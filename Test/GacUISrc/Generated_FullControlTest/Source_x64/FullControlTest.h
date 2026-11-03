@@ -367,41 +367,48 @@ namespace vl_workflow_global
 	struct __vwsnf414_FullControlTest_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize_;
 	struct __vwsnf415_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
 	struct __vwsnf416_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
-	struct __vwsnf417_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
-	struct __vwsnf418_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
-	struct __vwsnf419_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+	struct __vwsnf417_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+	struct __vwsnf418_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+	struct __vwsnf419_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
 	struct __vwsnf41_FullControlTest_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_;
-	struct __vwsnf420_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
-	struct __vwsnf421_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
-	struct __vwsnf422_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
-	struct __vwsnf423_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
-	struct __vwsnf424_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
-	struct __vwsnf425_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
-	struct __vwsnf426_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
-	struct __vwsnf427_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
-	struct __vwsnf428_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+	struct __vwsnf420_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+	struct __vwsnf421_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+	struct __vwsnf422_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+	struct __vwsnf423_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+	struct __vwsnf424_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+	struct __vwsnf425_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+	struct __vwsnf426_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+	struct __vwsnf427_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+	struct __vwsnf428_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
 	struct __vwsnf429_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
 	struct __vwsnf42_FullControlTest_demo_ListViewTabPage___vwsn_instance_ctor__;
 	struct __vwsnf430_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
-	struct __vwsnf431_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-	struct __vwsnf432_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-	struct __vwsnf433_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-	struct __vwsnf434_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-	struct __vwsnf435_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-	struct __vwsnf436_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-	struct __vwsnf437_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+	struct __vwsnf431_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+	struct __vwsnf432_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+	struct __vwsnf433_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+	struct __vwsnf434_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+	struct __vwsnf435_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+	struct __vwsnf436_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+	struct __vwsnf437_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
 	struct __vwsnf438_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
 	struct __vwsnf439_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
 	struct __vwsnf43_FullControlTest_demo_ListViewTabPage___vwsn_instance_ctor__;
-	struct __vwsnf440_FullControlTest_demo_TouchingListTabPage_EndSwipe_;
-	struct __vwsnf441_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-	struct __vwsnf442_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-	struct __vwsnf443_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-	struct __vwsnf444_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-	struct __vwsnf445_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-	struct __vwsnf446_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-	struct __vwsnf447_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+	struct __vwsnf440_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+	struct __vwsnf441_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+	struct __vwsnf442_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+	struct __vwsnf443_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+	struct __vwsnf444_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+	struct __vwsnf445_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+	struct __vwsnf446_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+	struct __vwsnf447_FullControlTest_demo_TouchingListTabPage_EndSwipe_;
+	struct __vwsnf448_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+	struct __vwsnf449_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
 	struct __vwsnf44_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
+	struct __vwsnf450_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+	struct __vwsnf451_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+	struct __vwsnf452_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+	struct __vwsnf453_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+	struct __vwsnf454_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
 	struct __vwsnf45_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 	struct __vwsnf46_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 	struct __vwsnf47_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
@@ -556,9 +563,9 @@ namespace vl_workflow_global
 	class __vwsnc173_FullControlTest_demo_DocumentBoxSubTabPageConstructor___vwsn_demo_DocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc174_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc175_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
-	class __vwsnc176_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription;
-	class __vwsnc177_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
-	class __vwsnc178_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc176_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc177_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc178_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc179_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc17_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc180_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
@@ -567,13 +574,15 @@ namespace vl_workflow_global
 	class __vwsnc183_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc184_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc185_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
-	class __vwsnc186_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
-	class __vwsnc187_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc186_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc187_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc188_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
-	class __vwsnc189_FullControlTest_demo_DialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__gaclib_controls_IDialogStringsStrings;
+	class __vwsnc189_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc18_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
-	class __vwsnc190_FullControlTest_demo_StringResource___vwsn_ls_en_US_BuildStrings__demo_IStringResourceStrings;
-	class __vwsnc191_FullControlTest_demo_StringResource___vwsn_ls_zh_CN_BuildStrings__demo_IStringResourceStrings;
+	class __vwsnc190_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc191_FullControlTest_demo_DialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__gaclib_controls_IDialogStringsStrings;
+	class __vwsnc192_FullControlTest_demo_StringResource___vwsn_ls_en_US_BuildStrings__demo_IStringResourceStrings;
+	class __vwsnc193_FullControlTest_demo_StringResource___vwsn_ls_zh_CN_BuildStrings__demo_IStringResourceStrings;
 	class __vwsnc19_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc1_FullControlTest_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize__vl_presentation_controls_list_IDataSorter;
 	class __vwsnc20_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
@@ -856,6 +865,8 @@ namespace demo
 #endif
 	protected:
 		::demo::AnimationTabPage* self;
+		::vl::presentation::controls::GuiButton* buttonStartAnimation;
+		::vl::presentation::compositions::GuiBoundsComposition* animationBackground;
 		::vl::presentation::controls::GuiTab* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_2;
@@ -879,8 +890,6 @@ namespace demo
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_20;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_21;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_22;
-		::vl::presentation::controls::GuiButton* buttonStartAnimation;
-		::vl::presentation::compositions::GuiBoundsComposition* animationBackground;
 		void __vwsn_demo_AnimationTabPage_Initialize(::demo::AnimationTabPage* __vwsn_this_);
 	public:
 		AnimationTabPageConstructor();
@@ -1016,9 +1025,9 @@ namespace demo
 #endif
 	protected:
 		::demo::CategoryItemTemplate* self;
+		::demo::MyCategory SelectedCategory;
 		::demo::CategoryDisplayer* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
-		::demo::MyCategory SelectedCategory;
 		void __vwsn_demo_CategoryItemTemplate_Initialize(::demo::CategoryItemTemplate* __vwsn_this_);
 	public:
 		CategoryItemTemplateConstructor();
@@ -1184,7 +1193,9 @@ namespace demo
 #endif
 	protected:
 		::demo::DataGridTabPage* self;
+		::vl::presentation::controls::GuiComboBoxListControl* comboView;
 		::vl::presentation::controls::GuiBindableDataGrid* dataGrid;
+		::demo::DateFilter* dateFilter;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiTextList* __vwsn_precompile_2;
@@ -1208,8 +1219,6 @@ namespace demo
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_20;
 		::vl::Ptr<::vl::presentation::controls::list::DataColumn> __vwsn_precompile_21;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_22;
-		::vl::presentation::controls::GuiComboBoxListControl* comboView;
-		::demo::DateFilter* dateFilter;
 		void __vwsn_demo_DataGridTabPage_Initialize(::demo::DataGridTabPage* __vwsn_this_);
 	public:
 		DataGridTabPageConstructor();
@@ -1314,6 +1323,10 @@ namespace demo
 #endif
 	protected:
 		::demo::DateFilter* self;
+		::vl::presentation::controls::GuiSelectableButton* checkFrom;
+		::vl::presentation::controls::GuiDateComboBox* dateFrom;
+		::vl::presentation::controls::GuiSelectableButton* checkTo;
+		::vl::presentation::controls::GuiDateComboBox* dateTo;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
@@ -1321,10 +1334,6 @@ namespace demo
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
-		::vl::presentation::controls::GuiSelectableButton* checkFrom;
-		::vl::presentation::controls::GuiDateComboBox* dateFrom;
-		::vl::presentation::controls::GuiSelectableButton* checkTo;
-		::vl::presentation::controls::GuiDateComboBox* dateTo;
 		void __vwsn_demo_DateFilter_Initialize(::demo::DateFilter* __vwsn_this_);
 	public:
 		DateFilterConstructor();
@@ -1380,6 +1389,10 @@ namespace demo
 #endif
 	protected:
 		::demo::DatePickerTabPage* self;
+		::vl::presentation::controls::GuiDatePicker* dp1;
+		::vl::presentation::controls::GuiDatePicker* dp2;
+		::vl::presentation::controls::GuiDateComboBox* dc1;
+		::vl::presentation::controls::GuiDateComboBox* dc2;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
@@ -1399,10 +1412,6 @@ namespace demo
 		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_16;
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_17;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_18;
-		::vl::presentation::controls::GuiDatePicker* dp1;
-		::vl::presentation::controls::GuiDatePicker* dp2;
-		::vl::presentation::controls::GuiDateComboBox* dc1;
-		::vl::presentation::controls::GuiDateComboBox* dc2;
 		void __vwsn_demo_DatePickerTabPage_Initialize(::demo::DatePickerTabPage* __vwsn_this_);
 	public:
 		DatePickerTabPageConstructor();
@@ -1437,7 +1446,7 @@ namespace demo
 
 	class DialogStringsInjection : public ::vl::Object, public ::vl::reflection::Description<DialogStringsInjection>
 	{
-		friend class ::vl_workflow_global::__vwsnc189_FullControlTest_demo_DialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__gaclib_controls_IDialogStringsStrings;
+		friend class ::vl_workflow_global::__vwsnc191_FullControlTest_demo_DialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__gaclib_controls_IDialogStringsStrings;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DialogStringsInjection>;
 #endif
@@ -1589,9 +1598,6 @@ namespace demo
 #endif
 	protected:
 		::demo::DocumentEditorBase* self;
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
 		::vl::presentation::controls::GuiMessageDialog* dialogMessage;
 		::vl::presentation::controls::GuiOpenFileDialog* dialogOpen;
 		::vl::presentation::controls::GuiOpenFileDialog* dialogOpenDoc;
@@ -1631,6 +1637,9 @@ namespace demo
 		::vl::presentation::controls::GuiToolstripCommand* commandAlignLeft;
 		::vl::presentation::controls::GuiToolstripCommand* commandAlignCenter;
 		::vl::presentation::controls::GuiToolstripCommand* commandAlignRight;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
 		void __vwsn_demo_DocumentEditorBase_Initialize(::demo::DocumentEditorBase* __vwsn_this_);
 	public:
 		DocumentEditorBaseConstructor();
@@ -1667,6 +1676,10 @@ namespace demo
 #endif
 	protected:
 		::demo::DocumentEditorRibbon* self;
+		::vl::presentation::controls::GuiMessageDialog* dialogMessage;
+		::vl::presentation::controls::GuiToolstripMenu* toolstripHome;
+		::vl::presentation::controls::GuiButton* buttonHome;
+		::vl::presentation::controls::GuiBindableRibbonGalleryList* styleGallery;
 		::vl::presentation::controls::GuiToolstripGroupContainer* __vwsn_precompile_0;
 		::vl::presentation::controls::GuiToolstripGroup* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_2;
@@ -1706,10 +1719,6 @@ namespace demo
 		::vl::presentation::controls::GuiToolstripGroup* __vwsn_precompile_36;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_37;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_38;
-		::vl::presentation::controls::GuiMessageDialog* dialogMessage;
-		::vl::presentation::controls::GuiToolstripMenu* toolstripHome;
-		::vl::presentation::controls::GuiButton* buttonHome;
-		::vl::presentation::controls::GuiBindableRibbonGalleryList* styleGallery;
 		::vl::presentation::controls::GuiToolstripGroup* __vwsn_precompile_39;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_40;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_41;
@@ -1783,6 +1792,7 @@ namespace demo
 #endif
 	protected:
 		::demo::DocumentEditorToolstrip* self;
+		::vl::presentation::controls::GuiToolstripButton* buttonAlignment;
 		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_0;
 		::vl::presentation::controls::GuiToolstripMenuBar* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_2;
@@ -1822,7 +1832,6 @@ namespace demo
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_36;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_37;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_38;
-		::vl::presentation::controls::GuiToolstripButton* buttonAlignment;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_39;
 		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_40;
 		::vl::presentation::controls::GuiToolstripToolBar* __vwsn_precompile_41;
@@ -1881,6 +1890,12 @@ namespace demo
 #endif
 	protected:
 		::demo::EasyLayoutResponsiveWindow* self;
+		::vl::presentation::controls::GuiCustomControl* movieHost;
+		::vl::presentation::compositions::GuiResponsiveGroupComposition* movieGroup;
+		::vl::presentation::controls::GuiBindableTextList* movieList;
+		::vl::presentation::compositions::GuiResponsiveGroupComposition* accountGroup;
+		::vl::presentation::controls::GuiBindableTextList* accountList;
+		::vl::presentation::compositions::GuiRepeatStackComposition* accountMenu;
 		::vl::presentation::compositions::GuiSharedSizeRootComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* __vwsn_precompile_1;
 		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyFillLayout> __vwsn_precompile_2;
@@ -1912,12 +1927,6 @@ namespace demo
 		::vl::presentation::compositions::GuiSharedSizeItemComposition* __vwsn_precompile_28;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_29;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_30;
-		::vl::presentation::controls::GuiCustomControl* movieHost;
-		::vl::presentation::compositions::GuiResponsiveGroupComposition* movieGroup;
-		::vl::presentation::controls::GuiBindableTextList* movieList;
-		::vl::presentation::compositions::GuiResponsiveGroupComposition* accountGroup;
-		::vl::presentation::controls::GuiBindableTextList* accountList;
-		::vl::presentation::compositions::GuiRepeatStackComposition* accountMenu;
 		void __vwsn_demo_EasyLayoutResponsiveWindow_Initialize(::demo::EasyLayoutResponsiveWindow* __vwsn_this_);
 	public:
 		EasyLayoutResponsiveWindowConstructor();
@@ -1961,6 +1970,9 @@ namespace demo
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<EasyLayoutTabPageConstructor>;
 #endif
 	protected:
+		::vl::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* layout;
+		::vl::presentation::controls::GuiSelectableButton* vertical;
+		::vl::presentation::controls::GuiSinglelineTextBox* editor;
 		::demo::EasyLayoutTabPage* __vwsn_precompile_0;
 		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyTopLayout> __vwsn_precompile_1;
 		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyTopLayout> __vwsn_precompile_2;
@@ -1994,9 +2006,6 @@ namespace demo
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_30;
 		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyBottomLayout> __vwsn_precompile_31;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_32;
-		::vl::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* layout;
-		::vl::presentation::controls::GuiSelectableButton* vertical;
-		::vl::presentation::controls::GuiSinglelineTextBox* editor;
 		void __vwsn_demo_EasyLayoutTabPage_Initialize(::demo::EasyLayoutTabPage* __vwsn_this_);
 	public:
 		EasyLayoutTabPageConstructor();
@@ -2027,6 +2036,8 @@ namespace demo
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<EasyLayoutTablePageConstructor>;
 #endif
 	protected:
+		::vl::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* layout;
+		::vl::presentation::controls::GuiSinglelineTextBox* editor;
 		::demo::EasyLayoutTablePage* __vwsn_precompile_0;
 		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyTopLayout> __vwsn_precompile_1;
 		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout> __vwsn_precompile_2;
@@ -2066,8 +2077,6 @@ namespace demo
 		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyFillLayout> __vwsn_precompile_36;
 		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyTopLayout> __vwsn_precompile_37;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_38;
-		::vl::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* layout;
-		::vl::presentation::controls::GuiSinglelineTextBox* editor;
 		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyFillLayout> __vwsn_precompile_39;
 		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout> __vwsn_precompile_40;
 		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyRowLayout> __vwsn_precompile_41;
@@ -2155,6 +2164,7 @@ namespace demo
 	protected:
 		::demo::EasyResponsiveAccountItemTemplate* self;
 		::vl::Ptr<::demo::EasyResponsiveAccount> ViewModel;
+		::vl::presentation::compositions::GuiResponsiveViewComposition* responsiveView;
 		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* __vwsn_precompile_1;
 		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout> __vwsn_precompile_2;
@@ -2167,7 +2177,6 @@ namespace demo
 		::vl::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* __vwsn_precompile_9;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_10;
 		::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement> __vwsn_precompile_11;
-		::vl::presentation::compositions::GuiResponsiveViewComposition* responsiveView;
 		void __vwsn_demo_EasyResponsiveAccountItemTemplate_Initialize(::demo::EasyResponsiveAccountItemTemplate* __vwsn_this_);
 	public:
 		EasyResponsiveAccountItemTemplateConstructor();
@@ -2211,8 +2220,8 @@ namespace demo
 	protected:
 		::demo::EasyResponsiveAccountMenuTemplate* self;
 		::vl::Ptr<::demo::EasyResponsiveAccount> ViewModel;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
 		::vl::presentation::controls::GuiToolstripButton* menuButton;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
 		void __vwsn_demo_EasyResponsiveAccountMenuTemplate_Initialize(::demo::EasyResponsiveAccountMenuTemplate* __vwsn_this_);
 	public:
 		EasyResponsiveAccountMenuTemplateConstructor();
@@ -2292,6 +2301,7 @@ namespace demo
 	protected:
 		::demo::EasyResponsiveMovieTemplate* self;
 		::vl::Ptr<::demo::EasyResponsiveMovie> ViewModel;
+		::vl::presentation::compositions::GuiResponsiveViewComposition* responsiveView;
 		::vl::presentation::compositions::GuiResponsiveFixedComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* __vwsn_precompile_1;
 		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout> __vwsn_precompile_2;
@@ -2309,7 +2319,6 @@ namespace demo
 		::vl::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* __vwsn_precompile_14;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_15;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_16;
-		::vl::presentation::compositions::GuiResponsiveViewComposition* responsiveView;
 		void __vwsn_demo_EasyResponsiveMovieTemplate_Initialize(::demo::EasyResponsiveMovieTemplate* __vwsn_this_);
 	public:
 		EasyResponsiveMovieTemplateConstructor();
@@ -2435,6 +2444,9 @@ namespace demo
 #endif
 	protected:
 		::demo::EmbeddedControlsSubTabPage* self;
+		::vl::presentation::controls::GuiMessageDialog* dialogStart;
+		::vl::presentation::controls::GuiDocumentViewer* docViewer;
+		::vl::presentation::controls::GuiComboBoxListControl* comboRun;
 		::vl::Ptr<::vl::presentation::controls::GuiDocumentItem> __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
@@ -2474,9 +2486,6 @@ namespace demo
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_36;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_37;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_38;
-		::vl::presentation::controls::GuiMessageDialog* dialogStart;
-		::vl::presentation::controls::GuiDocumentViewer* docViewer;
-		::vl::presentation::controls::GuiComboBoxListControl* comboRun;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_39;
 		::vl::presentation::controls::GuiDocumentLabel* __vwsn_precompile_40;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_41;
@@ -2613,12 +2622,12 @@ namespace demo
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<EnglishNumbersControllerTabPageConstructor>;
 #endif
 	protected:
+		::vl::presentation::compositions::GuiCellComposition* content;
+		::demo::EnglishNumbersController* controller;
 		::demo::EnglishNumbersControllerTabPage* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
-		::vl::presentation::compositions::GuiCellComposition* content;
-		::demo::EnglishNumbersController* controller;
 		void __vwsn_demo_EnglishNumbersControllerTabPage_Initialize(::demo::EnglishNumbersControllerTabPage* __vwsn_this_);
 	public:
 		EnglishNumbersControllerTabPageConstructor();
@@ -2720,10 +2729,10 @@ namespace demo
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderItemTemplateConstructor>;
 #endif
 	protected:
+		::demo::MyGender SelectedGender;
 		::demo::GenderItemTemplate* __vwsn_precompile_0;
 		::demo::GenderDisplayer* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
-		::demo::MyGender SelectedGender;
 		void __vwsn_demo_GenderItemTemplate_Initialize(::demo::GenderItemTemplate* __vwsn_this_);
 	public:
 		GenderItemTemplateConstructor();
@@ -2781,6 +2790,7 @@ namespace demo
 #endif
 	protected:
 		::demo::HyperlinkWindow* self;
+		::vl::presentation::controls::GuiSinglelineTextBox* textUrl;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_2;
@@ -2795,7 +2805,6 @@ namespace demo
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_11;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_12;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_13;
-		::vl::presentation::controls::GuiSinglelineTextBox* textUrl;
 		void __vwsn_demo_HyperlinkWindow_Initialize(::demo::HyperlinkWindow* __vwsn_this_);
 	public:
 		HyperlinkWindowConstructor();
@@ -2853,6 +2862,9 @@ namespace demo
 #endif
 	protected:
 		::demo::ListViewTabPage* self;
+		::vl::presentation::controls::GuiComboBoxListControl* comboView;
+		::vl::presentation::controls::GuiListView* listView;
+		::vl::presentation::controls::GuiBindableListView* bindableListView;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiTextList* __vwsn_precompile_2;
@@ -2878,9 +2890,6 @@ namespace demo
 		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_22;
 		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_23;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_24;
-		::vl::presentation::controls::GuiComboBoxListControl* comboView;
-		::vl::presentation::controls::GuiListView* listView;
-		::vl::presentation::controls::GuiBindableListView* bindableListView;
 		void __vwsn_demo_ListViewTabPage_Initialize(::demo::ListViewTabPage* __vwsn_this_);
 	public:
 		ListViewTabPageConstructor();
@@ -2919,11 +2928,11 @@ namespace demo
 #endif
 	protected:
 		::demo::LocaleSelector* self;
+		::vl::presentation::controls::GuiComboBoxListControl* comboLocales;
+		::vl::presentation::controls::GuiTextList* listLocales;
 		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_0;
 		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
-		::vl::presentation::controls::GuiComboBoxListControl* comboLocales;
-		::vl::presentation::controls::GuiTextList* listLocales;
 		void __vwsn_demo_LocaleSelector_Initialize(::demo::LocaleSelector* __vwsn_this_);
 	public:
 		LocaleSelectorConstructor();
@@ -2952,12 +2961,12 @@ namespace demo
 #endif
 	protected:
 		::demo::LocalizedColorDialogTabPage* self;
+		::vl::presentation::controls::GuiColorDialog* dialog;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> background;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_3;
-		::vl::presentation::controls::GuiColorDialog* dialog;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> background;
 		void __vwsn_demo_LocalizedColorDialogTabPage_Initialize(::demo::LocalizedColorDialogTabPage* __vwsn_this_);
 	public:
 		LocalizedColorDialogTabPageConstructor();
@@ -3025,6 +3034,24 @@ namespace demo
 #endif
 	protected:
 		::demo::LocalizedFileDialogTabPage* self;
+		::vl::presentation::controls::GuiOpenFileDialog* dialogOpen;
+		::vl::presentation::controls::GuiSinglelineTextBox* txtTitle;
+		::vl::presentation::controls::GuiSaveFileDialog* dialogSave;
+		::vl::presentation::controls::GuiSinglelineTextBox* txtDirectory;
+		::vl::presentation::controls::GuiSinglelineTextBox* txtFileName;
+		::vl::presentation::controls::GuiSinglelineTextBox* txtFilter;
+		::vl::presentation::controls::GuiSinglelineTextBox* txtFilterIndex;
+		::vl::presentation::controls::GuiSinglelineTextBox* txtDefaultExtension;
+		::vl::presentation::controls::GuiSelectableButton* chkFileDialogAllowMultipleSelection;
+		::vl::presentation::controls::GuiSelectableButton* chkFileDialogFileMustExist;
+		::vl::presentation::controls::GuiSelectableButton* chkFileDialogShowReadOnlyCheckBox;
+		::vl::presentation::controls::GuiSelectableButton* chkFileDialogDereferenceLinks;
+		::vl::presentation::controls::GuiSelectableButton* chkFileDialogShowNetworkButton;
+		::vl::presentation::controls::GuiSelectableButton* chkFileDialogPromptCreateFile;
+		::vl::presentation::controls::GuiSelectableButton* chkFileDialogPromptOverwriteFile;
+		::vl::presentation::controls::GuiSelectableButton* chkFileDialogDirectoryMustExist;
+		::vl::presentation::controls::GuiSelectableButton* chkFileDialogAddToRecent;
+		::vl::presentation::controls::GuiBindableTextList* lstFiles;
 		::vl::presentation::compositions::GuiStackComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_2;
@@ -3064,24 +3091,6 @@ namespace demo
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_36;
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_37;
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_38;
-		::vl::presentation::controls::GuiOpenFileDialog* dialogOpen;
-		::vl::presentation::controls::GuiSinglelineTextBox* txtTitle;
-		::vl::presentation::controls::GuiSaveFileDialog* dialogSave;
-		::vl::presentation::controls::GuiSinglelineTextBox* txtDirectory;
-		::vl::presentation::controls::GuiSinglelineTextBox* txtFileName;
-		::vl::presentation::controls::GuiSinglelineTextBox* txtFilter;
-		::vl::presentation::controls::GuiSinglelineTextBox* txtFilterIndex;
-		::vl::presentation::controls::GuiSinglelineTextBox* txtDefaultExtension;
-		::vl::presentation::controls::GuiSelectableButton* chkFileDialogAllowMultipleSelection;
-		::vl::presentation::controls::GuiSelectableButton* chkFileDialogFileMustExist;
-		::vl::presentation::controls::GuiSelectableButton* chkFileDialogShowReadOnlyCheckBox;
-		::vl::presentation::controls::GuiSelectableButton* chkFileDialogDereferenceLinks;
-		::vl::presentation::controls::GuiSelectableButton* chkFileDialogShowNetworkButton;
-		::vl::presentation::controls::GuiSelectableButton* chkFileDialogPromptCreateFile;
-		::vl::presentation::controls::GuiSelectableButton* chkFileDialogPromptOverwriteFile;
-		::vl::presentation::controls::GuiSelectableButton* chkFileDialogDirectoryMustExist;
-		::vl::presentation::controls::GuiSelectableButton* chkFileDialogAddToRecent;
-		::vl::presentation::controls::GuiBindableTextList* lstFiles;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_39;
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_40;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_41;
@@ -3119,14 +3128,14 @@ namespace demo
 #endif
 	protected:
 		::demo::LocalizedFontDialogTabPage* self;
+		::vl::presentation::controls::GuiFontDialog* dialog;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> label;
+		::vl::presentation::controls::GuiSelectableButton* checkEffect;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_4;
-		::vl::presentation::controls::GuiFontDialog* dialog;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> label;
-		::vl::presentation::controls::GuiSelectableButton* checkEffect;
 		void __vwsn_demo_LocalizedFontDialogTabPage_Initialize(::demo::LocalizedFontDialogTabPage* __vwsn_this_);
 	public:
 		LocalizedFontDialogTabPageConstructor();
@@ -3155,6 +3164,13 @@ namespace demo
 #endif
 	protected:
 		::demo::LocalizedMessageDialogTabPage* self;
+		::vl::presentation::controls::GuiMessageDialog* dialog;
+		::vl::presentation::controls::GuiSinglelineTextBox* txtTitle;
+		::vl::presentation::controls::GuiSinglelineTextBox* txtText;
+		::vl::presentation::controls::GuiComboBoxListControl* comboInput;
+		::vl::presentation::controls::GuiComboBoxListControl* comboDefaultButton;
+		::vl::presentation::controls::GuiComboBoxListControl* comboIcon;
+		::vl::presentation::controls::GuiLabel* lblOutput;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_2;
@@ -3184,13 +3200,6 @@ namespace demo
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_26;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_27;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_28;
-		::vl::presentation::controls::GuiMessageDialog* dialog;
-		::vl::presentation::controls::GuiSinglelineTextBox* txtTitle;
-		::vl::presentation::controls::GuiSinglelineTextBox* txtText;
-		::vl::presentation::controls::GuiComboBoxListControl* comboInput;
-		::vl::presentation::controls::GuiComboBoxListControl* comboDefaultButton;
-		::vl::presentation::controls::GuiComboBoxListControl* comboIcon;
-		::vl::presentation::controls::GuiLabel* lblOutput;
 		void __vwsn_demo_LocalizedMessageDialogTabPage_Initialize(::demo::LocalizedMessageDialogTabPage* __vwsn_this_);
 	public:
 		LocalizedMessageDialogTabPageConstructor();
@@ -3406,7 +3415,36 @@ namespace demo
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MainWindowConstructor>;
 #endif
 	protected:
+		::vl::presentation::controls::GuiSelectableButton* checkFrame;
+		::vl::presentation::controls::GuiSelectableButton* checkMax;
+		::vl::presentation::controls::GuiSelectableButton* checkMin;
+		::vl::presentation::controls::GuiSelectableButton* checkBorder;
+		::vl::presentation::controls::GuiSelectableButton* checkSizeBox;
+		::vl::presentation::controls::GuiSelectableButton* checkIcon;
+		::vl::presentation::controls::GuiSelectableButton* checkTitle;
 		::demo::MainWindow* self;
+		::vl::presentation::controls::GuiSelectableButton::MutexGroupController* paletteGroup;
+		::vl::presentation::controls::GuiMessageDialog* dialogLocalShortcut;
+		::vl::presentation::controls::GuiMessageDialog* dialogLocalSuperShortcut;
+		::vl::presentation::controls::GuiMessageDialog* dialogGlobalShortcut;
+		::vl::presentation::controls::GuiToolstripCommand* commandLocalShortcut;
+		::vl::presentation::controls::GuiToolstripCommand* commandLocalSuperShortcut;
+		::vl::presentation::controls::GuiToolstripCommand* commandGlobalShortcut;
+		::vl::presentation::controls::GuiTab* mainTabs;
+		::vl::presentation::controls::GuiTabPage* layoutPage;
+		::vl::presentation::controls::GuiRibbonTab* layoutTab;
+		::demo::DocumentEditorRibbon* editorRibbon;
+		::demo::DocumentEditorToolstrip* editorToolstrip;
+		::demo::RawElementTabPage* rawClockPage;
+		::demo::TouchingTabPage* touchingPage;
+		::vl::presentation::controls::GuiLabel* labelMouseButton;
+		::vl::presentation::controls::GuiLabel* labelMouseModifiers;
+		::vl::presentation::controls::GuiSelectableButton* paletteDefault;
+		::vl::presentation::controls::GuiSelectableButton* paletteAurora;
+		::vl::presentation::controls::GuiSelectableButton* paletteEmber;
+		::vl::presentation::controls::GuiSelectableButton* paletteMoonstone;
+		::vl::presentation::controls::GuiSelectableButton* paletteLagoon;
+		::vl::presentation::controls::GuiSelectableButton* paletteRosewood;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
 		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiTab* __vwsn_precompile_2;
@@ -3446,35 +3484,6 @@ namespace demo
 		::vl::presentation::controls::GuiTab* __vwsn_precompile_36;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_37;
 		::demo::ElementTabPage* __vwsn_precompile_38;
-		::vl::presentation::controls::GuiSelectableButton* checkFrame;
-		::vl::presentation::controls::GuiSelectableButton* checkMax;
-		::vl::presentation::controls::GuiSelectableButton* checkMin;
-		::vl::presentation::controls::GuiSelectableButton* checkBorder;
-		::vl::presentation::controls::GuiSelectableButton* checkSizeBox;
-		::vl::presentation::controls::GuiSelectableButton* checkIcon;
-		::vl::presentation::controls::GuiSelectableButton* checkTitle;
-		::vl::presentation::controls::GuiSelectableButton::MutexGroupController* paletteGroup;
-		::vl::presentation::controls::GuiMessageDialog* dialogLocalShortcut;
-		::vl::presentation::controls::GuiMessageDialog* dialogLocalSuperShortcut;
-		::vl::presentation::controls::GuiMessageDialog* dialogGlobalShortcut;
-		::vl::presentation::controls::GuiToolstripCommand* commandLocalShortcut;
-		::vl::presentation::controls::GuiToolstripCommand* commandLocalSuperShortcut;
-		::vl::presentation::controls::GuiToolstripCommand* commandGlobalShortcut;
-		::vl::presentation::controls::GuiTab* mainTabs;
-		::vl::presentation::controls::GuiTabPage* layoutPage;
-		::vl::presentation::controls::GuiRibbonTab* layoutTab;
-		::demo::DocumentEditorRibbon* editorRibbon;
-		::demo::DocumentEditorToolstrip* editorToolstrip;
-		::demo::RawElementTabPage* rawClockPage;
-		::demo::TouchingTabPage* touchingPage;
-		::vl::presentation::controls::GuiLabel* labelMouseButton;
-		::vl::presentation::controls::GuiLabel* labelMouseModifiers;
-		::vl::presentation::controls::GuiSelectableButton* paletteDefault;
-		::vl::presentation::controls::GuiSelectableButton* paletteAurora;
-		::vl::presentation::controls::GuiSelectableButton* paletteEmber;
-		::vl::presentation::controls::GuiSelectableButton* paletteMoonstone;
-		::vl::presentation::controls::GuiSelectableButton* paletteLagoon;
-		::vl::presentation::controls::GuiSelectableButton* paletteRosewood;
 		::demo::TouchingListTabPage* __vwsn_precompile_39;
 		::demo::AnimationTabPage* __vwsn_precompile_40;
 		::demo::LocalizedStringsTabPage* __vwsn_precompile_41;
@@ -3597,14 +3606,14 @@ namespace demo
 #endif
 	protected:
 		::demo::RawElementTabPage* self;
+		::vl::presentation::compositions::GuiBoundsComposition* clockBounds;
+		::vl::Ptr<::vl::presentation::elements::GuiRawElementBase> clock;
 		::vl::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* __vwsn_precompile_0;
 		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyTopLayout> __vwsn_precompile_1;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_2;
 		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyFillLayout> __vwsn_precompile_3;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_4;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_5;
-		::vl::presentation::compositions::GuiBoundsComposition* clockBounds;
-		::vl::Ptr<::vl::presentation::elements::GuiRawElementBase> clock;
 		void __vwsn_demo_RawElementTabPage_Initialize(::demo::RawElementTabPage* __vwsn_this_);
 	public:
 		RawElementTabPageConstructor();
@@ -3661,6 +3670,7 @@ namespace demo
 #endif
 	protected:
 		::demo::RefreshBindableDataGridTabPage* self;
+		::vl::presentation::controls::GuiComboBoxListControl* comboView;
 		::vl::presentation::controls::GuiBindableDataGrid* dataGrid;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
@@ -3689,7 +3699,6 @@ namespace demo
 		::vl::Ptr<::vl::presentation::controls::list::DataColumn> __vwsn_precompile_24;
 		::vl::Ptr<::vl::presentation::controls::list::DataColumn> __vwsn_precompile_25;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_26;
-		::vl::presentation::controls::GuiComboBoxListControl* comboView;
 		void __vwsn_demo_RefreshBindableDataGridTabPage_Initialize(::demo::RefreshBindableDataGridTabPage* __vwsn_this_);
 	public:
 		RefreshBindableDataGridTabPageConstructor();
@@ -3754,6 +3763,8 @@ namespace demo
 #endif
 	protected:
 		::demo::RefreshBindableListViewTabPage* self;
+		::vl::presentation::controls::GuiComboBoxListControl* comboView;
+		::vl::presentation::controls::GuiBindableListView* listView;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiTextList* __vwsn_precompile_2;
@@ -3780,8 +3791,6 @@ namespace demo
 		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_23;
 		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_24;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_25;
-		::vl::presentation::controls::GuiComboBoxListControl* comboView;
-		::vl::presentation::controls::GuiBindableListView* listView;
 		void __vwsn_demo_RefreshBindableListViewTabPage_Initialize(::demo::RefreshBindableListViewTabPage* __vwsn_this_);
 	public:
 		RefreshBindableListViewTabPageConstructor();
@@ -3832,6 +3841,7 @@ namespace demo
 	protected:
 		::demo::RefreshBindableTextListTabPage* self;
 		::vl::presentation::controls::GuiBindableTextList* textList;
+		::vl::presentation::controls::GuiButton* buttonRead;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_2;
@@ -3844,7 +3854,6 @@ namespace demo
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_9;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_10;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_11;
-		::vl::presentation::controls::GuiButton* buttonRead;
 		void __vwsn_demo_RefreshBindableTextListTabPage_Initialize(::demo::RefreshBindableTextListTabPage* __vwsn_this_);
 	public:
 		RefreshBindableTextListTabPageConstructor();
@@ -4001,6 +4010,8 @@ namespace demo
 #endif
 	protected:
 		::demo::RefreshListViewTabPage* self;
+		::vl::presentation::controls::GuiComboBoxListControl* comboView;
+		::vl::presentation::controls::GuiListView* listView;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiTextList* __vwsn_precompile_2;
@@ -4029,8 +4040,6 @@ namespace demo
 		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_25;
 		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_26;
 		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_27;
-		::vl::presentation::controls::GuiComboBoxListControl* comboView;
-		::vl::presentation::controls::GuiListView* listView;
 		void __vwsn_demo_RefreshListViewTabPage_Initialize(::demo::RefreshListViewTabPage* __vwsn_this_);
 	public:
 		RefreshListViewTabPageConstructor();
@@ -4063,6 +4072,7 @@ namespace demo
 	protected:
 		::demo::RefreshTextListTabPage* self;
 		::vl::presentation::controls::GuiTextList* textList;
+		::vl::presentation::controls::GuiButton* buttonRead;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_2;
@@ -4077,7 +4087,6 @@ namespace demo
 		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_11;
 		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_12;
 		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_13;
-		::vl::presentation::controls::GuiButton* buttonRead;
 		void __vwsn_demo_RefreshTextListTabPage_Initialize(::demo::RefreshTextListTabPage* __vwsn_this_);
 	public:
 		RefreshTextListTabPageConstructor();
@@ -4189,6 +4198,11 @@ namespace demo
 #endif
 	protected:
 		::demo::RepeatTabPage* self;
+		::demo::EnglishNumbersControllerTabPage* repeatStackTabPage;
+		::demo::EnglishNumbersControllerTabPage* repeatFlowTabPage;
+		::demo::EnglishNumbersControllerTabPage* sharedSizeFlowTabPage;
+		::demo::EnglishNumbersControllerTabPage* sharedSizeListTabPage;
+		::vl::presentation::controls::GuiScroll* hTracker;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiTab* __vwsn_precompile_2;
@@ -4224,11 +4238,6 @@ namespace demo
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_32;
 		::vl::presentation::controls::GuiScroll* __vwsn_precompile_33;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_34;
-		::demo::EnglishNumbersControllerTabPage* repeatStackTabPage;
-		::demo::EnglishNumbersControllerTabPage* repeatFlowTabPage;
-		::demo::EnglishNumbersControllerTabPage* sharedSizeFlowTabPage;
-		::demo::EnglishNumbersControllerTabPage* sharedSizeListTabPage;
-		::vl::presentation::controls::GuiScroll* hTracker;
 		void __vwsn_demo_RepeatTabPage_Initialize(::demo::RepeatTabPage* __vwsn_this_);
 	public:
 		RepeatTabPageConstructor();
@@ -4265,6 +4274,7 @@ namespace demo
 #endif
 	protected:
 		::demo::ResponsiveGroupControl* self;
+		::vl::presentation::compositions::GuiResponsiveGroupComposition* responsive;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
@@ -4304,7 +4314,6 @@ namespace demo
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_36;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_37;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_38;
-		::vl::presentation::compositions::GuiResponsiveGroupComposition* responsive;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_39;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_40;
 		void __vwsn_demo_ResponsiveGroupControl_Initialize(::demo::ResponsiveGroupControl* __vwsn_this_);
@@ -4342,6 +4351,7 @@ namespace demo
 #endif
 	protected:
 		::demo::ResponsiveStackControl* self;
+		::vl::presentation::compositions::GuiResponsiveStackComposition* responsive;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
@@ -4381,7 +4391,6 @@ namespace demo
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_36;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_37;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_38;
-		::vl::presentation::compositions::GuiResponsiveStackComposition* responsive;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_39;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_40;
 		void __vwsn_demo_ResponsiveStackControl_Initialize(::demo::ResponsiveStackControl* __vwsn_this_);
@@ -4466,6 +4475,8 @@ namespace demo
 #endif
 	protected:
 		::demo::ResponsiveViewControl* self;
+		::vl::presentation::compositions::GuiResponsiveViewComposition* responsive;
+		::vl::presentation::controls::GuiDocumentLabel* documentBox;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
@@ -4502,8 +4513,6 @@ namespace demo
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_33;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_34;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_35;
-		::vl::presentation::compositions::GuiResponsiveViewComposition* responsive;
-		::vl::presentation::controls::GuiDocumentLabel* documentBox;
 		void __vwsn_demo_ResponsiveViewControl_Initialize(::demo::ResponsiveViewControl* __vwsn_this_);
 	public:
 		ResponsiveViewControlConstructor();
@@ -4611,8 +4620,8 @@ namespace demo
 
 	class StringResource : public ::vl::Object, public ::vl::reflection::Description<StringResource>
 	{
-		friend class ::vl_workflow_global::__vwsnc190_FullControlTest_demo_StringResource___vwsn_ls_en_US_BuildStrings__demo_IStringResourceStrings;
-		friend class ::vl_workflow_global::__vwsnc191_FullControlTest_demo_StringResource___vwsn_ls_zh_CN_BuildStrings__demo_IStringResourceStrings;
+		friend class ::vl_workflow_global::__vwsnc192_FullControlTest_demo_StringResource___vwsn_ls_en_US_BuildStrings__demo_IStringResourceStrings;
+		friend class ::vl_workflow_global::__vwsnc193_FullControlTest_demo_StringResource___vwsn_ls_zh_CN_BuildStrings__demo_IStringResourceStrings;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<StringResource>;
 #endif
@@ -4660,6 +4669,8 @@ namespace demo
 	protected:
 		::demo::StyleItemTemplate* self;
 		::vl::Ptr<::demo::StyleItem> ViewModel;
+		::vl::presentation::controls::GuiCustomControl* containerControl;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> styleLabel;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
@@ -4668,8 +4679,6 @@ namespace demo
 		::vl::presentation::controls::GuiCustomControl* __vwsn_precompile_5;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_7;
-		::vl::presentation::controls::GuiCustomControl* containerControl;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> styleLabel;
 		void __vwsn_demo_StyleItemTemplate_Initialize(::demo::StyleItemTemplate* __vwsn_this_);
 	public:
 		StyleItemTemplateConstructor();
@@ -4730,6 +4739,13 @@ namespace demo
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<SubWindowConstructor>;
 #endif
 	protected:
+		::vl::presentation::controls::GuiSelectableButton* checkFrame;
+		::vl::presentation::controls::GuiSelectableButton* checkMax;
+		::vl::presentation::controls::GuiSelectableButton* checkMin;
+		::vl::presentation::controls::GuiSelectableButton* checkBorder;
+		::vl::presentation::controls::GuiSelectableButton* checkSizeBox;
+		::vl::presentation::controls::GuiSelectableButton* checkIcon;
+		::vl::presentation::controls::GuiSelectableButton* checkTitle;
 		::demo::SubWindow* self;
 		::vl::presentation::compositions::GuiStackComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_1;
@@ -4741,13 +4757,6 @@ namespace demo
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_7;
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_8;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_9;
-		::vl::presentation::controls::GuiSelectableButton* checkFrame;
-		::vl::presentation::controls::GuiSelectableButton* checkMax;
-		::vl::presentation::controls::GuiSelectableButton* checkMin;
-		::vl::presentation::controls::GuiSelectableButton* checkBorder;
-		::vl::presentation::controls::GuiSelectableButton* checkSizeBox;
-		::vl::presentation::controls::GuiSelectableButton* checkIcon;
-		::vl::presentation::controls::GuiSelectableButton* checkTitle;
 		void __vwsn_demo_SubWindow_Initialize(::demo::SubWindow* __vwsn_this_);
 	public:
 		SubWindowConstructor();
@@ -4829,22 +4838,41 @@ namespace demo
 	{
 		friend class ::vl_workflow_global::__vwsnc174_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc175_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc176_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc177_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf415_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf416_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf417_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf418_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf419_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf420_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf421_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf422_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf423_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextBoxSubTabPageConstructor>;
 #endif
 	protected:
 		::demo::TextBoxSubTabPage* self;
+		::vl::presentation::controls::GuiSinglelineTextBox* singleline;
+		::vl::presentation::controls::GuiMultilineTextBox* multiline;
+		::vl::presentation::controls::GuiSelectableButton* momentumOption;
+		::vl::presentation::controls::GuiSelectableButton* selectable;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
-		::vl::presentation::controls::GuiSinglelineTextBox* __vwsn_precompile_2;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4;
-		::vl::presentation::controls::GuiScrollContainer* __vwsn_precompile_5;
-		::vl::presentation::controls::GuiMultilineTextBox* __vwsn_precompile_6;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_8;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3;
+		::vl::presentation::controls::GuiScrollContainer* __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7;
+		::vl::presentation::compositions::GuiStackComposition* __vwsn_precompile_8;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_9;
+		::vl::presentation::compositions::GuiStackComposition* __vwsn_precompile_10;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_11;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_12;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_13;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_14;
 		void __vwsn_demo_TextBoxSubTabPage_Initialize(::demo::TextBoxSubTabPage* __vwsn_this_);
 	public:
 		TextBoxSubTabPageConstructor();
@@ -4855,8 +4883,17 @@ namespace demo
 		friend class ::demo::TextBoxSubTabPageConstructor;
 		friend class ::vl_workflow_global::__vwsnc174_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc175_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc176_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc177_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf415_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf416_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf417_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf418_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf419_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf420_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf421_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf422_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf423_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextBoxSubTabPage>;
 #endif
@@ -4865,23 +4902,43 @@ namespace demo
 		bool GetTextBoxAcceptTabInput();
 		void SetTextBoxAcceptTabInput(bool __vwsn_value_);
 		::vl::Event<void()> TextBoxAcceptTabInputChanged;
+		::vl::vint64_t __vwsn_prop_ShortPressCount;
+		::vl::vint64_t GetShortPressCount();
+		void SetShortPressCount(::vl::vint64_t __vwsn_value_);
+		::vl::Event<void()> ShortPressCountChanged;
+		::vl::vint64_t __vwsn_prop_LongPressCount;
+		::vl::vint64_t GetLongPressCount();
+		void SetLongPressCount(::vl::vint64_t __vwsn_value_);
+		::vl::Event<void()> LongPressCountChanged;
+		::vl::vint64_t __vwsn_prop_RightClickCount;
+		::vl::vint64_t GetRightClickCount();
+		void SetRightClickCount(::vl::vint64_t __vwsn_value_);
+		::vl::Event<void()> RightClickCountChanged;
+		::vl::presentation::compositions::MomentumScrolling* momentum;
+		void ObservePress(::vl::presentation::compositions::GuiPointGestureEventArgs* arguments);
+		void ObserveMouse(::vl::presentation::compositions::GuiMouseEventArgs* arguments);
 		TextBoxSubTabPage();
+		void __vwsn_instance_ctor_();
 		~TextBoxSubTabPage();
 	};
 
 	class TextBoxTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<TextBoxTabPageConstructor>
 	{
-		friend class ::vl_workflow_global::__vwsnc176_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf417_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf418_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf419_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf420_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf421_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+		friend class ::vl_workflow_global::__vwsnc178_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf424_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf425_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf426_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf427_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf428_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextBoxTabPageConstructor>;
 #endif
 	protected:
 		::demo::TextBoxTabPage* self;
+		::demo::TextBoxSubTabPage* t1;
+		::demo::TextBoxSubTabPage* t2;
+		::demo::DocumentBoxSubTabPage* d1;
+		::demo::DocumentBoxSubTabPage* d2;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiTab* __vwsn_precompile_2;
@@ -4890,10 +4947,6 @@ namespace demo
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_5;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_6;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_7;
-		::demo::TextBoxSubTabPage* t1;
-		::demo::TextBoxSubTabPage* t2;
-		::demo::DocumentBoxSubTabPage* d1;
-		::demo::DocumentBoxSubTabPage* d2;
 		void __vwsn_demo_TextBoxTabPage_Initialize(::demo::TextBoxTabPage* __vwsn_this_);
 	public:
 		TextBoxTabPageConstructor();
@@ -4902,12 +4955,12 @@ namespace demo
 	class TextBoxTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::TextBoxTabPageConstructor, public ::vl::reflection::Description<TextBoxTabPage>
 	{
 		friend class ::demo::TextBoxTabPageConstructor;
-		friend class ::vl_workflow_global::__vwsnc176_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf417_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf418_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf419_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf420_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf421_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+		friend class ::vl_workflow_global::__vwsnc178_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf424_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf425_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf426_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf427_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf428_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextBoxTabPage>;
 #endif
@@ -4971,7 +5024,10 @@ namespace demo
 #endif
 	protected:
 		::demo::TextListTabPage* self;
+		::vl::presentation::controls::GuiSelectableButton::MutexGroupController* mutexGroupController;
+		::vl::presentation::controls::GuiComboBoxListControl* comboView;
 		::vl::presentation::controls::GuiTextList* textList;
+		::vl::presentation::controls::GuiBindableTextList* bindableTextList;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiTextList* __vwsn_precompile_2;
@@ -5011,9 +5067,6 @@ namespace demo
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_36;
 		::vl::presentation::controls::GuiSelectableButton* __vwsn_precompile_37;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_38;
-		::vl::presentation::controls::GuiSelectableButton::MutexGroupController* mutexGroupController;
-		::vl::presentation::controls::GuiComboBoxListControl* comboView;
-		::vl::presentation::controls::GuiBindableTextList* bindableTextList;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_39;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_40;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_41;
@@ -5058,8 +5111,6 @@ namespace demo
 
 	class TouchingListItemTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<TouchingListItemTemplateConstructor>
 	{
-		friend class ::vl_workflow_global::__vwsnc177_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc178_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc179_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc180_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc181_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
@@ -5067,21 +5118,26 @@ namespace demo
 		friend class ::vl_workflow_global::__vwsnc183_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc184_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc185_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf422_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf423_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf424_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf425_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf426_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf427_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf428_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+		friend class ::vl_workflow_global::__vwsnc186_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc187_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf429_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf430_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf431_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf432_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf433_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf434_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf435_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf436_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf437_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TouchingListItemTemplateConstructor>;
 #endif
 	protected:
 		::demo::TouchingListItemTemplate* self;
 		::vl::Ptr<::demo::TouchingListItem> ViewModel;
+		::vl::presentation::compositions::GuiBoundsComposition* deleteBackground;
+		::vl::presentation::compositions::GuiBoundsComposition* deleteLabel;
+		::vl::presentation::compositions::GuiBoundsComposition* foreground;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_2;
@@ -5089,9 +5145,6 @@ namespace demo
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_4;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_5;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_6;
-		::vl::presentation::compositions::GuiBoundsComposition* deleteBackground;
-		::vl::presentation::compositions::GuiBoundsComposition* deleteLabel;
-		::vl::presentation::compositions::GuiBoundsComposition* foreground;
 		void __vwsn_demo_TouchingListItemTemplate_Initialize(::demo::TouchingListItemTemplate* __vwsn_this_);
 	public:
 		TouchingListItemTemplateConstructor();
@@ -5100,8 +5153,6 @@ namespace demo
 	class TouchingListItemTemplate : public ::vl::presentation::templates::GuiTextListItemTemplate, public ::demo::TouchingListItemTemplateConstructor, public ::vl::reflection::Description<TouchingListItemTemplate>
 	{
 		friend class ::demo::TouchingListItemTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc177_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc178_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc179_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc180_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc181_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
@@ -5109,15 +5160,17 @@ namespace demo
 		friend class ::vl_workflow_global::__vwsnc183_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc184_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc185_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf422_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf423_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf424_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf425_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf426_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf427_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf428_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+		friend class ::vl_workflow_global::__vwsnc186_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc187_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf429_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf430_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf431_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf432_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf433_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf434_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf435_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf436_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf437_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TouchingListItemTemplate>;
 #endif
@@ -5140,20 +5193,22 @@ namespace demo
 
 	class TouchingListTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<TouchingListTabPageConstructor>
 	{
-		friend struct ::vl_workflow_global::__vwsnf431_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf432_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf433_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf434_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf435_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf436_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf437_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf438_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf439_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf440_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf441_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf442_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf443_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf444_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf445_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf446_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TouchingListTabPageConstructor>;
 #endif
 	protected:
 		::demo::TouchingListTabPage* self;
+		::vl::presentation::controls::GuiSelectableButton* momentumOption;
+		::vl::presentation::controls::GuiBindableTextList* list;
 		::vl::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* __vwsn_precompile_0;
 		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyTopLayout> __vwsn_precompile_1;
 		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout> __vwsn_precompile_2;
@@ -5165,8 +5220,6 @@ namespace demo
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_8;
 		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyFillLayout> __vwsn_precompile_9;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_10;
-		::vl::presentation::controls::GuiSelectableButton* momentumOption;
-		::vl::presentation::controls::GuiBindableTextList* list;
 		void __vwsn_demo_TouchingListTabPage_Initialize(::demo::TouchingListTabPage* __vwsn_this_);
 	public:
 		TouchingListTabPageConstructor();
@@ -5174,17 +5227,17 @@ namespace demo
 
 	class TouchingListTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::TouchingListTabPageConstructor, public ::vl::reflection::Description<TouchingListTabPage>
 	{
-		friend struct ::vl_workflow_global::__vwsnf440_FullControlTest_demo_TouchingListTabPage_EndSwipe_;
+		friend struct ::vl_workflow_global::__vwsnf447_FullControlTest_demo_TouchingListTabPage_EndSwipe_;
 		friend class ::demo::TouchingListTabPageConstructor;
-		friend struct ::vl_workflow_global::__vwsnf431_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf432_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf433_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf434_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf435_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf436_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf437_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf438_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf439_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf440_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf441_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf442_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf443_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf444_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf445_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf446_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TouchingListTabPage>;
 #endif
@@ -5217,14 +5270,14 @@ namespace demo
 #endif
 	protected:
 		::demo::TouchingTabPage* self;
+		::vl::presentation::compositions::GuiBoundsComposition* touchingBounds;
+		::vl::Ptr<::vl::presentation::elements::GuiRawElementBase> touching;
 		::vl::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* __vwsn_precompile_0;
 		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyTopLayout> __vwsn_precompile_1;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_2;
 		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyFillLayout> __vwsn_precompile_3;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_5;
-		::vl::presentation::compositions::GuiBoundsComposition* touchingBounds;
-		::vl::Ptr<::vl::presentation::elements::GuiRawElementBase> touching;
 		void __vwsn_demo_TouchingTabPage_Initialize(::demo::TouchingTabPage* __vwsn_this_);
 	public:
 		TouchingTabPageConstructor();
@@ -5267,6 +5320,7 @@ namespace demo
 	protected:
 		::demo::TreeViewTabPage* self;
 		::vl::presentation::controls::GuiTreeView* treeView;
+		::vl::presentation::controls::GuiBindableTreeView* bindableTreeView;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_2;
@@ -5306,7 +5360,6 @@ namespace demo
 		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_36;
 		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_37;
 		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_38;
-		::vl::presentation::controls::GuiBindableTreeView* bindableTreeView;
 		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_39;
 		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_40;
 		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_41;
@@ -5345,21 +5398,25 @@ namespace demo
 
 	class VerticalTabTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<VerticalTabTemplateConstructor>
 	{
-		friend class ::vl_workflow_global::__vwsnc186_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc187_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc188_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf441_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf442_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf443_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf444_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf445_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf446_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf447_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+		friend class ::vl_workflow_global::__vwsnc189_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc190_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf448_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf449_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf450_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf451_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf452_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf453_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf454_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VerticalTabTemplateConstructor>;
 #endif
 	protected:
 		::demo::VerticalTabTemplate* self;
+		::vl::presentation::compositions::GuiCellComposition* beforeHeadersContainer;
+		::vl::presentation::compositions::GuiRepeatStackComposition* header;
+		::vl::presentation::compositions::GuiCellComposition* afterHeadersContainer;
+		::vl::presentation::compositions::GuiBoundsComposition* container;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
@@ -5369,10 +5426,6 @@ namespace demo
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_6;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_8;
-		::vl::presentation::compositions::GuiBoundsComposition* container;
-		::vl::presentation::compositions::GuiCellComposition* beforeHeadersContainer;
-		::vl::presentation::compositions::GuiCellComposition* afterHeadersContainer;
-		::vl::presentation::compositions::GuiRepeatStackComposition* header;
 		void __vwsn_demo_VerticalTabTemplate_Initialize(::demo::VerticalTabTemplate* __vwsn_this_);
 	public:
 		VerticalTabTemplateConstructor();
@@ -5381,16 +5434,16 @@ namespace demo
 	class VerticalTabTemplate : public ::vl::presentation::templates::GuiRibbonTabTemplate, public ::demo::VerticalTabTemplateConstructor, public ::vl::reflection::Description<VerticalTabTemplate>
 	{
 		friend class ::demo::VerticalTabTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc186_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc187_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc188_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf441_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf442_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf443_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf444_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf445_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf446_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf447_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+		friend class ::vl_workflow_global::__vwsnc189_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc190_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf448_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf449_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf450_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf451_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf452_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf453_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf454_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VerticalTabTemplate>;
 #endif
@@ -5628,7 +5681,7 @@ Closures
 
 		__vwsnf120_FullControlTest_demo_TouchingTabPageConstructor___vwsn_demo_TouchingTabPage_Initialize_(::demo::TouchingTabPageConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointSequenceStartedEventArgs* arguments) const;
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointGestureEventArgs* arguments) const;
 	};
 
 	struct __vwsnf121_FullControlTest_demo_TouchingTabPageConstructor___vwsn_demo_TouchingTabPage_Initialize_
@@ -5637,7 +5690,7 @@ Closures
 
 		__vwsnf121_FullControlTest_demo_TouchingTabPageConstructor___vwsn_demo_TouchingTabPage_Initialize_(::demo::TouchingTabPageConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointEventArgs* arguments) const;
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointSequenceStartedEventArgs* arguments) const;
 	};
 
 	struct __vwsnf122_FullControlTest_demo_TouchingTabPageConstructor___vwsn_demo_TouchingTabPage_Initialize_
@@ -5646,7 +5699,7 @@ Closures
 
 		__vwsnf122_FullControlTest_demo_TouchingTabPageConstructor___vwsn_demo_TouchingTabPage_Initialize_(::demo::TouchingTabPageConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointGestureEventArgs* arguments) const;
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointEventArgs* arguments) const;
 	};
 
 	struct __vwsnf123_FullControlTest_demo_TouchingTabPageConstructor___vwsn_demo_TouchingTabPage_Initialize_
@@ -5664,7 +5717,7 @@ Closures
 
 		__vwsnf124_FullControlTest_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_(::demo::TreeViewTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::Ptr<::vl::presentation::GuiImageData> operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+		::vl::Ptr<::vl::reflection::description::IValueEnumerable> operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
 	struct __vwsnf125_FullControlTest_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_
@@ -5673,7 +5726,7 @@ Closures
 
 		__vwsnf125_FullControlTest_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_(::demo::TreeViewTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::Ptr<::vl::reflection::description::IValueEnumerable> operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+		::vl::Ptr<::vl::presentation::GuiImageData> operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
 	struct __vwsnf126_FullControlTest_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_
@@ -8009,7 +8062,7 @@ Closures
 
 		__vwsnf366_FullControlTest_demo_RefreshBindableTreeViewTabPageConstructor___vwsn_demo_RefreshBindableTreeViewTabPage_Initialize_(::demo::RefreshBindableTreeViewTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::Ptr<::vl::presentation::GuiImageData> operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+		::vl::Ptr<::vl::reflection::description::IValueEnumerable> operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
 	struct __vwsnf367_FullControlTest_demo_RefreshBindableTreeViewTabPageConstructor___vwsn_demo_RefreshBindableTreeViewTabPage_Initialize_
@@ -8018,7 +8071,7 @@ Closures
 
 		__vwsnf367_FullControlTest_demo_RefreshBindableTreeViewTabPageConstructor___vwsn_demo_RefreshBindableTreeViewTabPage_Initialize_(::demo::RefreshBindableTreeViewTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::Ptr<::vl::reflection::description::IValueEnumerable> operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+		::vl::Ptr<::vl::presentation::GuiImageData> operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
 	struct __vwsnf368_FullControlTest_demo_RefreshBindableTreeViewTabPageConstructor___vwsn_demo_RefreshBindableTreeViewTabPage_Initialize_
@@ -8495,7 +8548,7 @@ Closures
 
 		__vwsnf415_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0);
 
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiMouseEventArgs* arguments) const;
 	};
 
 	struct __vwsnf416_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_
@@ -8504,34 +8557,34 @@ Closures
 
 		__vwsnf416_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0);
 
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointGestureEventArgs* arguments) const;
 	};
 
-	struct __vwsnf417_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_
+	struct __vwsnf417_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_
 	{
-		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+		::demo::TextBoxSubTabPageConstructor* __vwsnthis_0;
 
-		__vwsnf417_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
-
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
-	};
-
-	struct __vwsnf418_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_
-	{
-		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
-
-		__vwsnf418_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf417_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0);
 
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf419_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_
+	struct __vwsnf418_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_
 	{
-		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+		::demo::TextBoxSubTabPageConstructor* __vwsnthis_0;
 
-		__vwsnf419_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf418_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiMouseEventArgs* arguments) const;
+	};
+
+	struct __vwsnf419_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_
+	{
+		::demo::TextBoxSubTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf419_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointGestureEventArgs* arguments) const;
 	};
 
 	struct __vwsnf41_FullControlTest_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_
@@ -8543,85 +8596,85 @@ Closures
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf420_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_
+	struct __vwsnf420_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_
+	{
+		::demo::TextBoxSubTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf420_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf421_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_
+	{
+		::demo::TextBoxSubTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf421_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf422_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_
+	{
+		::demo::TextBoxSubTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf422_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf423_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_
+	{
+		::demo::TextBoxSubTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf423_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize_(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf424_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_
 	{
 		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
 
-		__vwsnf420_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf424_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf425_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_
+	{
+		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf425_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf426_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_
+	{
+		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf426_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf427_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_
+	{
+		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf427_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
 
 		void operator()() const;
 	};
 
-	struct __vwsnf421_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_
+	struct __vwsnf428_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_
 	{
 		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
 
-		__vwsnf421_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf428_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize_(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
 
 		void operator()() const;
-	};
-
-	struct __vwsnf422_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_
-	{
-		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
-
-		__vwsnf422_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
-
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
-	};
-
-	struct __vwsnf423_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_
-	{
-		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
-
-		__vwsnf423_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
-
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
-	};
-
-	struct __vwsnf424_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_
-	{
-		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
-
-		__vwsnf424_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
-
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
-	};
-
-	struct __vwsnf425_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_
-	{
-		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
-
-		__vwsnf425_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
-
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
-	};
-
-	struct __vwsnf426_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_
-	{
-		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
-
-		__vwsnf426_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
-
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
-	};
-
-	struct __vwsnf427_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_
-	{
-		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
-
-		__vwsnf427_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
-
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
-	};
-
-	struct __vwsnf428_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_
-	{
-		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
-
-		__vwsnf428_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
-
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
 	struct __vwsnf429_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_
@@ -8651,67 +8704,67 @@ Closures
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf431_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
+	struct __vwsnf431_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_
 	{
-		::demo::TouchingListTabPageConstructor* __vwsnthis_0;
+		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
 
-		__vwsnf431_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf431_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf432_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
+	struct __vwsnf432_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_
 	{
-		::demo::TouchingListTabPageConstructor* __vwsnthis_0;
+		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
 
-		__vwsnf432_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf432_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiListItemTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf433_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
+	struct __vwsnf433_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_
 	{
-		::demo::TouchingListTabPageConstructor* __vwsnthis_0;
+		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
 
-		__vwsnf433_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf433_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf434_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
+	struct __vwsnf434_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_
 	{
-		::demo::TouchingListTabPageConstructor* __vwsnthis_0;
+		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
 
-		__vwsnf434_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf434_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf435_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
+	struct __vwsnf435_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_
 	{
-		::demo::TouchingListTabPageConstructor* __vwsnthis_0;
+		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
 
-		__vwsnf435_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf435_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf436_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
+	struct __vwsnf436_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_
 	{
-		::demo::TouchingListTabPageConstructor* __vwsnthis_0;
+		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
 
-		__vwsnf436_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf436_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointSequenceStartedEventArgs* arguments) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf437_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
+	struct __vwsnf437_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_
 	{
-		::demo::TouchingListTabPageConstructor* __vwsnthis_0;
+		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
 
-		__vwsnf437_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf437_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointEventArgs* arguments) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
 	struct __vwsnf438_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
@@ -8720,7 +8773,7 @@ Closures
 
 		__vwsnf438_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointGestureEventArgs* arguments) const;
+		::vl::presentation::templates::GuiListItemTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf439_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
@@ -8729,7 +8782,7 @@ Closures
 
 		__vwsnf439_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointSequenceEndedEventArgs* arguments) const;
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
 	struct __vwsnf43_FullControlTest_demo_ListViewTabPage___vwsn_instance_ctor__
@@ -8741,77 +8794,95 @@ Closures
 		void operator()(::vl::Ptr<::vl::presentation::controls::list::ListViewItem> item) const;
 	};
 
-	struct __vwsnf440_FullControlTest_demo_TouchingListTabPage_EndSwipe_
+	struct __vwsnf440_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
+	{
+		::demo::TouchingListTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf440_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf441_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
+	{
+		::demo::TouchingListTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf441_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf442_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
+	{
+		::demo::TouchingListTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf442_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf443_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
+	{
+		::demo::TouchingListTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf443_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointGestureEventArgs* arguments) const;
+	};
+
+	struct __vwsnf444_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
+	{
+		::demo::TouchingListTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf444_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointSequenceStartedEventArgs* arguments) const;
+	};
+
+	struct __vwsnf445_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
+	{
+		::demo::TouchingListTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf445_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointEventArgs* arguments) const;
+	};
+
+	struct __vwsnf446_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
+	{
+		::demo::TouchingListTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf446_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointSequenceEndedEventArgs* arguments) const;
+	};
+
+	struct __vwsnf447_FullControlTest_demo_TouchingListTabPage_EndSwipe_
 	{
 		::vl::Ptr<::demo::TouchingListItem> target;
 		::demo::TouchingListTabPage* __vwsnthis_0;
 
-		__vwsnf440_FullControlTest_demo_TouchingListTabPage_EndSwipe_(::vl::Ptr<::demo::TouchingListItem> __vwsnctor_target, ::demo::TouchingListTabPage* __vwsnctorthis_0);
+		__vwsnf447_FullControlTest_demo_TouchingListTabPage_EndSwipe_(::vl::Ptr<::demo::TouchingListItem> __vwsnctor_target, ::demo::TouchingListTabPage* __vwsnctorthis_0);
 
 		void operator()() const;
 	};
 
-	struct __vwsnf441_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_
+	struct __vwsnf448_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_
 	{
 		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
 
-		__vwsnf441_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
+		__vwsnf448_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
 
 		::vl::presentation::templates::GuiTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
-	struct __vwsnf442_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_
+	struct __vwsnf449_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_
 	{
 		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
 
-		__vwsnf442_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
+		__vwsnf449_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
 
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
-	};
-
-	struct __vwsnf443_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_
-	{
-		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
-
-		__vwsnf443_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
-
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiItemEventArgs* arguments) const;
-	};
-
-	struct __vwsnf444_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_
-	{
-		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
-
-		__vwsnf444_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
-
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiItemEventArgs* arguments) const;
-	};
-
-	struct __vwsnf445_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_
-	{
-		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
-
-		__vwsnf445_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
-
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
-	};
-
-	struct __vwsnf446_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_
-	{
-		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
-
-		__vwsnf446_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
-
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
-	};
-
-	struct __vwsnf447_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_
-	{
-		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
-
-		__vwsnf447_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
-
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
 	struct __vwsnf44_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_
@@ -8821,6 +8892,51 @@ Closures
 		__vwsnf44_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_(::demo::MainWindowConstructor* __vwsnctorthis_0);
 
 		::vl::presentation::templates::GuiControlTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+	};
+
+	struct __vwsnf450_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_
+	{
+		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
+
+		__vwsnf450_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiItemEventArgs* arguments) const;
+	};
+
+	struct __vwsnf451_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_
+	{
+		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
+
+		__vwsnf451_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiItemEventArgs* arguments) const;
+	};
+
+	struct __vwsnf452_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_
+	{
+		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
+
+		__vwsnf452_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf453_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_
+	{
+		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
+
+		__vwsnf453_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf454_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_
+	{
+		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
+
+		__vwsnf454_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
 	struct __vwsnf45_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_
@@ -9315,7 +9431,7 @@ Closures
 
 		__vwsnf94_FullControlTest_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_(::demo::RepeatTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+		::vl::presentation::templates::GuiListItemTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf95_FullControlTest_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_
@@ -9324,7 +9440,7 @@ Closures
 
 		__vwsnf95_FullControlTest_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_(::demo::RepeatTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiListItemTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
 	struct __vwsnf96_FullControlTest_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_
@@ -9472,12 +9588,9 @@ Closures
 
 		__vwsnc100_FullControlTest_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -10952,25 +11065,7 @@ Closures
 
 		__vwsnc175_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0);
 
-		::demo::TextBoxSubTabPage* __vwsn_bind_cache_0 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		bool __vwsn_bind_opened_ = false;
-		bool __vwsn_bind_closed_ = false;
-		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0();
-		bool Open() override;
-		bool Update() override;
-		bool Close() override;
-	};
-
-	class __vwsnc176_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
-	{
-	public:
-		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
-
-		__vwsnc176_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
-
-		::demo::TextBoxSubTabPage* __vwsn_bind_cache_0 = nullptr;
+		::vl::presentation::controls::GuiSelectableButton* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
@@ -10981,14 +11076,14 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc177_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc176_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
-		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
+		::demo::TextBoxSubTabPageConstructor* __vwsnthis_0;
 
-		__vwsnc177_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
+		__vwsnc176_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0);
 
-		::demo::TouchingListItemTemplate* __vwsn_bind_cache_0 = nullptr;
+		::demo::TextBoxSubTabPage* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
@@ -10999,19 +11094,43 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc178_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc177_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
-		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
+		::demo::TextBoxSubTabPageConstructor* __vwsnthis_0;
 
-		__vwsnc178_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
+		__vwsnc177_FullControlTest_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(::demo::TextBoxSubTabPageConstructor* __vwsnctorthis_0);
 
-		::demo::TouchingListItemTemplate* __vwsn_bind_cache_0 = nullptr;
+		::demo::TextBoxSubTabPage* __vwsn_bind_cache_0 = nullptr;
+		::demo::TextBoxSubTabPage* __vwsn_bind_cache_1 = nullptr;
+		::demo::TextBoxSubTabPage* __vwsn_bind_cache_2 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_2_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
 		void __vwsn_bind_callback_0_0();
+		void __vwsn_bind_callback_1_0();
+		void __vwsn_bind_callback_2_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc178_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+
+		__vwsnc178_FullControlTest_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+
+		::demo::TextBoxSubTabPage* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -11029,7 +11148,7 @@ Closures
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_0();
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -11061,14 +11180,11 @@ Closures
 		__vwsnc180_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
 
 		::demo::TouchingListItemTemplate* __vwsn_bind_cache_0 = nullptr;
-		::demo::TouchingListItemTemplate* __vwsn_bind_cache_1 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_0();
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -11081,9 +11197,12 @@ Closures
 
 		__vwsnc181_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
 
+		::demo::TouchingListItemTemplate* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -11117,12 +11236,9 @@ Closures
 
 		__vwsnc183_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
 
-		::demo::TouchingListItemTemplate* __vwsn_bind_cache_0 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -11142,8 +11258,8 @@ Closures
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0();
-		void __vwsn_bind_callback_1_0();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -11155,6 +11271,45 @@ Closures
 		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
 
 		__vwsnc185_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
+
+		::demo::TouchingListItemTemplate* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc186_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc186_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
+
+		::demo::TouchingListItemTemplate* __vwsn_bind_cache_0 = nullptr;
+		::demo::TouchingListItemTemplate* __vwsn_bind_cache_1 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		void __vwsn_bind_callback_1_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc187_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc187_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
 
 		::demo::TouchingListItemTemplate* __vwsn_bind_cache_0 = nullptr;
 		::demo::TouchingListItemTemplate* __vwsn_bind_cache_1 = nullptr;
@@ -11176,12 +11331,12 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc186_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc188_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
 		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
 
-		__vwsnc186_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
+		__vwsnc188_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
 
 		::demo::VerticalTabTemplate* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
@@ -11194,12 +11349,12 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc187_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc189_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
 		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
 
-		__vwsnc187_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
+		__vwsnc189_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
 
 		::demo::VerticalTabTemplate* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
@@ -11212,12 +11367,30 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc188_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc18_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnc18_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__vl_reflection_description_IValueSubscription(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::demo::MainWindow* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc190_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
 		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
 
-		__vwsnc188_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
+		__vwsnc190_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
 
 		::demo::VerticalTabTemplate* __vwsn_bind_cache_0 = nullptr;
 		::vl::presentation::controls::GuiRibbonTabPage* __vwsn_bind_cache_1 = nullptr;
@@ -11233,10 +11406,10 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc189_FullControlTest_demo_DialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__gaclib_controls_IDialogStringsStrings : public ::vl::Object, public virtual ::gaclib_controls::IDialogStringsStrings
+	class __vwsnc191_FullControlTest_demo_DialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__gaclib_controls_IDialogStringsStrings : public ::vl::Object, public virtual ::gaclib_controls::IDialogStringsStrings
 	{
 	public:
-		__vwsnc189_FullControlTest_demo_DialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__gaclib_controls_IDialogStringsStrings();
+		__vwsnc191_FullControlTest_demo_DialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__gaclib_controls_IDialogStringsStrings();
 
 		::vl::WString Abort() override;
 		::vl::WString Blue() override;
@@ -11279,30 +11452,12 @@ Closures
 		::vl::WString Yes() override;
 	};
 
-	class __vwsnc18_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
-	{
-	public:
-		::demo::MainWindowConstructor* __vwsnthis_0;
-
-		__vwsnc18_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__vl_reflection_description_IValueSubscription(::demo::MainWindowConstructor* __vwsnctorthis_0);
-
-		::demo::MainWindow* __vwsn_bind_cache_0 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		bool __vwsn_bind_opened_ = false;
-		bool __vwsn_bind_closed_ = false;
-		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		bool Open() override;
-		bool Update() override;
-		bool Close() override;
-	};
-
-	class __vwsnc190_FullControlTest_demo_StringResource___vwsn_ls_en_US_BuildStrings__demo_IStringResourceStrings : public ::vl::Object, public virtual ::demo::IStringResourceStrings
+	class __vwsnc192_FullControlTest_demo_StringResource___vwsn_ls_en_US_BuildStrings__demo_IStringResourceStrings : public ::vl::Object, public virtual ::demo::IStringResourceStrings
 	{
 	public:
 		::vl::Locale __vwsn_ls_locale;
 
-		__vwsnc190_FullControlTest_demo_StringResource___vwsn_ls_en_US_BuildStrings__demo_IStringResourceStrings(::vl::Locale __vwsnctor___vwsn_ls_locale);
+		__vwsnc192_FullControlTest_demo_StringResource___vwsn_ls_en_US_BuildStrings__demo_IStringResourceStrings(::vl::Locale __vwsnctor___vwsn_ls_locale);
 
 		::vl::WString Currency(const ::vl::WString& __vwsn_ls_0) override;
 		::vl::WString DateFormat(::vl::DateTime __vwsn_ls_0) override;
@@ -11318,12 +11473,12 @@ Closures
 		::vl::WString YearMonthDate(::vl::DateTime __vwsn_ls_0) override;
 	};
 
-	class __vwsnc191_FullControlTest_demo_StringResource___vwsn_ls_zh_CN_BuildStrings__demo_IStringResourceStrings : public ::vl::Object, public virtual ::demo::IStringResourceStrings
+	class __vwsnc193_FullControlTest_demo_StringResource___vwsn_ls_zh_CN_BuildStrings__demo_IStringResourceStrings : public ::vl::Object, public virtual ::demo::IStringResourceStrings
 	{
 	public:
 		::vl::Locale __vwsn_ls_locale;
 
-		__vwsnc191_FullControlTest_demo_StringResource___vwsn_ls_zh_CN_BuildStrings__demo_IStringResourceStrings(::vl::Locale __vwsnctor___vwsn_ls_locale);
+		__vwsnc193_FullControlTest_demo_StringResource___vwsn_ls_zh_CN_BuildStrings__demo_IStringResourceStrings(::vl::Locale __vwsnctor___vwsn_ls_locale);
 
 		::vl::WString Currency(const ::vl::WString& __vwsn_ls_0) override;
 		::vl::WString DateFormat(::vl::DateTime __vwsn_ls_0) override;
@@ -12605,12 +12760,14 @@ Closures
 
 		__vwsnc83_FullControlTest_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::demo::DocumentEditorBase* __vwsn_bind_cache_0 = nullptr;
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_1(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -12623,14 +12780,12 @@ Closures
 
 		__vwsnc84_FullControlTest_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::demo::DocumentEditorBase* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_0_1(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_0();
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -12643,12 +12798,14 @@ Closures
 
 		__vwsnc85_FullControlTest_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::demo::DocumentEditorBase* __vwsn_bind_cache_0 = nullptr;
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_1(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -12661,14 +12818,12 @@ Closures
 
 		__vwsnc86_FullControlTest_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::demo::DocumentEditorBase* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_0_1(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_0();
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -12681,24 +12836,6 @@ Closures
 
 		__vwsnc87_FullControlTest_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::demo::DocumentEditorBase* __vwsn_bind_cache_0 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		bool __vwsn_bind_opened_ = false;
-		bool __vwsn_bind_closed_ = false;
-		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0();
-		bool Open() override;
-		bool Update() override;
-		bool Close() override;
-	};
-
-	class __vwsnc88_FullControlTest_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
-	{
-	public:
-		::demo::DocumentEditorBaseConstructor* __vwsnthis_0;
-
-		__vwsnc88_FullControlTest_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
-
 		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
@@ -12712,12 +12849,12 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc89_FullControlTest_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc88_FullControlTest_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
 		::demo::DocumentEditorBaseConstructor* __vwsnthis_0;
 
-		__vwsnc89_FullControlTest_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
+		__vwsnc88_FullControlTest_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
 		::demo::DocumentEditorBase* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
@@ -12725,6 +12862,26 @@ Closures
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
 		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc89_FullControlTest_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::DocumentEditorBaseConstructor* __vwsnthis_0;
+
+		__vwsnc89_FullControlTest_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_1(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -12755,14 +12912,12 @@ Closures
 
 		__vwsnc90_FullControlTest_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::demo::DocumentEditorBase* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_0_1(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_0();
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -12844,9 +12999,12 @@ Closures
 
 		__vwsnc95_FullControlTest_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -12859,12 +13017,9 @@ Closures
 
 		__vwsnc96_FullControlTest_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -12877,9 +13032,12 @@ Closures
 
 		__vwsnc97_FullControlTest_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -12892,12 +13050,9 @@ Closures
 
 		__vwsnc98_FullControlTest_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -12910,9 +13065,12 @@ Closures
 
 		__vwsnc99_FullControlTest_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;

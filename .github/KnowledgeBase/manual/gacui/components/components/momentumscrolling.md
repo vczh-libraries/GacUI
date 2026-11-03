@@ -12,7 +12,9 @@ Set `AcceptPointEvents` explicitly on non-scroll views when default acceptance i
 
 ## Selection and movement
 
-Momentum preserves selected list items and document ranges while scrolling the viewport. Selectable and Editable document content still reject point acceptance so mouse compatibility can select text immediately. Attaching the component does not convert that selection drag into scrolling. ViewOnly content and scrollable chrome can initiate momentum.
+Momentum preserves selected list items and document ranges while scrolling the viewport. Scrollable document content accepts touch in ViewOnly, Selectable and Editable modes, so a drag can initiate momentum without changing the range. The label family supports press selection but has no built-in gesture scrolling.
+
+Stationary short/long presses start no momentum. A fresh Started stops existing continuation before any later press-selection action. See [document touch selection](../../.././gacui/components/controls/editor/home.md) for caret and range rules.
 
 The component selects scrolling offers without marking them handled. Normal controls and application handlers consume movement. Generated events start unhandled, target both source fields at the bounds and do not contribute to velocity sampling. Existing axis locking, enabled/visible scrollbar checks and range clamping still apply.
 

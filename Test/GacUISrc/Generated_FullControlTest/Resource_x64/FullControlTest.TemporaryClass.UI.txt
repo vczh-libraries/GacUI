@@ -3172,6 +3172,81 @@ namespace demo
 
         prop TextBoxAcceptTabInput : bool{GetTextBoxAcceptTabInput, SetTextBoxAcceptTabInput : TextBoxAcceptTabInputChanged}
 
+        @cpp:Private
+        var <prop>ShortPressCount : int = 0;
+
+        func GetShortPressCount() : (int)
+        {
+            return <prop>ShortPressCount;
+        }
+
+        func SetShortPressCount(<value> : int) : (void)
+        {
+            if ((<prop>ShortPressCount != <value>))
+            {
+                (<prop>ShortPressCount = <value>);
+                ShortPressCountChanged();
+            }
+        }
+
+        event ShortPressCountChanged();
+
+        prop ShortPressCount : int{GetShortPressCount, SetShortPressCount : ShortPressCountChanged}
+
+        @cpp:Private
+        var <prop>LongPressCount : int = 0;
+
+        func GetLongPressCount() : (int)
+        {
+            return <prop>LongPressCount;
+        }
+
+        func SetLongPressCount(<value> : int) : (void)
+        {
+            if ((<prop>LongPressCount != <value>))
+            {
+                (<prop>LongPressCount = <value>);
+                LongPressCountChanged();
+            }
+        }
+
+        event LongPressCountChanged();
+
+        prop LongPressCount : int{GetLongPressCount, SetLongPressCount : LongPressCountChanged}
+
+        @cpp:Private
+        var <prop>RightClickCount : int = 0;
+
+        func GetRightClickCount() : (int)
+        {
+            return <prop>RightClickCount;
+        }
+
+        func SetRightClickCount(<value> : int) : (void)
+        {
+            if ((<prop>RightClickCount != <value>))
+            {
+                (<prop>RightClickCount = <value>);
+                RightClickCountChanged();
+            }
+        }
+
+        event RightClickCountChanged();
+
+        prop RightClickCount : int{GetRightClickCount, SetRightClickCount : RightClickCountChanged}
+
+        var momentum : MomentumScrolling* = new (MomentumScrolling*)();
+
+        func ObservePress(arguments : GuiPointGestureEventArgs*) : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        func ObserveMouse(arguments : GuiMouseEventArgs*) : (void)
+        {
+            raise "Not Implemented";
+        }
+
         new* ()
             :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
         {

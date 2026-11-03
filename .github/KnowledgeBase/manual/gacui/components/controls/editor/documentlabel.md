@@ -13,3 +13,5 @@ The control template doesn't need to care about rendering characters. When it is
 
 There is no functionality difference between **\<DocumentLabel/\>** and **\<DocumentTextBox/\>**. **\<DocumentLabel/\>** is expected to look like a **\<Label/\>**. **\<DocumentTextBox/\>** is expected to look like **\<SinglelineTextBox/\>**.
 
+This family, including `GuiSinglelineTextBox`, accepts touch and supports [short/long press selection](../../../.././gacui/components/controls/editor/home.md) according to `EditMode`. It has no scroll-view gesture consumer. Its existing internal offset still keeps the caret visible, and press hit testing accounts for that offset.
+

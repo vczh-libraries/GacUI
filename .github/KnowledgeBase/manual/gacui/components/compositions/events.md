@@ -98,24 +98,26 @@ Windows and the GacJS browser renderer support touch input. The native wGac (Way
 A sequence starts with the first contact and ends when all contacts lift or the sequence is canceled. `GuiGraphicsEventReceiver` exposes four point events:
 - `pointSequenceStarted` queries the hit composition and its ancestors. Set `acceptedComposition` to a composition in the same graphics host to capture the sequence. The first non-null choice wins.
 - `pointAction` reports Down, Update, Up, Enter and Leave through `eventType`.
-- `pointGesture` offers a built-in scrolling or manipulation payload.
+- `pointGesture` offers a built-in scrolling, manipulation or End-time short/long press payload.
 - `pointSequenceEnded` reports successful completion or cancellation exactly once to the accepted composition.
 
-Only the Started query traverses the parent chain. It continues even when `handled` is true, allowing an explicit handler to accept the sequence. Action, Gesture and End go only to the accepted composition and never bubble. Setting `GuiControl.AcceptPointEvents` to `true` enables default acceptance at its bounds when the Started query is unhandled and has no owner. This property defaults to `false`; `GuiScrollView` enables it by default. Setting it to `false` disables that control's default acceptance, but custom Started handlers or ancestors can still accept the sequence. `GuiControl.PointEventComposition` identifies capture within a control's bounds subtree, including during End, and becomes null after cleanup.
+Only the Started query traverses the parent chain. It continues even when `handled` is true, allowing an explicit handler to accept the sequence. Action, Gesture and End go only to the accepted composition and never bubble. Setting `GuiControl.AcceptPointEvents` to `true` enables default acceptance at its bounds when the Started query is unhandled and has no owner. This property defaults to `false`; `GuiScrollView` and the `GuiDocumentLabel` family enable it by default. Setting it to `false` disables that control's default acceptance, but custom Started handlers or ancestors can still accept the sequence. `GuiControl.PointEventComposition` identifies capture within a control's bounds subtree, including during End, and becomes null after cleanup.
 
 Started, Action and End expose a borrowed `Points` list in the receiving composition's logical coordinates. Slots follow contact Down order; lifted slots are empty and are not reused within the sequence. Copy values needed after the callback. Queue control removal with `GetApplication()->InvokeInMainThread`, just as for mouse handlers; deleting the receiving composition synchronously is unsupported.
 
 ### Gesture Selection and Payloads
 
 The graphics host has four built-in recognizers, in priority order:
-- **Right click:** a successful single-contact sequence lasting at least 500 milliseconds, with no excursion beyond a radius of eight logical units from its initial position. Recognition occurs on successful release, not while holding.
-- **Left click:** the same single-contact movement limit without the duration minimum. Right click wins when its duration requirement is met.
+- **Right click:** offers `GuiPointGesture_LongPressing` at successful End for a single-contact sequence lasting at least 500000 microseconds, with no excursion beyond a radius of eight logical units from its initial position.
+- **Left click:** offers `GuiPointGesture_ShortPressing` at successful End for the same single-contact movement limit and a duration below 500000 microseconds. A declined long press never produces a later short-press offer.
 - **Scrolling:** movement beyond that radius locks to the axis with the larger absolute displacement; horizontal wins a tie. `GuiPointGesture_Scrolling` supplies `isVertical` and signed incremental `distance`, positive towards right or down. The first distance includes all movement from Down. A second contact permanently stops scrolling offers for this sequence.
 - **Dragging, rotation and scaling:**`GuiPointGesture_DraggingAndRotation` is offered with identity values at Started and must be selected immediately to continue. One contact translates; two translate, rotate and uniformly scale; more than two pause. Contact membership changes establish a new baseline without a jump.
 
 For an unhandled `pointGesture` offer, set `selected` to `true` to choose that recognizer for the rest of the sequence, and set `handled` to `true` when consuming the payload. Selection is sticky and independent of `handled`. Raw Action and End events still arrive. A declined scrolling offer can be offered again; a declined initial manipulation offer cannot. These recognizers are fixed; applications cannot register additional recognizers or select an OS gesture implementation.
 
-`GuiPointGestureEventArgs.gesture` is a writable `Variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation>` in C++, reflected as the corresponding `variant<...>` in Workflow. Read the lowercase `gesture` field; there is no `Gesture` property or `GetGesture()` method. A Workflow handler can extract the active alternative with a nullable weak cast:
+Each eligible sequence offers exactly one short or long press, independently of the click-generation flags. Long press recognition waits for successful release and End; holding alone produces no press offer. Final-Up movement counts towards the eight-unit radial limit. An excursion followed by a return, any extra contact or cancellation disqualifies the press. Both press payloads expose `Point position`: the original screen start reprojected into the accepted composition's current logical coordinates at End. Successful End already has empty contact slots, so use this payload rather than `Points[0]`. Raw Action precedes recognition; the press offer precedes public End, with capture valid through both.
+
+`GuiPointGestureEventArgs.gesture` is a writable `Variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation, GuiPointGesture_ShortPressing, GuiPointGesture_LongPressing>` in C++, reflected as the corresponding `variant<...>` in Workflow. Read the lowercase `gesture` field; there is no `Gesture` property or `GetGesture()` method. A Workflow handler can extract the active alternative with a nullable weak cast:
 ```Workflow
 if (not arguments.handled)
 {
@@ -128,19 +130,21 @@ if (not arguments.handled)
 }
 ```
 
-Extracted payloads are copies. Apply manipulation in the order `p' = scale * R(rotation) * p + distance` in accepted-composition logical coordinates. Positive rotation is clockwise in radians. Payloads are incremental, including centroid-aware translation for two contacts.
+Extracted payloads are copies. Apply manipulation in the order `p' = scale * R(rotation) * p + distance` in accepted-composition logical coordinates. Positive rotation is clockwise in radians. Payloads are incremental, including centroid-aware translation for two contacts. The same nullable weak-cast syntax extracts either press type; inactive alternatives return null. To write a changed payload back, assign the whole variant with all four alternatives in the exact order above.
 
 ### Clicks and Existing Controls
 
-An accepted sequence with an eligible click and no selected scrolling or manipulation gesture automatically produces a deferred mouse click. It uses the original contact position with current layout after point cleanup. Cancellation, any additional contact, or movement outside the click radius prevents this fallback; returning inside the radius does not restore it. End `handled` does not veto the click.
+An accepted sequence with an eligible press and no selected gesture automatically produces a deferred mouse click. It uses the original contact position with current layout after point cleanup. Cancellation, any additional contact, or movement outside the click radius prevents this fallback; returning inside the radius does not restore it. Selecting any gesture, including either press, suppresses both deferred clicks. Setting only `handled` on the offer or public End does not veto the click.
 
 `GuiPointSequenceStartedEventArgs::generateLeftButtonClick` and `generateRightButtonClick` both default to `true`. Configure them during Started; the completed query's values apply to that sequence only. With both enabled, eligible short taps generate left clicks and eligible presses of at least 500 milliseconds generate right clicks. Left-only permits both short and long presses to generate left clicks. Right-only suppresses short taps. Disabling both suppresses both deferred clicks.
 
-These flags do not change physical mouse input or rejected-sequence mouse compatibility. Movement beyond the click radius, multiple contacts, cancellation and selected scrolling or manipulation still disqualify deferred clicks.
+These flags control only deferred mouse generation; disabling both still permits eligible short/long press offers. They do not change physical mouse input or rejected-sequence mouse compatibility. Movement beyond the click radius, multiple contacts, cancellation and any selected gesture still disqualify deferred clicks.
 
 The optional [MomentumScrolling component](../../.././gacui/components/components/momentumscrolling.md) continues scrolling gestures after successful End. Its events target the control's persistent bounds with capture already cleared; it does not start another native sequence.
 
-A rejected sequence uses mouse compatibility immediately, so ordinary controls and text selection can keep their existing mouse behavior. For remote input, only the original first contact drives that stream; later contacts never replace it. See [GuiScrollView touch behavior](../../.././gacui/components/controls/container/scrollcontainer.md) for scrolling, nested controls, selectable text and gestures that scroll views do not consume.
+A rejected sequence uses mouse compatibility immediately, so ordinary controls can keep their existing mouse behavior. For remote input, only the original first contact drives that stream; later contacts never replace it. See [GuiScrollView touch behavior](../../.././gacui/components/controls/container/scrollcontainer.md) for scrolling, nested controls, selectable text and gestures that scroll views do not consume.
+
+Both document families support [press selection](../../.././gacui/components/controls/editor/home.md). Enabled Selectable/Editable documents preserve an existing range on an inside short press and extend a collapsed caret on a different long press. Scrollable document content accepts drags for viewport scrolling while retaining selection; labels provide press selection without a scroll-view gesture consumer.
 
 The [Touching sample](https://github.com/vczh-libraries/Release/tree/master/Tutorial/GacUI_Windows/Touching) applies manipulation to a custom-drawn rectangle. [TouchingList](https://github.com/vczh-libraries/Release/tree/master/Tutorial/GacUI_Windows/TouchingList) adds application-specific horizontal swipe-to-delete behavior while retaining built-in vertical scrolling. Swipe-to-delete is not a default behavior of list controls.
 

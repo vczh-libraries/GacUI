@@ -40,6 +40,23 @@ There are 2 text controls in GacUI:
 - **\<SinglelineTextBox/\>**
 - **\<MultilineTextBox/\>**
 
+## Touch Selection and Scrolling
+
+Both document families accept touch by default. `GuiDocumentViewer` and `GuiMultilineTextBox` inherit gesture scrolling from `GuiScrollView`. `GuiDocumentLabel`, XML `DocumentTextBox` and `GuiSinglelineTextBox` support press selection without a scroll-view gesture consumer; they retain their internal offset for keeping the caret visible. Windows and GacJS acquire touch, including browsers on Linux/macOS. Native wGac and iGac do not acquire touch.
+
+Enabled `Selectable` and `Editable` documents apply these rules at successful End:
+- A short press inside a nonempty selection focuses the control and preserves both endpoints. Either endpoint counts as inside, including reversed ranges. Other short presses use ordinary deferred left-click caret positioning and modifiers.
+- A long press with a collapsed selection at a different caret focuses the control and extends the range from the old caret to the pressed caret.
+- A long press at the current caret, or anywhere when a nonempty range already exists, keeps the endpoints and falls back to the normal right click. This also applies outside an existing range.
+
+Short presses last less than 500000 microseconds; long presses last at least that long. Holding alone does not create a selection: recognition waits for release and End. A second contact, cancellation or movement beyond the eight-logical-unit radius disqualifies both presses and click fallback. Press positions use the original screen start with current window/DPI and document layout, including margins, scrolling and label offsets.
+
+`ViewOnly` leaves the caret range unchanged and keeps hyperlink activation through click fallback. `Selectable` allows selection but no editing; `Editable` retains normal editing. Disabled controls do not focus or change selection. Physical mouse dragging, Shift-click and keyboard selection keep their existing behavior.
+
+Accepted drags over scrollable document content scroll while preserving the range. The optional [MomentumScrolling component](../../../.././gacui/components/components/momentumscrolling.md) can continue that motion after release in all edit modes. Stationary presses start no momentum, and a new contact stops existing momentum before its selection action. Neither document family automatically consumes manipulation gestures.
+
+Shared handlers stay on the persistent bounds composition across template refreshes. Selection applies only to document-content starts; scrollbars, surrounding chrome and embedded controls retain their own behavior. Earlier child acceptance remains authoritative, and gestures do not bubble. Applications may suppress either deferred click through Started flags without suppressing press offers. See [Touch and Built-in Gestures](../../../.././gacui/components/compositions/events.md) for typed payloads, selection and fallback rules.
+
 ## Mouse Operations
 
 When **EditMode** is **Selectable**, the document cannot be edited by mouse operations or keyboard operations.

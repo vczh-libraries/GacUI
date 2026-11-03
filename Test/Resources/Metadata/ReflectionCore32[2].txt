@@ -1639,7 +1639,7 @@ enum presentation::compositions::GuiPointEventsType {
 }
 
 class presentation::compositions::GuiPointGestureEventArgs : presentation::compositions::GuiEventArgs {
-    property gesture : Variant<presentation::compositions::GuiPointGesture_Scrolling, presentation::compositions::GuiPointGesture_DraggingAndRotation>;
+    property gesture : Variant<presentation::compositions::GuiPointGesture_Scrolling, presentation::compositions::GuiPointGesture_DraggingAndRotation, presentation::compositions::GuiPointGesture_ShortPressing, presentation::compositions::GuiPointGesture_LongPressing>;
     property selected : system::Boolean;
 
     constructor () : presentation::compositions::GuiPointGestureEventArgs^;
@@ -1654,9 +1654,19 @@ struct presentation::compositions::GuiPointGesture_DraggingAndRotation {
 }
 
 @ValueType
+struct presentation::compositions::GuiPointGesture_LongPressing {
+    property position : presentation::Point;
+}
+
+@ValueType
 struct presentation::compositions::GuiPointGesture_Scrolling {
     property distance : system::Int32;
     property isVertical : system::Boolean;
+}
+
+@ValueType
+struct presentation::compositions::GuiPointGesture_ShortPressing {
+    property position : presentation::Point;
 }
 
 class presentation::compositions::GuiPointSequenceEndedEventArgs : presentation::compositions::GuiEventArgs {
