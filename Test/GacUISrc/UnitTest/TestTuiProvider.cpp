@@ -267,11 +267,25 @@ TEST_FILE
 								auto labelBounds = label->GetBoundsComposition()->GetGlobalBounds();
 								TEST_ASSERT(labelBounds.Width() < size.x);
 								TEST_ASSERT(labelBounds.Height() >= 7);
+								auto element = label->GetControlTemplateObject()->GetOwnedElement().Cast<GuiSolidLabelElement>();
+								TEST_ASSERT(element->GetText() == message);
+								TEST_ASSERT(element->GetFont() == label->GetDisplayFont());
+								TEST_ASSERT(element->GetColor() == tuiskin::TuiTheme::GetColorPackage().LabelText);
+								label->SetEnabled(false);
+								TEST_ASSERT(element->GetColor() == tuiskin::TuiTheme::GetColorPackage().ControlBorderDisabled);
+								label->SetEnabled(true);
+								label->SetTextColor(Color(0x12, 0x34, 0x56));
+								TEST_ASSERT(element->GetColor() == label->GetTextColor());
 								dialog->Close();
 							});
 						});
 						auto result = dialogs.ShowMessageBox(main.GetNativeWindow(), message, L"Wrapped message", INativeDialogService::DisplayOKCancel, INativeDialogService::DefaultSecond, INativeDialogService::IconInformation, INativeDialogService::ModalWindow);
 						TEST_ASSERT(result == INativeDialogService::SelectCancel);
+						// Let the dialog service finish its queued window deletion before exiting.
+						while (GetApplication()->GetWindows().Count() > 1)
+						{
+							TEST_ASSERT(GetApplication()->RunOneCycle());
+						}
 						main.Close();
 					});
 					GetNativeController()->InputService()->StartTimer();

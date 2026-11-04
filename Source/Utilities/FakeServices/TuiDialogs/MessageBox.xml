@@ -1,18 +1,8 @@
 <Folder>
   <Instance name="TuiMessageBoxLabelTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="tui_controls::TuiMessageBoxLabelTemplate">
-      <ref.Ctor><![CDATA[
-        {
-          messageLabel.ControlTemplate = ITheme::GetCurrentTheme().CreateStyle(ThemeName::Label);
-          var label = cast (GuiSolidLabelElement^) messageLabel.ControlTemplateObject.OwnedElement;
-          label.WrapLine = true;
-          label.WrapLineHeightCalculation = true;
-        }
-      ]]></ref.Ctor>
-      <LabelTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" DefaultTextColor-bind="(cast (GuiLabelTemplate*) messageLabel.ControlTemplateObject).DefaultTextColor">
-        <Label ref.Name="messageLabel" Text-bind="self.Text" Font-bind="self.Font" TextColor-bind="self.TextColor" Enabled-bind="self.VisuallyEnabled">
-          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
-        </Label>
+      <LabelTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" DefaultTextColor="#808080">
+        <SolidLabel Text-bind="self.Text" Font-bind="self.Font" Color-bind="self.VisuallyEnabled ? self.TextColor : cast Color &quot;#404040&quot;" Multiline="true" WrapLine="true" WrapLineHeightCalculation="true" />
       </LabelTemplate>
     </Instance>
   </Instance>
