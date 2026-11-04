@@ -127,6 +127,12 @@ The system handles object lifetime carefully during modal operations:
 - Employs `InvokeInMainThread` for safe event handler cleanup
 - Ensures proper resource management even if modal windows are unexpectedly destroyed
 
+`DeleteAfterProcessingAllEvents` guards its queued native destruction with the
+control host's disposal flag and current native-window association. Hosted
+main-window teardown can destroy a child before that queued task runs; the task
+must then leave the already-destroyed native window alone. The normal destroying
+notification remains responsible for the deferred control-host deletion.
+
 ### Async Operations Integration
 
 Modal windows integrate seamlessly with GacUI's async infrastructure:

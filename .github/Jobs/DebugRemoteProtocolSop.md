@@ -352,6 +352,10 @@ Skip this point-input scenario for native `wGac` and `iGac`, whose native render
    outside padding on the other three sides. Movie rows return to their initial
    compact height after shrinking from detailed to title-only content; repeat
    the grow/shrink cycle to check that the larger row height is not retained.
+   In a browser, drag a resize edge outside the renderer surface and release
+   within the page. Move back without pressing a button: the modal must no
+   longer resize. Repeat with a title-bar drag, then require another ordinary
+   resize and close to work. This checks Core-requested mouse capture and release.
 3. Select a movie and a different account. Scroll the real movie list and
    resize across all four appearances. Require the same data and selection,
    valid scrolling and correct item hit targets. Scroll to previously unseen

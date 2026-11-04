@@ -2,6 +2,8 @@
 
 ## Shared
 
+- When releasing a browser drag outside the renderer, first observe Core's capture request. Input sent before remote capture acknowledgment tests transport latency rather than the captured-release path. Check resize and title dragging separately, then move back without a pressed button and require unchanged bounds.
+
 - A close request can dismiss an active hosted modal while leaving its main application running. Before a fresh-counter test, confirm that the previous Core has actually exited; reconnecting a new renderer to that surviving Core preserves its old data.
 
 - During remote font measurement or palette replacement, require the target's Core bounds and current renderer DOM bounds to agree and settle before sending coordinates. A label can already exist with one-pixel placeholder bounds while the renderer still shows the preceding geometry; reject those bounds before comparing consecutive reads.
@@ -102,6 +104,10 @@
 - For a blocked native MiniHTTP host-loss check, suspend the host, issue a real text-changing RPC, confirm bytes are waiting in the host socket receive queue, then kill it before acknowledgement. Record the observed termination time separately from the transport deadline constant. The corresponding stdio check can identify the requester blocked in its futex wait before killing the auto-launched child.
 
 ## macOS (iGac repo specific)
+
+- Locate TUI text fields and popup arrows by their current terminal cell coordinates after layout settles. Convert Unicode strings to display-cell widths before computing a hit position: JavaScript string indices differ for CJK and supplementary scalars. Borders and natural-size dialogs can move a textbox content row by one cell. Match the actual popup option and selected combo row, not the same text in explanatory document content, and restore editor focus before sending shortcuts.
+
+- For Cocoa open/save automation, set the Go to Folder sheet's path field, confirm that sheet has disappeared, and then activate the file panel's Open/Save button. A Return sent before the sheet accepts the path can select the previously highlighted item. Verify the loaded document and continuing timer/automation activity after both acceptance and cancellation.
 
 - For terminal input, prefer an owned PTY master fd. If desktop input is necessary, verify the target terminal's window ID, tty and foreground process immediately before every operation; native automation can activate another app between operations. An Accessibility denial does not authorize sending unchecked desktop keystrokes. Keep unrelated terminal sessions untouched.
 - macOS can set the transient `PENDIN` local flag when restoring canonical terminal input. A bare PTY `tcgetattr`, raw-mode transition and `tcsetattr` restoration reproduces this without GacUI. Compare all persistent termios fields while treating this kernel status bit separately, and also verify normal exit, terminal reset sequences and usable shell input.

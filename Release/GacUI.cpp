@@ -2444,9 +2444,14 @@ GuiControlHost
 				}
 				else
 				{
-					GetApplication()->InvokeInMainThread(this, [window]()
+					auto disposedFlag = GetDisposedFlag();
+					GetApplication()->InvokeInMainThread(this, [this, window, disposedFlag]()
 					{
-						GetCurrentController()->WindowService()->DestroyNativeWindow(window);
+						// Main-window teardown may destroy a hosted child before this task runs.
+						if (!disposedFlag->IsDisposed() && GetNativeWindow() == window)
+						{
+							GetCurrentController()->WindowService()->DestroyNativeWindow(window);
+						}
 					});
 				}
 			}
