@@ -262,6 +262,8 @@ TEST_FILE
 								TEST_ASSERT(bounds.x2.value <= size.x && bounds.y2.value <= size.y);
 								auto label = TryFindControlByText<GuiLabel>(dialog, message);
 								TEST_ASSERT(label);
+								TEST_ASSERT(label->GetTextColor() == tuiskin::TuiTheme::GetColorPackage().LabelText);
+								TEST_ASSERT(label->GetDisplayFont() == dialog->GetDisplayFont());
 								auto labelBounds = label->GetBoundsComposition()->GetGlobalBounds();
 								TEST_ASSERT(labelBounds.Width() < size.x);
 								TEST_ASSERT(labelBounds.Height() >= 7);
