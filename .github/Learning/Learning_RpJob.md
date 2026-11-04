@@ -2,6 +2,16 @@
 
 ## Shared
 
+- A close request can dismiss an active hosted modal while leaving its main application running. Before a fresh-counter test, confirm that the previous Core has actually exited; reconnecting a new renderer to that surviving Core preserves its old data.
+
+- During remote font measurement or palette replacement, require the target's Core bounds and current renderer DOM bounds to agree and settle before sending coordinates. A label can already exist while the renderer still shows the preceding geometry.
+
+- When checking that fresh contact stops momentum, distinguish Core movement from an older browser frame arriving late. Consume the preceding flick's pending idle and wait for the stopping contact's render before capturing the stationary position; a fixed delay can compare two different rendered frames of an already-stopped Core.
+
+- Recheck the actual client viewport after a palette refresh before testing momentum. A taller refreshed window can expose the whole document, leaving no scroll range for a flick. Restore the intended client size and verify both content overflow and the current gesture interior before judging post-release movement.
+
+- A DocumentLabel inside an outer scroll container grows with its content. Its caret movement does not itself prove that the outer container scrolled; inspect the container and use its scrolling controls to reach retained text. Keep this separate from a DocumentViewer's internal scrolling behavior.
+
 - GacJS normalizes each nonzero browser wheel delta to one notch; a large delta does not jump a virtual list to its end. Traverse with overlapping visible rows and stop on an observed edge item, retaining an explicit safety bound. Fixed wheel counts can end early for taller detailed rows, and offscreen selected rows are legitimately absent from the current control tree. When collecting both Core Controls and browser DOM, require the edge item in both observations before ending the collection: the DOM can advance after the Core snapshot was read.
 
 - After a GacJS checkout gains a workspace package, verify its local dependency link before diagnosing downstream unsafe-type lint errors. The remote-protocol-wasm package compiled successfully but was absent from node_modules; running `yarn install --frozen-lockfile` from `<GacJS repo>/Gaclib` restored the workspace link and resolved the errors without a source change. Keep temporary verification scripts outside package lint roots, or under ignored build output after the build completes.
@@ -34,6 +44,10 @@
 - Audit generated snapshot differences before preserving baselines: resolve element references and compare rendered content, distinguish regenerated identities from layout changes, and inspect current-day date-picker highlights. Keep real changes and new regression snapshots. GacJS snapshot imports normalize CRLF to LF to preserve its established checkout format; a second codegen run must remain clean.
 
 ## Windows
+
+- CppTest_Metaonly uses separate native windows. Target each current window ID through its own automation IO endpoint, and inspect native message boxes before issuing any Controls read. Client-coordinate replay does not activate an OS caption button; use the native window's close command for that caption-close check.
+
+- A console cell read can show a replacement glyph for supplementary text while the editor retains the exact scalar. Copy the text to the Windows clipboard to distinguish model corruption from console capture or font limitations; record physical glyph rendering separately.
 
 - When a spawned CLI test expects exit code 1, track watchdog expiry separately. Forced Windows termination can report the same exit code with no signal, so matching that code and earlier diagnostics does not prove the CLI exited itself. Fail explicitly on watchdog expiry and wait for the owned child to close after forced cleanup.
 

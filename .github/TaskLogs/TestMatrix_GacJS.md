@@ -1,62 +1,74 @@
-# Test Matrix Card 2026-10-13 23:06:27 America/Los_Angeles
+# Test Matrix Card 2026-11-03 17:16:17 -08:00
 
 ## Test Matrix
 
 | Test Item | 1st |
 | --- | --- |
-| [Windows][`/RPT`][`/Http`] | 2026-10-14 02:46:10 |
-| [Windows][`/RPT`][`/MiniHttp`] | 2026-10-14 02:46:53 |
-| [Windows][`/FCT`][`/Http`] | 2026-10-14 02:18:05 (fixed) |
-| [Windows][`/FCT`][`/MiniHttp`] | 2026-10-14 02:20:03 |
-| [Windows][`/RVMT`][`/Http`][Native `RemotingTest_RvmHost` over network] | 2026-10-14 02:23:06 |
-| [Windows][`/RVMT`][`/Http`][Native `RemotingTest_RvmHost` over stdio `/Cli:<path>`] | 2026-10-14 02:24:17 |
-| [Windows][`/RVMT`][`/Http`][GacJS browser host `?rvmhost`] | 2026-10-14 02:25:11 |
-| [Windows][`/RVMT`][`/Http`][GacJS Node `cli.js` over network] | 2026-10-14 02:40:31 (fixed) |
-| [Windows][`/RVMT`][`/Http`][GacJS Node SEA over stdio `/Cli:<path>`] | 2026-10-14 02:41:29 |
-| [Windows][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over network] | 2026-10-14 02:28:16 |
-| [Windows][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over stdio `/Cli:<path>`] | 2026-10-14 02:29:18 |
-| [Windows][`/RVMT`][`/MiniHttp`][GacJS browser host `?rvmhost`] | 2026-10-14 02:30:17 |
-| [Windows][`/RVMT`][`/MiniHttp`][GacJS Node `cli.js` over network] | 2026-10-14 02:42:23 |
-| [Windows][`/RVMT`][`/MiniHttp`][GacJS Node SEA over stdio `/Cli:<path>`] | 2026-10-14 02:43:26 |
+| [Windows][`/RPT`][`/Http`] | 2026-11-03 19:54:15 |
+| [Windows][`/RPT`][`/MiniHttp`] | 2026-11-03 19:54:45 |
+| [Windows][`/FCT`][`/Http`] | 2026-11-03 20:14:15 |
+| [Windows][`/FCT`][`/MiniHttp`] | 2026-11-03 20:14:15 |
+| [Windows][`/RVMT`][`/Http`][Native `RemotingTest_RvmHost` over network] | 2026-11-03 19:46:28 |
+| [Windows][`/RVMT`][`/Http`][Native `RemotingTest_RvmHost` over stdio `/Cli:<path>`] | 2026-11-03 19:46:52 |
+| [Windows][`/RVMT`][`/Http`][GacJS browser host `?rvmhost`] | 2026-11-03 19:47:12 |
+| [Windows][`/RVMT`][`/Http`][GacJS Node `cli.js` over network] | 2026-11-03 19:47:40 |
+| [Windows][`/RVMT`][`/Http`][GacJS Node SEA over stdio `/Cli:<path>`] | 2026-11-03 19:48:02 |
+| [Windows][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over network] | 2026-11-03 19:48:21 |
+| [Windows][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over stdio `/Cli:<path>`] | 2026-11-03 19:48:43 |
+| [Windows][`/RVMT`][`/MiniHttp`][GacJS browser host `?rvmhost`] | 2026-11-03 19:49:00 |
+| [Windows][`/RVMT`][`/MiniHttp`][GacJS Node `cli.js` over network] | 2026-11-03 19:49:21 |
+| [Windows][`/RVMT`][`/MiniHttp`][GacJS Node SEA over stdio `/Cli:<path>`] | 2026-11-03 19:49:43 |
 
 ## Issues Found and Fix
 
-### 1st: Windows FCT over Http — physical Alt does not display access keys
+- The FullSurface generator test exceeded 10 seconds twice (full suite and focused retry at 12.2 seconds). Its scoped timeout is now 30 seconds, preserving all type-checking assertions. Rebuilt all 10 packages and passed the complete yarn test suite.
 
-- Reproduced three times at 23:32 America/Los_Angeles: pressing physical browser Alt sent `IOKeyDown`/`IOKeyUp` with code `164` (`KEY_LMENU`), while no `ShortcutKey` controls appeared.
-- The browser maps `AltLeft`/`AltRight` to side-specific modifier codes, but the Core ALT-mode handlers compare against generic `KEY_MENU` (`18`). This blocks the vertical Layout tab access-key SOP.
-- Evidence: `<GacUI repo>/.github/TaskLogs/GacJS_FCT_AltProbe_20261013.log`. Core activation and key-up suppression now recognize all three Alt codes, with regression coverage for action/Escape behavior and modifier guards. Fresh full-showcase re-verification passed on both transports on October 14 (Http 02:18:05–02:20:03, MiniHttp 02:20:03–02:22:02): physical AltLeft and AltRight display the expected access hints and activate the expected pages.
+## Observations and Limitations
 
-### 1st: Windows RVMT Http Node host — libuv assertion during second-host rejection
+- Final verification 2026-11-03 21:27:53: import and codegen/lint passed; all ten packages rebuilt; yarn test passed all 11 packages, including 61/61 browser E2E cases in 13 files. Evidence: <GacUI repo>/Test/GacUISrc/x64/Debug/RpWindows/GacJS-touching-sync-build.log and GacJS-final-verified-test.log.
 
-- One observation at 2026-10-14 02:26:27 America/Los_Angeles: the rejected second Node host printed `gacjs-rvmhost: HTTP channel closed before client assignment.` followed by `Assertion failed: !(handle->flags & UV_HANDLE_CLOSING), file src\win\async.c, line 76` and exited with code `3221226505`.
-- The original host remained connected and subsequent RPC, renderer replacement, normal shutdown, idle host loss and blocked delivery checks passed. Five fresh attempts using the unmodified actual Node CLI against a faithful ephemeral loopback handshake reproduced the same assertion and exit code in all five attempts. MiniHttp's live matrix rejection exited normally with code 1; no MiniHttp failure is claimed.
-- The owning fix in `<GacJS repo>/Gaclib/website/rvmhost/src/cli.ts` lets network-mode canceled fetch and I/O drain by assigning `process.exitCode`; `/Cli` retains immediate `process.exit`. The rebuilt real-child regression passes for both Node and SEA, including exact exit code 1, expected diagnostics and a timeout check. All 11 package test suites passed, followed by all 14 affected Node/SEA matrix scenarios on both transports (October 14, 02:40:31–02:44:23). Both live rejected Node children exited 1 without an assertion; the Http Node row is fixed.
-- Runtime: Node v24.13.1, libuv 1.51.0. Before-fix evidence: `<GacUI repo>/.github/TaskLogs/GacJS_RVM_20261014.evidence.log`.
-- Reproduction evidence: `<GacUI repo>/.github/TaskLogs/GacJS_RVM_NodeReject_20261014.log`.
+- The preceding full run and focused retry reported Touching/MiniHTTP momentum interruption mismatches of 12 pixels. Diagnostics showed Core bounds stayed identical while the browser caught up by 11 pixels. The test now consumes the flick idle and waits for the stopping contact render before sampling. HTTP and MiniHTTP passed both the focused verification and final full suite. This is a harness synchronization correction, with unchanged momentum behavior.
 
-## Verification Notes
+- Imported ScrollResetOnNavigation frames 4/5 were audited after resolving element IDs: complete normalized rendered trees (content, geometry and child order) are unchanged. Differences are regenerated identities; GuiToolstripMenuAutomatic and its five frames are newly synchronized upstream snapshots.
 
-- Scope: Windows GacJS only, using Playwright Chromium. All 14 required rows passed; final verification completed on October 14 at 02:48:41 America/Los_Angeles.
-- GacUI Debug x64 build passed through copilotBuild.ps1: 0 warnings, 0 errors. GacJS import, codegen and build passed. Packaged yarn test passed in all 11 packages, including 58 live protocol E2E tests.
-- The Alt fix rebuild passed with 0 warnings and 0 errors. Full GacUI UnitTest passed 93/93 files and 1820/1820 cases, with no reported memory leaks. Final GacJS synchronization, all ten package builds, all eleven package test suites and browser verification passed. The RVM-host suite includes sixteen passing tests and the real Node/SEA rejection regression.
-- Repeated final codegen produced an identical diff. All 124 changed GacJS snapshot JSON files match the current owning GacUI snapshots after newline normalization; the generated snapshot index only changed ordering. Snapshot review accounted for allocation IDs, current calendar values, file-dialog working-directory geometry and the existing supplementary-character correction. The nine changed GacUI snapshot/log artifacts contain only file-dialog working-directory geometry and allocation-ID/order refreshes.
-- The existing IIS listener serves the GacJS website on port 8896; index.html returned HTTP 200.
-- Browser shortcut checks cover browser input dispatch; native Windows OS-global registration is outside this renderer's coverage.
-- Initial GacJS build could not resolve the newly present remote-protocol-wasm workspace because its node_modules link was missing. Refreshing workspace links with frozen-lockfile installation resolved the build failure without source changes; this was preparation, not an application matrix failure.
-- Supplemental RPT/shared browser suite passed all 10 tests on both transports (23:24:45-23:27:29 America/Los_Angeles). RPT covered initial content, clicked-button retention, grid add/clear, document modal, first-renderer close, second/third takeover, detached-renderer input rejection, repeated shortcuts and extended buttons, and File confirmation shutdown with Core exit 0. Fresh fatal runs each observed exactly one Core-authored `!Error` containing `This is a fatel error!`, one matching page error, Core exit 3, the error mask, no success mask, and no retry.
-- FCT and RPT shared input checks passed before/after replacement: five mouse buttons; Alt/Super and combined Ctrl/Shift modifiers; movement, double-clicks, both directions on both wheel axes; preserved browser history; all three browser shortcut paths; mouse-label font/color equality. FCT exact bracket text and outgoing `0xDB`/`0xDD` keys passed before/after replacement. FCT showcase/layout/modal coverage subsequently passed on both transports.
-- Supplemental evidence is retained in `<GacUI repo>/.github/TaskLogs/GacJS_RPT_Shared_20261013.log` and `GacJS_RPT_Shared_20261013.progress.log`. No application failures occurred in these supplemental tests. Core/host processes and port 8888 were absent after cleanup.
-- Final FCT suite passed all eight tests on fresh Http and MiniHttp sessions (October 14, 02:18:05–02:22:02 America/Los_Angeles). It verified both lists, literal bracket input and editor retention, local shortcuts, physical left/right Alt access keys, vertical-tab keyboard navigation, preserved controls across palette refreshes, and fixed rail spacing.
-- Each FCT modal run reproduced appearances at client widths 240/350/440/680 and height 320 through two grow/shrink cycles. All 24 films/directors were visited in every appearance; all eight publisher accounts, selected-item persistence, menu/list agreement, newly realized movie and icon-only account hit targets, compact row-height restoration, 96-by-96 movie image/text geometry, and centered natural 32-by-32 account images passed. The 680-by-220 and 680-by-520 checks verified independent scrolling and reachable equal-width footers.
-- FCT OK, Cancel and title-bar close paths restored owner input and reopened at 240 by 320 without accumulating windows. Aurora custom/standard colors, first-renderer close, second/third renderer replacement, retained editor values, repeated local shortcuts, and Force Exit with Core exit code 0 all passed without page errors or error masks.
-- FCT test calibration corrected wheel-delta magnitude assumptions, mixed Core/DOM snapshot ordering and a theme-token expectation; these were probe issues, not additional product failures. Final evidence: `<GacUI repo>/.github/TaskLogs/GacJS_FCT_20261014.log`. The temporary harness has a temporary-directory backup. Browser-native limitations are unchanged: actual Windows OS-global hot-key registration is not claimed.
-- The complete supplemental RVM matrix ran all 34 scenarios across ten rows on October 14, 02:23:06–02:33:28 America/Los_Angeles. All protocol assertions passed; the observed Http rejected-Node assertion above was then fixed and its affected rows re-verified. The original host continued serving RPC after every rejected second host; ordinary renderer close/reopen and second/third takeover preserved the host and data, and normal UI Exit produced Core exit 0.
-- All twenty fresh RVM host-loss scenarios observed exactly one Core-authored `!Error` containing `RemotingTest_RvmHost disconnected.`, exactly one matching page error, the visible error mask without a success mask, Core exit 3 and no retry. Blocked network/browser delivery ended after the five-second acknowledgement deadline (5.025–5.051 seconds including input scheduling and browser presentation); blocked stdio loss ended promptly (0.168–0.340 seconds). Suspended native/Node hosts and intercepted browser reply/replacement-poll requests were paired with a retained pending Core Controls read to prove the Translate call was blocked.
-- All four native/SEA stdio modes accepted exact `!Exit`, produced Core exit 0 and reaped their recorded child process. The before-fix RVM evidence is retained in `<GacUI repo>/.github/TaskLogs/GacJS_RVM_20261014.log` and `GacJS_RVM_20261014.evidence.log`. Core, RVM-host processes and the port 8888 listener were absent after cleanup; the temporary harness and evidence also have a temporary-directory backup for the rebuild.
-- After the Node exit fix, all 14 fresh Node-network/SEA-stdio scenarios passed on Http and MiniHttp at 02:40:31–02:44:23 America/Los_Angeles. Both second Node hosts exited 1 with only the expected assignment-closed diagnostic. All four rows preserved RPC and data across renderer closure and takeover; normal UI Exit produced Core exit 0. All eight fresh host-loss cases retained the exact one-error contract and Core exit 3, and both SEA exact-`!Exit` cases reaped their children with Core exit 0. No retry, extra page error, or dialog appeared.
-- Final RVM evidence: `<GacUI repo>/.github/TaskLogs/GacJS_RVM_Fixed_20261014.log` and `GacJS_RVM_Fixed_20261014.evidence.log`. All ten RVM rows are complete; only the reproduced Http Node row has the fixed marker. Post-run inspection again found no Core/RVM-host processes and no port 8888 listener.
-- Final supplemental verification with the rebuilt Core and GacJS passed all 12 tests across four files on October 14, 02:45:40–02:48:41 America/Los_Angeles. Both RPT rows completed the normal SOP, first-renderer close, second/third takeover, detached-input rejection, exact shortcut and mouse checks, and File confirmation shutdown with Core exit 0. Both fresh fatal cases again observed exactly one Core-authored `!Error`, exactly one matching page error, Core exit 3, the expected error mask and no retry.
-- The final shared FCT/RPT checks passed for all five mouse buttons, Alt/Super and combined Ctrl/Shift modifiers, movement, double-clicks, both directions on both wheel axes, browser-history preservation, font/color equality and all three browser shortcut chords before and after renderer replacement. Literal `Hello[Ab]{Cd}` and outgoing `0xDB`/`0xDD` bracket keys passed before and after replacement on both transports. This verifies browser input dispatch; native OS-global hot-key registration is not claimed.
-- Two additional fresh FCT cases closed through the visible Force Exit control. Each required Core exit 0, a retained success mask with no error mask, no page errors or dialogs, and zero protocol requests during a 1.5-second terminal observation. This closes the earlier FCT no-retry/reconnect evidence gap.
-- Final supplemental evidence is retained in ignored `<GacUI repo>/.github/TaskLogs/GacJS_RPT_Shared_20261014.log` and `GacJS_RPT_Shared_20261014.progress.log`. No application failure occurred in this final suite. Cleanup confirmed no Core, RVM-host or test-runner processes and no port 8888 listener.
+- Repeated yarn codegen and lint passed. SHA-256 comparisons left the imported snapshot data and generated index unchanged, confirming generation is repeatable.
+
+- The checked-in Touching_Remote.ps1 -Browser run passed on HTTP and MiniHTTP: raw transforms and painted markers, three-contact/rebase/cancel/fallback, TouchingList identities/reversal/removal/recycling/momentum, ordinary ListView, document press ranges and exclusive fallback, momentum in both edit modes, and palette replacement. No page errors; browser scroll position remained stationary; both Core processes exited normally. All 14 Windows browser matrix rows are complete.
+
+- [Windows][`/FCT`][`/MiniHttp`]: lists, exact brace editor retention, both local shortcuts, mouse payloads before/after replacement, vertical rail keyboard/gap, four palettes, all responsive modal cycles/datasets, clock, renderer replacement/takeover and queued normal exit passed. The checked-in touch driver subsequently passed both transports.
+
+- [Windows][`/FCT`][`/Http`]: lists, exact brace editor retention, both local shortcuts, mouse payloads before/after replacement, vertical rail keyboard/gap, four palettes, all responsive modal cycles/datasets, clock, renderer replacement/takeover and queued normal exit passed. The checked-in touch driver subsequently passed both transports.
+
+- Browser wheel magnitude is normalized to one notch by GacJS. The responsive scroll helper now emits separate wheel events for repeated notches. A subsequent retry found a prior modal had intercepted Exit, so the old Core was closed completely before restarting with fresh list counters.
+
+
+- Browser RPT first retry attached to a prior Core still waiting for its normal Exit confirmation; the prompt was confirmed and both fresh HTTP/MiniHTTP runs then passed. Browser coordinate checks now require Core and rendered label bounds to agree.
+
+
+- [Windows][`/RPT`][`/MiniHttp`]: button, nine grid cells/clear, embedded dialog, local Ctrl+Q and Ctrl+Alt+Win+Q, all mouse buttons/modifiers/double-clicks/wheels, replacement/takeover, canceled Exit and confirmed queued close passed. Fresh fatal session retained exact Core error mask and one intentional page error.
+
+- [Windows][`/RPT`][`/Http`]: button, nine grid cells/clear, embedded dialog, local Ctrl+Q and Ctrl+Alt+Win+Q, all mouse buttons/modifiers/double-clicks/wheels, replacement/takeover, canceled Exit and confirmed queued close passed. Fresh fatal session retained exact Core error mask and one intentional page error.
+
+
+
+- [Windows][`/RVMT`][`/MiniHttp`][GacJS Node SEA over stdio `/Cli:<path>`]: literal brace input/RPC, applicable second-host rejection, renderer replacement/takeover, normal Exit and owned-host cleanup, idle-next-call and blocked-delivery fatal variants passed in Chromium. Exact Core-authored fatal mask and one intentional matching page error verified.
+
+- [Windows][`/RVMT`][`/MiniHttp`][GacJS Node `cli.js` over network]: literal brace input/RPC, applicable second-host rejection, renderer replacement/takeover, normal Exit and owned-host cleanup, idle-next-call and blocked-delivery fatal variants passed in Chromium. Exact Core-authored fatal mask and one intentional matching page error verified.
+
+- [Windows][`/RVMT`][`/MiniHttp`][GacJS browser host `?rvmhost`]: literal brace input/RPC, applicable second-host rejection, renderer replacement/takeover, normal Exit and owned-host cleanup, idle-next-call and blocked-delivery fatal variants passed in Chromium. Exact Core-authored fatal mask and one intentional matching page error verified.
+
+- [Windows][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over stdio `/Cli:<path>`]: literal brace input/RPC, applicable second-host rejection, renderer replacement/takeover, normal Exit and owned-host cleanup, idle-next-call and blocked-delivery fatal variants passed in Chromium. Exact Core-authored fatal mask and one intentional matching page error verified.
+
+- [Windows][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over network]: literal brace input/RPC, applicable second-host rejection, renderer replacement/takeover, normal Exit and owned-host cleanup, idle-next-call and blocked-delivery fatal variants passed in Chromium. Exact Core-authored fatal mask and one intentional matching page error verified.
+
+- [Windows][`/RVMT`][`/Http`][GacJS Node SEA over stdio `/Cli:<path>`]: literal brace input/RPC, applicable second-host rejection, renderer replacement/takeover, normal Exit and owned-host cleanup, idle-next-call and blocked-delivery fatal variants passed in Chromium. Exact Core-authored fatal mask and one intentional matching page error verified.
+
+- [Windows][`/RVMT`][`/Http`][GacJS Node `cli.js` over network]: literal brace input/RPC, applicable second-host rejection, renderer replacement/takeover, normal Exit and owned-host cleanup, idle-next-call and blocked-delivery fatal variants passed in Chromium. Exact Core-authored fatal mask and one intentional matching page error verified.
+
+- [Windows][`/RVMT`][`/Http`][GacJS browser host `?rvmhost`]: literal brace input/RPC, applicable second-host rejection, renderer replacement/takeover, normal Exit and owned-host cleanup, idle-next-call and blocked-delivery fatal variants passed in Chromium. Exact Core-authored fatal mask and one intentional matching page error verified.
+
+- [Windows][`/RVMT`][`/Http`][Native `RemotingTest_RvmHost` over stdio `/Cli:<path>`]: literal brace input/RPC, applicable second-host rejection, renderer replacement/takeover, normal Exit and owned-host cleanup, idle-next-call and blocked-delivery fatal variants passed in Chromium. Exact Core-authored fatal mask and one intentional matching page error verified.
+
+- [Windows][`/RVMT`][`/Http`][Native `RemotingTest_RvmHost` over network]: literal brace input/RPC, applicable second-host rejection, renderer replacement/takeover, normal Exit and owned-host cleanup, idle-next-call and blocked-delivery fatal variants passed in Chromium. Exact Core-authored fatal mask and one intentional matching page error verified.
+
+- After the scoped FullSurface timeout correction, yarn build passed all 10 packages and yarn test completed successfully. Evidence: <GacUI repo>/Test/GacUISrc/x64/Debug/RpWindows/GacJS-build-after-timeout.log and GacJS-test-after-timeout.log.

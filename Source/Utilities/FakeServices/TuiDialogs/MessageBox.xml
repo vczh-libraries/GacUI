@@ -57,6 +57,15 @@
     <Instance ref.CodeBehind="false" ref.Class="tui_controls::TuiMessageBoxWindow">
       <ref.Parameter Name="ViewModel" Class="presentation::IMessageBoxDialogViewModel" />
       <ref.Members><![CDATA[
+        func CreateMessageLabelTemplate(value: object): GuiControlTemplate*
+        {
+          var labelTemplate = ITheme::GetCurrentTheme().CreateStyle(ThemeName::Label)(value);
+          var label = cast (GuiSolidLabelElement^) labelTemplate.OwnedElement;
+          label.WrapLine = true;
+          label.WrapLineHeightCalculation = true;
+          return labelTemplate;
+        }
+
         func GetIconText(icon: INativeDialogService::MessageBoxIcons): string
         {
           switch (icon)
@@ -91,7 +100,7 @@
             <Label Text-eval="self.GetIconText(ViewModel.Icon)" />
           </Cell>
           <Cell Site="row:0 column:1 ">
-            <Label Text-eval="ViewModel.Text">
+            <Label Text-eval="ViewModel.Text" ControlTemplate-eval="self.CreateMessageLabelTemplate">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
             </Label>
           </Cell>

@@ -7,6 +7,7 @@
 #include "../../../Source/PlatformProviders/Hosted/GuiHostedGraphics.h"
 #include "../../../Source/Controls/ListControlPackage/TuiItemTemplates.h"
 #include "../../../Source/Skins/TuiSkin/Config/TuiSkinConfig.h"
+#include "../../../Source/Utilities/FakeServices/TuiDialogs/TuiFakeDialogService.h"
 #include <algorithm>
 
 using namespace vl;
@@ -188,7 +189,7 @@ namespace tui_provider_tests
 		TEST_ASSERT(GetTuiApplication() == nullptr);
 	}
 
-	void RunGuiTest(const Func<void()>& test)
+	void RunGuiTest(const Func<void()>& test, Size size)
 	{
 		SetGuiMainProxy([&]()
 		{
@@ -213,10 +214,15 @@ namespace tui_provider_tests
 				SetTuiApplication(nullptr);
 				SetHostedApplication(nullptr);
 				SetNativeController(previousController);
-			}, Size(600, 400));
+			}, size);
 		});
 		SetupGacGenNativeController();
 		SetGuiMainProxy({});
+	}
+
+	void RunGuiTest(const Func<void()>& test)
+	{
+		RunGuiTest(test, Size(600, 400));
 	}
 }
 
@@ -224,6 +230,56 @@ using namespace tui_provider_tests;
 
 TEST_FILE
 {
+	TEST_CASE(L"TUI message dialogs wrap long text inside the viewport")
+	{
+		for (auto size : { Size(80, 25), Size(120, 40) })
+		{
+			RunGuiTest([&]()
+			{
+				using namespace controls;
+				auto skin = Ptr(new tuiskin::TuiTheme);
+				theme::RegisterTheme(skin);
+				{
+					GuiWindow main(theme::ThemeName::SystemFrameWindow);
+					FakeTuiDialogService dialogs;
+					auto message = WString::Unmanaged(L"First line\n\nThis long message must remain readable within the terminal viewport, including a deliberately lengthy explanation that spans more than one hundred and twenty terminal columns.\nLast line");
+					GetApplication()->InvokeInMainThread(&main, [&]()
+					{
+						GetApplication()->InvokeInMainThread(&main, [&]()
+						{
+							GuiWindow* dialog = nullptr;
+							for (auto window : GetApplication()->GetWindows())
+							{
+								if (window->GetText() == L"Wrapped message") dialog = window;
+							}
+							TEST_ASSERT(dialog);
+							// Wrapped labels update their minimum height during rendering.
+							dialog->GetGraphicsHost()->InvokeAfterRendering([&, dialog]()
+							{
+								dialog->ForceCalculateSizeImmediately();
+								auto bounds = dialog->GetNativeWindow()->GetBounds();
+								TEST_ASSERT(bounds.x1.value >= 0 && bounds.y1.value >= 0);
+								TEST_ASSERT(bounds.x2.value <= size.x && bounds.y2.value <= size.y);
+								auto label = TryFindControlByText<GuiLabel>(dialog, message);
+								TEST_ASSERT(label);
+								auto labelBounds = label->GetBoundsComposition()->GetGlobalBounds();
+								TEST_ASSERT(labelBounds.Width() < size.x);
+								TEST_ASSERT(labelBounds.Height() >= 7);
+								dialog->Close();
+							});
+						});
+						auto result = dialogs.ShowMessageBox(main.GetNativeWindow(), message, L"Wrapped message", INativeDialogService::DisplayOKCancel, INativeDialogService::DefaultSecond, INativeDialogService::IconInformation, INativeDialogService::ModalWindow);
+						TEST_ASSERT(result == INativeDialogService::SelectCancel);
+						main.Close();
+					});
+					GetNativeController()->InputService()->StartTimer();
+					GetApplication()->Run(&main);
+				}
+				theme::UnregisterTheme(skin->Name);
+			}, size);
+		}
+	});
+
 	TEST_CASE(L"TUI rejects raw graphics creation")
 	{
 		TuiGraphicsResourceManager resources;
