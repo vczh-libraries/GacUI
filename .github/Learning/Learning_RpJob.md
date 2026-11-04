@@ -4,13 +4,14 @@
 
 - A close request can dismiss an active hosted modal while leaving its main application running. Before a fresh-counter test, confirm that the previous Core has actually exited; reconnecting a new renderer to that surviving Core preserves its old data.
 
-- During remote font measurement or palette replacement, require the target's Core bounds and current renderer DOM bounds to agree and settle before sending coordinates. A label can already exist while the renderer still shows the preceding geometry.
+- During remote font measurement or palette replacement, require the target's Core bounds and current renderer DOM bounds to agree and settle before sending coordinates. A label can already exist with one-pixel placeholder bounds while the renderer still shows the preceding geometry; reject those bounds before comparing consecutive reads.
 
 - When checking that fresh contact stops momentum, distinguish Core movement from an older browser frame arriving late. Consume the preceding flick's pending idle and wait for the stopping contact's render before capturing the stationary position; a fixed delay can compare two different rendered frames of an already-stopped Core.
 
 - Recheck the actual client viewport after a palette refresh before testing momentum. A taller refreshed window can expose the whole document, leaving no scroll range for a flick. Restore the intended client size and verify both content overflow and the current gesture interior before judging post-release movement.
 
 - A DocumentLabel inside an outer scroll container grows with its content. Its caret movement does not itself prove that the outer container scrolled; inspect the container and use its scrolling controls to reach retained text. Keep this separate from a DocumentViewer's internal scrolling behavior.
+- For clock repaint checks, read the baseline time after capturing the first pixels, then wait for a later time and changed pixels. Comparing against the time read before the first capture can accept an already-painted tick and compare the same frame twice.
 
 - GacJS normalizes each nonzero browser wheel delta to one notch; a large delta does not jump a virtual list to its end. Traverse with overlapping visible rows and stop on an observed edge item, retaining an explicit safety bound. Fixed wheel counts can end early for taller detailed rows, and offscreen selected rows are legitimately absent from the current control tree. When collecting both Core Controls and browser DOM, require the edge item in both observations before ending the collection: the DOM can advance after the Core snapshot was read.
 
@@ -35,6 +36,8 @@
 - Locate input targets again from the current rendered tree after text or tab changes. An idle notification from an earlier mouse move can precede the button result; wait for the exact expected visible text before judging the next transition.
 - Wait for a dialog's control bounds to settle before clicking its confirmation button. Its text can appear before the final centered layout. Locate the current localized confirmation label: FullControlTest can show `OK` or `确定`; RemoteProtocolTest uses `OK`.
 - After selecting a combo item, verify the selected label inside the combo itself. A matching label in its still-open popup does not establish that the selection committed. In terminal dialogs, match the action inside the innermost modal frame; an underlying launch button can contain the same word.
+- Confirm that a combo popup has disappeared before targeting controls underneath it. Do not assume Escape dismisses every popup; click outside when that popup does not handle Escape, then locate the next target again.
+- Refocus a document editor after a menu or dialog before sending selection, deletion or undo keys. A retained document and an available Edit command do not prove that keyboard focus has returned to the editor.
 - Group DataGrid cells by their vertical centers when checking rows. Different cell templates can give text in the same row different top and bottom bounds.
 - Dismiss a DataGrid editor by selecting another real cell; clicking blank space can leave the editor active. To check directory-only file validation, disable FileMustExist: missing-file validation takes precedence over missing-directory validation.
 - TextList's Radio view still exposes each item's independent Checked value; it does not create a mutex group. The showcase's two Dummy radio buttons do share a mutex group. Verify these behaviors separately.
