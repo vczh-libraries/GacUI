@@ -1,6 +1,6 @@
 #include "TestRemote_GraphicsHost_Shared.h"
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteController.h"
-#ifdef VCZH_MSVC
+#if defined VCZH_MSVC
 #include "../../../Source/PlatformProviders/Windows/ServicesImpl/WindowsInputService.h"
 #endif
 
@@ -19,7 +19,7 @@ TEST_FILE
 		};
 		GuiRemoteController remote(nullptr);
 		checkNames(remote.InputService());
-#ifdef VCZH_MSVC
+#if defined VCZH_MSVC
 		windows::WindowsInputService windowsInput;
 		checkNames(&windowsInput);
 #endif

@@ -116,6 +116,7 @@ GuiRemoteEvents (events)
 
 	void GuiRemoteEvents::OnControllerConnect(const remoteprotocol::ControllerGlobalConfig& arguments)
 	{
+		pendingHighSurrogate = 0;
 		remote->remoteMessages.RequestControllerConnectionEstablished();
 		remote->OnControllerConnect(arguments);
 		bool disconnected = false;
@@ -126,6 +127,7 @@ GuiRemoteEvents (events)
 
 	void GuiRemoteEvents::OnControllerDisconnect()
 	{
+		pendingHighSurrogate = 0;
 		remote->OnControllerDisconnect();
 	}
 
@@ -247,7 +249,25 @@ GuiRemoteEvents (events)
 
 	void GuiRemoteEvents::OnIOChar(const NativeWindowCharInfo& arguments)
 	{
-		for (auto l : remote->remoteWindow.listeners) l->Char(arguments);
+		auto info = arguments;
+#if defined VCZH_WCHAR_UTF32
+		// UTF-16 renderers send one code unit per IOChar event.
+		if (info.code >= 0xD800 && info.code <= 0xDBFF)
+		{
+			pendingHighSurrogate = info.code;
+			return;
+		}
+		if (info.code >= 0xDC00 && info.code <= 0xDFFF)
+		{
+			if (!pendingHighSurrogate) return;
+			char16_t pair[] = { (char16_t)pendingHighSurrogate,(char16_t)info.code };
+			char32_t scalar;
+			encoding::UtfConversion<char16_t>::To32(pair, 2, scalar);
+			info.code = (wchar_t)scalar;
+		}
+		pendingHighSurrogate = 0;
+#endif
+		for (auto l : remote->remoteWindow.listeners) l->Char(info);
 	}
 }
 

@@ -22,12 +22,12 @@ void RunTextBoxKeyTestCases(const wchar_t* resource, const WString& controlName)
 					textBox->SetCaret(TextPos(0, 0), TextPos(0, 3));
 					textBox->SetFocused();
 					auto emoji = WString::Unmanaged(L"\U0001F600");
-#ifdef VCZH_WCHAR_UTF16
+#if defined VCZH_WCHAR_UTF16
 					protocol->TypeString(emoji.Left(1));
 					TEST_ASSERT(textBox->GetText() == L"old");
 					TEST_ASSERT(!textBox->CanUndo());
 					protocol->TypeString(emoji.Right(1));
-#else
+#elif defined VCZH_WCHAR_UTF32
 					protocol->TypeString(emoji);
 #endif
 					TEST_ASSERT(textBox->GetText() == emoji);

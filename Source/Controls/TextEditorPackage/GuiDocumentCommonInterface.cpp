@@ -562,7 +562,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-#ifdef VCZH_WCHAR_UTF16
+#if defined VCZH_WCHAR_UTF16
 				pendingHighSurrogate = 0;
 #endif
 				if(documentControl->GetVisuallyEnabled())

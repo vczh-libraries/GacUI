@@ -1,5 +1,6 @@
 #include "GuiGraphicsHost_Point.h"
 #include "GuiGraphicsHost.h"
+#include <algorithm>
 #include <cmath>
 
 namespace vl

@@ -55,6 +55,52 @@ void AssertCaretCache(
 
 TEST_FILE
 {
+	TEST_CASE(L"Remote UTF-16 character events preserve complete scalars and modifiers")
+	{
+		using namespace vl::presentation;
+		class Listener : public INativeWindowListener
+		{
+		public:
+			List<NativeWindowCharInfo> characters;
+			void Char(const NativeWindowCharInfo& info) override { characters.Add(info); }
+		} listener;
+		GuiRemoteController remote(nullptr);
+		GuiRemoteEvents events(&remote);
+		auto window = remote.WindowService()->CreateNativeWindow(INativeWindow::Normal);
+		window->InstallListener(&listener);
+		auto input = [&](wchar_t code)
+		{
+			NativeWindowCharInfo info;
+			info.code = code;
+			info.ctrl = info.shift = info.alt = info.osSuper = info.capslock = true;
+			events.OnIOChar(info);
+		};
+		input(L'A');
+		input(L'中');
+		input((wchar_t)0xD83D);
+		input((wchar_t)0xDE42);
+		WString text;
+		for (auto&& info : listener.characters)
+		{
+			text += WString::FromChar(info.code);
+			TEST_ASSERT(info.ctrl && info.shift && info.alt && info.osSuper && info.capslock);
+		}
+		TEST_ASSERT(text == L"A中🙂");
+#if defined VCZH_WCHAR_UTF32
+		TEST_ASSERT(listener.characters.Count() == 3);
+		input((wchar_t)0xD83D);
+		input(L'B');
+		input((wchar_t)0xDE42);
+		input((wchar_t)0x1F642);
+		TEST_ASSERT(listener.characters.Count() == 5);
+		TEST_ASSERT(listener.characters[3].code == L'B');
+		TEST_ASSERT(listener.characters[4].code == (wchar_t)0x1F642);
+#elif defined VCZH_WCHAR_UTF16
+		TEST_ASSERT(listener.characters.Count() == 4);
+#endif
+		window->UninstallListener(&listener);
+	});
+
 	TEST_CATEGORY(L"GuiRemoteCaretCache")
 	{
 		TEST_CASE(L"Matching native encoding bypasses cache")
