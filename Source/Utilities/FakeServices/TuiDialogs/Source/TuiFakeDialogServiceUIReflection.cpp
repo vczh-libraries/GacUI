@@ -685,6 +685,7 @@ namespace vl
 				CLASS_MEMBER_BASE(::tui_controls::TuiMessageBoxWindowConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::tui_controls::TuiMessageBoxWindow*(::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel>), { L"__vwsn_ctor_parameter_ViewModel" })
 				CLASS_MEMBER_METHOD(__vwsn_instance_ctor_, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(CreateMessageLabelTemplate, { L"value" })
 				CLASS_MEMBER_METHOD(GetIconText, { L"icon" })
 				CLASS_MEMBER_METHOD(GetViewModel, NO_PARAMETER)
 				CLASS_MEMBER_FIELD(__vwsn_parameter_ViewModel)

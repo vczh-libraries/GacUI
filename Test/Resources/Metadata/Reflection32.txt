@@ -11278,6 +11278,7 @@ class tui_controls::TuiMessageBoxWindow : presentation::controls::GuiWindow, tui
     @system::workflow_attributes::att_cpp_Private()
     property __vwsn_parameter_ViewModel : presentation::IMessageBoxDialogViewModel^;
 
+    function CreateMessageLabelTemplate(value : system::Object) : presentation::templates::GuiControlTemplate*;
     function GetIconText(icon : presentation::INativeDialogService::MessageBoxIcons) : system::String;
     function GetViewModel() : presentation::IMessageBoxDialogViewModel^;
     function __vwsn_instance_ctor_() : system::Void;

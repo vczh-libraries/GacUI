@@ -7713,6 +7713,9 @@ namespace tui_controls
                 (<precompile>2.Text = self.GetIconText(ViewModel.Icon));
             }
             {
+                (<precompile>4.ControlTemplate = self.CreateMessageLabelTemplate);
+            }
+            {
                 (<precompile>4.Text = ViewModel.Text);
             }
             {
@@ -7756,6 +7759,15 @@ namespace tui_controls
     @cpp:Friend(typeof(TuiMessageBoxWindowConstructor))
     class TuiMessageBoxWindow : ::presentation::controls::GuiWindow, TuiMessageBoxWindowConstructor
     {
+        func CreateMessageLabelTemplate(value : object) : (GuiControlTemplate*)
+        {
+            var labelTemplate = ITheme::GetCurrentTheme().CreateStyle(ThemeName::Label)(value);
+            var label = (cast (GuiSolidLabelElement^) labelTemplate.OwnedElement);
+            (label.WrapLine = true);
+            (label.WrapLineHeightCalculation = true);
+            return labelTemplate;
+        }
+
         func GetIconText(icon : INativeDialogService::MessageBoxIcons) : (string)
         {
             {

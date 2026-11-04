@@ -967,6 +967,7 @@ namespace tui_controls
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiMessageBoxWindow>;
 #endif
 	public:
+		::vl::presentation::templates::GuiControlTemplate* CreateMessageLabelTemplate(const ::vl::reflection::description::Value& value);
 		::vl::WString GetIconText(::vl::presentation::INativeDialogService::MessageBoxIcons icon);
 	private:
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> __vwsn_parameter_ViewModel;

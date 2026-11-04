@@ -891,6 +891,11 @@ namespace tui_controls
 {
     class TuiMessageBoxWindow : ::presentation::controls::GuiWindow
     {
+        func CreateMessageLabelTemplate(value : object) : (GuiControlTemplate*)
+        {
+            raise "Not Implemented";
+        }
+
         func GetIconText(icon : INativeDialogService::MessageBoxIcons) : (string)
         {
             raise "Not Implemented";

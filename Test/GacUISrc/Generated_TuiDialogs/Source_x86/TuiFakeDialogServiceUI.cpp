@@ -7502,6 +7502,9 @@ Class (::tui_controls::TuiMessageBoxWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetText(::vl::__vwsn::This(this->self)->GetIconText(::vl::__vwsn::This(this->ViewModel.Obj())->GetIcon()));
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetControlTemplate(::vl::Func<::vl::presentation::templates::GuiControlTemplate*(const ::vl::reflection::description::Value&)>(::vl::__vwsn::This(this->self), &::tui_controls::TuiMessageBoxWindow::CreateMessageLabelTemplate));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetText(::vl::__vwsn::This(this->ViewModel.Obj())->GetText());
 		}
 		{
@@ -7531,6 +7534,15 @@ Class (::tui_controls::TuiMessageBoxWindowConstructor)
 /***********************************************************************
 Class (::tui_controls::TuiMessageBoxWindow)
 ***********************************************************************/
+
+	::vl::presentation::templates::GuiControlTemplate* TuiMessageBoxWindow::CreateMessageLabelTemplate(const ::vl::reflection::description::Value& value)
+	{
+		auto labelTemplate = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateStyle(::vl::presentation::theme::ThemeName::Label)(value);
+		auto label = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::elements::GuiSolidLabelElement>(::vl::__vwsn::This(labelTemplate)->GetOwnedElement().Obj()));
+		::vl::__vwsn::This(label.Obj())->SetWrapLine(true);
+		::vl::__vwsn::This(label.Obj())->SetWrapLineHeightCalculation(true);
+		return labelTemplate;
+	}
 
 	::vl::WString TuiMessageBoxWindow::GetIconText(::vl::presentation::INativeDialogService::MessageBoxIcons icon)
 	{
