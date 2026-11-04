@@ -459,7 +459,12 @@
                       self.SetDialogProperties(dialogOpen);
                       if (dialogOpen.ShowDialog())
                       {
-                        lstFiles.ItemSource = dialogOpen.FileNames;
+                        var selectedFiles : string[] = {};
+                        for (file in dialogOpen.FileNames)
+                        {
+                          selectedFiles.Add(file);
+                        }
+                        lstFiles.ItemSource = selectedFiles;
                       }
                     }
                   ]]></ev.Clicked-eval>

@@ -4,7 +4,7 @@
 #include "../../../Source/GacUI.h"
 #include <VlppReflection.h>
 #include <VlppWorkflowCompiler.h>
-#ifdef VCZH_MSVC
+#if defined VCZH_MSVC
 #define _WINSOCKAPI_
 #include <Windows.h>
 #endif
@@ -37,9 +37,9 @@ WString GetExePath()
 
 WString GetTestOutputPath()
 {
-#ifdef _WIN64
+#if defined _WIN64
 	return GetExePath() + L"../../../Resources/Metadata/";
-#else
+#elif defined VCZH_MSVC || defined VCZH_GCC || defined VCZH_WASM
 	return GetExePath() + L"../../Resources/Metadata/";
 #endif
 }

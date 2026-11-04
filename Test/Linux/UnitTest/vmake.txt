@@ -333,12 +333,12 @@
 ../../GacUISrc/UnitTest/TestItemProviders_TreeViewItemBindableRootProvider.cpp
 ../../GacUISrc/UnitTest/TestItemProviders_NodeItemProvider.cpp
 ../../GacUISrc/UnitTest/TestItemProviders.cpp
+../../GacUISrc/UnitTest/TestRemote_Raw.cpp
+../../GacUISrc/UnitTest/TestRawElement_Windows.cpp
+../../GacUISrc/Generated_FullControlTest/FullControlTestEventHandlers.cpp
 DarkSkin.Linux.cpp
 DarkSkinResource.Linux.cpp
 DarkSkinReflection.Linux.cpp
 TuiSkin.Linux.cpp
 TuiSkinResource.Linux.cpp
 TuiSkinReflection.Linux.cpp
-../../GacUISrc/UnitTest/TestRemote_Raw.cpp
-../../GacUISrc/UnitTest/TestRawElement_Windows.cpp
-../../GacUISrc/Generated_FullControlTest/FullControlTestEventHandlers.cpp

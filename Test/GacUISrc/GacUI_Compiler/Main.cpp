@@ -1,5 +1,5 @@
 #include "ResourceCompiler.h"
-#ifdef VCZH_MSVC
+#if defined VCZH_MSVC
 #define _WINSOCKAPI_
 #include <Windows.h>
 #endif
@@ -492,9 +492,9 @@ FilePath GetResourcePath()
 	Array<wchar_t> buffer(65536);
 	GetModuleFileName(NULL, &buffer[0], (DWORD)buffer.Count());
 	auto folder = FilePath(WString::Unmanaged(&buffer[0])).GetFolder();
-#ifdef _WIN64
+#if defined _WIN64
 	return folder / L"../../../Resources";
-#else
+#elif defined VCZH_MSVC || defined VCZH_GCC || defined VCZH_WASM
 	return folder / L"../../Resources";
 #endif
 }

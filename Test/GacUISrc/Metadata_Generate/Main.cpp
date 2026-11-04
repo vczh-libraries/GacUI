@@ -2,14 +2,14 @@
 #include "../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.h"
 #include "../../../Source/Utilities/FakeServices/TuiDialogs/Source/TuiFakeDialogServiceUIReflection.h"
 #include "../../../Source/UnitTestUtilities/SnapshotViewer/Source/GuiUnitTestSnapshotViewerReflection.h"
-#ifdef VCZH_64
+#if defined VCZH_64
 #include "../Generated_DarkSkin/Source_x64/DarkSkinReflection.h"
 #include "../Generated_TuiSkin/Source_x64/TuiSkinReflection.h"
-#else
+#elif defined VCZH_MSVC || defined VCZH_GCC || defined VCZH_WASM
 #include "../Generated_DarkSkin/Source_x86/DarkSkinReflection.h"
 #include "../Generated_TuiSkin/Source_x86/TuiSkinReflection.h"
 #endif
-#ifdef VCZH_MSVC
+#if defined VCZH_MSVC
 #define _WINSOCKAPI_
 #include <Windows.h>
 #endif
@@ -56,9 +56,9 @@ WString GetExePath()
 
 WString GetTestOutputPath()
 {
-#ifdef VCZH_64
+#if defined VCZH_64
 	return GetExePath() + L"../../../Resources/Metadata/";
-#else
+#elif defined VCZH_MSVC || defined VCZH_GCC || defined VCZH_WASM
 	return GetExePath() + L"../../Resources/Metadata/";
 #endif
 }
@@ -69,18 +69,18 @@ WString GetTestOutputPath()
 }
 #endif
 
-#ifdef VCZH_64
+#if defined VCZH_64
 #define REFLECTION_CORE_BIN L"ReflectionCore64.bin"
 #define REFLECTION_CORE_OUTPUT L"ReflectionCore64.txt"
-#else
+#elif defined VCZH_MSVC || defined VCZH_GCC || defined VCZH_WASM
 #define REFLECTION_CORE_BIN L"ReflectionCore32.bin"
 #define REFLECTION_CORE_OUTPUT L"ReflectionCore32.txt"
 #endif
 
-#ifdef VCZH_64
+#if defined VCZH_64
 #define REFLECTION_BIN L"Reflection64.bin"
 #define REFLECTION_OUTPUT L"Reflection64.txt"
-#else
+#elif defined VCZH_MSVC || defined VCZH_GCC || defined VCZH_WASM
 #define REFLECTION_BIN L"Reflection32.bin"
 #define REFLECTION_OUTPUT L"Reflection32.txt"
 #endif
