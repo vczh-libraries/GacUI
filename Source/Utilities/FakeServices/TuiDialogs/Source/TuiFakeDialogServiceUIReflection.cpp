@@ -686,7 +686,6 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiLabelTemplate)
 				CLASS_MEMBER_BASE(::tui_controls::TuiMessageBoxLabelTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::tui_controls::TuiMessageBoxLabelTemplate*(), NO_PARAMETER)
-				CLASS_MEMBER_METHOD(__vwsn_instance_ctor_, NO_PARAMETER)
 			END_CLASS_MEMBER(::tui_controls::TuiMessageBoxLabelTemplate)
 
 			BEGIN_CLASS_MEMBER(::tui_controls::TuiMessageBoxLabelTemplateConstructor)
@@ -695,8 +694,6 @@ namespace vl
 				CLASS_MEMBER_METHOD(__vwsn_tui_controls_TuiMessageBoxLabelTemplate_Initialize, { L"__vwsn_this_" })
 				ATTRIBUTE_MEMBER(::vl::__vwsn::att_cpp_Protected)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
-				ATTRIBUTE_MEMBER(::vl::__vwsn::att_cpp_Protected)
-				CLASS_MEMBER_FIELD(messageLabel)
 				ATTRIBUTE_MEMBER(::vl::__vwsn::att_cpp_Protected)
 				CLASS_MEMBER_FIELD(self)
 				ATTRIBUTE_MEMBER(::vl::__vwsn::att_cpp_Protected)
