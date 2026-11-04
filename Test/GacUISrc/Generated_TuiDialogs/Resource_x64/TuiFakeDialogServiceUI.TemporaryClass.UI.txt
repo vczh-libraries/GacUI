@@ -1,4 +1,4 @@
-﻿================================(1/12)================================
+﻿================================(1/13)================================
 module <instance>tui_controls::TuiColorComponentControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -79,7 +79,7 @@ namespace tui_controls
     }
 }
 
-================================(2/12)================================
+================================(2/13)================================
 module <instance>tui_controls::TuiColorDialogControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -172,7 +172,7 @@ namespace tui_controls
     }
 }
 
-================================(3/12)================================
+================================(3/13)================================
 module <instance>tui_controls::TuiColorDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -239,7 +239,7 @@ namespace tui_controls
     }
 }
 
-================================(4/12)================================
+================================(4/13)================================
 module <instance>tui_controls::TuiFileDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -316,7 +316,7 @@ namespace tui_controls
     }
 }
 
-================================(5/12)================================
+================================(5/13)================================
 module <instance>tui_controls::TuiFilePickerControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -412,7 +412,7 @@ namespace tui_controls
     }
 }
 
-================================(6/12)================================
+================================(6/13)================================
 module <instance>tui_controls::TuiFontNameControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -526,7 +526,7 @@ namespace tui_controls
     }
 }
 
-================================(7/12)================================
+================================(7/13)================================
 module <instance>tui_controls::TuiFontSizeControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -633,7 +633,7 @@ namespace tui_controls
     }
 }
 
-================================(8/12)================================
+================================(8/13)================================
 module <instance>tui_controls::TuiFullFontDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -700,7 +700,7 @@ namespace tui_controls
     }
 }
 
-================================(9/12)================================
+================================(9/13)================================
 module <instance>tui_controls::TuiSimpleFontDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -767,7 +767,7 @@ namespace tui_controls
     }
 }
 
-================================(10/12)================================
+================================(10/13)================================
 module <instance>tui_controls::TuiMessageBoxButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -865,7 +865,45 @@ namespace tui_controls
     }
 }
 
-================================(11/12)================================
+================================(11/13)================================
+module <instance>tui_controls::TuiMessageBoxLabelTemplate;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace tui_controls
+{
+    class TuiMessageBoxLabelTemplate : ::presentation::templates::GuiLabelTemplate
+    {
+        new* ()
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
+        }
+    }
+}
+
+================================(12/13)================================
 module <instance>tui_controls::TuiMessageBoxWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -891,11 +929,6 @@ namespace tui_controls
 {
     class TuiMessageBoxWindow : ::presentation::controls::GuiWindow
     {
-        func CreateMessageLabelTemplate(value : object) : (GuiControlTemplate*)
-        {
-            raise "Not Implemented";
-        }
-
         func GetIconText(icon : INativeDialogService::MessageBoxIcons) : (string)
         {
             raise "Not Implemented";
@@ -921,7 +954,7 @@ namespace tui_controls
     }
 }
 
-================================(12/12)================================
+================================(13/13)================================
 module <localized-strings>tui_controls::TuiDialogStrings;
 
 namespace tui_controls

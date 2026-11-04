@@ -11271,6 +11271,29 @@ class tui_controls::TuiMessageBoxButtonTemplateConstructor : system::ReferenceTy
     constructor () : tui_controls::TuiMessageBoxButtonTemplateConstructor^;
 }
 
+@FullName:tui_controls::TuiMessageBoxLabelTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tui_controls::TuiMessageBoxLabelTemplateConstructor)
+class tui_controls::TuiMessageBoxLabelTemplate : presentation::templates::GuiLabelTemplate, tui_controls::TuiMessageBoxLabelTemplateConstructor {
+    function __vwsn_instance_ctor_() : system::Void;
+
+    constructor () : tui_controls::TuiMessageBoxLabelTemplate*;
+}
+
+@FullName:tui_controls::TuiMessageBoxLabelTemplateConstructor
+class tui_controls::TuiMessageBoxLabelTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property messageLabel : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tui_controls::TuiMessageBoxLabelTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tui_controls_TuiMessageBoxLabelTemplate_Initialize(__vwsn_this_ : tui_controls::TuiMessageBoxLabelTemplate*) : system::Void;
+
+    constructor () : tui_controls::TuiMessageBoxLabelTemplateConstructor^;
+}
+
 @FullName:tui_controls::TuiMessageBoxWindow
 @system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tui_controls::TuiMessageBoxWindowConstructor)
 class tui_controls::TuiMessageBoxWindow : presentation::controls::GuiWindow, tui_controls::TuiMessageBoxWindowConstructor {
@@ -11278,7 +11301,6 @@ class tui_controls::TuiMessageBoxWindow : presentation::controls::GuiWindow, tui
     @system::workflow_attributes::att_cpp_Private()
     property __vwsn_parameter_ViewModel : presentation::IMessageBoxDialogViewModel^;
 
-    function CreateMessageLabelTemplate(value : system::Object) : presentation::templates::GuiControlTemplate*;
     function GetIconText(icon : presentation::INativeDialogService::MessageBoxIcons) : system::String;
     function GetViewModel() : presentation::IMessageBoxDialogViewModel^;
     function __vwsn_instance_ctor_() : system::Void;

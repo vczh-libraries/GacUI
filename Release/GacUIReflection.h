@@ -1556,6 +1556,8 @@ namespace vl
 			DECL_TYPE_INFO(::tui_controls::TuiFullFontDialogWindowConstructor)
 			DECL_TYPE_INFO(::tui_controls::TuiMessageBoxButtonTemplate)
 			DECL_TYPE_INFO(::tui_controls::TuiMessageBoxButtonTemplateConstructor)
+			DECL_TYPE_INFO(::tui_controls::TuiMessageBoxLabelTemplate)
+			DECL_TYPE_INFO(::tui_controls::TuiMessageBoxLabelTemplateConstructor)
 			DECL_TYPE_INFO(::tui_controls::TuiMessageBoxWindow)
 			DECL_TYPE_INFO(::tui_controls::TuiMessageBoxWindowConstructor)
 			DECL_TYPE_INFO(::tui_controls::TuiSimpleFontDialogWindow)

@@ -1,4 +1,4 @@
-﻿================================(1/23)================================
+﻿================================(1/25)================================
 module <constructor>tui_controls::TuiColorComponentControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -388,7 +388,7 @@ namespace tui_controls
     }
 }
 
-================================(2/23)================================
+================================(2/25)================================
 module <instance>tui_controls::TuiColorComponentControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -473,7 +473,7 @@ namespace tui_controls
     }
 }
 
-================================(3/23)================================
+================================(3/25)================================
 module <constructor>tui_controls::TuiColorDialogControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1630,7 +1630,7 @@ namespace tui_controls
     }
 }
 
-================================(4/23)================================
+================================(4/25)================================
 module <instance>tui_controls::TuiColorDialogControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1731,7 +1731,7 @@ namespace tui_controls
     }
 }
 
-================================(5/23)================================
+================================(5/25)================================
 module <constructor>tui_controls::TuiColorDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1855,12 +1855,12 @@ namespace tui_controls
             {
                 (<precompile>4 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
+            {
+                (<precompile>4.Alt = "O");
+            }
             (<precompile>5 = <precompile>4.BoundsComposition);
             {
                 (<precompile>5.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>4.Alt = "O");
             }
             {
                 <precompile>3.AddChild(<precompile>4.BoundsComposition);
@@ -1875,12 +1875,12 @@ namespace tui_controls
             {
                 (<precompile>7 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
+            {
+                (<precompile>7.Alt = "C");
+            }
             (<precompile>8 = <precompile>7.BoundsComposition);
             {
                 (<precompile>8.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>7.Alt = "C");
             }
             {
                 <precompile>6.AddChild(<precompile>7.BoundsComposition);
@@ -2207,7 +2207,7 @@ namespace tui_controls
     }
 }
 
-================================(6/23)================================
+================================(6/25)================================
 module <instance>tui_controls::TuiColorDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2282,7 +2282,7 @@ namespace tui_controls
     }
 }
 
-================================(7/23)================================
+================================(7/25)================================
 module <constructor>tui_controls::TuiFileDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2407,12 +2407,12 @@ namespace tui_controls
                 (buttonOK = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
                 <this>.SetNamedObject("buttonOK", buttonOK);
             }
+            {
+                (buttonOK.Alt = "O");
+            }
             (<precompile>4 = buttonOK.BoundsComposition);
             {
                 (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (buttonOK.Alt = "O");
             }
             {
                 <precompile>3.AddChild(buttonOK.BoundsComposition);
@@ -2427,12 +2427,12 @@ namespace tui_controls
             {
                 (<precompile>6 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
+            {
+                (<precompile>6.Alt = "C");
+            }
             (<precompile>7 = <precompile>6.BoundsComposition);
             {
                 (<precompile>7.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>6.Alt = "C");
             }
             {
                 <precompile>5.AddChild(<precompile>6.BoundsComposition);
@@ -2700,7 +2700,7 @@ namespace tui_controls
     }
 }
 
-================================(8/23)================================
+================================(8/25)================================
 module <instance>tui_controls::TuiFileDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2796,7 +2796,7 @@ namespace tui_controls
     }
 }
 
-================================(9/23)================================
+================================(9/25)================================
 module <constructor>tui_controls::TuiFilePickerControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2972,24 +2972,24 @@ namespace tui_controls
                 });
             }
             {
-                (treeView.HorizontalAlwaysVisible = false);
-            }
-            {
-                (treeView.VerticalAlwaysVisible = false);
-            }
-            {
                 (treeView.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var item = (cast (IFileDialogFolder^) <item>);
                     return item.Name;
                 });
             }
-            (<precompile>4 = treeView.BoundsComposition);
             {
-                (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (treeView.HorizontalAlwaysVisible = false);
+            }
+            {
+                (treeView.VerticalAlwaysVisible = false);
             }
             {
                 (treeView.Alt = "D");
+            }
+            (<precompile>4 = treeView.BoundsComposition);
+            {
+                (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 <precompile>3.AddChild(treeView.BoundsComposition);
@@ -3015,12 +3015,12 @@ namespace tui_controls
             {
                 (dataGrid.VerticalAlwaysVisible = false);
             }
+            {
+                (dataGrid.Alt = "F");
+            }
             (<precompile>7 = dataGrid.BoundsComposition);
             {
                 (<precompile>7.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (dataGrid.Alt = "F");
             }
             (<precompile>6 = new (::presentation::controls::list::DataColumn^)());
             {
@@ -3092,12 +3092,12 @@ namespace tui_controls
                 <this>.SetNamedObject("textBox", textBox);
             }
             (<precompile>16 = textBox.FocusableComposition);
+            {
+                (textBox.Alt = "S");
+            }
             (<precompile>15 = textBox.BoundsComposition);
             {
                 (<precompile>15.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (textBox.Alt = "S");
             }
             {
                 <precompile>14.AddChild(textBox.BoundsComposition);
@@ -3160,12 +3160,6 @@ namespace tui_controls
                 (<precompile>23 = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
             }
             {
-                (<precompile>23.HorizontalAlwaysVisible = false);
-            }
-            {
-                (<precompile>23.VerticalAlwaysVisible = false);
-            }
-            {
                 (<precompile>23.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var item = (cast (IFileDialogFilter^) <item>);
@@ -3173,15 +3167,21 @@ namespace tui_controls
                 });
             }
             {
+                (<precompile>23.HorizontalAlwaysVisible = false);
+            }
+            {
+                (<precompile>23.VerticalAlwaysVisible = false);
+            }
+            {
                 (comboBox = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, <precompile>23));
                 <this>.SetNamedObject("comboBox", comboBox);
+            }
+            {
+                (comboBox.Alt = "E");
             }
             (<precompile>24 = comboBox.BoundsComposition);
             {
                 (<precompile>24.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (comboBox.Alt = "E");
             }
             {
                 <precompile>22.AddChild(comboBox.BoundsComposition);
@@ -3713,7 +3713,7 @@ namespace tui_controls
     }
 }
 
-================================(10/23)================================
+================================(10/25)================================
 module <instance>tui_controls::TuiFilePickerControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4016,7 +4016,7 @@ namespace tui_controls
     }
 }
 
-================================(11/23)================================
+================================(11/25)================================
 module <constructor>tui_controls::TuiFontNameControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4079,12 +4079,12 @@ namespace tui_controls
             {
                 (textBox.EditMode = Selectable of (::presentation::controls::GuiDocumentEditMode));
             }
+            {
+                (textBox.Alt = "F");
+            }
             (<precompile>1 = textBox.BoundsComposition);
             {
                 (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (textBox.Alt = "F");
             }
             {
                 (textBox.Text = "TuiFont");
@@ -4395,7 +4395,7 @@ namespace tui_controls
     }
 }
 
-================================(12/23)================================
+================================(12/25)================================
 module <instance>tui_controls::TuiFontNameControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4516,7 +4516,7 @@ namespace tui_controls
     }
 }
 
-================================(13/23)================================
+================================(13/25)================================
 module <constructor>tui_controls::TuiFontSizeControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4575,12 +4575,12 @@ namespace tui_controls
             {
                 (textBox.EditMode = Selectable of (::presentation::controls::GuiDocumentEditMode));
             }
+            {
+                (textBox.Alt = "S");
+            }
             (<precompile>1 = textBox.BoundsComposition);
             {
                 (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (textBox.Alt = "S");
             }
             {
                 (textBox.Text = "1");
@@ -4891,7 +4891,7 @@ namespace tui_controls
     }
 }
 
-================================(14/23)================================
+================================(14/25)================================
 module <instance>tui_controls::TuiFontSizeControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5001,7 +5001,7 @@ namespace tui_controls
     }
 }
 
-================================(15/23)================================
+================================(15/25)================================
 module <constructor>tui_controls::TuiFullFontDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5364,12 +5364,12 @@ namespace tui_controls
             {
                 (<precompile>21 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
+            {
+                (<precompile>21.Alt = "O");
+            }
             (<precompile>22 = <precompile>21.BoundsComposition);
             {
                 (<precompile>22.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>21.Alt = "O");
             }
             {
                 <precompile>20.AddChild(<precompile>21.BoundsComposition);
@@ -5384,12 +5384,12 @@ namespace tui_controls
             {
                 (<precompile>24 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
+            {
+                (<precompile>24.Alt = "C");
+            }
             (<precompile>25 = <precompile>24.BoundsComposition);
             {
                 (<precompile>25.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>24.Alt = "C");
             }
             {
                 <precompile>23.AddChild(<precompile>24.BoundsComposition);
@@ -6270,7 +6270,7 @@ namespace tui_controls
     }
 }
 
-================================(16/23)================================
+================================(16/25)================================
 module <instance>tui_controls::TuiFullFontDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6356,7 +6356,7 @@ namespace tui_controls
     }
 }
 
-================================(17/23)================================
+================================(17/25)================================
 module <constructor>tui_controls::TuiSimpleFontDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6584,12 +6584,12 @@ namespace tui_controls
             {
                 (<precompile>13 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
+            {
+                (<precompile>13.Alt = "O");
+            }
             (<precompile>14 = <precompile>13.BoundsComposition);
             {
                 (<precompile>14.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>13.Alt = "O");
             }
             {
                 <precompile>12.AddChild(<precompile>13.BoundsComposition);
@@ -6604,12 +6604,12 @@ namespace tui_controls
             {
                 (<precompile>16 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
+            {
+                (<precompile>16.Alt = "C");
+            }
             (<precompile>17 = <precompile>16.BoundsComposition);
             {
                 (<precompile>17.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>16.Alt = "C");
             }
             {
                 <precompile>15.AddChild(<precompile>16.BoundsComposition);
@@ -7010,7 +7010,7 @@ namespace tui_controls
     }
 }
 
-================================(18/23)================================
+================================(18/25)================================
 module <instance>tui_controls::TuiSimpleFontDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7092,7 +7092,7 @@ namespace tui_controls
     }
 }
 
-================================(19/23)================================
+================================(19/25)================================
 module <constructor>tui_controls::TuiMessageBoxButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7119,10 +7119,10 @@ namespace tui_controls
     class TuiMessageBoxButtonTemplateConstructor
     {
         @cpp:Protected
-        var Action : ::presentation::IMessageBoxDialogAction^ = null of (::presentation::IMessageBoxDialogAction^);
+        var self : ::tui_controls::TuiMessageBoxButtonTemplate* = null of (::tui_controls::TuiMessageBoxButtonTemplate*);
 
         @cpp:Protected
-        var self : ::tui_controls::TuiMessageBoxButtonTemplate* = null of (::tui_controls::TuiMessageBoxButtonTemplate*);
+        var Action : ::presentation::IMessageBoxDialogAction^ = null of (::presentation::IMessageBoxDialogAction^);
 
         @cpp:Protected
         var buttonControl : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
@@ -7314,7 +7314,7 @@ namespace tui_controls
     }
 }
 
-================================(20/23)================================
+================================(20/25)================================
 module <instance>tui_controls::TuiMessageBoxButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7510,7 +7510,484 @@ namespace tui_controls
     }
 }
 
-================================(21/23)================================
+================================(21/25)================================
+module <constructor>tui_controls::TuiMessageBoxLabelTemplate;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace tui_controls
+{
+    class TuiMessageBoxLabelTemplateConstructor
+    {
+        @cpp:Protected
+        var self : ::tui_controls::TuiMessageBoxLabelTemplate* = null of (::tui_controls::TuiMessageBoxLabelTemplate*);
+
+        @cpp:Protected
+        var messageLabel : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        func <tui_controls-TuiMessageBoxLabelTemplate>Initialize(<this> : ::tui_controls::TuiMessageBoxLabelTemplate*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                (messageLabel = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                <this>.SetNamedObject("messageLabel", messageLabel);
+            }
+            (<precompile>0 = messageLabel.BoundsComposition);
+            {
+                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                self.AddChild(messageLabel.BoundsComposition);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::tui_controls::TuiMessageBoxLabelTemplate* = null of (::tui_controls::TuiMessageBoxLabelTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Text of (::system::String);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::tui_controls::TuiMessageBoxLabelTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.TextChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.TextChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::tui_controls::TuiMessageBoxLabelTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = messageLabel.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (messageLabel.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::tui_controls::TuiMessageBoxLabelTemplate* = null of (::tui_controls::TuiMessageBoxLabelTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Font of (::presentation::FontProperties?);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::tui_controls::TuiMessageBoxLabelTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FontChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FontChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::tui_controls::TuiMessageBoxLabelTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = messageLabel.Font;
+                    var <new> = (cast (::presentation::FontProperties?) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (messageLabel.Font = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::tui_controls::TuiMessageBoxLabelTemplate* = null of (::tui_controls::TuiMessageBoxLabelTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.TextColor of (::presentation::Color);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::tui_controls::TuiMessageBoxLabelTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.TextColorChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.TextColorChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::tui_controls::TuiMessageBoxLabelTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = messageLabel.TextColor;
+                    var <new> = (cast (::presentation::Color) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (messageLabel.TextColor = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::tui_controls::TuiMessageBoxLabelTemplate* = null of (::tui_controls::TuiMessageBoxLabelTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.VisuallyEnabled of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::tui_controls::TuiMessageBoxLabelTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.VisuallyEnabledChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.VisuallyEnabledChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::tui_controls::TuiMessageBoxLabelTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = messageLabel.Enabled;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (messageLabel.Enabled = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::presentation::templates::GuiLabelTemplate* = null of (::presentation::templates::GuiLabelTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.DefaultTextColor of (::presentation::Color);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = ((cast (GuiLabelTemplate*) messageLabel.ControlTemplateObject) ?? null of (::presentation::templates::GuiLabelTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.DefaultTextColorChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.DefaultTextColorChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::presentation::templates::GuiLabelTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = self.DefaultTextColor;
+                    var <new> = (cast (::presentation::Color) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (self.DefaultTextColor = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(22/25)================================
+module <instance>tui_controls::TuiMessageBoxLabelTemplate;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace tui_controls
+{
+    @cpp:Friend(typeof(TuiMessageBoxLabelTemplateConstructor))
+    class TuiMessageBoxLabelTemplate : ::presentation::templates::GuiLabelTemplate, TuiMessageBoxLabelTemplateConstructor
+    {
+        new* ()
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("tui_controls::TuiMessageBoxLabelTemplate");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<tui_controls-TuiMessageBoxLabelTemplate>Initialize(this);
+            <instance-ctor>();
+        }
+
+        func <instance-ctor>() : (::system::Void)
+        {
+            (messageLabel.ControlTemplate = ITheme::GetCurrentTheme().CreateStyle(ThemeName::Label));
+            var label = (cast (GuiSolidLabelElement^) messageLabel.ControlTemplateObject.OwnedElement);
+            (label.WrapLine = true);
+            (label.WrapLineHeightCalculation = true);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
+        }
+    }
+}
+
+================================(23/25)================================
 module <constructor>tui_controls::TuiMessageBoxWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7578,10 +8055,10 @@ namespace tui_controls
             (self = <this>);
             (ViewModel = <this>.ViewModel);
             {
-                (self.IconVisible = false);
+                (self.SizeBox = false);
             }
             {
-                (self.SizeBox = false);
+                (self.IconVisible = false);
             }
             {
                 (self.MinimizedBox = false);
@@ -7636,6 +8113,14 @@ namespace tui_controls
             (<precompile>5 = <precompile>4.BoundsComposition);
             {
                 (<precompile>5.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>4.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
+                {
+                    {
+                        return new (::tui_controls::TuiMessageBoxLabelTemplate*)();
+                    }
+                });
             }
             {
                 <precompile>3.AddChild(<precompile>4.BoundsComposition);
@@ -7713,9 +8198,6 @@ namespace tui_controls
                 (<precompile>2.Text = self.GetIconText(ViewModel.Icon));
             }
             {
-                (<precompile>4.ControlTemplate = self.CreateMessageLabelTemplate);
-            }
-            {
                 (<precompile>4.Text = ViewModel.Text);
             }
             {
@@ -7732,7 +8214,7 @@ namespace tui_controls
     }
 }
 
-================================(22/23)================================
+================================(24/25)================================
 module <instance>tui_controls::TuiMessageBoxWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7759,15 +8241,6 @@ namespace tui_controls
     @cpp:Friend(typeof(TuiMessageBoxWindowConstructor))
     class TuiMessageBoxWindow : ::presentation::controls::GuiWindow, TuiMessageBoxWindowConstructor
     {
-        func CreateMessageLabelTemplate(value : object) : (GuiControlTemplate*)
-        {
-            var labelTemplate = ITheme::GetCurrentTheme().CreateStyle(ThemeName::Label)(value);
-            var label = (cast (GuiSolidLabelElement^) labelTemplate.OwnedElement);
-            (label.WrapLine = true);
-            (label.WrapLineHeightCalculation = true);
-            return labelTemplate;
-        }
-
         func GetIconText(icon : INativeDialogService::MessageBoxIcons) : (string)
         {
             {
@@ -7830,7 +8303,7 @@ namespace tui_controls
     }
 }
 
-================================(23/23)================================
+================================(25/25)================================
 module <localized-strings>tui_controls::TuiDialogStrings;
 
 namespace tui_controls
