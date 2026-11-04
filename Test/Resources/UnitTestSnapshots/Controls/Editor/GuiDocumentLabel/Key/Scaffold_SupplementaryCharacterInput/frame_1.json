@@ -325,7 +325,7 @@
             "runsDiff": [
               {
                 "caretBegin": 0,
-                "caretEnd": 5,
+                "caretEnd": 4,
                 "props": [
                   "DocumentTextRunProperty",
                   {
@@ -339,7 +339,7 @@
             "createdInlineObjects": null,
             "removedInlineObjects": null
           },
-          "caret": {"id": 29, "caret": 5, "caretColor": "#FFFFFF", "frontSide": true}
+          "caret": {"id": 29, "caret": 4, "caretColor": "#FFFFFF", "frontSide": true}
         }
       ]
     ]

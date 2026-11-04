@@ -470,7 +470,7 @@
             "runsDiff": [
               {
                 "caretBegin": 0,
-                "caretEnd": 5,
+                "caretEnd": 4,
                 "props": [
                   "DocumentTextRunProperty",
                   {
@@ -484,7 +484,7 @@
             "createdInlineObjects": null,
             "removedInlineObjects": null
           },
-          "caret": {"id": 40, "caret": 5, "caretColor": "#FFFFFF", "frontSide": true}
+          "caret": {"id": 40, "caret": 4, "caretColor": "#FFFFFF", "frontSide": true}
         }
       ]
     ]
@@ -967,8 +967,8 @@
                                   "hitTestResult": null,
                                   "cursor": null,
                                   "element": 40,
-                                  "bounds": {"x1": 16, "y1": 44, "x2": 71, "y2": 60},
-                                  "validArea": {"x1": 16, "y1": 44, "x2": 71, "y2": 60}
+                                  "bounds": {"x1": 16, "y1": 44, "x2": 59, "y2": 60},
+                                  "validArea": {"x1": 16, "y1": 44, "x2": 59, "y2": 60}
                                 },
                                 "children": null
                               }
