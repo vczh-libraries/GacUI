@@ -4774,7 +4774,19 @@ Closures
 		::vl::__vwsn::This(__vwsnthis_0->self)->SetDialogProperties(static_cast<::vl::presentation::controls::GuiFileDialogBase*>(__vwsnthis_0->dialogOpen));
 		if (::vl::__vwsn::This(__vwsnthis_0->dialogOpen)->ShowDialog())
 		{
-			::vl::__vwsn::This(__vwsnthis_0->lstFiles)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->dialogOpen)->GetFileNames())));
+			auto selectedFiles = ::vl::reflection::description::IValueList::Create();
+			{
+				auto __vwsn_for_enumerable_file = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->dialogOpen)->GetFileNames()));
+				auto __vwsn_for_enumerator_file = ::vl::__vwsn::This(__vwsn_for_enumerable_file.Obj())->CreateEnumerator();
+				while (::vl::__vwsn::This(__vwsn_for_enumerator_file.Obj())->Next())
+				{
+					auto file = ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(__vwsn_for_enumerator_file.Obj())->GetCurrent());
+					{
+						::vl::__vwsn::This(selectedFiles.Obj())->Add(::vl::__vwsn::Box(file));
+					}
+				}
+			}
+			::vl::__vwsn::This(__vwsnthis_0->lstFiles)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(selectedFiles));
 		}
 	}
 

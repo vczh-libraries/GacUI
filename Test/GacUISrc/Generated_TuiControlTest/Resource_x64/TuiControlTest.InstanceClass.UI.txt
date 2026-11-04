@@ -27349,7 +27349,19 @@ namespace tuidemo
                     self.SetDialogProperties(dialogOpen);
                     if (dialogOpen.ShowDialog())
                     {
-                        (lstFiles.ItemSource = dialogOpen.FileNames);
+                        var selectedFiles : string[] = {};
+                        {
+                            var <for-enumerable>file = dialogOpen.FileNames of (::system::Enumerable^);
+                            var <for-enumerator>file = <for-enumerable>file.CreateEnumerator();
+                            while (<for-enumerator>file.Next())
+                            {
+                                var file = (cast (::system::String) <for-enumerator>file.GetCurrent());
+                                {
+                                    selectedFiles.Add(file);
+                                }
+                            }
+                        }
+                        (lstFiles.ItemSource = selectedFiles);
                     }
                 };
                 attach(<precompile>65.Clicked, <event-handler>);

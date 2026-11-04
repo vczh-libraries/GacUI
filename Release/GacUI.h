@@ -25855,6 +25855,7 @@ GuiRemoteEvents
 	{
 	protected:
 		GuiRemoteController*						remote;
+		wchar_t										pendingHighSurrogate = 0;
 
 	public:
 		GuiRemoteEvents(GuiRemoteController* _remote);
@@ -25889,6 +25890,7 @@ GuiRemoteEvents
 }
 
 #endif
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\REMOTE\GUIREMOTEWINDOW.H
