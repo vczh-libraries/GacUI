@@ -34551,16 +34551,17 @@ GuiHostedController::INativeWindowListener (IO Event Handling)
 		void GuiHostedController::PointSequenceEnded(const PointSequenceEndInfo& info)
 		{
 			if (info.sequenceId != pointSequenceId) return;
-			if (pointSequenceWindow)
+			auto window = pointSequenceWindow;
+			auto adjusted = info;
+			adjusted.accepted = pointSequenceAccepted;
+			ResetPointSequence();
+			if (window)
 			{
-				auto adjusted = info;
-				adjusted.accepted = pointSequenceAccepted;
-				for (auto listener : pointSequenceWindow->listeners)
+				for (auto listener : window->listeners)
 				{
 					listener->PointSequenceEnded(adjusted);
 				}
 			}
-			ResetPointSequence();
 		}
 
 		void GuiHostedController::MouseDown(NativeMouseButton button, const NativeWindowMouseInfo& info)
@@ -40351,11 +40352,6 @@ GuiRemoteProtocolAsyncJsonChannel
 			uiTaskQueued = false;
 		}
 
-		auto processEvent = [this](const ReceivedPackage& eventPackage)
-		{
-			reader->OnRead(eventPackage.senderClientId, eventPackage.package);
-		};
-
 		for (auto&& eventPackage : events)
 		{
 			ChannelPackageInfo info;
@@ -40370,7 +40366,7 @@ GuiRemoteProtocolAsyncJsonChannel
 
 			if (info.name == L"ControllerConnect" && eventPackage.senderClientId == currentConnectionClientId)
 			{
-				processEvent(eventPackage);
+				processingEvents.Add(eventPackage);
 			}
 		}
 
@@ -40388,9 +40384,26 @@ GuiRemoteProtocolAsyncJsonChannel
 
 			if (info.name != L"ControllerConnect" && eventPackage.senderClientId == currentConnectionClientId)
 			{
-				processEvent(eventPackage);
+				processingEvents.Add(eventPackage);
 			}
 		}
+
+		while (nextProcessingEvent < processingEvents.Count())
+		{
+			// Consume before dispatch: application callbacks can pump the remaining events.
+			auto eventPackage = processingEvents[nextProcessingEvent++];
+			vint currentConnectionClientId = -1;
+			SPIN_LOCK(lockConnection)
+			{
+				currentConnectionClientId = connectionClientId;
+			}
+			if (eventPackage.senderClientId == currentConnectionClientId)
+			{
+				reader->OnRead(eventPackage.senderClientId, eventPackage.package);
+			}
+		}
+		processingEvents.Clear();
+		nextProcessingEvent = 0;
 	}
 
 	void GuiRemoteProtocolAsyncJsonChannel::ProcessRemoteEvents()
@@ -42343,9 +42356,10 @@ GuiRemoteWindow (events)
 		}
 		auto activeCount = pointState.contacts.Count() + (event == NativePointEvent::Down ? 1 : event == NativePointEvent::Up ? -1 : 0);
 		CHECK_ERROR(info.activePointCount == activeCount, ERROR_MESSAGE_PREFIX L"Invalid active contact count.");
-		UpdateNativePointInput(pointState, listeners, event, (vuint64_t)info.pointId, info);
-		if (!pointState.accepted) ProcessIOPointFallback(pointCommandState, listeners, event, (vuint64_t)info.pointId, info, starting);
 		nextPointEventIndex++;
+		auto accepted = pointState.accepted;
+		UpdateNativePointInput(pointState, listeners, event, (vuint64_t)info.pointId, info);
+		if (!accepted) ProcessIOPointFallback(pointCommandState, listeners, event, (vuint64_t)info.pointId, info, starting);
 #undef ERROR_MESSAGE_PREFIX
 	}
 
@@ -42355,11 +42369,15 @@ GuiRemoteWindow (events)
 		if (!AcceptPointRecord(arguments.sequenceId, arguments.eventIndex)) return;
 		auto timestamp = remoteprotocol::DecodePointUnsigned(arguments.timestamp);
 		CHECK_ERROR(arguments.reason != PointSequenceEndReason::Succeeded || (pointState.nextPointId > 0 && pointState.contacts.Count() == 0), ERROR_MESSAGE_PREFIX L"Successful End requires all contacts Up.");
-		EndNativePointSequence(pointState, listeners, arguments.reason, timestamp);
-		if (arguments.reason != PointSequenceEndReason::Succeeded) CancelIOPointFallback(pointCommandState, listeners);
+		// End callbacks can open a synchronous dialog and start another sequence.
+		auto completedState = std::move(pointState);
+		auto completedFallback = std::move(pointCommandState);
 		ResetCompletedNativePointSequence(pointState);
+		pointCommandState = {};
 		wirePointSequenceId = 0;
 		nextPointEventIndex = 0;
+		EndNativePointSequence(completedState, listeners, arguments.reason, timestamp);
+		if (arguments.reason != PointSequenceEndReason::Succeeded) CancelIOPointFallback(completedFallback, listeners);
 #undef ERROR_MESSAGE_PREFIX
 	}
 

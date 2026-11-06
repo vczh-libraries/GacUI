@@ -23197,6 +23197,10 @@ GuiRemoteProtocolAsyncJsonChannel
 		collections::List<ReceivedPackage>					queuedEvents;
 		bool												uiTaskQueued = false;
 
+		// Shared by nested UI-thread event pumps, including synchronous dialogs.
+		collections::List<ReceivedPackage>					processingEvents;
+		vint												nextProcessingEvent = 0;
+
 		SpinLock											lockResponses;
 		EventObject											eventAutoResponses;
 		collections::Dictionary<vint, ReceivedPackage>		queuedResponses;
