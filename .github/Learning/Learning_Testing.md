@@ -8,24 +8,25 @@
 - Remote protocol frames: actions must change UI; organize frames carefully [9]
 - Stress remote core/renderer transport and terminal flows [8]
 - Don’t schedule redundant idle frames [7]
+- Keep FullControlTest UIA checks synchronized with showcase changes [7]
+- Seed key-behavior tests via `protocol->TypeString` [7]
 - Preserve existing idle-frame titles when requested [6]
-- Seed key-behavior tests via `protocol->TypeString` [6]
-- Keep FullControlTest UIA checks synchronized with showcase changes [6]
+- Verify `/IO` synchronous errors and queued success separately [5]
 - Add new unit test files to `UnitTest.vcxproj` and `.filters` [4]
 - Verify GacJS HTTP fatal errors through browser UI [4]
-- Verify `/IO` synchronous errors and queued success separately [4]
 - Use remote-protocol snapshots only for useful rendering [4]
+- Prefer automation geometry before screenshots for layout verification [4]
+- Remote-debugging guides own complete Cartesian test matrices [4]
+- Exercise actual showcase XML in generated and interpreted consumers [4]
 - Caret navigation tests: type markers to expose caret [3]
 - Avoid duplicate tests across related categories [3]
 - Validate imported dependency APIs with GacUI build and unit test [3]
 - Native modal dialogs block GacUI HTTP automation [3]
 - Verify native shortcut delivery through the focused renderer or terminal [3]
 - Compare TUI control regressions with the GUI showcase [3]
-- Prefer automation geometry before screenshots for layout verification [3]
 - Verify GitView diffs against real repository states [3]
-- Exercise actual showcase XML in generated and interpreted consumers [3]
-- Remote-debugging guides own complete Cartesian test matrices [3]
 - Verify injection routing with fresh distinguishable calls [3]
+- RichText style tests: `EditStyle` + `SummarizeStyle`, set only edited fields [3]
 - Account for eager child preparation in item-provider tests [2]
 - Isolate callbacks per test case (fresh log + callback) [2]
 - Prefer comments that name the exercised interface [2]
@@ -33,7 +34,6 @@
 - `DetachCallback()` should fire `OnAttached(provider=nullptr)` [2]
 - Update `UnitTest.vcxproj.user` `/F:` filters for new files [2]
 - `TEST_CATEGORY` / `TEST_CASE` blocks must end with `});` [2]
-- RichText style tests: `EditStyle` + `SummarizeStyle`, set only edited fields [2]
 - GuiDocumentLabel paragraphs: use `\\r\\n\\r\\n` between paragraphs in `LoadTextAndClearUndoRedo` [2]
 - Use `AssertItems`/`AssertCallbacks` for visible item lists [2]
 - Unit-test renderer `CaretLineLast` should treat CRLF as newline [2]
@@ -43,6 +43,11 @@
 - Verify compiler releases through every tutorial architecture output [2]
 - Treat file-dialog snapshots as scheduling-sensitive contracts [2]
 - Make snapshot fixture inputs independent of the host environment [2]
+- Editor smoke tests: deterministic caret placement (`Ctrl+Home`) [2]
+- Keep observation outside timed touch gestures [2]
+- Undo/redo tests: clear baselines and respect history granularity [2]
+- Observe deferred control-host destruction after a frame boundary [2]
+- Derive native touch expectations from converted coordinates [2]
 - Browser E2E tests must handle localized dialogs and host fixtures [1]
 - Verify GacGen RPC outputs with positive and negative resources [1]
 - Unit tests must own helper-thread and stack-callback lifetimes [1]
@@ -64,14 +69,12 @@
 - `GuiSaveFileDialog` uses `GetFileName()` (not `GetFileNames()`) [1]
 - Save dialog: non-existing file is allowed unless prompting [1]
 - Scaffolding-only editor tests: use requested `TEST_CATEGORY` titles [1]
-- Undo/redo tests: clear baselines and respect history granularity [1]
 - Split singleline-only key cases into a dedicated helper [1]
 - Multiline editor assertions: validate `GetDocument()` model, not `GetText()` [1]
 - Hyperlink tests: `ViewOnly` interaction + merged event log + model checks [1]
 - Avoid searching for CRLF in deterministic tests [1]
 - Match existing test-file namespace style (avoid extra `using namespace`) [1]
 - Focus the control before simulating keyboard input [1]
-- Editor smoke tests: deterministic caret placement (`Ctrl+Home`) [1]
 - Prefer IOChar-only typing helpers first [1]
 - Prefer base-type lookups for reusable control tests [1]
 - Avoid over-abstraction in test scaffolds [1]
@@ -97,6 +100,10 @@
 - Verify transient row presentation before asynchronous layout settles [1]
 - Scope native-touch exclusions to the actual provider [1]
 - Keep rich document fixtures readable and self-contained [1]
+- Assert owned-popup closure at the owner's completion boundary [1]
+- Serialize metadata generation with its consumers stopped [1]
+- Route native popup automation through its owning window [1]
+- Verify touch-only modal input through reentrant remote dispatch [1]
 
 # Refinements
 
@@ -249,6 +256,8 @@ When `TooltipTimer` (or similar) freezes the clock, caret blinking/animation won
 
 For editor key-behavior tests, prefer seeding initial text through the input pipeline (`protocol->TypeString`) rather than `SetText(...)`, so subsequent key handling is exercised under the same input-driven code paths. Use a frame boundary between typing and assertions/next key actions (e.g. `Init` focuses + types, next frame performs key input + assertions).
 
+Character-only Type input does not perform a document editor's paragraph-creation key action. For multiline integration fixtures, send explicit Enter operations and assert the resulting paragraph count. Select existing text through a verified caret-navigation range when the showcase does not handle Ctrl+A, and confirm that selection is nonempty before replacement.
+
 ## Use `TEST_ERROR` for invalid bindings and out-of-range access
 
 When a bindable tree is misconfigured (e.g. missing/invalid `childrenProperty`, inconsistent children types), or when tests intentionally access nodes with invalid indices (including expand/collapse paths), validate the failure with `TEST_ERROR(...)` instead of letting the test crash or accidentally pass.
@@ -340,6 +349,8 @@ When reusing shared “editor smoke test” helpers across multiple `GuiDocument
 
 Prefer making the interaction deterministic over changing XML layout just to make a click land reliably (keep singleline layout where appropriate).
 
+Public SetCaret does not itself scroll the document. When a hit-testing regression requires a label view offset, call the existing EnsureCaretVisible operation and assert the offset before sending the press. Derive border/content coordinates from the actual template geometry; the first pixel inside a one-pixel border is already content.
+
 ## Verify `GacUICompiler` determinism with repeated no-change runs
 
 When fixing nondeterministic `GacUICompiler` output, verify by running the compiler once and committing or accepting the generated output as the baseline, then running it several more times without source changes. After each repeat, check `git status` and inspect diffs if anything changes. Success means repeated compiler runs leave both generated text/C++ files and binary resources unchanged; unit tests can still pass while binary resource nondeterminism remains, so the no-change loop is the essential verification.
@@ -369,6 +380,8 @@ For rich-text style editing tests on `GuiDocumentLabel`, prefer:
 - When asserting “outside edited range” behavior, capture baseline summaries before applying edits and assert those baselines remain unchanged; do not assume `SummarizeStyle(...)` returns empty fields for default/unmodified styles.
 
 When creating a `DocumentStyleProperties` for an edit, only set the fields under test; leave unrelated fields unset so assertions don’t depend on theme/default styles.
+
+Capture an empty editor's default font baseline before loading a heterogeneous rich-document fixture; asking UIA for the whole loaded document's font can return MixedAttributeValue. The FullControlTest RTF/HTML exporters select the entire document, so reload or explicitly reset the fixture before later point-caret operations. A short press inside that selected range intentionally preserves it.
 
 ## GuiDocumentLabel paragraphs: use `\\r\\n\\r\\n` between paragraphs in `LoadTextAndClearUndoRedo`
 
@@ -465,6 +478,8 @@ After importing remoting-related dependency releases, verify `RemotingTest_Core`
 
 When changing GacUI HTTP automation `/IO`, verify synchronous error paths separately from queued success through the documented application execution and automation workflow. Send a malformed command such as an invalid mouse coordinate and confirm the response contains the syntax error immediately. For restricted modes such as `ExitOnly`, confirm ordinary commands return the exact contract error without queuing work while exact `!Exit` still returns `Queued`. Then send a healthy valid command and confirm the response is `Queued` and the UI changes afterward. For modal workflows, avoid treating `Queued` as completion and inspect `/Controls` or `/Dom` only after the dialog/action has actually finished.
 
+In the shared CppTest client, use the existing ControlsSnapshot completion barrier after queued scrolling, selection, typing and command execution before reading UIA state. Apply it to every command branch, including a direct context-menu branch that returns early. Keep exact result assertions; stale immediate readback is a synchronization defect in the driver, not a reason to accept either the old or new state.
+
 ## Native modal dialogs block GacUI HTTP automation
 
 When a native dialog is open from a GacUI test application, the app's HTTP automation endpoint can block behind the modal loop. Handle the dialog from another process using Win32 enumeration and messages, then resume app-level automation only after the native dialog has been confirmed or canceled. This applies to standard message, color, font, and file dialogs as well as non-standard crash/error windows.
@@ -519,6 +534,8 @@ Keep FullControlTest feature operations under `/FCT` and RemoteProtocolTest/Remo
 
 Recreate the native and GacJS test-matrix cards from their guide templates before a full verification run. Keep every row even when some rows are explicitly excluded, leaving excluded results blank, and update each row immediately when it starts, succeeds, fails, or is fixed. Run each included row with fresh processes and commit the cards only after the complete matrix is finished.
 
+When ribbon and toolstrip editor scenarios share feature checks, write those steps once and reference them from the alternate scenario, listing only its different input method and excluded ribbon-only features. Explain that disabling remoteFS exposes the native Core's local filesystem for HTTP tests; Wasm instead requires provisioning fixtures in that origin's OPFS. Apply native wGac/iGac touch exclusions without excluding GacJS on those operating systems.
+
 ## Treat file-dialog snapshots as scheduling-sensitive contracts
 
 When refactoring asynchronous fake-file-dialog work, a passing unit-test summary and clean leak report are insufficient. Compare all tracked file-dialog snapshots byte for byte: moving queue consumption behind UI callbacks or batching submissions can keep functional assertions green while rewriting many snapshots through changed element-allocation and rendering order. Restore those artifacts and reject the refactor unless the scheduling and snapshot migration are explicitly intended.
@@ -553,6 +570,8 @@ The native theme harness does not automatically register DarkSkin reflection des
 
 Use the automation service to inspect control and composition bounds when diagnosing or comparing GacUI layouts. Compare the same application state, size and coordinate space, including spacing, alignment and clipping. Treat screenshots as the last choice for layout questions; use them when the question concerns native rendering or when the application has no suitable automation endpoint.
 
+Successful UIA Invoke does not prove a control is visible: it can operate a zero-height option. Assert positive visible bounds for newly added showcase controls and check their real rendered layout. Wait for scrollable layout after installing long text, reset the viewport explicitly, and require remaining scroll range at release before using lack of momentum as failure evidence.
+
 ## Author Playground UI entirely in XML and Workflow
 
 Playground exists to try UI authored in XML. Put its controls, layout, document content and UI interaction handlers in XML/Workflow resources, including UIA regression fixtures. C++ selects a resource candidate and loads or opens its reflected window; do not assemble the fixture UI in C++. Narrow native interop hooks called by Workflow remain allowed. Selecting one of several resource candidates by changing `GuiMain` is an intended use of this application.
@@ -582,6 +601,8 @@ For permanent ViewSizes levels, extend the same four array-length cases to direc
 For point/gesture changes, use the focused Touching scenario to cover Touching, TouchingList, list scrolling and text selection, including selection after template replacement. Exercise generated native, interpreted Workflow, renderer-side IO and browser acquisition separately where requested. Keep raw lifecycle and identity-safe deferred-removal assertions alongside rendered reveal/reset results. Report synthetic automation, browser pixels and physical hardware as distinct evidence.
 
 For ribbon gallery regressions, locate the actual popup children; `GetListControlInDropdown()` returns the inline list and does not prove popup behavior. Exercise child-caption clicks, an already-selected item, both groups, wide and collapsed layouts, reopening and theme refresh. Require one application per click, retained document selection and exact effective formatting, while selection synchronization and dismissal apply nothing.
+
+When verifying a sibling Release tutorial, run that standalone executable from its expected resource directory and reuse the shared UIA probes where applicable. For DocumentEditorRibbon, exercise the actual popup captions in wide and collapsed ribbons and check effective formatting plus retained selection; an inline-list lookup or a passing FullControlTest alone does not establish the tutorial's behavior. Use automation IO when popup children expose Toggle without Invoke, and record that limitation separately.
 
 ## Verify GitView diffs against real repository states
 
@@ -619,6 +640,8 @@ Initialize snapshot-visible dates explicitly before attaching or rendering a dat
 
 Link the actual affected FullControlTest XML into a fast resource fixture instead of recreating its handlers in a simplified test. Run the failing interaction through interpreted Workflow as well as generated C++; metadata generation and native-only success do not prove the same script path works. For touch completion, reproduce the extra-contact reset followed by End before fixing the optional-target access. When a test depends on window movement, assert that the selected host window actually moved before interpreting unchanged coordinates as evidence.
 
+A visible-style lookup after scrolling may be null because the starting row was virtualized away. The interpreted resource can accept a null strong cast that generated C++ rejects, so include the actual generated/native consumer and an outside-window scroll that removes the starting row. Exercise normal End, cancellation/extra-contact cleanup and a fresh subsequent touch.
+
 ## Verify transient row presentation before asynchronous layout settles
 
 A virtualized row's default presentation must be correct immediately when realized and recycled, not only after an idle frame. Check that closed rows expose no reveal background during rapid scrolling, cancellation and reset. Verify the measured reveal limit before the first swipe as well as partial/full/reset frames; hiding the measuring content can defer its size until interaction. Extend the actual-resource regression in `<GacUI repo>/Test/GacUISrc/UnitTest/TestControls_PointScrolling.cpp` so simplified fixtures or settled-only observations cannot conceal the flash.
@@ -634,3 +657,35 @@ Use bright text colors against the dark editor background in `<GacUI repo>/Test/
 ## Verify injection routing with fresh distinguishable calls
 
 Use distinguishable predecessor and renderer providers, fresh API queries and actual request evidence when checking remote injection routing. Cached localization labels or matching native and renderer values do not prove the selected route. Check feature combinations, observed disconnection and replacement; remove temporary providers, rebuild production and repeat a real-provider smoke check.
+
+## Assert owned-popup closure at the owner's completion boundary
+
+Keep an independent main window alive while hiding or closing a secondary owner with a visible tooltip, popup or cascading menu. Invoke the owner action directly or through UIA so an outside click does not dismiss the popup first. Assert descendant closure, tooltip detachment and menu-state cleanup inside the owner's completion callback, then inspect the surviving frame. Cover hovered tooltips, canceled independent closes, mandatory owner dismissal, reassignment, unowned reuse and unrelated owners. Verify ordinary native and hosted applications separately because remote protocol subwindows do not exercise the Windows posted-message boundary.
+
+## Keep observation outside timed touch gestures
+
+For momentum integration checks in `<GacUI repo>/Test/Touching_Remote.ps1` and the shared UIA fixtures, take expensive Controls snapshots before the timed flick and observe continuation immediately after Up. A full-tree read between the last movement and Up changes the sampled velocity; reads or settling delays afterward can consume the playback being tested. Keep exact sampling windows, final-Up behavior, fractional rounding, stopping distances and delayed ticks in deterministic input/animation-clock unit tests, while integration checks establish actual continuation and interruption.
+
+For browser press fixtures, do not wait for a renderer idle signal after stationary Down before beginning the intended hold interval. Base flick coordinates on the viewport shared by the tested backend, rather than a row-relative offset that can leave one renderer's viewport.
+
+## Derive native touch expectations from converted coordinates
+
+Native logical-to-screen conversion can truncate touch coordinates at the current DPI. Compute expected translation, scale and rotation from the coordinates actually converted by the provider while retaining tight assertion tolerances. In UI integration swipe fixtures, use a deliberate full-reveal overshoot so one-pixel quantization does not invalidate a deletion setup; keep exact threshold and clamp checks in deterministic protocol tests. Report native injection separately from physical hardware coverage.
+
+## Serialize metadata generation with its consumers stopped
+
+Generate GacUI metadata in the prescribed architecture order with consumers of the output files stopped. If generation cannot write a metadata file, inspect the stream/open failure before changing reflection code and rerun serially after releasing the file. Rebuild current GacGen/GacBuild tools before consuming newly generated metadata; an older cached compiler can fail because its Workflow emitter is incompatible with the new metadata.
+
+## Observe deferred control-host destruction after a frame boundary
+
+`SafeDeleteControl` on a `GuiControlHost` queues destruction until event processing finishes. In ordinary lifetime tests, retain disposal flags across frames and inspect them after queued destruction; give popup cleanup its own completion boundary before closing the main test window. Check borrowed-pointer ownership before cleanup rather than assuming an immediate delete proves it.
+
+`ShowModalAndDelete` queues native-window destruction and then object deletion. In the existing TUI message-dialog regression, continue pumping the test application's event loop until only the main window remains before closing it. Passing message-box assertions alone do not prove its normal deferred cleanup finished; inspect the end of the Debug log for leaked dialog objects.
+
+## Route native popup automation through its owning window
+
+Use each native popup's windowId and client-local coordinates for automation input, rather than sending popup positions through the main-window pointer helper. Match UIA roles and patterns to the provider: submenu headers expand, while executable items invoke. Hover native cascading headers or use ExpandCollapse; a full click can first open them by hover and then close the chain. Find persistence submenu items in the popup, retain the hosted path separately, and restrict any native-dialog message fallback to the specific observed OS failure and owned control.
+
+## Verify touch-only modal input through reentrant remote dispatch
+
+For remote touch regressions, open, cancel and reopen a modal dialog using touch before any mouse input, retaining a mouse control case. Cover both accepted point clicks and rejected mouse fallback, and assert old-batch FIFO plus event-index progression when the callback pumps nested input. A fresh sequence started in that loop must retain its hosted route after the older End returns. Verify native-renderer and browser acquisition paths separately; ordinary nonmodal windows or hosted-only success do not establish this boundary.

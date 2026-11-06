@@ -15,10 +15,10 @@
 - `RemotingTest_Core /RVMT` gates singleton channels by startup phase [4]
 - RVM accepted-host loss poisons the requester dispatcher outside locks [4]
 - Keep item templates focused on rendering [4]
+- Keep point state in a graphics-host helper [4]
 - Automation `/IO` parses synchronously and queues parsed commands [3]
 - `CppTest_Rvm` is a GUI app and stays console-free [3]
 - Omit redundant EazyLayout sample properties and wrappers [3]
-- Keep point state in a graphics-host helper [3]
 - `vl::collections::ObservableList<T>` element access and replacement [2]
 - Extract helpers to remove duplicated conversion blocks [2]
 - Place helpers in the primary-responsibility namespace [2]
@@ -38,6 +38,7 @@
 - Keep raw point lifecycle independent of gesture recognition [2]
 - Expose supported variant fields directly in reflection [2]
 - Preserve complete style catalogs in private documents [2]
+- Detach tooltip positioning before its owner is destroyed [2]
 - Nest EazyLayout descriptor groups under one owning layout [1]
 - Use /AsPort for automation with default 8888 [1]
 - Use channel `localClient` callbacks for remoting local-client detection [1]
@@ -116,7 +117,11 @@
 - Recompute point coordinates using current native conversion [1]
 - Keep custom showcase rows themed and varied [1]
 - Keep ribbon gallery application independent of selection changes [1]
-- Detach tooltip positioning before its owner is destroyed [1]
+- Keep Linux-only unit-test adapters in the Linux build inventory [1]
+- Subscribe momentum to persistent bounds and retire callbacks safely [1]
+- Keep momentum input samples separate from playback time [1]
+- Bind shared editor shortcuts to the focused document [1]
+- Render named TUI label templates directly with SolidLabel [1]
 
 # Refinements
 
@@ -641,6 +646,8 @@ Remote renderers acquire the whole GacUI input surface and forward point sequenc
 
 Keep point contact storage, current coordinate conversion and capture in the private `GuiPointActionManager` helper. Split recognition into the fixed internal gesture implementations, with explicit priority and independent state; do not expose an end-user registration API. `GuiGraphicsHost` owns Started selection and mouse synthesis. Controls consume gesture payloads through their ordinary APIs instead of reading manager axis/displacement state; expose only a narrow host capture query when observation is necessary. Remove obsolete external manager access and control-specific recognition state.
 
+Keep the short left-click and timed right-click recognizers independent in `<GacUI repo>/Source/Application/GraphicsHost/GuiGraphicsHost_Point.cpp`. Repeating their small eligibility logic is preferable to deriving left click from right click and using a duration sentinel to select behavior.
+
 ## Preserve Started inheritance and separate handled from acceptance
 
 Keep `GuiPointSequenceStartedEventArgs` derived from `GuiPointEventArgs` in C++ and reflection, including inherited `handled`. Started traversal continues through handlers and ancestors regardless of handled; `GuiControl::OnPointSequenceStarted` skips automatic acceptance when handled or when an owner is already selected. The first non-null `acceptedComposition` stays selected. Handled neither clears that owner nor prohibits explicit custom acceptance, so a child can block an ancestor's default point behavior without changing the event hierarchy. Action and End go to the selected target; mandatory cleanup is independent of handled.
@@ -670,3 +677,25 @@ In `<GacUI repo>/Source/Controls/ToolstripPackage/GuiRibbonGalleryList.cpp`, kee
 ## Detach tooltip positioning before its owner is destroyed
 
 Before destroying a control's tooltip content, detach it through the owning `GuiTooltip` and clear control-relative popup positioning immediately. Native closure can finish asynchronously, so waiting for window closure cannot protect a reference to a destroyed template control. Verify owner deletion while the tooltip is visible and subsequent reuse by a surviving owner.
+
+For owner hide or accepted close, dismiss explicitly owned popup descendants through the shared application/window lifecycle before publishing owner completion. Reuse the existing opening-popup inventory and native parenting, while distinguishing modal-chain records and structural hosted parenting from explicit popup ownership. Keep menu cleanup and tooltip detachment on the ordinary closure path; accepted owner dismissal is mandatory, whereas an independently canceled close remains cancellable. Native outside-click traversal is a separate provider responsibility and must tolerate children detaching or being destroyed during synchronous callbacks.
+
+## Keep Linux-only unit-test adapters in the Linux build inventory
+
+Register the Linux skin adapter sources in `CPP_ADDS` in `<GacUI repo>/Test/Linux/UnitTest/vmake`, keeping the physical adapters and architecture selection intact. Do not add a LinuxSkin folder or Linux-only compile entries to `<GacUI repo>/Test/GacUISrc/UnitTest/UnitTest.vcxproj` and its filters merely to feed the Linux build. Regenerate derived inventories through the normal wrapper.
+
+## Subscribe momentum to persistent bounds and retire callbacks safely
+
+`GuiControl::GetPointEventComposition()` queries active capture and can be null while idle or after End; it is not a persistent subscription target. In `<GacUI repo>/Source/Application/GraphicsHost/GuiGraphicsHost_Point.cpp`, subscribe `MomentumScrolling` at the control's bounds and preserve child acceptance. Its retained `GuiDisposedFlag` is passive: discard disposed bookkeeping without touching destroyed receivers. Keep per-control state alive through generated callbacks, and stop animations for safe retirement instead of synchronously removing the scheduler's current entry. Detach live handlers normally and invalidate callbacks on component teardown.
+
+## Keep momentum input samples separate from playback time
+
+In `<GacUI repo>/Source/Application/GraphicsHost/GuiGraphicsHost_Point.cpp`, compute momentum velocity solely from raw input timestamps and cumulative displacement, including final-Up movement and the stationary tail to End. Use the local animation clock only for elapsed playback; never subtract timestamps from different clocks. Retain the predecessor needed to interpolate the trailing sampling boundary and exclude synthetic gestures from sampling. Integrate elapsed intervals with fractional residue, avoid overflow for valid finite deceleration settings, and clamp rounded increments to the initial velocity's sign so a near-zero final interval cannot reverse direction.
+
+## Bind shared editor shortcuts to the focused document
+
+When both FullControlTest document editors coexist, bind their shared shortcuts to `document.Focused` in `<GacUI repo>/Test/Resources/App/FullControlTest/DocumentEditorBase.xml`, following the TuiControlTest resource. Static duplicate window-wide registrations can make `GuiShortcutKeyManager::CreateShortcutIfNotExist` leave the second editor without its shortcuts, so input changes the hidden editor. Reuse the existing commands for menu labels, states and accelerators, and verify the visible editor's actual mode/text result.
+
+## Render named TUI label templates directly with SolidLabel
+
+In `<GacUI repo>/Source/Utilities/FakeServices/TuiDialogs/MessageBox.xml`, declare the reusable label template as another named `<Instance/>` and reference its type directly through `ControlTemplate`. A `<LabelTemplate/>` should own a `<SolidLabel/>`, not a nested themed `<Label/>` or a constructor-assigned factory. Copy the necessary TUI label text/font/enabled-color bindings and neutral palette values from `<GacUI repo>/Test/Resources/App/TuiSkin/TuiSkin.xml`; this small rendering duplication is intentional. Preserve declarative multiline and wrapping flags. The Release TUI tutorial consumes the built-in dialog through its library dependencies, so update those generated dependencies without inventing a second dialog XML.

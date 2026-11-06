@@ -7,11 +7,11 @@
 - Proactively remove code made redundant by refactoring [33]
 - Process staged tasks one by one with verification [28]
 - Port fixes from imports to source repositories [23]
-- Extract abstractions only for real shared behavior [22]
-- Verify and localize portability on every target OS [20]
+- Extract abstractions only for real shared behavior [23]
+- Verify and localize portability on every target OS [21]
 - Crash early instead of adding error-tolerance fallbacks [16]
 - Fix behavior at the owning state instead of patching symptoms [16]
-- Validate expectations against implementation and existing tests [12]
+- Validate expectations against implementation and existing tests [13]
 - Make `Stop()` drain asynchronous work before returning [8]
 - Do not assume async callback owners are heap allocated [5]
 - Treat environment correlation as evidence, not a cause [5]
@@ -22,16 +22,17 @@
 - Use RAII scope cleanup instead of manual catch cleanup [3]
 - Use explicit positive compiler and platform guards [3]
 - Keep encoding and exception adapters at the C++/JavaScript boundary [3]
+- Treat Debug memory leak dumps as required failures [3]
 - Capture dependent lambdas explicitly [2]
 - Use `ERROR_MESSAGE_PREFIX` for meaningful `CHECK_ERROR` / `CHECK_FAIL` messages [2]
 - Prefer simple calls before interface casts [2]
-- Treat Debug memory leak dumps as required failures [2]
 - Prefer well-defined tests over ambiguous edge cases [2]
 - Prefer raw pointers unless shared ownership is required [2]
 - Start async callbacks after most-derived construction [2]
 - Sort serialization metadata by deterministic keys, not pointer addresses [2]
 - Derive behavior thresholds from named constants [2]
 - Reuse existing library algorithms before writing local equivalents [2]
+- Guard optional Workflow values with explicit conditionals [2]
 - Prefer `operator<=> = default` for lexicographic key structs [1]
 - Prefer two-pointer merge for sorted range maps [1]
 - Use named sentinel constants instead of raw values [1]
@@ -63,10 +64,11 @@
 - Minimize browser fixture manifests and audit consumed inputs [1]
 - Preserve compiler-generated modules during packaging [1]
 - Validate complete deployment inputs before writing outputs [1]
-- Guard optional Workflow values with explicit conditionals [1]
 - Keep compiler-proven checks out of runtime execution [1]
 - Preserve ordinary conversion behavior when adding type-specific semantics [1]
 - Exercise each distinct semantic and runtime failure independently [1]
+- Respect explicitly limited verification scope [1]
+- Commit consumed event state before reentrant callbacks [1]
 
 # Refinements
 
@@ -148,6 +150,8 @@ Move reusable filesystem metadata and metadata-preserving copy operations into t
 
 When splitting a large state machine, put each genuine behavior in a focused implementation with explicit priority, while the owner keeps shared state and lifetime. Internal extensibility does not require a public registration API. Consumers should receive the result they need rather than inspect the owner's private state machine.
 
+For short sibling implementations with different semantics, a little duplication can be clearer than inheritance controlled by a sentinel or mode flag. Keep each implementation responsible for its own behavior instead of making one concrete sibling implement both.
+
 ## Make `Stop()` drain asynchronous work before returning
 
 If an API exposes `Stop()`, callers should be able to rely on it as the shutdown boundary: after it returns, no pending action, wait callback, overlapped I/O, or async completion should still touch the object. Do not paper over a broken `Stop()` with sleeps in tests; fix the stop path.
@@ -191,6 +195,8 @@ Check existing command grammar when a request appears to name an operation incor
 For regression tests, verify that the proposed case actually distinguishes broken and fixed behavior. A positive control can pass under both implementations, so retain a root-cause-sensitive reproduction and assert the relevant observable boundary, such as callback count and range, rather than only a coarse aggregate result.
 
 For performance regressions, establish a same-machine baseline and instrument construction, connection, exchange, draining, and shutdown separately. Before diagnosing a deadlock, identify the exact test that appears stuck and measure how long it runs. Rule out each plausible hypothesis with direct state and timing evidence before changing production code; a plausible platform theory or a nearby commit is not a substitute for measuring the actual slow boundary.
+
+Before porting a reported fix into a downstream sample, inspect its authored handler, generated handler and the exact imported library linked by its project. The shared repair may already be packaged; rebuild and exercise the real consumer before deciding that another source or resource change is necessary.
 
 ## Prefer `operator<=> = default` for lexicographic key structs
 
@@ -432,6 +438,8 @@ Keep platform-specific size or ABI workarounds, associated storage/lifetime chan
 
 Do not expand an implementation's supported platform set solely to reuse a downstream test backend. Separate portable public declarations or resource-building helpers from deliberately unavailable implementations, and guard test registrations by the services they actually require. Keep shared helpers available when other supported tests still use them.
 
+For a behavior shared by native providers, first identify which policy belongs in shared code and which completion semantics belong to each provider. A passing hosted or remote test cannot prove a native queued-message boundary. Audit the equivalent providers, keep any necessary provider fixes narrowly justified, and record unavailable target-platform verification separately.
+
 ## Use reentrant POSIX date-time conversions
 
 On POSIX platforms, never retain pointers returned by `localtime()` or `gmtime()` across calls or threads because both may share process-wide `tm` storage. Use caller-owned stack values populated by `localtime_r()` and `gmtime_r()` instead, with separate values for simultaneous local and UTC conversions.
@@ -528,6 +536,8 @@ Express a derived threshold in terms of its named source constant instead of rep
 
 Do not use a boolean expression as the only null guard before reading a Workflow object's property. Interpreted Workflow can evaluate both operands, so put the dereference inside an explicit conditional after checking the optional value. Verify the same authored resource through generated C++ and interpreted Workflow; passing only the generated consumer can hide this difference.
 
+Preserve optional lookup contracts through casts too. If a virtualized item's visible style may legitimately be absent, use Workflow's weak `as` cast and guard the result instead of requiring a strong `cast`. Interpreted execution can tolerate a null strong-cast result that generated C++ rejects, so verify the actual authored resource through both consumers.
+
 ## Keep compiler-proven checks out of runtime execution
 
 When semantic analysis establishes a type or operand invariant, encode the known information in generated instructions and helpers instead of repeating the same validation at runtime. Retain runtime checks for facts that remain dynamic, such as the active variant option. Follow existing build-mode guarantees rather than adding unreachable defensive branches.
@@ -539,3 +549,11 @@ Implement a new type's distinct conversion rules through dedicated lowering and 
 ## Exercise each distinct semantic and runtime failure independently
 
 Map each new rejection or runtime-failure branch to a reachable assertion and its expected outcome. A fixture that stops at its first diagnostic does not cover later failures. Keep parser, semantic, runtime and generator failures distinct; a crash or earlier unrelated diagnostic is not evidence that the intended rejection works. Include corresponding successful controls.
+
+## Respect explicitly limited verification scope
+
+When a behavior-preserving refactor explicitly requests minimum limited testing, reuse the existing focused regression and extend only the assertions needed to preserve that behavior. Complete the generation, architecture builds and metadata checks required by the changed inputs, plus any specifically requested downstream consumer. Do not expand the task to unrelated runtime suites, and still inspect the complete execution log for failures after the passing summary.
+
+## Commit consumed event state before reentrant callbacks
+
+When application callbacks can pump the event loop, advance validated input indices and the shared pending-event cursor before invoking them. Keep the undispatched remainder in its owning queue so nested dispatch preserves FIFO ahead of newly arrived input. Move a completed sequence out of active routing state before its End callback, retaining its payload separately; afterward, do not clear a replacement sequence created by nested dispatch. Preserve strict validation while fixing ownership and commit order.
