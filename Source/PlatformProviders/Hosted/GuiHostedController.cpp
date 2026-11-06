@@ -718,16 +718,17 @@ GuiHostedController::INativeWindowListener (IO Event Handling)
 		void GuiHostedController::PointSequenceEnded(const PointSequenceEndInfo& info)
 		{
 			if (info.sequenceId != pointSequenceId) return;
-			if (pointSequenceWindow)
+			auto window = pointSequenceWindow;
+			auto adjusted = info;
+			adjusted.accepted = pointSequenceAccepted;
+			ResetPointSequence();
+			if (window)
 			{
-				auto adjusted = info;
-				adjusted.accepted = pointSequenceAccepted;
-				for (auto listener : pointSequenceWindow->listeners)
+				for (auto listener : window->listeners)
 				{
 					listener->PointSequenceEnded(adjusted);
 				}
 			}
-			ResetPointSequence();
 		}
 
 		void GuiHostedController::MouseDown(NativeMouseButton button, const NativeWindowMouseInfo& info)

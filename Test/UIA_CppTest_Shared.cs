@@ -719,6 +719,30 @@ public static class GacUIShowcaseTests
             scroll.SetScrollPercent(ScrollPattern.NoScroll, pass % 2 == 0 ? 100 : 0);
             closed("rapidly recycled rows never render red");
         }
+        Test("TouchingList / completion after the starting row scrolls outside the window");
+        for (int completion = 0; completion < 3; completion++)
+        {
+            scroll.SetScrollPercent(ScrollPattern.NoScroll, 0);
+            var first = RenderedCaptionBounds(Items(list)[0].Current.Name);
+            int token = 1301 + completion * 2;
+            PointInput("Down", token, first, 180, 25);
+            PointInput("Update", token, first, 180, -1000);
+            Wait(() => scroll.Current.VerticalScrollPercent == 100, "drag outside the window reaches the bottom");
+            Check(Items(list)[0].Current.IsOffscreen, "starting row has been virtualized away");
+            if (completion == 1) Input("!PointCancel:" + token + ",CaptureLost");
+            else
+            {
+                if (completion == 2)
+                {
+                    PointInput("Down", token + 1, list, 0.5, 0.5);
+                    PointInput("Up", token + 1, list, 0.5, 0.5);
+                }
+                PointInput("Up", token, first, 180, -1000);
+            }
+            settleItems();
+            Check(Items(list).Count == 9, "offscreen completion preserves every item");
+            closed("offscreen completion keeps recycled rows closed");
+        }
         Invoke(page, "Clear"); settleItems(); Wait(() => Items(list).Count == 0, "Clear after deletion");
         PointInput("Down", 1008, list, 0.8, 0.5);
         PointInput("Update", 1008, list, 0.2, 0.5);

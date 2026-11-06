@@ -184,7 +184,8 @@ function Test-SwipeAndText {
     IO $rendererBase '!PointCancel:105,PlatformCanceled'
     Assert-Reveal 0
     IO $rendererBase "!PointDown:106,$x,$y"
-    IO $rendererBase "!PointUp:106,$($x-$maximum),$y"
+    # Cross the full-reveal threshold despite fractional-DPI coordinate rounding.
+    IO $rendererBase "!PointUp:106,$($x-$maximum-2),$y"
     Wait-For { @(Controls | Where-Object elementText -eq $name).Count -eq 0 } 'deferred middle row removal'
     $next = @(Controls | Where-Object elementText -like 'Item 8 *')[0]
     if ([Math]::Abs($next.bounds.y1 - $row.bounds.y1) -gt 1 -or $next.bounds.x1 -ne $left) { throw 'Replacement row inherited a stale index or reveal.' }
@@ -368,6 +369,32 @@ function Test-SwipeAndText {
     }
     Write-Output 'PASS renderer IO / press selection and viewport scrolling before and after template replacement'
 }
+function Test-TouchDialogs {
+    # Keep localized captions independent of Windows PowerShell's script code page.
+    $cancelCaptions = @('Cancel', ([string][char]0x53D6 + [char]0x6D88))
+    function Tap-Caption($text) {
+        Wait-For { @(Controls | Where-Object elementText -eq $text).Count -gt 0 } "touch target $text"
+        $node = @(Controls | Where-Object elementText -eq $text)[0]
+        $x = [int](($node.bounds.x1 + $node.bounds.x2) / 2)
+        $y = [int](($node.bounds.y1 + $node.bounds.y2) / 2)
+        IO $rendererBase "!PointDown:150,$x,$y"
+        IO $rendererBase "!PointUp:150,$x,$y"
+    }
+    Tap-Caption 'Control'
+    Tap-Caption 'Document Editor (Toolstrip)'
+    for ($pass = 0; $pass -lt 2; $pass++) {
+        Tap-Caption 'Edit'
+        Tap-Caption 'Object'
+        Tap-Caption 'Insert Image ...'
+        Wait-For { @(Controls | Where-Object title -eq 'Select an Image').Count -eq 1 } 'touch opens image dialog'
+        Wait-For { @(Controls | Where-Object elementText -in $cancelCaptions).Count -gt 0 } 'image dialog cancel button'
+        $cancel = @(Controls | Where-Object elementText -in $cancelCaptions)[0].elementText
+        Tap-Caption $cancel
+        Wait-For { @(Controls | Where-Object title -eq 'Select an Image').Count -eq 0 } 'touch closes image dialog'
+    }
+    Tap-Caption 'Misc'
+    Write-Output 'PASS renderer touch-only modal opening, cancellation and reopening'
+}
 try {
     foreach($transportName in $Transport) {foreach($backendName in $Backend) {
         $owned.Clear()
@@ -390,6 +417,7 @@ try {
             }
             $renderer = Start-Wrapped 'RemotingTest_Rendering_Win32'
             Wait-For { @(Controls | Where-Object elementText -eq 'Misc').Count -gt 0 } 'initial controls'
+            Test-TouchDialogs
             Select-Tab 'Misc'
             Wait-For {
                 if (@(Controls | Where-Object elementText -eq 'Touching').Count -gt 0) {return $true}
@@ -418,7 +446,8 @@ try {
                 }
                 $xx=$x+30;$yy=$y+20
                 IO $endpoint "!PointUpdate:10,$xx,$yy"
-                Wait-For {[Math]::Abs((State)[0]-$initial[0]-30) -lt 0.01} 'one-contact translation'
+                # Native client-coordinate conversion can round by one logical pixel at fractional DPI.
+                Wait-For {[Math]::Abs((State)[0]-$initial[0]-30) -le 1} 'one-contact translation'
                 IO $endpoint "!PointDown:20,$($xx+100),$yy"
                 Wait-For {(State)[4] -eq 2} 'second contact'
                 IO $endpoint "!PointUpdate:20,$xx,$($yy+160)"
@@ -450,8 +479,8 @@ try {
             IO $rendererBase "!PointDown:1,$tx,$ty"
             IO $rendererBase "!PointUp:1,$tx,$ty"
             Wait-For {$null -ne (Find-Raw)} 'rejected touch tab fallback'
-            if($NativeInjection) { & (Join-Path $PSScriptRoot 'Touching_NativeInput.ps1') -TargetProcessId $renderer.Id -Application RemotingTest_Rendering_Native -AsPort 8889 -CoreAsPort 8888 }
             Test-SwipeAndText
+            if($NativeInjection) { & (Join-Path $PSScriptRoot 'Touching_NativeInput.ps1') -TargetProcessId $renderer.Id -Application RemotingTest_Rendering_Native -AsPort 8889 -CoreAsPort 8888 }
             IO $rendererBase '!Exit'
             Wait-For {$core.HasExited -and $renderer.HasExited} 'graceful exit'
             Write-Output "PASS $transportName $backendName renderer state, fallback and shutdown"

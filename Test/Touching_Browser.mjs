@@ -83,6 +83,13 @@ const touch = async (type, fingers, settle = true) => {
     if (settle) await idle();
 };
 const finger = (id, p) => ({ id, ...p, radiusX: 6, radiusY: 8, force: 0.7 });
+async function tapCaption(text) {
+    await until(async () => await label(text) !== undefined, `Touch target ${text}`);
+    const b = (await label(text)).bounds;
+    const p = await screenPoint(b, (b.x2 - b.x1) / 2, (b.y2 - b.y1) / 2);
+    await touch('touchStart', [finger(150, p)], false);
+    await touch('touchEnd', []);
+}
 function noCompatibility(start) {
     assert.deepEqual(events.slice(start).filter(event => /^(IOButton|IOMouse)/.test(event.name)), []);
     evidence.checks.push('Touch release emits no compatibility mouse/button events');
@@ -96,6 +103,20 @@ try {
     await idle(30000, true);
     await until(async () => await label('Misc') !== undefined, 'FullControlTest rendered');
     const outerScroll = await page.evaluate(() => [scrollX, scrollY]);
+    const dialogStart = events.length;
+    await tapCaption('Control');
+    await tapCaption('Document Editor (Toolstrip)');
+    for (let pass = 0; pass < 2; pass++) {
+        await tapCaption('Edit');
+        await tapCaption('Object');
+        await tapCaption('Insert Image ...');
+        await until(async () => (await all()).some(node => node.title === 'Select an Image'), 'Touch opens image dialog');
+        await until(async () => (await all()).some(node => ['Cancel', '取消'].includes(node.elementText)), 'Image dialog cancel button');
+        const cancel = (await all()).find(node => ['Cancel', '取消'].includes(node.elementText));
+        await tapCaption(cancel.elementText);
+        await until(async () => !(await all()).some(node => node.title === 'Select an Image'), 'Touch closes image dialog and permits reopening');
+    }
+    noCompatibility(dialogStart);
     await click('Misc'); await click('Touching');
     await until(async () => await raw() !== undefined, 'Touching raw element');
     const bounds = (await raw()).bounds, initial = await state();

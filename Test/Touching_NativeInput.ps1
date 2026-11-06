@@ -92,9 +92,25 @@ public static class TouchingNativeInput {
 $base = "http://localhost:$AsPort/Automation/$Application"
 $remoteRenderer = $Application -eq 'RemotingTest_Rendering_Native'
 $controlsBase = if ($remoteRenderer) { "http://localhost:$CoreAsPort/Automation/RemotingTest_Core" } else { $base }
+$nativeInputJson = $null
+if ($PSVersionTable.PSEdition -eq 'Desktop') {
+    # Windows PowerShell's REST parser returns a string for deeply nested control trees.
+    Add-Type -AssemblyName System.Web.Extensions
+    $nativeInputJson = [System.Web.Script.Serialization.JavaScriptSerializer]::new()
+    $nativeInputJson.MaxJsonLength = 16 * 1024 * 1024
+    $nativeInputJson.RecursionLimit = 512
+}
+function Read-Tree($uri) {
+    if ($nativeInputJson) {
+        $response = Invoke-WebRequest $uri -UseBasicParsing -TimeoutSec 5
+        return $nativeInputJson.DeserializeObject($response.Content)
+    }
+    Invoke-RestMethod $uri -TimeoutSec 5
+}
 function Get-Nodes($value) {
     if ($null -eq $value) { return }
     if ($value -is [System.Array]) { foreach ($item in $value) { Get-Nodes $item }; return }
+    if ($value -is [Collections.IDictionary]) { $value; foreach ($item in $value.Values) { Get-Nodes $item }; return }
     if ($value -is [System.Management.Automation.PSCustomObject]) {
         $value
         foreach ($property in $value.PSObject.Properties) { Get-Nodes $property.Value }
@@ -102,7 +118,7 @@ function Get-Nodes($value) {
 }
 function Snapshot {
     $null = [TouchingNativeInput]::Window($TargetProcessId)
-    Get-Nodes (Invoke-RestMethod "$controlsBase/Controls" -TimeoutSec 5)
+    Get-Nodes (Read-Tree "$controlsBase/Controls")
 }
 function Find-Element([string]$id) { @(Snapshot | Where-Object elementId -EQ $id)[0] }
 function Caption([string]$text) { @(Snapshot | Where-Object elementText -EQ $text)[0] }
@@ -130,7 +146,7 @@ function State {
     if ($remoteRenderer) {
         $matched = $false
         for ($attempt=0; $attempt -lt 20; $attempt++) {
-            $raw = @(Get-Nodes (Invoke-RestMethod "$base/Dom" -TimeoutSec 5) | Where-Object rawId -EQ 'FullControlTest.Touching')[0]
+            $raw = @(Get-Nodes (Read-Tree "$base/Dom") | Where-Object rawId -EQ 'FullControlTest.Touching')[0]
             if ($raw.data -eq $element.elementData) { $matched = $true; break }
             Start-Sleep -Milliseconds 25
         }
@@ -191,6 +207,38 @@ try {
     Start-Sleep -Milliseconds 200
     if (!(Find-Element 'FullControlTest.Touching')) { throw 'Unpromoted mouse input failed after accepted touch.' }
     Write-Output 'PASS independent unpromoted Windows mouse injection. Physical touch/mouse and additional monitor DPI remain hardware checks.'
+
+    $tab = Bounds (Caption 'TouchingList')
+    Command "!LeftClick:$([int](($tab.x1+$tab.x2)/2)),$([int](($tab.y1+$tab.y2)/2))"
+    Start-Sleep -Milliseconds 150
+    $add = Bounds (Caption 'Add 5 Items')
+    for ($i=0; $i -lt 8; $i++) {
+        Command "!LeftClick:$([int](($add.x1+$add.x2)/2)),$([int](($add.y1+$add.y2)/2))"
+    }
+    Start-Sleep -Milliseconds 150
+    $list = @(Snapshot | Where-Object control -eq 'TextList')[0]
+    if (!$list) { throw 'Missing TouchingList viewport.' }
+    $first = @(Snapshot | Where-Object elementText -like 'Item *')[0].elementText
+    $b = Bounds $list
+    $x = [int](($b.x1+$b.x2)/2)
+    $y = [int](($b.y1+$b.y2)/2)
+    $point = [TouchingNativeInput]::ScreenPoint($window,$x,$y)
+    Frame @([TouchingNativeInput]::Contact(1,0x10006,$point))
+    for ($nextY=$y-20; $nextY -ge -50; $nextY-=20) {
+        $point = [TouchingNativeInput]::ScreenPoint($window,$x,$nextY)
+        Frame @([TouchingNativeInput]::Contact(1,0x20006,$point))
+        Start-Sleep -Milliseconds 10
+    }
+    Frame @([TouchingNativeInput]::Contact(1,0x40000,$point))
+    Start-Sleep -Milliseconds 200
+    if (Caption $first) { throw 'Outside-window drag did not recycle the starting rows.' }
+    $tab = Bounds (Caption 'Touching')
+    $tap = [TouchingNativeInput]::ScreenPoint($window,($tab.x1+$tab.x2)/2,($tab.y1+$tab.y2)/2)
+    Frame @([TouchingNativeInput]::Contact(1,0x10006,$tap))
+    Frame @([TouchingNativeInput]::Contact(1,0x40000,$tap))
+    Start-Sleep -Milliseconds 200
+    if (!(Find-Element 'FullControlTest.Touching')) { throw 'Fresh touch failed after dragging outside the window.' }
+    Write-Output 'PASS native TouchingList drag outside the window, row virtualization, and fresh touch.'
 } finally {
     $null = [TouchingNativeInput]::SetThreadDpiAwarenessContext($previousDpi)
 }

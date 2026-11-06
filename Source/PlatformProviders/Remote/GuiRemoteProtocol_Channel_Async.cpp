@@ -60,11 +60,6 @@ GuiRemoteProtocolAsyncJsonChannel
 			uiTaskQueued = false;
 		}
 
-		auto processEvent = [this](const ReceivedPackage& eventPackage)
-		{
-			reader->OnRead(eventPackage.senderClientId, eventPackage.package);
-		};
-
 		for (auto&& eventPackage : events)
 		{
 			ChannelPackageInfo info;
@@ -79,7 +74,7 @@ GuiRemoteProtocolAsyncJsonChannel
 
 			if (info.name == L"ControllerConnect" && eventPackage.senderClientId == currentConnectionClientId)
 			{
-				processEvent(eventPackage);
+				processingEvents.Add(eventPackage);
 			}
 		}
 
@@ -97,9 +92,26 @@ GuiRemoteProtocolAsyncJsonChannel
 
 			if (info.name != L"ControllerConnect" && eventPackage.senderClientId == currentConnectionClientId)
 			{
-				processEvent(eventPackage);
+				processingEvents.Add(eventPackage);
 			}
 		}
+
+		while (nextProcessingEvent < processingEvents.Count())
+		{
+			// Consume before dispatch: application callbacks can pump the remaining events.
+			auto eventPackage = processingEvents[nextProcessingEvent++];
+			vint currentConnectionClientId = -1;
+			SPIN_LOCK(lockConnection)
+			{
+				currentConnectionClientId = connectionClientId;
+			}
+			if (eventPackage.senderClientId == currentConnectionClientId)
+			{
+				reader->OnRead(eventPackage.senderClientId, eventPackage.package);
+			}
+		}
+		processingEvents.Clear();
+		nextProcessingEvent = 0;
 	}
 
 	void GuiRemoteProtocolAsyncJsonChannel::ProcessRemoteEvents()

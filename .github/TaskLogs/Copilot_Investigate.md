@@ -2,71 +2,64 @@
 
 # PROBLEM DESCRIPTION
 
-investigate repro in [MessageBox.xml](<GacUI repo>/Source/Utilities/FakeServices/TuiDialogs/MessageBox.xml) , I would like you to delete the `CreateMessageLabelTemplate` function, instead implement the control template using another `<Instance/>` in the same file. Therefore you can specify the type name directly to `ControlTemplate` instead of using `-eval` binding. Perform minimum limited test to make sure the new control template doesn't change the behavior.
+address and fix the following bugs:
+
+- When doing touch scrolling on a list control, you can use the `TouchingList` from `CppTest`, I press the list control and drag all the way to outside of the window on a touch screen, it crashes.
+- When running GacJS with `RemotingTest_Core /Http /FCT`, and if I only use touching on a browser instead of using mouse, you can repro the issue by opening the document tab to insert an image, and touching suddenly becomes no responding. But mouse is still working. This issue does not repro on `CppTest` which is in hosted mode, but it repros when running `RemotingTest_Core /Http /FCT` with `Remoting_Rendering_Win32 /Http`, so I suspect this is a general remote protocol issue rather than a `GacJS` issue.
 
 # UPDATES
 
 ## UPDATE
 
-once finishing also port the change to Release demo's tutorial and run `GacBuild.ps1` to update generated files.
-
-## UPDATE
-
-Using `<Label/>` in `<LabelTemplate/>` is not correct, the correct way is to use `<SolidLabel/>` with TUI theme colors. Although this makes you having to copy some TUI label template code but this is expected. Rework `tui_controls::TuiMessageBoxLabelTemplate`. Perform minimum limited as the original request required.
+to clarify the second issue happens whenever a sub window is opened, meanwhile hosted mode without remote protocol is working just fine, hope this helps you narrowing down
 
 # TEST [CONFIRMED]
 
-- Reuse the existing `TUI message dialogs wrap long text inside the viewport` regression in `<GacUI repo>/Test/GacUISrc/UnitTest/TestTuiProvider.cpp`. It checks multiline text, a blank line, wrapping, viewport bounds at 80x25 and 120x40, and the Cancel result with the second default button.
-- Run only the `TestTuiProvider.cpp` unit-test filter after regeneration. Check the label still uses the installed theme's default color and the dialog font.
-- Regenerate the affected resources and required reflection metadata; check generator errors and build both required architectures. Run the Release tutorial's GacBuild driver and inspect its output.
+- Extend the existing point-input tests to reproduce scrolling outside a hosted window, including boundary notifications and sequence completion.
+- Reproduce touch-only modal opening through the remote protocol, verify a second touch reaches the dialog, and retain a mouse control case.
+- Require both regressions to fail before fixes and pass afterwards. Run related unit tests and the focused hosted/remote automation checks; distinguish synthetic input from physical touch coverage.
+
+Observed before fixes:
+
+- Windows `InjectTouchInput` against Debug x64 CppTest reproduces the exception after adding enough TouchingList items and dragging above the native window. CDB stops in `vl::__vwsn::Ensure<demo::TouchingListItemTemplate>`, called by `demo::TouchingListTabPage::GetSwipeTemplate` from `EndSwipe`; the starting row has been virtualized away. The authored source is `<GacUI repo>/Test/Resources/App/FullControlTest/TouchingListTabPage.xml`.
+- With Core `/Http /FCT` and the native renderer `/Http`, renderer-side point input opens Control > Document Editor (Toolstrip) > Edit > Object > Insert Image. A subsequent touch on the file dialog's Cancel leaves it open; a mouse click closes it. Ordinary nonmodal Window Manager windows worked in this reproduction.
+- The new nested-batch test in `<GacUI repo>/Test/GacUISrc/UnitTest/TestRemote_ChannelServer.cpp` fails: a nested pump receives newly arrived input before the undispatched remainder of the outer batch.
+- The new modal point test in `<GacUI repo>/Test/GacUISrc/UnitTest/TestRemote_GraphicsHost_Mouse.cpp` fails with `GuiRemoteWindow::AcceptPointRecord#Point event index gap` when a click pumps its sequence's End reentrantly.
+- Debug x64 builds the regressions without warnings or errors. The actual-resource interpreted TouchingList test tolerates the null strong-cast result, unlike generated C++; retain both native and interpreted verification.
 
 # PROPOSALS
 
-- No.1 Give the wrapping label a named template instance [DENIED]
-- No.2 Render the message directly with SolidLabel [CONFIRMED]
+- No.1 Preserve optional row lookup and retire dispatched input before modal callbacks [CONFIRMED]
 
-## No.1 Give the wrapping label a named template instance
+## No.1 Preserve optional row lookup and retire dispatched input before modal callbacks
 
-The old factory enabled `WrapLine` and `WrapLineHeightCalculation` on the active theme's label so long messages did not expand beyond the terminal viewport. Preserve that themed label inside a reusable label template instance, forwarding text, font, enabled state and text color. The instance constructor assigns the current theme's label factory explicitly, preserving its wrapping settings across theme refreshes as before, then enables wrapping on the label. The message box selects the instance class directly through `ControlTemplate`.
+TouchingList's visible-style lookup is optional by contract. Use a weak cast so scrolling, cancellation, or an additional contact can clear a swipe after virtualization without requiring a still-visible row.
 
-This keeps TUI dialog resources independent of a particular skin implementation and preserves custom label palettes. The Release tutorial uses the library's built-in fake TUI dialogs rather than a separate MessageBox XML, so its library snapshot must receive the generated dialog implementation.
-
-### CODE CHANGE
-
-- Add `tui_controls::TuiMessageBoxLabelTemplate` to the existing MessageBox XML; remove the window's factory and use the template type name directly.
-- Preserve the existing focused regression and add color/font checks there.
-- Regenerate dialog C++ and metadata, update the Release tutorial's library dependency, and run its GacBuild driver.
-
-### DENIED BY USER
-
-The original implementation passed the limited behavioral tests below, but incorrectly nested a themed `Label` control inside `LabelTemplate`. The user requires a directly owned `SolidLabel` and explicitly accepts copying the TUI label template's rendering logic and colors. Proposal No.2 replaces this implementation.
-
-- Generated both architectures of TUI dialog resources with `GacUI_Compiler`; no resource error files remain. Temporarily selected only `BUILD_TUIDIALOGS` for this focused generation, then restored the compiler's original source before the final builds. Regenerated the merged dialog sources and packed the four affected library files with CodePack.
-- Debug Win32 and x64 solution builds passed with zero warnings and errors. Regenerated metadata for both architectures; `Metadata_Test` passed its core/full metadata round trips for both architectures.
-- Debug x64 `UnitTest` with `/F:TestTuiProvider.cpp` passed 1/1 test files and 21/21 cases. The existing message-dialog regression passed at 80x25 and 120x40, including the new installed-palette text-color and effective-font assertions, multiline wrapping, blank lines, viewport bounds and Cancel result. The earlier completion report missed the deferred dialog-deletion leak in the debug log; No.2 corrects the regression's shutdown and verifies the complete log.
-- Copied the generated GacUI/GacUIReflection pairs and current reflection metadata into `<Release repo>/Import` and `<Release repo>/Tools`. The tutorial already uses these built-in dialogs, and its authored TUI XML matches the development demo, so no duplicate dialog XML was added.
-- Ran `<Release repo>/Tools/GacBuild.ps1 -FileName <Release repo>/Tutorial/GacUI.xml` successfully. Refreshed the TUI tutorial resource timestamp to select its x32/x64 regeneration; unrelated tutorial resources were skipped. Both staged architectures completed and the merged C++ and data resource were deployed. Their contents remain identical, so the Release diff contains only the four library files and two metadata binaries.
-- Final source review and `git diff --check` passed in both repositories. The message box contains a direct `ControlTemplate="tui_controls::TuiMessageBoxLabelTemplate"` attribute and no `CreateMessageLabelTemplate` function.
-
-Build and execution evidence is retained in the ignored `<GacUI repo>/Test/GacUISrc/x64/Debug/RpWindows/MessageBox*.log` files.
-
-## No.2 Render the message directly with SolidLabel
-
-Copy the TUI label template's text/font/enabled-color bindings into the named message label template. Use the built-in TUI palettes' shared neutral colors: `LabelText` is `#808080` and `ControlBorderDisabled` is `#404040`, as defined in `<GacUI repo>/Test/Resources/App/TuiSkin/TuiSkin.xml`. Set `Multiline`, `WrapLine` and `WrapLineHeightCalculation` declaratively on `SolidLabel`. Remove the nested control, factory assignment and template constructor script. The message box continues selecting the template by its type name.
+Remote dialogs can reenter the event pump from a mouse fallback or deferred point click. Keep pending channel events and their consumed cursor in the channel, so a nested pump processes the old batch remainder before new events. Advance a validated point action's event index before calling application code. Retire a completed remote sequence and hosted routing before End callbacks, preserving the completed payload separately and leaving a nested sequence intact. Keep strict protocol validation and first-contact mouse fallback behavior.
 
 ### CODE CHANGE
 
-- Simplify `<GacUI repo>/Source/Utilities/FakeServices/TuiDialogs/MessageBox.xml` to a `LabelTemplate` owning one `SolidLabel`.
-- Extend the same existing message-dialog regression with rendered text/font and enabled/disabled-color checks. Keep verification limited to `/F:TestTuiProvider.cpp`, required builds/metadata generation, and the already requested Release port and tutorial generation.
-- Regenerate affected dialog sources, library release files and metadata; update the Release tutorial's shared dependencies and rerun its GacBuild driver.
-- The first focused run passed all 21 cases but the debug log reported leaked message-dialog objects. `ShowModalAndDelete` queues native-window destruction and then object deletion, while the regression immediately closed its main window after `ShowMessageBox` returned. Keep pumping the existing test application's event loop until only the main window remains, then close it, so the service's normal asynchronous deletion finishes. This is a correction to the existing regression's shutdown sequence; no production lifecycle change is needed.
+- Change only the optional lookup in the TouchingList XML, regenerate its consumers, and extend existing scrolling/native/UIA checks.
+- Update `<GacUI repo>/Source/PlatformProviders/Remote/GuiRemoteProtocol_Channel_Async.h/.cpp`, `<GacUI repo>/Source/PlatformProviders/Remote/GuiRemoteWindow.cpp`, and `<GacUI repo>/Source/PlatformProviders/Hosted/GuiHostedController.cpp` for reentrant dispatch ownership.
+- Cover accepted and rejected point clicks opening modal windows, pending-batch FIFO, starting-row virtualization, and fresh touch after completion. Verify actual HTTP native and browser touch paths.
 
 ### CONFIRMED
 
-- The message label template owns one `SolidLabel`, with TUI neutral colors, text/font/enabled-color bindings and all three multiline/wrapping flags. There is no nested `Label`, constructor script or template factory in this instance. The message box still references its type name directly.
-- Focused TUI-dialog generation passed for x86/x64. The temporary compiler selection was restored before the final builds; no compiler source change remains. Debug Win32 and x64 builds passed with zero warnings/errors. Both metadata generators and the core/full x86/x64 metadata round-trip check passed.
-- After correcting the regression's shutdown, `/F:TestTuiProvider.cpp` passed 1/1 files and 21/21 cases. The complete debug log ends with the passing summary and contains no memory-leak report. Existing 80x25/120x40 wrapping, multiline text, blank lines, viewport and Cancel checks passed along with rendered text/font, disabled-color and explicit text-color checks.
-- CodePack regenerated the affected library files; their Release tutorial dependency copies and both reflection binaries were updated. `<Release repo>/Tools/GacBuild.ps1 -FileName <Release repo>/Tutorial/GacUI.xml` succeeded, rebuilding only the TUI tutorial in both architectures and merging/deploying its outputs. Tutorial output contents remain unchanged; the Release diff is the three affected library files and two metadata binaries.
-- Source review and `git diff --check` passed in both repositories. Verification remained limited to the existing TUI provider test file and required generation/build checks.
+The starting list row is legitimately absent after virtualization, so the weak lookup lets all existing swipe cleanup paths finish. The native exception is gone without changing list capture or scrolling behavior. Remote dispatch now consumes queued events and advances each point record before calling application code; completion moves the old sequence out of active state before End callbacks. A modal loop can therefore finish the preceding input and start a new sequence without losing its route when the older callback returns.
 
-Evidence is retained in the ignored `<GacUI repo>/Test/GacUISrc/x64/Debug/RpWindows/SolidLabel*.log` files, including the complete final debug log `SolidLabelFinalExecute.log` and initial leak report `SolidLabelLeak.log`.
+Validation:
+
+- Debug x64 remote channel, async renderer, and graphics-host mouse/point tests: 106/106 pass, with no memory leak report.
+- Debug x64 point scrolling, file/message dialogs, and automation-service tests: 66/66 pass, with no memory leak report. Unrelated compiler ordering and asynchronous file-list allocation/frame timing changes in snapshots are excluded.
+- Final Debug x64 build after generation: zero warnings/errors; all seven selected test files pass together, 172/172 cases, with no memory leak report. Metadata generation for both architectures and x64 Metadata_Test succeed. Debug Win32 also builds successfully; its two pre-existing character-code-page warnings are in the unchanged TestRemote_Caret.cpp.
+- Debug Win32 remote channel, async renderer, graphics-host mouse/point, and point scrolling tests: 126/126 pass, with no memory leak report. Win32 metadata generation succeeds.
+- Debug Win32 CppTest passes real Windows `InjectTouchInput` acquisition, including dragging above the window until the starting rows are virtualized and using fresh touch afterwards. Its UIA Touching suite passes the three new offscreen completion cases and normal shutdown (10,237 assertions).
+- Debug Win32 CppTest_Metaonly and interpreted GacUI_Host pass the same UIA Touching suite and normal shutdown (10,241 assertions each).
+- Final Debug x64 CppTest and CppTest_Metaonly pass the Touching UIA suites and normal shutdown (10,241 assertions each). CppTest also passes Windows `InjectTouchInput` for the outside-window drag, starting-row virtualization, and fresh touch, then closes through UIA.
+- HTTP GacJS Chromium CDP touch: opens, cancels, and reopens the image dialog before any mouse input; then passes the existing gesture, list, momentum, selection, and palette checks. No JavaScript errors or touch-generated mouse/button protocol records.
+- HTTP Direct2D native renderer: touch-only image-dialog opening, cancellation, and reopening, followed by all existing gesture, swipe, momentum, selection, palette, and shutdown checks pass. The test resolves the localized Cancel caption independently of Windows PowerShell's script code page and allows native coordinate rounding at fractional DPI. Full swipe input crosses the reveal threshold instead of landing on a rounding-sensitive boundary.
+- HTTP Direct2D Windows input injection passes contact translation, multiple contacts, canceled Up, mouse fallback, outside-window TouchingList scrolling, fresh touch, and graceful shutdown. The optional driver initially failed to navigate from TextBox because Windows PowerShell returned the deep Controls JSON as a string; reproduced this independently, reused the remote driver's deep JSON parser, and reran all native injection checks successfully from that page.
+- FullControlTest generation requires DarkSkin and fake-dialog localized resources to be loaded in the same compiler run. The normal inventory produced the complete x86 FullControlTest artifacts. Stopped its unrelated remaining generation and ran a focused x64 FakeDialog/DarkSkin/FullControlTest pass after identifying both dependencies; all temporary compiler source switches are restored. Unrelated generated artifacts are excluded.
+- Both generated C++ variants change only the nullable row lookup; matching resources are regenerated with no remaining UI compilation errors. TouchingList snapshots record the additional recycling operations; the final rendered state matches the original after normalizing allocation IDs. Unit-test filters and application launch arguments are restored.
+
+Coverage uses Windows input injection, automation/UIA, and Chromium CDP touch. Physical fingers and additional monitor DPI remain hardware coverage.

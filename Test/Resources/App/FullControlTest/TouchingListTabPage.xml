@@ -64,7 +64,7 @@
           if (swipeItem is null) { return null; }
           var index = Items.IndexOf(swipeItem);
           if (index == -1) { return null; }
-          return cast TouchingListItemTemplate* list.Arranger.GetVisibleStyle(index);
+          return list.Arranger.GetVisibleStyle(index) as TouchingListItemTemplate*;
         }
 
         func ResetSwipe(): void

@@ -81,6 +81,12 @@ namespace remote_channel_server_tests
 		void OnControllerConnect(const ControllerGlobalConfig&) override {}
 		void OnControllerDisconnect() override { disconnections++; }
 		vint						responses = 0;
+		Func<void(vint)>			shortcut;
+
+		void OnIOGlobalShortcutKey(const vint& id) override
+		{
+			shortcut(id);
+		}
 
 		void RespondWindowGetBounds(vint, const WindowSizingConfig&) override
 		{
@@ -149,6 +155,43 @@ using namespace remote_channel_server_tests;
 
 TEST_FILE
 {
+	TEST_CASE(L"Nested event pumps drain the pending batch before newly received input")
+	{
+		TakeoverJsonChannel channel;
+		GuiRemoteProtocolAsyncJsonChannel asyncChannel(&channel);
+		TakeoverCoreChannel core(&asyncChannel);
+		TakeoverEvents events;
+		core.Initialize(&events);
+		channel.Connect(17);
+		asyncChannel.GetRemoteEventProcessor()->ProcessRemoteEvents();
+		auto send = [&](vint id)
+		{
+			Ptr<glr::json::JsonObject> package;
+			ChannelPackageInfo info{ ChannelPackageSemantic::Event, -1, L"IOGlobalShortcutKey" };
+			JsonChannelPack(info, ConvertCustomTypeToJson(id), package);
+			channel.GetReader()->OnRead(17, package);
+		};
+		List<vint> received;
+		events.shortcut = [&](vint id)
+		{
+			received.Add(id);
+			if (id == 1)
+			{
+				send(3);
+				asyncChannel.GetRemoteEventProcessor()->ProcessRemoteEvents();
+				TEST_ASSERT(received.Count() == 3);
+				TEST_ASSERT(received[1] == 2 && received[2] == 3);
+			}
+		};
+		send(1);
+		send(2);
+		asyncChannel.GetRemoteEventProcessor()->ProcessRemoteEvents();
+		TEST_ASSERT(received.Count() == 3);
+		send(4);
+		asyncChannel.GetRemoteEventProcessor()->ProcessRemoteEvents();
+		TEST_ASSERT(received.Count() == 4 && received[3] == 4);
+	});
+
 	TEST_CASE(L"Transport loss cancels async responses and delivers disconnection on the event thread")
 	{
 		TakeoverJsonChannel channel;

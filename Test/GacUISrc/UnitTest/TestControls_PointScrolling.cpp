@@ -988,6 +988,32 @@ TEST_FILE
 			{
 				TEST_ASSERT(reveal() == 0);
 				AssertTouchingListNoRed(state->list->GetBoundsComposition());
+				for (vint completion = 0; completion < 3; completion++)
+				{
+					auto origin = protocol->LocationOf(state->list->GetArranger()->GetVisibleStyle(0), 0.7, 0.5);
+					auto outside = NativePoint(origin.x, -1000);
+					state->input->Start(origin);
+					state->input->Move(outside);
+					TEST_ASSERT(!state->list->GetArranger()->GetVisibleStyle(0));
+					if (completion == 1)
+					{
+						state->input->End(0, PointSequenceEndReason::Canceled_CaptureLost);
+					}
+					else
+					{
+						if (completion == 2)
+						{
+							state->input->Down(1, origin);
+							state->input->Up(1, origin);
+						}
+						state->input->Up(0, outside);
+						state->input->End();
+					}
+					TEST_ASSERT(state->items->GetCount() == 5);
+					TEST_ASSERT(!state->list->GetPointEventComposition());
+					state->list->SetViewPosition(Point());
+					AssertTouchingListNoRed(state->list->GetBoundsComposition());
+				}
 				state->list->SetEnabled(false);
 			});
 			protocol->OnNextIdleFrame(L"Disabled row uses DarkSkin", [=]()

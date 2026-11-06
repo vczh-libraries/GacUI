@@ -231,6 +231,69 @@ TEST_FILE
 		StartRemoteControllerTest(protocol);
 	});
 
+	for (bool accepted : { false,true })
+	TEST_CATEGORY(L"Touch opens a modal window with reentrant input, accepted=" + itow(accepted))
+	{
+		GraphicsHostProtocol protocol;
+		List<WString> eventLogs;
+		GuiWindow* controlHost = nullptr;
+		GuiWindow* dialog = nullptr;
+		GuiButton* opener = nullptr;
+		GuiButton* closer = nullptr;
+		PointProtocolInput input(nullptr, false);
+		vint clicks = 0;
+		NativePoint dialogPoint;
+		protocol.OnNextFrame([&]()
+		{
+			input.events = protocol.GetEvents();
+			opener = new GuiButton(theme::ThemeName::Button);
+			opener->SetAcceptPointEvents(accepted);
+			opener->GetBoundsComposition()->SetExpectedBounds(Rect(20, 20, 120, 80));
+			controlHost->AddChild(opener);
+			dialog = new GuiWindow(theme::ThemeName::Window);
+			dialog->SetClientSize({ 200,200 });
+			closer = new GuiButton(theme::ThemeName::Button);
+			closer->SetAcceptPointEvents(true);
+			closer->GetBoundsComposition()->SetExpectedBounds(Rect(20, 20, 120, 80));
+			dialog->AddChild(closer);
+			closer->Clicked.AttachLambda([&](auto*, auto&) { clicks++; dialog->Hide(); });
+			opener->Clicked.AttachLambda([&](auto*, auto&)
+			{
+				clicks++;
+				dialog->ShowModal(controlHost, []() {});
+				dialog->GetNativeWindow()->SetBounds(NativeRect(250, 100, 450, 300));
+				dialog->ForceCalculateSizeImmediately();
+				auto origin = dialog->GetNativeWindow()->GetClientBoundsInScreen().LeftTop();
+				auto mainOrigin = controlHost->GetNativeWindow()->GetClientBoundsInScreen().LeftTop();
+				dialogPoint = NativePoint(origin.x - mainOrigin.x + 50, origin.y - mainOrigin.y + 50);
+				// A synchronous dialog pumps the remaining End and a new Down before this click returns.
+				if (!accepted) input.End();
+				input.Start(dialogPoint);
+				TEST_ASSERT(closer->GetPointEventComposition() == closer->GetBoundsComposition());
+			});
+			controlHost->ForceCalculateSizeImmediately();
+		});
+		protocol.OnNextFrame([&]()
+		{
+			input.Start(NativePoint(50, 50));
+			input.Up(0, NativePoint(50, 50));
+			if (accepted) input.End();
+			TEST_ASSERT(clicks == 1);
+			TEST_ASSERT(closer->GetPointEventComposition() == closer->GetBoundsComposition());
+			input.Up(0, dialogPoint);
+			input.End();
+			TEST_ASSERT(clicks == 2 && !dialog->GetOpening());
+			TEST_ASSERT(!closer->GetPointEventComposition());
+		});
+		protocol.OnNextFrame([&]()
+		{
+			SafeDeleteControl(dialog);
+			controlHost->Hide();
+		});
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		StartRemoteControllerTest(protocol);
+	});
+
 	TEST_CATEGORY(L"Press offers are independent of deferred click flags")
 	{
 		GraphicsHostProtocol protocol;
