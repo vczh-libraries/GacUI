@@ -1517,6 +1517,9 @@ namespace demo
                 });
             }
             {
+                (list.HorizontalAlwaysVisible = false);
+            }
+            {
                 (list.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiListItemTemplate*)
                 {
                     {
@@ -1527,9 +1530,6 @@ namespace demo
                     }
                     raise "Cannot find a matched control template to create.";
                 });
-            }
-            {
-                (list.HorizontalAlwaysVisible = false);
             }
             (<precompile>10 = list.BoundsComposition);
             {
@@ -1695,7 +1695,7 @@ namespace demo
             {
                 return null;
             }
-            return (cast (TouchingListItemTemplate*) list.Arranger.GetVisibleStyle(index));
+            return (list.Arranger.GetVisibleStyle(index) as (TouchingListItemTemplate*));
         }
 
         func ResetSwipe() : (void)

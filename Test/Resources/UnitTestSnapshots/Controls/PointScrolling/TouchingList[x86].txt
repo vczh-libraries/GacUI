@@ -25,13 +25,13 @@ namespace gacuisrc_unittest
     class SwipeWindowConstructor
     {
         @cpp:Protected
-        var self : ::gacuisrc_unittest::SwipeWindow* = null of (::gacuisrc_unittest::SwipeWindow*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
 
         @cpp:Protected
         var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var self : ::gacuisrc_unittest::SwipeWindow* = null of (::gacuisrc_unittest::SwipeWindow*);
 
         @cpp:Protected
         var sample : ::demo::TouchingListTabPage* = null of (::demo::TouchingListTabPage*);
@@ -141,9 +141,6 @@ namespace demo
     class TouchingTabPageConstructor
     {
         @cpp:Protected
-        var self : ::demo::TouchingTabPage* = null of (::demo::TouchingTabPage*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
 
         @cpp:Protected
@@ -160,6 +157,9 @@ namespace demo
 
         @cpp:Protected
         var <precompile>5 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+
+        @cpp:Protected
+        var self : ::demo::TouchingTabPage* = null of (::demo::TouchingTabPage*);
 
         @cpp:Protected
         var touchingBounds : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -403,9 +403,6 @@ namespace demo
     class TouchingListItemTemplateConstructor
     {
         @cpp:Protected
-        var self : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
 
         @cpp:Protected
@@ -428,6 +425,9 @@ namespace demo
 
         @cpp:Protected
         var ViewModel : ::demo::TouchingListItem^ = null of (::demo::TouchingListItem^);
+
+        @cpp:Protected
+        var self : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
 
         @cpp:Protected
         var deleteBackground : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -1404,9 +1404,6 @@ namespace demo
     class TouchingListTabPageConstructor
     {
         @cpp:Protected
-        var self : ::demo::TouchingListTabPage* = null of (::demo::TouchingListTabPage*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
 
         @cpp:Protected
@@ -1428,6 +1425,15 @@ namespace demo
         var <precompile>6 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
+        var self : ::demo::TouchingListTabPage* = null of (::demo::TouchingListTabPage*);
+
+        @cpp:Protected
+        var momentumOption : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+
+        @cpp:Protected
+        var list : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
+
+        @cpp:Protected
         var <precompile>7 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
 
         @cpp:Protected
@@ -1438,12 +1444,6 @@ namespace demo
 
         @cpp:Protected
         var <precompile>10 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var momentumOption : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
-
-        @cpp:Protected
-        var list : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
 
         @cpp:Protected
         func <demo-TouchingListTabPage>Initialize(<this> : ::demo::TouchingListTabPage*) : (::system::Void)
@@ -1517,6 +1517,9 @@ namespace demo
                 });
             }
             {
+                (list.HorizontalAlwaysVisible = false);
+            }
+            {
                 (list.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiListItemTemplate*)
                 {
                     {
@@ -1527,9 +1530,6 @@ namespace demo
                     }
                     raise "Cannot find a matched control template to create.";
                 });
-            }
-            {
-                (list.HorizontalAlwaysVisible = false);
             }
             (<precompile>10 = list.BoundsComposition);
             {
@@ -1695,7 +1695,7 @@ namespace demo
             {
                 return null;
             }
-            return (cast (TouchingListItemTemplate*) list.Arranger.GetVisibleStyle(index));
+            return (list.Arranger.GetVisibleStyle(index) as (TouchingListItemTemplate*));
         }
 
         func ResetSwipe() : (void)

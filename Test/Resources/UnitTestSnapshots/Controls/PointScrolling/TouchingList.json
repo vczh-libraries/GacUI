@@ -117,7 +117,19 @@
     [355, "SolidBackground"],
     [356, "SolidLabel"],
     [357, "SolidBackground"],
-    [358, "SolidLabel"]
+    [358, "SolidLabel"],
+    [419, "SolidBackground"],
+    [420, "SolidBackground"],
+    [421, "SolidBackground"],
+    [422, "SolidLabel"],
+    [423, "SolidBackground"],
+    [424, "SolidLabel"],
+    [425, "SolidBackground"],
+    [426, "SolidBackground"],
+    [427, "SolidBackground"],
+    [428, "SolidLabel"],
+    [429, "SolidBackground"],
+    [430, "SolidLabel"]
   ],
   "imageCreations": [],
   "imageMetadatas": [],
@@ -366,7 +378,7 @@
       "root": null
     },
     {
-      "frameId": 42,
+      "frameId": 45,
       "frameName": "Disabled row uses DarkSkin",
       "windowSize": {
         "bounds": {
