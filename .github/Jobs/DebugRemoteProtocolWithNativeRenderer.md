@@ -11,7 +11,7 @@ establish each required process topology, then execute the matching SOP section.
 The application and renderer transport are independent dimensions.
 Test their Cartesian product. `/RVMT` adds a Core-to-host mode dimension:
 manual host over the selected network transport, or auto-launched stdio
-`/Cli:<path>`. Do not multiply that host dimension across `/FCT` or `/RPT`.
+`/Cli:<command>`. Do not multiply that host dimension across `/FCT` or `/RPT`.
 Use fresh processes for each target.
 
 **Complete test matrix see `### Test Matrix Card`**.
@@ -48,7 +48,7 @@ the file format looks like this:
 | [Windows][CppTest_Rvm][`/Pipe`] |  |
 | [Windows][CppTest_Rvm][`/Http`] |  |
 | [Windows][CppTest_Rvm][`/MiniHttp`] |  |
-| [Windows][CppTest_Rvm][`/Cli:<path>`] |  |
+| [Windows][CppTest_Rvm][`/Cli:<command>`] |  |
 | [Windows][`/RPT`][`/Pipe`] |  |
 | [Windows][`/RPT`][`/Http`] |  |
 | [Windows][`/RPT`][`/MiniHttp`] |  |
@@ -56,21 +56,21 @@ the file format looks like this:
 | [Windows][`/FCT`][`/Http`] |  |
 | [Windows][`/FCT`][`/MiniHttp`] |  |
 | [Windows][`/RVMT`][`/Pipe`] |  |
-| [Windows][`/RVMT`][`/Pipe /Cli:<path>`] |  |
+| [Windows][`/RVMT`][`/Pipe /Cli:<command>`] |  |
 | [Windows][`/RVMT`][`/Http`] |  |
-| [Windows][`/RVMT`][`/Http /Cli:<path>`] |  |
+| [Windows][`/RVMT`][`/Http /Cli:<command>`] |  |
 | [Windows][`/RVMT`][`/MiniHttp`] |  |
-| [Windows][`/RVMT`][`/MiniHttp /Cli:<path>`] |  |
+| [Windows][`/RVMT`][`/MiniHttp /Cli:<command>`] |  |
 | [Linux][Test_CppTest_Rvm][`/MiniHttp`] |  |
 | [Linux][`/RPT`][`/MiniHttp`] |  |
 | [Linux][`/FCT`][`/MiniHttp`] |  |
 | [Linux][`/RVMT`][`/MiniHttp`] |  |
-| [Linux][`/RVMT`][`/MiniHttp /Cli:<path>`] |  |
+| [Linux][`/RVMT`][`/MiniHttp /Cli:<command>`] |  |
 | [macOS][Test_CppTest_Rvm][`/MiniHttp`] |  |
 | [macOS][`/RPT`][`/MiniHttp`] |  |
 | [macOS][`/FCT`][`/MiniHttp`] |  |
 | [macOS][`/RVMT`][`/MiniHttp`] |  |
-| [macOS][`/RVMT`][`/MiniHttp /Cli:<path>`] |  |
+| [macOS][`/RVMT`][`/MiniHttp /Cli:<command>`] |  |
 
 ## Issues Found and Fix
 ```
@@ -157,7 +157,7 @@ and then start the renderer:
 
 ```powershell
 $hostExe = (Join-Path $bin 'RemotingTest_RvmHost.exe')
-$core = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Core.exe') -ArgumentList '/Http','/RVMT',('/Cli:"{0}"' -f $hostExe) -PassThru
+$core = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Core.exe') -ArgumentList '/Http','/RVMT',('/Cli:"\"{0}\""' -f $hostExe) -PassThru -WindowStyle Hidden
 $renderer = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Rendering_Win32.exe') -ArgumentList '/Http','/AsPort:8890' -PassThru
 ```
 
@@ -174,7 +174,7 @@ and continues to expose Windows HTTP automation on port 8888 by default (overrid
 
 ```powershell
 $hostExe = (Join-Path $bin 'RemotingTest_RvmHost.exe')
-$requester = Start-Process -FilePath (Join-Path $bin 'CppTest_Rvm.exe') -ArgumentList ('/Cli:"{0}"' -f $hostExe) -PassThru
+$requester = Start-Process -FilePath (Join-Path $bin 'CppTest_Rvm.exe') -ArgumentList ('/Cli:"\"{0}\""' -f $hostExe) -PassThru -WindowStyle Hidden
 ```
 
 The examples are separate runs, not one script. Start the selected core, wait

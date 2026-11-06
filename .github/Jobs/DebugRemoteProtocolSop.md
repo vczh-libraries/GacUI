@@ -47,8 +47,8 @@ establish, drive, inspect, replace, and close the renderer session.
   - `RemotingTest_RvmHost` and GacJS `rvmhost` implement that `IViewModel`. A host connects through a manually selected network transport, the GacJS browser host, or auto-launched stdio `/Cli`. Requesters block until the accepted host completes the Workflow RPC service handshake and the required service is acquired and held; `Ready` alone is not sufficient.
 - Expected Behavior:
   - Only one native or GacJS view-model host is allowed to connect.
-  - `CppTest_Rvm /Cli:<path>` auto-launches `<path> /Cli`. `RemotingTest_Core /RVMT <renderer-transport> /Cli:<path>` keeps renderer traffic on its selected network server and auto-launches the host on a separate stdio-only server.
-  - `/Cli:<path>` and the single literal argument `/Cli:"<path>"` name the same executable path. Exactly one balanced quote pair is removed; the npm bin, a JavaScript file, or `node <script>` is not a Core-launchable path.
+  - `CppTest_Rvm /Cli:<command>` auto-launches `<command> /Cli`. `RemotingTest_Core /RVMT <renderer-transport> /Cli:<command>` keeps renderer traffic on its selected network server and auto-launches the host on a separate stdio-only server.
+  - `/Cli:<command>` is one argument containing the complete child command. `/Cli:"node script.js"` is shell grouping syntax; preserve inner quotes around executable or script paths with spaces. Both requesters forward the command unchanged and append ` /Cli`. Verify `node` with options before a quoted script path, and a quoted native executable without script arguments. Require the Node process to be the direct child on Windows, protocol-only stdout, and child termination on normal requester shutdown.
   - If the accepted host disconnects before the main window is closed for any
     reason, this is a fatal error inside `RemotingTest_Core` and `CppTest_Rvm`.
     - When an in-flight or subsequent RPC observes host loss, `CppTest_Rvm`
@@ -517,7 +517,7 @@ renderer. First complete the Workflow RPC check above. For Core, keep the
 renderer connected throughout the failure.
 
 1. Stop only the accepted view-model host through the failure injection
-   appropriate to that host mode. Force-terminate a native, Node, or SEA host
+   appropriate to that host mode. Force-terminate a native or Node host
    process through the operating-system process tool. For a browser `?rvmhost`
    mode, first replace its renderer with a separate ordinary renderer, then call
    `window.__gacui_rvmhost_session.host.stop()` to stop only the browser host

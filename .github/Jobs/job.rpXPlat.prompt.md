@@ -89,7 +89,7 @@ In `GacUI` there are important test apps:
 - `RemotingTest_Core`, a test ap as the core app in remote protocol.
   - It runs from `GacUI/Test/Linux/RemotingTest_Core`.
   - `test_core.sh --app:fct|rpt|rvmt --protocol:minihttp [--cli]` full-builds the selected GacUI project and starts it.
-  - Renderer traffic always uses `/MiniHttp`. For `/RVMT`, host mode is independently either manual `/MiniHttp` or auto-launched `/Cli:<path>`.
+  - Renderer traffic always uses `/MiniHttp`. For `/RVMT`, host mode is independently either manual `/MiniHttp` or auto-launched `/Cli:<command>`. Pass the complete host command as one argument, preserving quotes around paths containing spaces; Core appends ` /Cli`.
 - `RemotingTest_RvmHost`, a CLI app hosts the implementation of `IViewModel` with `RemoteViewModelTest` is used.
   - Requres `CppTest_Rvm` or `RemotingTest_Core /RVMT`.
   - It runs from `GacUI/Test/Linux/RemotingTest_RvmHost`.

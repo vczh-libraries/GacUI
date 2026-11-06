@@ -10,8 +10,8 @@ using namespace vl;
 using namespace vl::console;
 
 #ifdef VCZH_MSVC
-extern int StartNamedPipeServer(vint index, const WString& cliPath);
-extern int StartHttpServer(vint index, const WString& cliPath);
+extern int StartNamedPipeServer(vint index, const WString& cliCommand);
+extern int StartHttpServer(vint index, const WString& cliCommand);
 #define ARGUMENT_COMPARE wcscmp
 #define ARGUMENT_NCOMPARE wcsncmp
 #define ARGUMENT_TEXT(TEXT) L##TEXT
@@ -20,7 +20,7 @@ extern int StartHttpServer(vint index, const WString& cliPath);
 #define ARGUMENT_NCOMPARE strncmp
 #define ARGUMENT_TEXT(TEXT) TEXT
 #endif
-extern int StartMiniHttpServer(vint index, const WString& cliPath);
+extern int StartMiniHttpServer(vint index, const WString& cliCommand);
 
 #ifdef VCZH_MSVC
 int wmain(int argc, wchar_t* argv[])
@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
 	vint index = -1; // 0 = FullControlTest (/FCT), 1 = RemoteProtocolTest (/RPT), 2 = RemoteViewModelTest (/RVMT)
 	int transport = -1; // 0 = Pipe, 1 = Http, 2 = MiniHTTP
 	bool cliSpecified = false;
-	WString cliPath;
+	WString cliCommand;
 
 	for (int i = 1; i < argc; i++)
 	{
@@ -108,37 +108,11 @@ int main(int argc, char* argv[])
 		{
 			if (cliSpecified || !argv[i][5])
 			{
-				Console::WriteLine(L"Error: /Cli must be specified once with a nonempty host path.");
-				return result;
-			}
-#ifdef VCZH_MSVC
-			auto cliArgument = argv[i] + 5;
-			auto cliLength = (vint)wcslen(cliArgument);
-#else
-			auto cliArgument = argv[i] + 5;
-			auto cliLength = (vint)strlen(cliArgument);
-#endif
-			if (cliArgument[0] == ARGUMENT_TEXT('"') || cliArgument[cliLength - 1] == ARGUMENT_TEXT('"'))
-			{
-				if (cliLength < 2 || cliArgument[0] != ARGUMENT_TEXT('"') || cliArgument[cliLength - 1] != ARGUMENT_TEXT('"'))
-				{
-					Console::WriteLine(L"Error: /Cli contains an invalid quoted host path.");
-					return result;
-				}
-				cliArgument++;
-				cliLength -= 2;
-			}
-			if (cliLength == 0)
-			{
-				Console::WriteLine(L"Error: /Cli must be specified once with a nonempty host path.");
+				Console::WriteLine(L"Error: /Cli must be specified once with a nonempty host command.");
 				return result;
 			}
 			cliSpecified = true;
-#ifdef VCZH_MSVC
-			cliPath = WString::CopyFrom(cliArgument, cliLength);
-#else
-			cliPath = u8tow(U8String::CopyFrom(reinterpret_cast<const char8_t*>(cliArgument), cliLength));
-#endif
+			cliCommand = argument.Sub(5, argument.Length() - 5);
 		}
 		else
 		{
@@ -167,7 +141,7 @@ int main(int argc, char* argv[])
 	if (transport == 0)
 	{
 #ifdef VCZH_MSVC
-		result = StartNamedPipeServer(index, cliPath);
+		result = StartNamedPipeServer(index, cliCommand);
 #else
 		Console::WriteLine(L"Error: /Pipe is only supported on Windows.");
 #endif
@@ -175,14 +149,14 @@ int main(int argc, char* argv[])
 	else if (transport == 1)
 	{
 #ifdef VCZH_MSVC
-		result = StartHttpServer(index, cliPath);
+		result = StartHttpServer(index, cliCommand);
 #else
 		Console::WriteLine(L"Error: /Http is only supported on Windows.");
 #endif
 	}
 	else
 	{
-		result = StartMiniHttpServer(index, cliPath);
+		result = StartMiniHttpServer(index, cliCommand);
 	}
 #if defined VCZH_MSVC && VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();

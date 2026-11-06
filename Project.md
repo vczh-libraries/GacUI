@@ -278,7 +278,7 @@ Select RemoteProtocolTest in `RemotingTest_Core`, together with one renderer tra
 
 ### /RVMT
 
-Select RemoteViewModelTest in `RemotingTest_Core`, together with one renderer transport. It is mutually exclusive with `/FCT` and `/RPT`. The view-model host connection is independent of the renderer connection: use the same network transport for both, or add `/Cli:<path>` for an automatically launched stdio host.
+Select RemoteViewModelTest in `RemotingTest_Core`, together with one renderer transport. It is mutually exclusive with `/FCT` and `/RPT`. The view-model host connection is independent of the renderer connection: use the same network transport for both, or add `/Cli:<command>` for an automatically launched stdio host.
 
 Without `/Cli`, start Core first, then `RemotingTest_RvmHost` with the same transport selector, then the renderer after Core automation contains `Remote View Model Test`. RVM RPC uses the exact logical channels `ViewModelChannel` and `ViewModelReadyChannel`; renderers use `GacUIRemoteProtocol`. A requester terminates with an error if its view-model host disconnects while the application is running.
 
@@ -296,13 +296,19 @@ Select the portable socket-based HTTP transport on protocol port `8888`, exclusi
 
 ### /Cli
 
-Use `/Cli:<nonempty-host-path>` in a requester to launch `RemotingTest_RvmHost` automatically with the exact `/Cli` switch. Do not start that host manually.
+Use `/Cli:<nonempty-host-command>` in a requester to launch a host automatically with the exact `/Cli` switch appended. The command may be a quoted `RemotingTest_RvmHost` executable or `node "<absolute JavaScript path>"`. Do not start that host manually.
 
-- `RemotingTest_Core` requires explicit `/RVMT` and one renderer transport in addition to `/Cli:<path>`. It starts a renderer-only network server and a host-only stdio server, then stops the host server before the renderer server.
-- `CppTest_Rvm` accepts exactly one of `/Pipe`, `/Http`, `/MiniHttp` or `/Cli:<path>`. Its network modes wait for a manually started host. Here `/Cli` is itself the exclusive RVM transport; this application never uses a separate renderer.
+- `RemotingTest_Core` requires explicit `/RVMT` and one renderer transport in addition to `/Cli:<command>`. It starts a renderer-only network server and a host-only stdio server, then stops the host server before the renderer server.
+- `CppTest_Rvm` accepts exactly one of `/Pipe`, `/Http`, `/MiniHttp` or `/Cli:<command>`. Its network modes wait for a manually started host. Here `/Cli` is itself the exclusive RVM transport; this application never uses a separate renderer.
 - `RemotingTest_RvmHost` accepts bare `/Cli` instead of a network selector. Stdin/stdout are reserved for framed protocol traffic and the ordinary startup banner is suppressed. Explicit `/corehost` is invalid in this local mode.
 
-A process launcher may pass `/Cli:<path>` or the single literal argument `/Cli:"<path>"`. Requesters remove exactly one balanced quote pair and reject empty, duplicate or unmatched quoted values. The path names one executable, never a command plus arguments. Linux/macOS stdio support comes from the imported `<GacUI repo>/Import/VlppOS.Linux.cpp`.
+Pass the entire `/Cli:<command>` option as one argument. Shell syntax such as
+`/Cli:"node script.js"` groups that argument; executable and script paths with
+spaces need their own quotes inside the command. Requesters preserve the command
+without removing or adding enclosing quotes, then append ` /Cli`. Empty and
+duplicate options are rejected. Node options go before the script path. Assume
+`node` is available on PATH. Windows passes the command to `CreateProcessW`;
+Linux/macOS use the imported VlppOS stdio launcher and its `/bin/sh -c` quoting.
 
 ### /corehost
 

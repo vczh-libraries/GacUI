@@ -1,6 +1,35 @@
 # Test Matrix Card 2026-11-03 17:16:17 -08:00
 
-## Test Matrix
+## Current host-command contract
+
+The current GacJS stdio host is `node "<absolute path to cli.js>"`, passed as
+one `/Cli:<command>` argument. Core and `CppTest_Rvm` append ` /Cli`. The
+packaged-host entries below are historical results for a retired artifact;
+they do not establish verification of the replacement Node command. Follow
+[the current operating guide](../Jobs/DebugRemoteProtocolWithGacJS.md).
+
+## Node command validation — 2026-11-05
+
+GacUI Debug x64 built with zero warnings and errors. GacJS `yarn run import`,
+`yarn codegen`, `yarn build`, and `yarn test` completed successfully; unrelated
+upstream-generated changes from import/codegen were restored before build.
+The full test run passed all 62 Windows protocol tests, including:
+
+- Core `/MiniHttp`: Node options and a quoted script path containing spaces,
+  direct child ownership, stdio-only RVM traffic, `Translate`, and child cleanup
+  on normal Core shutdown.
+- Core `/Http`: `Translate` followed by accepted Node host loss, the exact
+  Core-authored error, and nonzero Core termination.
+- `CppTest_Rvm`: Node options and a quoted script path containing spaces,
+  both built-in RPC calls, normal exit, and child cleanup. A quoted native
+  `RemotingTest_RvmHost` command also passed both built-in calls and normal exit.
+- `StartCore.ps1`: Windows argument parsing preserved the native executable
+  quotes in both requester modes, including a path containing spaces.
+
+These are automated regression results, not a rerun of every SOP matrix row.
+Linux and macOS runtime verification was explicitly skipped.
+
+## Historical Test Matrix
 
 | Test Item | 1st |
 | --- | --- |
@@ -12,12 +41,12 @@
 | [Windows][`/RVMT`][`/Http`][Native `RemotingTest_RvmHost` over stdio `/Cli:<path>`] | 2026-11-03 19:46:52 |
 | [Windows][`/RVMT`][`/Http`][GacJS browser host `?rvmhost`] | 2026-11-03 19:47:12 |
 | [Windows][`/RVMT`][`/Http`][GacJS Node `cli.js` over network] | 2026-11-03 19:47:40 |
-| [Windows][`/RVMT`][`/Http`][GacJS Node SEA over stdio `/Cli:<path>`] | 2026-11-03 19:48:02 |
+| [Windows][`/RVMT`][`/Http`][Retired packaged Node host over stdio `/Cli:<path>`] | 2026-11-03 19:48:02 |
 | [Windows][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over network] | 2026-11-03 19:48:21 |
 | [Windows][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over stdio `/Cli:<path>`] | 2026-11-03 19:48:43 |
 | [Windows][`/RVMT`][`/MiniHttp`][GacJS browser host `?rvmhost`] | 2026-11-03 19:49:00 |
 | [Windows][`/RVMT`][`/MiniHttp`][GacJS Node `cli.js` over network] | 2026-11-03 19:49:21 |
-| [Windows][`/RVMT`][`/MiniHttp`][GacJS Node SEA over stdio `/Cli:<path>`] | 2026-11-03 19:49:43 |
+| [Windows][`/RVMT`][`/MiniHttp`][Retired packaged Node host over stdio `/Cli:<path>`] | 2026-11-03 19:49:43 |
 
 ## Issues Found and Fix
 
@@ -51,7 +80,7 @@
 
 
 
-- [Windows][`/RVMT`][`/MiniHttp`][GacJS Node SEA over stdio `/Cli:<path>`]: literal brace input/RPC, applicable second-host rejection, renderer replacement/takeover, normal Exit and owned-host cleanup, idle-next-call and blocked-delivery fatal variants passed in Chromium. Exact Core-authored fatal mask and one intentional matching page error verified.
+- [Windows][`/RVMT`][`/MiniHttp`][Retired packaged Node host over stdio `/Cli:<path>`]: literal brace input/RPC, applicable second-host rejection, renderer replacement/takeover, normal Exit and owned-host cleanup, idle-next-call and blocked-delivery fatal variants passed in Chromium. Exact Core-authored fatal mask and one intentional matching page error verified.
 
 - [Windows][`/RVMT`][`/MiniHttp`][GacJS Node `cli.js` over network]: literal brace input/RPC, applicable second-host rejection, renderer replacement/takeover, normal Exit and owned-host cleanup, idle-next-call and blocked-delivery fatal variants passed in Chromium. Exact Core-authored fatal mask and one intentional matching page error verified.
 
@@ -61,7 +90,7 @@
 
 - [Windows][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over network]: literal brace input/RPC, applicable second-host rejection, renderer replacement/takeover, normal Exit and owned-host cleanup, idle-next-call and blocked-delivery fatal variants passed in Chromium. Exact Core-authored fatal mask and one intentional matching page error verified.
 
-- [Windows][`/RVMT`][`/Http`][GacJS Node SEA over stdio `/Cli:<path>`]: literal brace input/RPC, applicable second-host rejection, renderer replacement/takeover, normal Exit and owned-host cleanup, idle-next-call and blocked-delivery fatal variants passed in Chromium. Exact Core-authored fatal mask and one intentional matching page error verified.
+- [Windows][`/RVMT`][`/Http`][Retired packaged Node host over stdio `/Cli:<path>`]: literal brace input/RPC, applicable second-host rejection, renderer replacement/takeover, normal Exit and owned-host cleanup, idle-next-call and blocked-delivery fatal variants passed in Chromium. Exact Core-authored fatal mask and one intentional matching page error verified.
 
 - [Windows][`/RVMT`][`/Http`][GacJS Node `cli.js` over network]: literal brace input/RPC, applicable second-host rejection, renderer replacement/takeover, normal Exit and owned-host cleanup, idle-next-call and blocked-delivery fatal variants passed in Chromium. Exact Core-authored fatal mask and one intentional matching page error verified.
 

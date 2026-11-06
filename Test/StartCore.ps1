@@ -30,7 +30,7 @@ if ($Cli -and $App -ne 'cpptest_rvm' -and $App -ne 'rvmt') {
 if ($App -eq 'cpptest_rvm') {
     $application = Join-Path $bin 'CppTest_Rvm.exe'
     if ($Cli) {
-        $applicationArguments = @('/Cli:"{0}"' -f $hostExe)
+        $applicationArguments = @('/Cli:"\"{0}\""' -f $hostExe)
     }
     else {
         $applicationArguments = @($protocolArgument)
@@ -45,7 +45,7 @@ else {
     }
     $applicationArguments = @($protocolArgument, $appArgument)
     if ($Cli) {
-        $applicationArguments += '/Cli:"{0}"' -f $hostExe
+        $applicationArguments += '/Cli:"\"{0}\""' -f $hostExe
     }
 }
 

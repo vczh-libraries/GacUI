@@ -283,11 +283,11 @@ template<typename TServerBase, typename ...TArgs>
 int StartServerHelper(
 	vint index,
 	Ptr<async_tcp_socket::IAsyncSocketServer> miniHttpSocketServer,
-	const WString& cliPath,
+	const WString& cliCommand,
 	TArgs&&... args)
 {
 	auto jsonParser = Ptr(new glr::json::Parser);
-	if (index == 2 && cliPath != L"")
+	if (index == 2 && cliCommand != L"")
 	{
 		using RvmChannelServer = RemoteViewModelChannelServer<StdioRedirectionServer>;
 		RemoteViewModelRendererChannelServer<TServerBase, RvmChannelServer> rendererServer(
@@ -296,7 +296,7 @@ int StartServerHelper(
 			);
 		RvmChannelServer rvmChannelServer(jsonParser, false);
 		rendererServer.SetRvmChannelServer(&rvmChannelServer);
-		auto command = WString::Unmanaged(L"\"") + cliPath + WString::Unmanaged(L"\" /Cli");
+		auto command = cliCommand + WString::Unmanaged(L" /Cli");
 		auto result = StartServer(
 			index,
 			miniHttpSocketServer,
@@ -338,35 +338,35 @@ int StartServerHelper(
 }
 
 #if defined VCZH_MSVC
-int StartNamedPipeServer(vint index, const WString& cliPath)
+int StartNamedPipeServer(vint index, const WString& cliCommand)
 {
 	return StartServerHelper<named_pipe::NamedPipeServer>(
 		index,
 		nullptr,
-		cliPath,
+		cliCommand,
 		WString::Unmanaged(RemotingNamedPipeName)
 		);
 }
 
-int StartHttpServer(vint index, const WString& cliPath)
+int StartHttpServer(vint index, const WString& cliCommand)
 {
 	return StartServerHelper<windows_http::HttpServer>(
 		index,
 		nullptr,
-		cliPath,
+		cliCommand,
 		WString::Unmanaged(RemotingHttpBaseUrl),
 		RemotingHttpPort
 		);
 }
 #endif
 
-int StartMiniHttpServer(vint index, const WString& cliPath)
+int StartMiniHttpServer(vint index, const WString& cliCommand)
 {
 	auto socketServer = async_tcp_socket::CreateDefaultAsyncSocketServer(RemotingHttpPort);
 	return StartServerHelper<async_tcp_socket::SocketHttpServer>(
 		index,
 		socketServer,
-		cliPath,
+		cliCommand,
 		socketServer,
 		WString::Unmanaged(RemotingHttpBaseUrl)
 		);

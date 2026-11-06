@@ -17,7 +17,7 @@ The Core application and renderer transport are independent dimensions.
 Test their Cartesian product with fresh processes. `/RVMT` adds five host modes:
 the native C++ host over the renderer network transport, the native C++ host
 auto-launched over stdio, the GacJS host inside `?rvmhost`, the independently
-started GacJS Node network host, and the GacJS Node SEA auto-launched over
+started GacJS Node network host, and the GacJS Node CLI auto-launched over
 stdio. Do not multiply that host dimension across `/FCT` or `/RPT`.
 `CppTest_Rvm` is excluded because it renders locally and needs no remote
 renderer. `/Pipe` is excluded because a fetch-based browser cannot use it.
@@ -27,8 +27,8 @@ renderer. `/Pipe` is excluded because a fetch-based browser cannot use it.
 Every `/RVMT` target includes exactly one host. Native manual mode uses
 `RemotingTest_RvmHost` on the same transport; native stdio mode passes that
 executable to Core. The three GacJS modes instead use `?rvmhost`, the Node
-network CLI, or the platform-native Node SEA. In either stdio mode, Core launches
-`<path> /Cli`, so do not start the host manually. Installed Safari is a supplementary macOS
+network CLI, or the same Node CLI over stdio. In either stdio mode, Core launches
+`<command> /Cli`, so do not start the host manually. Installed Safari is a supplementary macOS
 compatibility check, not another required matrix row and not a substitute for
 Playwright WebKit.
 
@@ -56,29 +56,29 @@ the file format looks like this:
 | [Windows][`/FCT`][`/Http`] |  |
 | [Windows][`/FCT`][`/MiniHttp`] |  |
 | [Windows][`/RVMT`][`/Http`][Native `RemotingTest_RvmHost` over network] |  |
-| [Windows][`/RVMT`][`/Http`][Native `RemotingTest_RvmHost` over stdio `/Cli:<path>`] |  |
+| [Windows][`/RVMT`][`/Http`][Native `RemotingTest_RvmHost` over stdio `/Cli:<command>`] |  |
 | [Windows][`/RVMT`][`/Http`][GacJS browser host `?rvmhost`] |  |
 | [Windows][`/RVMT`][`/Http`][GacJS Node `cli.js` over network] |  |
-| [Windows][`/RVMT`][`/Http`][GacJS Node SEA over stdio `/Cli:<path>`] |  |
+| [Windows][`/RVMT`][`/Http`][GacJS Node `cli.js` over stdio `/Cli:<command>`] |  |
 | [Windows][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over network] |  |
-| [Windows][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over stdio `/Cli:<path>`] |  |
+| [Windows][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over stdio `/Cli:<command>`] |  |
 | [Windows][`/RVMT`][`/MiniHttp`][GacJS browser host `?rvmhost`] |  |
 | [Windows][`/RVMT`][`/MiniHttp`][GacJS Node `cli.js` over network] |  |
-| [Windows][`/RVMT`][`/MiniHttp`][GacJS Node SEA over stdio `/Cli:<path>`] |  |
+| [Windows][`/RVMT`][`/MiniHttp`][GacJS Node `cli.js` over stdio `/Cli:<command>`] |  |
 | [Linux][`/RPT`][`/MiniHttp`] |  |
 | [Linux][`/FCT`][`/MiniHttp`] |  |
 | [Linux][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over network] |  |
-| [Linux][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over stdio `/Cli:<path>`] |  |
+| [Linux][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over stdio `/Cli:<command>`] |  |
 | [Linux][`/RVMT`][`/MiniHttp`][GacJS browser host `?rvmhost`] |  |
 | [Linux][`/RVMT`][`/MiniHttp`][GacJS Node `cli.js` over network] |  |
-| [Linux][`/RVMT`][`/MiniHttp`][GacJS Node SEA over stdio `/Cli:<path>`] |  |
+| [Linux][`/RVMT`][`/MiniHttp`][GacJS Node `cli.js` over stdio `/Cli:<command>`] |  |
 | [macOS][`/RPT`][`/MiniHttp`] |  |
 | [macOS][`/FCT`][`/MiniHttp`] |  |
 | [macOS][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over network] |  |
-| [macOS][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over stdio `/Cli:<path>`] |  |
+| [macOS][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over stdio `/Cli:<command>`] |  |
 | [macOS][`/RVMT`][`/MiniHttp`][GacJS browser host `?rvmhost`] |  |
 | [macOS][`/RVMT`][`/MiniHttp`][GacJS Node `cli.js` over network] |  |
-| [macOS][`/RVMT`][`/MiniHttp`][GacJS Node SEA over stdio `/Cli:<path>`] |  |
+| [macOS][`/RVMT`][`/MiniHttp`][GacJS Node `cli.js` over stdio `/Cli:<command>`] |  |
 
 ## Issues Found and Fix
 ```
@@ -125,14 +125,15 @@ requires one transport selector:
 | `/Http` | The Windows full-HTTP transport. |
 | `/MiniHttp` | The portable async-socket MiniHTTP transport. Use this exact spelling. |
 | `/Pipe` | The Windows named-pipe transport. A fetch-based browser cannot use it. |
-| `/Cli:<path>` | With explicit `/RVMT`, auto-launch `<path> /Cli` on a separate stdio host server. It does not select the browser transport. |
+| `/Cli:<command>` | With explicit `/RVMT`, auto-launch `<command> /Cli` on a separate stdio host server. It does not select the browser transport. |
 
 `/FCT`, `/RPT`, and `/RVMT` are exclusive, as are the transport arguments.
 `/Cli` is optional, at most once, and valid only with explicit `/RVMT` plus a
-renderer transport. The path may be passed as `/Cli:<path>` or as the single
-literal argument `/Cli:"<path>"`; exactly one balanced quote pair is removed,
-while empty or unmatched quoted paths are rejected. Start Core before opening
-`http://localhost:8896/index.html`.
+renderer transport. Pass the complete child command after `/Cli:` as one
+argument. Shell syntax `/Cli:"node script.js"` groups the option; quote executable
+and script paths containing spaces inside that command. Requesters preserve
+those quotes and append ` /Cli`. Empty and duplicate values are rejected.
+Start Core before opening `http://localhost:8896/index.html`.
 
 The protocol endpoint is fixed at port `8888`. In MiniHTTP mode, the core also
 registers its `/Automation/RemotingTest_Core/...` routes on that listener by default. A different `/AsPort` creates a separate automation listener while protocol clients still connect to `8888`. GacJS
@@ -186,29 +187,20 @@ Use one of these mutually exclusive GacJS host modes for an `/RVMT` matrix row:
    endpoint. `--service-only` prints only
    `GACJS_RVMHOST_SERVICE_HELD` and is used with `CppTest_Rvm`, which has no
    renderer. Do not pass Core's `/Http` or `/MiniHttp` spellings to this CLI.
-3. Core-launched Node stdio host: pass the absolute native launcher emitted by
-   the `rvmhost` build:
+3. Core-launched Node stdio host: pass `node "<absolute path to cli.js>"`
+   as Core's `/Cli:<command>` value, using the built script at
+   `<GacJS repo>/Gaclib/website/rvmhost/lib/src/cli.js`. Assume `node` is available
+   on PATH. Node options precede the script path. Navigate to ordinary
+   `index.html` only after Core automation contains exact `Remote View Model Test`.
+   Core appends exact ` /Cli`; the child reserves stdin/stdout for Base64 protocol
+   lines and emits no readiness marker.
 
-   ```text
-   <GacJS>/Gaclib/website/rvmhost/lib/bin/gacjs-rvmhost.exe   # Windows
-   <GacJS>/Gaclib/website/rvmhost/lib/bin/gacjs-rvmhost       # Linux/macOS
-   ```
-
-   Use that file as Core's `/Cli:<path>` value and navigate to ordinary
-   `index.html` only after Core automation contains exact
-   `Remote View Model Test`. Core appends exact ` /Cli`; the child reserves
-   stdin/stdout for Base64 protocol lines and emits no readiness marker.
-
-The package's npm bin and `lib/src/cli.js` are normal Node launchers, not valid
-Core `/Cli:<path>` values. Do not pass `node <script>` as the path. The native
-SEA is one executable and supports paths containing spaces. With a process API,
-pass `/Cli:<absolute path>` as one argument without shell quoting; a literal
-`/Cli:"<absolute path>"` argument is also accepted. Build and test the SEA on the
-same platform where it runs.
-
-When Core launches `/Cli:<path>` on Linux or macOS, its inherited `/bin/sh -c`
-launcher handles ordinary spaces through the surrounding quotes, but paths
-containing shell-special characters are not robustly supported.
+The build emits a bundled JavaScript CLI. A process API should receive one
+argument such as `/Cli:node "<absolute script path>"`, preserving the script's
+inner quotes. `CppTest_Rvm` accepts the same command without a renderer
+transport. A native host command is its quoted executable path. Windows uses
+`CreateProcessW`; Linux/macOS use `/bin/sh -c`, so apply that platform's command
+quoting, including escaping shell-special characters in paths when necessary.
 
 For every GacJS host mode, perform the Remote View Model SOP: require
 `Hello, !`, type a unique marker, and require `Hello, <marker>!`. Replace only
@@ -216,7 +208,7 @@ the renderer and require the accepted host and subsequent `Translate` calls to
 remain alive. In a separate failure run, retain the renderer, terminate only the
 accepted host, trigger another `Translate`, and require exact
 `RemotingTest_RvmHost disconnected.` from Core. Graceful stdio verification must
-POST exact `!Exit` to Core automation and require its SEA child to be reaped;
+POST exact `!Exit` to Core automation and require its Node child to be reaped;
 force-killing Core does not verify this shutdown path.
 
 ## Operating the Browser
@@ -285,7 +277,7 @@ the `Remote View Model Test` window before opening the browser:
 ```powershell
 $hostExe = '<GacUI>\Test\GacUISrc\x64\Debug\RemotingTest_RvmHost.exe'
 $core = Start-Process -FilePath $coreExe -ArgumentList '/Http','/RVMT' -PassThru
-$host = Start-Process -FilePath $hostExe -ArgumentList '/Http' -PassThru
+$hostProcess = Start-Process -FilePath $hostExe -ArgumentList '/Http' -PassThru -WindowStyle Hidden
 ```
 
 Repeat that order with `/MiniHttp`. Exercise every application/transport target
@@ -295,27 +287,26 @@ For each `/RVMT` renderer transport, also run the native `/Cli` host mode. Core
 owns the child process; wait for its RVM window and then open the browser:
 
 ```powershell
-$core = Start-Process -FilePath $coreExe -ArgumentList '/Http','/RVMT',('/Cli:"{0}"' -f $hostExe) -PassThru
+$core = Start-Process -FilePath $coreExe -ArgumentList '/Http','/RVMT',('/Cli:"\"{0}\""' -f $hostExe) -PassThru -WindowStyle Hidden
 ```
 
 Run the three GacJS-host variants separately. Browser-host mode starts only
 Core and opens the query page. Network mode starts Core, then the Node CLI and
-waits for its ready line. Stdio mode gives Core the SEA path and starts no host
+waits for its ready line. Stdio mode gives Core the Node command and starts no host
 manually:
 
 ```powershell
 $nodeCli = '<GacJS>\Gaclib\website\rvmhost\lib\src\cli.js'
-$sea = '<GacJS>\Gaclib\website\rvmhost\lib\bin\gacjs-rvmhost.exe'
 
 # Browser host: then open /index.html?rvmhost
 $core = Start-Process -FilePath $coreExe -ArgumentList '/Http','/RVMT' -PassThru
 
 # Independent network host: wait for GACJS_RVMHOST_READY, then open /index.html
 $core = Start-Process -FilePath $coreExe -ArgumentList '/Http','/RVMT' -PassThru
-$host = Start-Process -FilePath node -ArgumentList $nodeCli -PassThru -NoNewWindow
+$hostProcess = Start-Process -FilePath node -ArgumentList ('"{0}"' -f $nodeCli) -PassThru -WindowStyle Hidden
 
-# Core-launched SEA: wait for the RVM automation window, then open /index.html
-$core = Start-Process -FilePath $coreExe -ArgumentList '/Http','/RVMT',('/Cli:"{0}"' -f $sea) -PassThru
+# Core-launched Node: wait for the RVM automation window, then open /index.html
+$core = Start-Process -FilePath $coreExe -ArgumentList '/Http','/RVMT',('/Cli:"node \"{0}\""' -f $nodeCli) -PassThru -WindowStyle Hidden
 ```
 
 Repeat all three with `/MiniHttp`. When automating `Start-Process`, retain and
@@ -344,7 +335,7 @@ has not already exited:
 
 ```powershell
 if ($core -and -not $core.HasExited) { Stop-Process -Id $core.Id -Force }
-if ($host -and -not $host.HasExited) { Stop-Process -Id $host.Id -Force }
+if ($hostProcess -and -not $hostProcess.HasExited) { Stop-Process -Id $hostProcess.Id -Force }
 ```
 
 ## Linux and macOS
@@ -390,7 +381,7 @@ the host manually:
 
 ```bash
 host_exe="$(realpath <GacUI>/Test/Linux/RemotingTest_RvmHost/Bin/RemotingTest_RvmHost)"
-<GacUI>/Test/Linux/RemotingTest_Core/Bin/RemotingTest_Core /MiniHttp /RVMT "/Cli:$host_exe" &
+<GacUI>/Test/Linux/RemotingTest_Core/Bin/RemotingTest_Core /MiniHttp /RVMT "/Cli:\"$host_exe\"" &
 core_pid=$!
 ```
 
@@ -399,7 +390,6 @@ Run the three GacJS-host variants as separate portable rows:
 ```bash
 core_exe="<GacUI>/Test/Linux/RemotingTest_Core/Bin/RemotingTest_Core"
 node_cli="<GacJS>/Gaclib/website/rvmhost/lib/src/cli.js"
-sea="$(realpath <GacJS>/Gaclib/website/rvmhost/lib/bin/gacjs-rvmhost)"
 
 # Browser host: open /index.html?rvmhost
 "$core_exe" /MiniHttp /RVMT &
@@ -411,14 +401,13 @@ core_pid=$!
 node "$node_cli" &
 host_pid=$!
 
-# Core-launched SEA: wait for the RVM automation window, then open /index.html
-"$core_exe" /MiniHttp /RVMT "/Cli:$sea" &
+# Core-launched Node: wait for the RVM automation window, then open /index.html
+"$core_exe" /MiniHttp /RVMT "/Cli:node \"$node_cli\"" &
 core_pid=$!
 ```
 
-Build the SEA natively on Linux and macOS. Do not copy one platform's launcher
-to another. The browser-host and Node-network rows use the same static output;
-only the former adds `?rvmhost`.
+The Node network and stdio rows use the same bundled JavaScript CLI and the
+installed Node runtime. Only the browser-host row adds `?rvmhost`.
 
 Open `http://localhost:8896/index.html` only after the core reports that its
 MiniHTTP server is waiting on port `8888`. Require the page to load

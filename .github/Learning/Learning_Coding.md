@@ -467,7 +467,7 @@ Returning 404 for an unsupported verb or route, malformed IO suffix, invalid con
 
 ## `/Cli` host transport is independent from Core renderer transport
 
-For `CppTest_Rvm`, `/Cli:<path>` is one exclusive RVM transport alongside `/Pipe`, `/Http`, and `/MiniHttp`. For `RemotingTest_Core /RVMT`, `/Cli:<path>` selects only the auto-launched host transport and must be combined with exactly one renderer transport. In that mode, compose separate renderer-only and stdio host-only servers, connect the renderer/Core side first to preserve client-id ordering, and stop the host server before the renderer server. Do not manually launch `RemotingTest_RvmHost` when `/Cli` owns it.
+For `CppTest_Rvm`, `/Cli:<command>` is one exclusive RVM transport alongside `/Pipe`, `/Http`, and `/MiniHttp`. For `RemotingTest_Core /RVMT`, `/Cli:<command>` selects only the auto-launched host transport and must be combined with exactly one renderer transport. Both requesters preserve the complete command and append ` /Cli`; pass `node "<absolute script path>"` or a quoted native executable path as one option value. In that mode, compose separate renderer-only and stdio host-only servers, connect the renderer/Core side first to preserve client-id ordering, and stop the host server before the renderer server. Do not manually launch `RemotingTest_RvmHost` when `/Cli` owns it.
 
 Keep Core view-model acquisition inside `StartServer`'s error boundary and make server ownership type-directed. The combined topology reuses the already-started renderer/RVM server, the split `/Cli` topology starts and stops its separate stdio server, and `/FCT` and `/RPT` use a compile-time no-RVM path. Only child launch is an optional composition callback.
 

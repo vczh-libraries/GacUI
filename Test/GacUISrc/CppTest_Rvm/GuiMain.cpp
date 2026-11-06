@@ -197,11 +197,11 @@ int StartMiniHttpServer()
 	return StartServer(server, socketServer, {});
 }
 
-int StartCliServer(const WString& hostPath)
+int StartCliServer(const WString& hostCommand)
 {
 	auto parser = Ptr(new glr::json::Parser);
 	RemoteViewModelChannelServer<StdioRedirectionServer> server(parser, false);
-	auto command = WString::Unmanaged(L"\"") + hostPath + WString::Unmanaged(L"\" /Cli");
+	auto command = hostCommand + WString::Unmanaged(L" /Cli");
 	return StartServer(server, nullptr, Func<void()>([&]()
 	{
 		server.ConnectNewClient(command);
