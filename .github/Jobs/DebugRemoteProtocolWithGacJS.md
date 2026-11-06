@@ -409,10 +409,13 @@ core_pid=$!
 The Node network and stdio rows use the same bundled JavaScript CLI and the
 installed Node runtime. Only the browser-host row adds `?rvmhost`.
 
-Open `http://localhost:8896/index.html` only after the core reports that its
-MiniHTTP server is waiting on port `8888`. Require the page to load
-`index.html`, `global.css`, and `index.js`, and require the core to report that
-a renderer connected.
+Open `http://localhost:8896/index.html` after Core's MiniHTTP listener answers
+on port `8888` and the selected host mode satisfies its readiness condition.
+For external or stdio `/RVMT` hosts, require the Core automation title
+`Remote View Model Test` first. The browser-host page must instead connect its
+host before the application can become ready. Require the page to load
+`index.html`, `global.css`, and `index.js`, then observe renderer idle and the
+visible application title. Startup console banners are not required.
 
 After closing the browser, press ENTER in the website-server terminal. Then
 stop the retained Core and any independently started host:

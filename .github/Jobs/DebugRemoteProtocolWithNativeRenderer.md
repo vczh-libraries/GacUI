@@ -18,8 +18,9 @@ Use fresh processes for each target.
 
 Every `/RVMT` target includes `RemotingTest_RvmHost`. In manual mode, start it
 after the requester/Core with the same network selector and before the renderer.
-In `/Cli` mode, pass its absolute executable path to the requester/Core; the
-application quotes the path, appends exact `/Cli`, and launches the host itself.
+In `/Cli` mode, pass its quoted executable path as the complete host command
+in one `/Cli:<command>` argument. The requester/Core preserves the command,
+appends exact ` /Cli`, and launches the host itself.
 Do not also start a manual host in that mode. Standalone requesters do not use a
 remote renderer. The wGac and iGac standalone launchers remain fixed to manual
 `/MiniHttp`.
@@ -177,19 +178,13 @@ $hostExe = (Join-Path $bin 'RemotingTest_RvmHost.exe')
 $requester = Start-Process -FilePath (Join-Path $bin 'CppTest_Rvm.exe') -ArgumentList ('/Cli:"\"{0}\""' -f $hostExe) -PassThru -WindowStyle Hidden
 ```
 
-The examples are separate runs, not one script. Start the selected core, wait
-for its server-created message, and only then start the matching renderer. A
-successful connection prints:
-
-```text
-> Waiting for a renderer ...
-> Renderer connected: 2
-```
-
-HTTP creation reports
-`http://localhost:8888/GacUIRemoteProtocolHttp`; MiniHTTP reports the same URL
-with `Mini HTTP server created`; named pipe reports
-`GacUIRemoteProtocolNamedPipe`.
+The examples are separate runs, not one script. Start the selected Core and
+wait for its automation `Controls` endpoint to expose the selected application's
+window before starting the matching renderer. For `/RVMT`, start or auto-launch
+the host first and require the exact title `Remote View Model Test`; this
+establishes service acquisition as well as listener readiness. Startup banners
+are not a readiness contract. Confirm renderer connection by reading its fresh
+`Dom` and the corresponding Core `Controls` state.
 
 ### HTTP Automation
 
@@ -325,8 +320,8 @@ passes its absolute path to Core, and does not start a manual host:
 wGac/test_core.sh --app:rvmt --protocol:minihttp --cli
 ```
 
-Wait for `Waiting for a renderer ...`, then run the renderer in another
-terminal:
+Wait for Core automation to expose the selected application's window, then run
+the renderer in another terminal. For `/RVMT`, require `Remote View Model Test`:
 
 ```bash
 wGac/test.sh --app:renderer
@@ -435,8 +430,8 @@ passes its absolute path to Core, and does not start a manual host:
 iGac/test_core.sh --app:rvmt --protocol:minihttp --cli
 ```
 
-Wait for `Waiting for a renderer ...`, then run the renderer in another
-terminal:
+Wait for Core automation to expose the selected application's window, then run
+the renderer in another terminal. For `/RVMT`, require `Remote View Model Test`:
 
 ```bash
 iGac/test.sh --app:renderer
