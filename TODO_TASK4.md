@@ -1,0 +1,15 @@
+- Currently a short pressing touch generates left button click:
+  - If two generated left button click happens less than 0.5 second, the second one should generates left double click.
+  - The actual meaning of "left double click" means the sequence of `MouseDown`, `MouseDbClick`, `MouseDoubleClick`.
+  - Since a generated right click requires pressing more than 0.5 second so it is not impossible to generate a right double click, so only processing left double click is totally fine.
+  - You can use a `Nullable<DateTime>` to record the time of the last generated left click, when double click is generated reset it to empty, it is easier to check.
+- `PointSequenceEndInfo::timestamp` should have a comment to clarify its unit.
+- To verify, run `job:rpWindows` but:
+  - No need to generate matrix card.
+  - Only pick `Touching`, `TouchingList`, `Document Editor` tab pages.
+  - Verify against `CppTest`, `RemotingTest_Rendering_Win32` and `GacJS`, for regression.
+  - Additionally on `Document Editor` tab page, you can try to insert an image from file system, using any existing image in the repo:
+    - When the file dialog is opened, try to send fast sequences of point events to simulate some double clicks, on folder/file name for navigation.
+    - This is for verifying the new feature.
+- Update KB page and the website to simply mention the left double click conversion.
+- Publish the website, but when running `job:copilotInitAll`, skip learning.

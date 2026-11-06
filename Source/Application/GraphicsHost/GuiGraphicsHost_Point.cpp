@@ -22,21 +22,21 @@ MomentumScrollingState
 			public:
 				struct Sample
 				{
-					vuint64_t time;
-					double position;
+					vuint64_t					time;
+					double						position;
 				};
 
-				MomentumScrolling* owner;
-				controls::GuiControl* control;
-				Ptr<controls::GuiDisposedFlag> disposed;
-				GuiGraphicsComposition* bounds;
-				GuiGraphicsHost* host = nullptr;
-				Ptr<IGuiGraphicsEventHandler> startedHandler, actionHandler, gestureHandler, endedHandler;
-				List<Sample> samples;
-				vuint64_t sequence = 0, started = 0, timestamp = 0, playbackStart = 0, version = 0;
-				double position = 0, velocity = 0, duration = 0, elapsed = 0, residue = 0;
-				vint boundary = 1;
-				bool vertical = false, scrolling = false, stopped = true, generating = false;
+				MomentumScrolling*				owner;
+				controls::GuiControl*			control;
+				Ptr<controls::GuiDisposedFlag>	disposed;
+				GuiGraphicsComposition*			bounds;
+				GuiGraphicsHost*				host = nullptr;
+				Ptr<IGuiGraphicsEventHandler> 	startedHandler, actionHandler, gestureHandler, endedHandler;
+				List<Sample>					samples;
+				vuint64_t						sequence = 0, started = 0, timestamp = 0, playbackStart = 0, version = 0;
+				double							position = 0, velocity = 0, duration = 0, elapsed = 0, residue = 0;
+				vint							boundary = 1;
+				bool							vertical = false, scrolling = false, stopped = true, generating = false;
 
 				MomentumScrollingState(MomentumScrolling* _owner, controls::GuiControl* _control)
 					:owner(_owner), control(_control), disposed(_control->GetDisposedFlag()), bounds(_control->GetBoundsComposition())
