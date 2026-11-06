@@ -41690,7 +41690,7 @@ namespace demo
             {
                 return null;
             }
-            return (cast (TouchingListItemTemplate*) list.Arranger.GetVisibleStyle(index));
+            return (list.Arranger.GetVisibleStyle(index) as (TouchingListItemTemplate*));
         }
 
         func ResetSwipe() : (void)
