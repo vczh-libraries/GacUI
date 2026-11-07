@@ -132,7 +132,7 @@ Each completed functional row covers Touching, TouchingList and both Ribbon/Tool
 | Configuration | Result |
 | --- | --- |
 | CppTest / Direct2D | Passed; graceful exit passed; desktop pixels unavailable |
-| CppTest / GDI | Passed after paragraph-layout fix; pixels passed; separate Win32 injection unavailable (error 203) |
+| CppTest / GDI | Passed after paragraph-layout fix; final repeat passed pixels and graceful exit; separate Win32 injection unavailable (error 203) |
 | Native Pipe / Direct2D | Passed with exclusive protocol ownership; graceful exit passed |
 | Native Pipe / GDI | Passed; pixels and graceful exit passed |
 | Native Http / Direct2D | Passed; graceful exit passed |
@@ -141,3 +141,11 @@ Each completed functional row covers Touching, TouchingList and both Ribbon/Tool
 | Native MiniHttp / GDI | Passed; pixels and graceful exit passed |
 | Chromium / Http | Passed, including capture outside the renderer, resize, compatibility suppression, pixels and Core shutdown |
 | Chromium / MiniHttp | Passed, including capture outside the renderer, resize, compatibility suppression, pixels and Core shutdown |
+
+### Publication and synchronization completed
+
+- The final GacJS build passed all ten build packages. The final package test run passed all ten non-entry test packages; the separate entry unit run passed 40 cases, including all 27 controlled Chromium tests, with 23 platform-specific cases skipped. The general live application E2E matrix remained excluded in favor of the two requested scoped browser runs. The regenerated snapshot/index changes are committed separately as GacJS `7b5fb23`.
+- Both `job:copilotInitAll` rounds started at Merge Knowledge Base and completed Sync Back Knowledge Base and Instructions, with `CheckRepo.ps1 CheckAll` after each sync-back. The second merge reviewed each repository upload and retained the already-published canonical manual paragraph when older copies omitted it. No learning/refinement/remembering steps ran: zero repositories updated learnings, and zero contributed new learnings.
+- Recursive manual-folder deletion was rejected by command policy. A non-deleting copy was used after proving that both trees contained exactly 214 files and the destination had no obsolete files. Every resulting file matched the generated manual; the generated final index section also matched. All eight synchronized repositories have identical manual files, index, point-input KB and unchanged Learning.md. Tools commits `7c50404` and `ecf31c6` retain the canonical KB and regenerated manual updates.
+- The website build/tests, sequential static downloads, Markdown export, successful Pages CI and live rendered article were verified. WebsiteSource `7f05764` and publishing `62ee536c0` contain the brief note. The complete deployed `wasm-fct` tree stayed at `598ab044e23fe7c4b37c39a69950127c1b773c85`; no WASM build or unrelated showcase verification was performed.
+- GacUI implementation commit `c2b53f2f9` contains the selected fix, regression tests and scoped helpers. Changes were committed and pushed in twelve repositories: GacUI, GacJS, Tools, WebsiteSource, the publishing repository, Vlpp, VlppOS, VlppRegex, VlppReflection, VlppParser2, Workflow and Release. All owned application/debugger processes exited, and debugger argument files were restored to their initial state. No matrix cards were created or updated.
