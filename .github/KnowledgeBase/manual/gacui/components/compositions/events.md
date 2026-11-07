@@ -140,6 +140,8 @@ An accepted sequence with an eligible press and no selected gesture automaticall
 
 These flags control only deferred mouse generation; disabling both still permits eligible short/long press offers. They do not change physical mouse input or rejected-sequence mouse compatibility. Movement beyond the click radius, multiple contacts, cancellation and any selected gesture still disqualify deferred clicks.
 
+Two generated left clicks on the same graphics host less than half a second apart also produce a left double click on the second click, between mouse Down and Up. Each pair clears its timing history, so rapid clicks alternate single/double/single/double. This time-only conversion does not affect generated right clicks, physical mouse input or rejected-sequence mouse compatibility.
+
 The optional [MomentumScrolling component](../../.././gacui/components/components/momentumscrolling.md) continues scrolling gestures after successful End. Its events target the control's persistent bounds with capture already cleared; it does not start another native sequence.
 
 A rejected sequence uses mouse compatibility immediately, so ordinary controls can keep their existing mouse behavior. For remote input, only the original first contact drives that stream; later contacts never replace it. See [GuiScrollView touch behavior](../../.././gacui/components/controls/container/scrollcontainer.md) for scrolling, nested controls, selectable text and gestures that scroll views do not consume.
