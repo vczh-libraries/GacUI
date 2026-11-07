@@ -450,6 +450,9 @@
     <ClCompile Include="TestRawElement_Windows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TestParagraph_Windows.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\Generated_FullControlTest\FullControlTestRawElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

@@ -335,6 +335,7 @@
 ../../GacUISrc/UnitTest/TestItemProviders.cpp
 ../../GacUISrc/UnitTest/TestRemote_Raw.cpp
 ../../GacUISrc/UnitTest/TestRawElement_Windows.cpp
+../../GacUISrc/UnitTest/TestParagraph_Windows.cpp
 ../../GacUISrc/Generated_FullControlTest/FullControlTestEventHandlers.cpp
 DarkSkin.Linux.cpp
 DarkSkinResource.Linux.cpp

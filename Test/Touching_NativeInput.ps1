@@ -191,13 +191,13 @@ try {
     if ([Math]::Abs($scaled[2]-2*$after[2]) -gt 0.01 -or $scaled[4] -ne 0) { throw 'Native multitouch/canceled-Up result did not match.' }
     Write-Output 'PASS native multiple contacts, original contact lifts first, and canceled Up.'
 
-    $tab = Bounds (Caption 'Raw Clock')
+    $tab = Bounds (Caption 'TouchingList')
     $tap = [TouchingNativeInput]::ScreenPoint($window, ($tab.x1+$tab.x2)/2, ($tab.y1+$tab.y2)/2)
     Frame @([TouchingNativeInput]::Contact(1,0x10006,$tap))
     Frame @([TouchingNativeInput]::Contact(1,0x20006,$tap))
     Frame @([TouchingNativeInput]::Contact(1,0x40000,$tap))
     Start-Sleep -Milliseconds 200
-    if (!(Find-Element 'FullControlTest.Clock')) { throw 'Rejected native touch did not retain compatibility mouse click.' }
+    if (!(Caption 'Add 5 Items')) { throw 'Rejected native touch did not retain compatibility mouse click.' }
     if ($remoteRenderer) { Write-Output 'PASS rejected native touch uses Core mouse fallback through renderer forwarding.' }
     else { Write-Output 'PASS rejected native touch retains OS mouse fallback.' }
 

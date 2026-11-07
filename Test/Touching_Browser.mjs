@@ -6,6 +6,9 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
 import { createHash } from 'node:crypto';
+import { verifyEditors } from './Touching_Editors.mjs';
+
+const clickPairing = process.argv.includes('--click-pairing');
 
 const requireGacJS = createRequire(new URL('../../GacJS/Gaclib/package.json', import.meta.url));
 const { chromium } = requireGacJS('playwright');
@@ -13,6 +16,18 @@ const { parseNetworkPackage } = await import(pathToFileURL(requireGacJS.resolve(
 const browser = await chromium.launch({ headless: true });
 const context = await browser.newContext({ viewport: { width: 800, height: 600 }, hasTouch: true });
 const page = await context.newPage();
+await page.addInitScript(() => {
+    window.__gacui_touch_pointer_ids = new Set();
+    window.__gacui_mouse_boundaries = [];
+    for (const type of ['mouseenter', 'mouseleave']) document.addEventListener(type, event => {
+        if (event.target.id === 'gacui-screen') window.__gacui_mouse_boundaries.push({
+            type, firesTouchEvents: event.sourceCapabilities?.firesTouchEvents,
+        });
+    }, true);
+    document.addEventListener('pointerdown', event => {
+        if (event.pointerType === 'touch') window.__gacui_touch_pointer_ids.add(event.pointerId);
+    }, true);
+});
 const evidence = { transport: process.argv[2], input: 'Chromium CDP touch', checks: [], errors: [], screenshots: [] };
 const events = [];
 let idlePending = false, idleResolve = null;
@@ -90,10 +105,24 @@ async function tapCaption(text) {
     await touch('touchStart', [finger(150, p)], false);
     await touch('touchEnd', []);
 }
-function noCompatibility(start) {
-    assert.deepEqual(events.slice(start).filter(event => /^(IOButton|IOMouse)/.test(event.name)), []);
+function noCompatibility(start, boundaries = []) {
+    // Modal removal can expose the stationary physical mouse. Only allow boundaries
+    // that Chromium explicitly identifies as ordinary mouse input, once per DOM event.
+    const ordinary = {
+        IOMouseEntered: boundaries.filter(event => event.type === 'mouseenter' && event.firesTouchEvents === false).length,
+        IOMouseLeaved: boundaries.filter(event => event.type === 'mouseleave' && event.firesTouchEvents === false).length,
+    };
+    const compatibility = events.slice(start).filter(event => /^(IOButton|IOMouse)/.test(event.name)).filter(event => {
+        if (ordinary[event.name] > 0) { ordinary[event.name]--; return false; }
+        return true;
+    });
+    assert.deepEqual(compatibility, []);
     evidence.checks.push('Touch release emits no compatibility mouse/button events');
 }
+const capturedTouches = () => page.evaluate(() => {
+    const target = document.getElementById('gacui-screen');
+    return [...window.__gacui_touch_pointer_ids].filter(id => target.hasPointerCapture(id)).length;
+});
 async function picture(name) {
     const target = path.join(os.tmpdir(), `touch-step3-${name}.png`);
     await page.screenshot({ path: target }); evidence.screenshots.push(target);
@@ -102,6 +131,9 @@ try {
     await page.goto(process.env.GACUI_TOUCH_WEBSITE ?? 'http://localhost:8896/index.html');
     await idle(30000, true);
     await until(async () => await label('Misc') !== undefined, 'FullControlTest rendered');
+    const connection = events.find(event => event.name === 'ControllerConnect');
+    assert(connection && connection.arguments.injectFileSystem === false);
+    evidence.checks.push('Browser remoteFS is disabled; file dialogs use the Core filesystem');
     const outerScroll = await page.evaluate(() => [scrollX, scrollY]);
     const dialogStart = events.length;
     await tapCaption('Control');
@@ -155,6 +187,30 @@ try {
     await until(async()=>(await pixels()).yellow===0,'Browser clears contact marker pixels');
     noCompatibility(start);
     await picture('touching');
+
+    const captureStart = events.length;
+    const captureBounds = (await raw()).bounds;
+    a = finger(40, await screenPoint(captureBounds, 140, 120));
+    await touch('touchStart', [a]);
+    await until(async () => await capturedTouches() === 1, 'Browser captures the active touch');
+    const capturedState = await state();
+    const screen = await page.locator('#gacui-screen').boundingBox();
+    const outside = { ...a, x: Math.max(1, screen.x - 5), y: Math.max(1, screen.y - 5) };
+    assert(outside.x < screen.x || outside.y < screen.y);
+    await touch('touchMove', [outside]);
+    await until(async () => {
+        const current = await state();
+        return current[4] === 1 && (current[0] !== capturedState[0] || current[1] !== capturedState[1]);
+    }, 'Captured touch continues outside the renderer surface');
+    await page.setViewportSize({ width: 820, height: 620 });
+    await idle();
+    await touch('touchMove', [a]);
+    assert.equal((await state())[4], 1);
+    await touch('touchEnd', []);
+    await until(async () => (await state())[4] === 0 && await capturedTouches() === 0, 'Resize preserves capture and release clears it');
+    noCompatibility(captureStart);
+    await page.setViewportSize({ width: 800, height: 600 });
+    await idle();
 
     await click('TouchingList'); await click('Clear'); await click('Clear');
     await until(async () => !(await all()).some(node=>node.elementText?.startsWith('Item ')),'Clear populated and empty lists');
@@ -213,6 +269,42 @@ try {
     await click('Momentum Scrolling');
     await picture('momentum');
 
+    if (clickPairing) {
+        async function editorTap(point, duration = 0) {
+            const p = await screenPoint({ x1: 0, y1: 0 }, point.x, point.y);
+            await touch('touchStart', [finger(450, p)], false);
+            if (duration) await new Promise(resolve => setTimeout(resolve, duration));
+            await touch('touchEnd', [], false);
+        }
+        await verifyEditors({
+            name: `${process.argv[2]}-Chromium`, controls,
+            tap: async (point, duration) => { await editorTap(point, duration); await idle(); },
+            pair: async point => {
+                // Resolve the transform once, then send both sequences without a snapshot or idle wait.
+                const p = await screenPoint({ x1: 0, y1: 0 }, point.x, point.y);
+                const boundaryStart = await page.evaluate(() => window.__gacui_mouse_boundaries.length);
+                const pairStart = events.length;
+                for (let i = 0; i < 2; i++) {
+                    await touch('touchStart', [finger(451, p)], false);
+                    await touch('touchEnd', [], false);
+                }
+                await idle();
+                const boundaries = await page.evaluate(start => window.__gacui_mouse_boundaries.slice(start), boundaryStart);
+                noCompatibility(pairStart, boundaries);
+            },
+            mouse: async point => {
+                const p = await screenPoint({ x1: 0, y1: 0 }, point.x, point.y);
+                await page.mouse.click(p.x, p.y); await idle();
+            },
+            key: async key => {
+                const names = { CTRL: 'Control', SHIFT: 'Shift', HOME: 'Home', END: 'End', ESC: 'Escape' };
+                await page.keyboard.press(key.split('+').map(part => names[part] ?? part).join('+'));
+                await idle();
+            },
+            type: async text => { await page.keyboard.type(text); await idle(); },
+        });
+        evidence.checks.push('Both editors preserve touch selection, navigate folders and insert exactly one image through browser double taps, including Undo/Redo and spaced taps');
+    } else {
     await click('List'); await click('ListView');
     const firstList=async()=>(await all()).find(node=>node.control==='ListView');
     const taskRow=async()=>nodes(await firstList()).find(node=>node.elementText==='Task');
@@ -306,9 +398,10 @@ try {
             await until(async()=>(await all()).some(node=>node.element?.includes('#168A7A')),'Aurora templates are installed');
         }
     }
+    }
     assert.deepEqual(await page.evaluate(()=>[scrollX,scrollY]),outerScroll);
     assert.deepEqual(evidence.errors,[]);
-    evidence.checks.push('Outer browser page remains stationary; text selection survives template replacement');
+    evidence.checks.push('Outer browser page remains stationary');
     console.log(JSON.stringify(evidence,null,2));
 } finally {
     fs.writeFileSync(path.join(os.tmpdir(),'touch-step3-browser.json'),JSON.stringify(evidence,null,2));

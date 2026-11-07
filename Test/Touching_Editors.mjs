@@ -51,6 +51,7 @@ export async function verifyEditors(input) {
     }
     const parentFolder = path.resolve(path.dirname(fileURLToPath(import.meta.url)), 'Resources/App/FullControlTest');
     const imageFolder = path.join(parentFolder, 'ToolbarImages');
+    const imageName = 'a_Align.png';
     const folderIs = async folder => nodes(await dialog()).some(node => node.elementText === folder);
 
     await tap('Control');
@@ -106,20 +107,22 @@ export async function verifyEditors(input) {
         target = center((await row('ToolbarImages')).bounds);
         await input.pair(target);
         await until(async () => await folderIs(imageFolder), `${variant}: double folder tap navigates exactly once and keeps dialog open`);
-        await until(async () => await row('s_Font.png'), `${variant}: image label coordinates refreshed`);
+        await until(async () => await row(imageName), `${variant}: image label coordinates refreshed`);
         await pause(600);
-        target = center((await row('s_Font.png')).bounds);
+        target = center((await row(imageName)).bounds);
         await input.tap(target);
-        await until(async () => await selectedFile('s_Font.png'), `${variant}: single image tap selects its row`);
+        await until(async () => await selectedFile(imageName), `${variant}: single image tap selects its row`);
         await pause(600);
         await input.tap(target);
         await pause(100);
         assert(await dialog(), `${variant}: spaced image taps do not confirm`);
         assert.equal(await images(), originalImages);
         await pause(600);
-        target = center((await row('s_Font.png')).bounds);
+        target = center((await row(imageName)).bounds);
         await input.pair(target);
         await until(async () => !await dialog() && await images() === originalImages + 1, `${variant}: double image tap closes dialog and inserts exactly one image`);
+        const insertedDocument = (await document()).bounds;
+        await input.tap({ x: insertedDocument.x1 + 8, y: insertedDocument.y1 + 8 });
         await input.key('CTRL+Z');
         await until(async () => await images() === originalImages, `${variant}: Undo removes that insertion`);
         await input.key('CTRL+Y');
@@ -133,7 +136,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     const [core, renderer, name] = process.argv.slice(2);
     assert(core && renderer && name, 'Expected Core endpoint, input endpoint and configuration name');
     async function io(command) {
-        const response = await fetch(`${renderer}/IO`, { method: 'POST', headers: { 'Content-Type': 'application/json; charset=utf8' }, body: command });
+        const response = await fetch(`${renderer}/IO`, { method: 'POST', headers: { 'Content-Type': 'application/json; charset=utf8' }, body: command, signal: AbortSignal.timeout(15000) });
         assert.equal(await response.text(), 'Queued', command);
     }
     async function tap(point, duration = 0) {
@@ -143,7 +146,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     }
     await verifyEditors({
         name,
-        controls: async () => (await fetch(`${core}/Controls`)).json(),
+        controls: async () => (await fetch(`${core}/Controls`, { signal: AbortSignal.timeout(15000) })).json(),
         tap,
         pair: async point => { await tap(point); await tap(point); },
         mouse: async point => io(`!LeftClick:${point.x},${point.y}`),

@@ -103,6 +103,7 @@ Host
 				GuiGraphicsComposition*					mouseCaptureComposition = nullptr;
 				bool									mouseButtonStates[5] = {};
 				bool									suppressNativeMouseCapture = false;
+				Nullable<DateTime>						lastGeneratedLeftClick;
 				CompositionList							mouseEnterCompositions;
 				void									RefreshRelatedHostRecord(INativeWindow* nativeWindow);
 

@@ -278,20 +278,21 @@ TEST_FILE
 			});
 			controlHost->ForceCalculateSizeImmediately();
 		});
+		for (vint i = 0; i < 2; i++)
+		protocol.OnNextFrame([&, i]()
+		{
+			input.Start(NativePoint(50, 50));
+			input.Up(0, NativePoint(50, 50));
+			if (accepted) input.End();
+			TEST_ASSERT(clicks == i * 2 + 1);
+			TEST_ASSERT(closer->GetPointEventComposition() == closer->GetBoundsComposition());
+			input.Up(0, dialogPoint);
+			input.End();
+			TEST_ASSERT(clicks == i * 2 + 2 && !dialog->GetOpening());
+			TEST_ASSERT(!closer->GetPointEventComposition());
+		});
 		protocol.OnNextFrame([&]()
 		{
-			for (vint i = 0; i < 2; i++)
-			{
-				input.Start(NativePoint(50, 50));
-				input.Up(0, NativePoint(50, 50));
-				if (accepted) input.End();
-				TEST_ASSERT(clicks == i * 2 + 1);
-				TEST_ASSERT(closer->GetPointEventComposition() == closer->GetBoundsComposition());
-				input.Up(0, dialogPoint);
-				input.End();
-				TEST_ASSERT(clicks == i * 2 + 2 && !dialog->GetOpening());
-				TEST_ASSERT(!closer->GetPointEventComposition());
-			}
 			nestedInput = false;
 			protocol.LClick(NativePoint(50, 50));
 			protocol.LClick(dialogPoint);
@@ -350,7 +351,7 @@ TEST_FILE
 		});
 		protocol.OnNextFrame([&]()
 		{
-			gacui_unittest_template::TooltipTimer clock;
+			auto clock = Ptr(new gacui_unittest_template::TooltipTimer);
 			PointProtocolInput input(protocol.GetEvents());
 			auto tap = [&]()
 			{
@@ -360,15 +361,15 @@ TEST_FILE
 			};
 			for (auto interval : { 0,499,500,501 })
 			{
-				clock.Advance(500);
+				clock->Advance(500);
 				tap();
 				AssertEventLogs(mouseEvents, L"Move", L"Down", L"Up");
-				clock.Advance(interval);
+				clock->Advance(interval);
 				tap();
 				if (interval < 500) AssertEventLogs(mouseEvents, L"Move", L"Down", L"Double", L"Up");
 				else AssertEventLogs(mouseEvents, L"Move", L"Down", L"Up");
 			}
-			clock.Advance(500);
+			clock->Advance(500);
 			for (vint i = 0; i < 4; i++)
 			{
 				tap();
@@ -377,10 +378,10 @@ TEST_FILE
 			}
 			tap();
 			AssertEventLogs(mouseEvents, L"Move", L"Down", L"Up");
-			clock.Advance(501);
+			clock->Advance(501);
 			tap();
 			AssertEventLogs(mouseEvents, L"Move", L"Down", L"Up");
-			clock.Advance(499);
+			clock->Advance(499);
 			tap();
 			AssertEventLogs(mouseEvents, L"Move", L"Down", L"Double", L"Up");
 
@@ -411,11 +412,19 @@ TEST_FILE
 			host->SetNativeWindow(window);
 			tap();
 			AssertEventLogs(mouseEvents, L"Move", L"Down", L"Up");
-			onEnd = [&]() { clock.Advance(500); };
+			onEnd = [&]() { clock->Advance(500); };
 			tap();
 			AssertEventLogs(mouseEvents, L"Move", L"Down", L"Up");
 			onEnd = {};
-			clock.Advance(499);
+			clock->Advance(499);
+			tap();
+			AssertEventLogs(mouseEvents, L"Move", L"Down", L"Double", L"Up");
+			tap();
+			AssertEventLogs(mouseEvents, L"Move", L"Down", L"Up");
+			clock = nullptr;
+			clock = Ptr(new gacui_unittest_template::TooltipTimer);
+			tap();
+			AssertEventLogs(mouseEvents, L"Move", L"Down", L"Up");
 			tap();
 			AssertEventLogs(mouseEvents, L"Move", L"Down", L"Double", L"Up");
 			controlHost->Hide();
@@ -506,7 +515,7 @@ TEST_FILE
 				{
 					input.Start(NativePoint(100, 100));
 					if (scenario == 4) { input.Down(1, NativePoint(100, 100)); input.Up(1, NativePoint(100, 100)); }
-					if (scenario == 5 || scenario == 6) { input.Move(NativePoint(110, 100)); input.Move(NativePoint(100, 100)); }
+					if (scenario == 5 || scenario == 6 || scenario == 7) { input.Move(NativePoint(110, 100)); input.Move(NativePoint(100, 100)); }
 					if (scenario != 3) input.Up(0, NativePoint(100, 100));
 					input.End(scenario == 8 ? 500000 : 100000, scenario == 3 ? PointSequenceEndReason::Canceled_PlatformCanceled : PointSequenceEndReason::Succeeded);
 				}

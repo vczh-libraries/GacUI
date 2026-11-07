@@ -368,6 +368,18 @@ GuiGraphicsHost
 				PointUncapture();
 				if (!button) return;
 
+				bool doubleClick = false;
+				if (button.Value() == NativeMouseButton::Left)
+				{
+					auto now = DateTime::UtcTime();
+					doubleClick = lastGeneratedLeftClick
+						&& now.osMilliseconds >= lastGeneratedLeftClick.Value().osMilliseconds
+						&& now.osMilliseconds - lastGeneratedLeftClick.Value().osMilliseconds < 500;
+					// Consume the pair before mouse callbacks can pump another point sequence.
+					if (doubleClick) lastGeneratedLeftClick = Nullable<DateTime>();
+					else lastGeneratedLeftClick = now;
+				}
+
 				// The synchronous click needs only composition capture; leave physical native capture intact.
 				auto physicalCapture = mouseCaptureComposition;
 				suppressNativeMouseCapture = true;
@@ -389,6 +401,7 @@ GuiGraphicsHost
 				mouse.left = button.Value() == NativeMouseButton::Left;
 				mouse.right = button.Value() == NativeMouseButton::Right;
 				MouseDown(button.Value(), mouse);
+				if (doubleClick) MouseDoubleClick(NativeMouseButton::Left, mouse);
 				mouse.left = mouse.right = false;
 				MouseUp(button.Value(), mouse);
 				mouseCaptureComposition = physicalCapture;
@@ -800,6 +813,7 @@ GuiGraphicsHost
 			{
 				if (hostRecord.nativeWindow != _nativeWindow)
 				{
+					lastGeneratedLeftClick = Nullable<DateTime>();
 					if (hostRecord.nativeWindow)
 					{
 						ResetMouseCapture();

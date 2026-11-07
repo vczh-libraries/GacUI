@@ -37,7 +37,7 @@ WindowsGDIParagraph
 
 				void PrepareUniscribeData()
 				{
-					if (paragraph->BuildUniscribeData(renderTarget->GetDC()))
+					if (paragraph->BuildUniscribeData(renderTarget->GetDC()) || paragraph->lastAvailableWidth == -1)
 					{
 						vint width = paragraph->lastAvailableWidth == -1 ? 65536 : paragraph->lastAvailableWidth;
 						paragraph->Layout(paragraph->lastWrapLine, width, paragraph->paragraphAlignment);

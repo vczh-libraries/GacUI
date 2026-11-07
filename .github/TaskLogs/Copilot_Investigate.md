@@ -81,9 +81,9 @@ No unresolved review comments.
 
 # PROPOSALS
 
-- No.1 Pair actual generated left clicks in their graphics host
+- No.1 Pair actual generated left clicks in their graphics host [CONFIRMED]
 
-## No.1 Pair actual generated left clicks in their graphics host
+## No.1 Pair actual generated left clicks in their graphics host [CONFIRMED]
 
 After public point End and fallback selection, sample the injectable UTC clock only for an actual deferred left click. Compare `osMilliseconds` with the host's last unpaired click, accepting nonnegative elapsed time strictly below 500 ms. Consume a pair before callbacks; otherwise remember the new time. Insert `MouseDoubleClick` after Down with the left flag set, preserving the existing Up and capture/button restoration. Reset history only on an actual native-window binding change. Keep point timestamps and gesture recognition separate.
 
@@ -92,4 +92,52 @@ After public point End and fallback selection, sample the injectable UTC clock o
 - Add a protected host-local `Nullable<DateTime>` and update it before generated mouse callbacks in `PointSequenceEnded`; clear it in the changed-binding branch of `SetNativeWindow`.
 - Document the monotonic microsecond unit of `PointSequenceEndInfo::timestamp`.
 - Extend deterministic timing, exclusion, capture and modal regressions. Extend existing application helpers with a scoped mode and shared editor/file-dialog checks for CppTest, native renderer and browser acquisition.
+- Fix the observed GDI dialog-reopen crash by preparing layout when paragraph shaping exists but its available width is still uninitialized; add native caret and hit-test regression coverage.
 - Add a brief conversion note to the point-input KB and website article, then build, publish and synchronize both documented rounds with learning skipped and deployed WASM files preserved.
+
+### Verification progress
+
+- The baseline unfiltered UnitTest run completed with the intended assertion failure in `Deferred left clicks pair by UTC generation time`: actual `Move, Down, Up`; expected `Move, Down, Double, Up`. It reached the zero-millisecond second click. Earlier test files and the existing modal tests ran before the failure. This confirms the deterministic regression independently of the application reproduction.
+- The implementation preserves the existing gesture manager and remote protocol. No reflected fields or XML resources changed, so reflection/resource generation is not required.
+- The application helper's scoped mode excludes the unrelated ListView, TextBox, palette and Raw Clock pages. It retains Touching/TouchingList regressions and shares both-editor checks between native point injection and actual Chromium touch acquisition. The real image fixture is `<GacUI repo>/Test/Resources/App/FullControlTest/ToolbarImages/a_Align.png`, which is visible in the first file-list column.
+- First implementation build reported only ambiguous empty-brace assignment to `Nullable<DateTime>`. Use the explicit empty `Nullable<DateTime>()` value at pair consumption and rebinding; timing behavior is unchanged.
+- The next build compiled the implementation and expanded tests; it could not relink CppTest because the baseline modal needed a second Exit to shut down its main window. The owned baseline process has now exited. Two existing code-page warnings came from `TestRemote_Caret.cpp`. Add backward-clock reset coverage using a recreated injected timer, then rebuild before runtime checks.
+- CDB located an extended modal-fixture failure on the second same-frame reopen, including the rejected sequence path: the old `WindowReadyToClose` handler is detached through `InvokeInMainThread`, so reopening and closing again before that queued detach invokes both handlers. Schedule the two touch cycles and later mouse cycle on separate protocol frames, retaining nested input inside each opening callback. This exercises normal modal reopen lifetime without changing modal-window production behavior.
+- Website build/tests, both sequential static downloads and Markdown export passed. The Markdown command retained its existing missing registered-reference warnings; the changed article and Markdown both contain the note. Publication staging contained 295 newline-only files, which were restored after normalized comparison; the only semantic output change is the new paragraph. The existing deployment contained no obsolete documentation files, so copying into it produced the same fresh file set without recursive deletion. The entire deployed `wasm-fct` tree remains unchanged.
+- WebsiteSource commit `7f05764` and publishing commit `62ee536c0` were pushed. Pages run `42319532719` completed successfully. Chromium followed the published URL to `http://gaclib.net/doc/current/gacui/components/compositions/events.html` and verified the rendered conversion paragraph.
+- The first GacJS root test run reported eight RawBrowser timeouts and a teardown timeout; other reported package tests passed. Recheck after cleanup before classifying this result. The CppTest scoped helper initially rejected its internal Standalone label because PowerShell validates assignments to the Transport parameter; use a separate local transport list.
+- Focused CDB mouse run passed all 107 cases, including 0/499/500/501 ms, rollback, nested clicks, host/window lifetime, suppressions, physical capture and both modal paths. The preceding focused PointScrolling run reached all its cases before the separate modal-fixture failure; the final full wrapper run includes both files again.
+- CppTest Direct2D confirmed folder double-tap navigation and exactly one image insertion. Two helper assumptions needed correction: Windows locale ordering places `_Copy.png` outside the visible virtualized columns, so use the observed first-column `a_Align.png`; Undo/Redo shortcut bindings exist only while the document is focused, so touch the document after the file dialog closes before sending those keys. These are fixture/navigation corrections, not changes to application behavior.
+- The full Debug x64 UnitTest wrapper passed 96/96 files and 1987/1987 cases; its completed log has no memory-leak output. CppTest Direct2D passed both editors and Touching/TouchingList checks.
+- CppTest GDI reproduced a crash twice when reopening Insert Image after a successful insertion and Undo/Redo. CDB confirmed `UniscribeParagraph::GetCaretBoundsWithLine` receives virtual-line index -1 for caret 88: shaping is already built, available width is still -1, and the virtual-line list is empty. Setting single-line wrapping builds shaping before a width is assigned; `PrepareUniscribeData` then skips layout because shaping is already built. Extend preparation to lay out this unmeasured state with its existing default width, add a native paragraph regression, and retain the application reopen check. This corrects an observed verification failure without changing touch recognition.
+- The new `<GacUI repo>/Test/GacUISrc/UnitTest/TestParagraph_Windows.cpp` reproduced the same exception before the fix, then passed after it. It covers both wrapping and alignment changes before initial measurement, caret/hit-test agreement, and later narrow wrapping. Debug x64 rebuilt with zero warnings and zero errors. The updated full UnitTest wrapper is running.
+- CppTest GDI now passes both editors, image insertion and post-insertion reopen, gestures, swipe/cancellation/recycled-row checks, scrolling and momentum. Its pixel capture also passed. The separate Win32 acquisition attempt failed at `InjectTouchInput` with error 203; no physical-touch result is claimed.
+- GacJS package tests passed in the reduced-concurrency retry, including all 27 controlled Chromium cases and 40 website-entry unit cases (23 platform-specific cases skipped). Earlier timeouts varied under concurrent compilation and were absent once the upstream build completed. Stop the general live E2E phase to honor this task's scoped app verification. Its startup briefly transferred the active renderer during the first native Pipe run; repeat native configurations with exclusive ownership of the fixed protocol port.
+- The first skip-learning KB merge processed all seven dependency repositories in order. Only GacUI's point-input note changed canonical Tools KB; Tools commit `7c50404` is pushed. Sync-back waits for active wrapper runs to finish so their log directories remain intact.
+- The final unfiltered Debug x64 UnitTest wrapper passed 97/97 files and 1988/1988 cases, including the GDI paragraph regression. The completed raw log ends with those summaries and no leak dump. The 123 file-dialog snapshot differences were the known scheduling-dependent frame/allocation ordering noise; review found no intended snapshot change, and those outputs were restored. GacJS's official generator then copied the committed upstream snapshots, with all ten imported files matching GacUI and an identical diff after a second codegen pass.
+- Chromium's first image-insertion check rejected `IOMouseEntered` during modal removal. DOM diagnostics showed `sourceCapabilities.firesTouchEvents === false`: the stationary ordinary mouse was exposed by the closing dialog. Moving it outside instead introduced an ordinary leave boundary. The helper now permits only matching boundary events explicitly marked as non-touch by Chromium, one protocol event per observed DOM event; all mouse buttons, movement and touch-derived boundaries remain rejected. No browser production behavior changed.
+- Both Http and MiniHttp Chromium runs passed with remote filesystem injection disabled, including both editors, touch capture beyond the renderer, resize/release, compatibility suppression, visible pixels, stationary outer page and Core shutdown. There were no browser page errors.
+- The first skip-learning sync-back completed. All eight destination repositories received only the reviewed point-input paragraph; its hash matches canonical Tools. No learning files changed. The regenerated online manual will be propagated by the second skip-learning round.
+
+### CONFIRMED
+
+The original missing event is reproduced by both a deterministic zero-millisecond pair and an actual file-dialog folder double tap. The selected implementation fixes both through the existing shared fallback path. Exact-clock tests prove the strict threshold, rollback handling and consumed-pair reset; host/window lifetime, nested callbacks, suppression and independent physical capture tests preserve the surrounding contracts. The full suite passes all 1988 cases without a leak dump.
+
+All ten requested application configurations pass the functional scope, including both editor variants and exactly one image insertion with Undo/Redo. The observed GDI reopen crash was independently reproduced in a focused paragraph test, fixed at layout preparation, and verified again in standalone and all three native remote GDI configurations. Code review found no reflection, resource or protocol changes requiring native generation. Physical touch hardware remains unverified: the attempted Win32 injection failed with error 203. Direct2D desktop pixel acquisition was unavailable in this session; GDI and browser pixels passed.
+
+### Scoped application results
+
+Each completed functional row covers Touching, TouchingList and both Ribbon/Toolstrip editors, including real local file-dialog single selection, slow taps, fast folder/file pairs, one image, Undo/Redo and cancellation/reopen. Native rows use automation-service point sequences; browser rows use Chromium CDP acquisition. Desktop pixels and Win32 injection are recorded separately.
+
+| Configuration | Result |
+| --- | --- |
+| CppTest / Direct2D | Passed; graceful exit passed; desktop pixels unavailable |
+| CppTest / GDI | Passed after paragraph-layout fix; pixels passed; separate Win32 injection unavailable (error 203) |
+| Native Pipe / Direct2D | Passed with exclusive protocol ownership; graceful exit passed |
+| Native Pipe / GDI | Passed; pixels and graceful exit passed |
+| Native Http / Direct2D | Passed; graceful exit passed |
+| Native Http / GDI | Passed; pixels and graceful exit passed |
+| Native MiniHttp / Direct2D | Passed; graceful exit passed |
+| Native MiniHttp / GDI | Passed; pixels and graceful exit passed |
+| Chromium / Http | Passed, including capture outside the renderer, resize, compatibility suppression, pixels and Core shutdown |
+| Chromium / MiniHttp | Passed, including capture outside the renderer, resize, compatibility suppression, pixels and Core shutdown |

@@ -3,7 +3,9 @@ param(
     [ValidateSet('Pipe','Http','MiniHttp')][string[]]$Transport = @('Pipe','Http','MiniHttp'),
     [ValidateSet('Direct2D','GDI')][string[]]$Backend = @('Direct2D','GDI'),
     [switch]$NativeInjection,
-    [switch]$Browser
+    [switch]$Browser,
+    [switch]$ClickPairing,
+    [switch]$CppTest
 )
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path $PSScriptRoot -Parent
@@ -11,10 +13,19 @@ $solution = Join-Path $PSScriptRoot 'GacUISrc'
 $wrapper = Join-Path $repo '.github/Scripts/copilotExecute.ps1'
 $coreUser = Join-Path $solution 'RemotingTest_Core/RemotingTest_Core.vcxproj.user'
 $rendererUser = Join-Path $solution 'RemotingTest_Rendering_Win32/RemotingTest_Rendering_Win32.vcxproj.user'
-$coreOriginal = [IO.File]::ReadAllBytes($coreUser)
-$rendererOriginal = [IO.File]::ReadAllBytes($rendererUser)
+$cppUser = Join-Path $solution 'CppTest/CppTest.vcxproj.user'
+$originals = @{}
+foreach ($path in @($coreUser,$rendererUser,$cppUser)) {
+    $originals[$path] = if (Test-Path -LiteralPath $path) { [IO.File]::ReadAllBytes($path) } else { $null }
+}
 $coreBase = 'http://localhost:8888/Automation/RemotingTest_Core'
 $rendererBase = 'http://localhost:8889/Automation/RemotingTest_Rendering_Native'
+$transportNames = $Transport
+if ($CppTest) {
+    if ($Browser) { throw 'CppTest and Browser are separate application paths.' }
+    $transportNames = @('Standalone')
+    $coreBase = $rendererBase = 'http://localhost:8888/Automation/CppTest'
+}
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
 Add-Type -AssemblyName System.Web.Extensions
 $controlsJson = [System.Web.Script.Serialization.JavaScriptSerializer]::new()
@@ -70,7 +81,7 @@ public static class RemoteTouchProbe {
 }
 '@
 function Set-Arguments($path,$arguments) {
-    [xml]$xml = Get-Content -LiteralPath $path -Raw
+    [xml]$xml = if (Test-Path -LiteralPath $path) { Get-Content -LiteralPath $path -Raw } else { '<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" />' }
     $group = $xml.CreateElement('PropertyGroup',$xml.DocumentElement.NamespaceURI)
     $group.SetAttribute('Condition', '''$(Configuration)|$(Platform)''==''Debug|x64''')
     foreach ($existing in $xml.DocumentElement.ChildNodes) {
@@ -236,6 +247,8 @@ function Test-SwipeAndText {
     Select-Tab 'Momentum Scrolling'
     Write-Output 'PASS renderer IO / optional momentum after Up and interruption on fresh Down'
 
+    if ($ClickPairing) { return }
+
     Select-Tab 'List'
     Wait-For { @(Controls | Where-Object elementText -eq 'ListView').Count -gt 0 } 'List page'
     Select-Tab 'ListView'
@@ -396,28 +409,38 @@ function Test-TouchDialogs {
     Write-Output 'PASS renderer touch-only modal opening, cancellation and reopening'
 }
 try {
-    foreach($transportName in $Transport) {foreach($backendName in $Backend) {
+    foreach($transportName in $transportNames) {foreach($backendName in $Backend) {
         $owned.Clear()
         try {
-            [IO.File]::WriteAllBytes($coreUser,$coreOriginal)
-            [IO.File]::WriteAllBytes($rendererUser,$rendererOriginal)
             Set-Arguments $coreUser "/$transportName /FCT"
             $rendererArgs="/$transportName /AsPort:8889"
             if($backendName -eq 'GDI') {$rendererArgs+=' /Gdi'}
             Set-Arguments $rendererUser $rendererArgs
-            $core = Start-Wrapped 'RemotingTest_Core'
+            if ($CppTest) {
+                $cppArgs = '/AsPort:8888'
+                if ($backendName -eq 'GDI') { $cppArgs += ' /Gdi' }
+                Set-Arguments $cppUser $cppArgs
+                $core = $renderer = Start-Wrapped 'CppTest'
+            } else {
+                $core = Start-Wrapped 'RemotingTest_Core'
+            }
             if ($Browser) {
                 if ($transportName -eq 'Pipe') { throw 'Browser touch requires Http or MiniHttp.' }
-                & node (Join-Path $PSScriptRoot 'Touching_Browser.mjs') $transportName
+                $browserArguments = @($transportName)
+                if ($ClickPairing) { $browserArguments += '--click-pairing' }
+                & node (Join-Path $PSScriptRoot 'Touching_Browser.mjs') @browserArguments
                 if ($LASTEXITCODE -ne 0) { throw 'Browser touch verification failed.' }
                 IO $coreBase '!Exit'
                 Wait-For { $core.HasExited } 'browser Core shutdown'
                 Write-Output "PASS $transportName Chromium CDP touch and Core shutdown"
                 continue
             }
-            $renderer = Start-Wrapped 'RemotingTest_Rendering_Win32'
+            if (!$CppTest) { $renderer = Start-Wrapped 'RemotingTest_Rendering_Win32' }
             Wait-For { @(Controls | Where-Object elementText -eq 'Misc').Count -gt 0 } 'initial controls'
-            Test-TouchDialogs
+            if ($ClickPairing) {
+                & node (Join-Path $PSScriptRoot 'Touching_Editors.mjs') $coreBase $rendererBase "$transportName-$backendName"
+                if ($LASTEXITCODE -ne 0) { throw 'Editor touch pairing verification failed.' }
+            } else { Test-TouchDialogs }
             Select-Tab 'Misc'
             Wait-For {
                 if (@(Controls | Where-Object elementText -eq 'Touching').Count -gt 0) {return $true}
@@ -433,7 +456,7 @@ try {
                 return $false
             } 'Touching raw element'
             $bounds=(Find-Raw).bounds;$x=[int]$bounds.x1+140;$y=[int]$bounds.y1+120
-            foreach($endpoint in @($rendererBase,$coreBase)) {
+            foreach($endpoint in @($rendererBase,$coreBase | Select-Object -Unique)) {
                 $initial=State
                 IO $endpoint "!PointDown:10,$x,$y"
                 Wait-For {(State)[4] -eq 1} 'first contact'
@@ -468,19 +491,24 @@ try {
                 Wait-For {(State)[4] -eq 0} 'fresh sequence'
                 Write-Output "PASS $transportName $backendName $endpoint typed touch routing and gestures"
             }
-            Wait-For {
+            if (!$CppTest) { Wait-For {
                 $desc=@(Nodes (Invoke-RestMethod "$rendererBase/Dom" -TimeoutSec 10) | Where-Object rawId -eq 'FullControlTest.Touching')[0]
                 $desc.data -eq (Find-Raw).elementData
-            } 'renderer receives current Touching state'
-            Select-Tab 'Raw Clock'
-            Wait-For {@(Controls | Where-Object elementId -eq 'FullControlTest.Clock').Count -gt 0} 'clock painter replacement'
-            $tab=@(Controls | Where-Object elementText -eq 'Touching')[0]
-            $tx=[int](($tab.bounds.x1+$tab.bounds.x2)/2);$ty=[int](($tab.bounds.y1+$tab.bounds.y2)/2)
-            IO $rendererBase "!PointDown:1,$tx,$ty"
-            IO $rendererBase "!PointUp:1,$tx,$ty"
-            Wait-For {$null -ne (Find-Raw)} 'rejected touch tab fallback'
+            } 'renderer receives current Touching state' }
+            if (!$ClickPairing) {
+                Select-Tab 'Raw Clock'
+                Wait-For {@(Controls | Where-Object elementId -eq 'FullControlTest.Clock').Count -gt 0} 'clock painter replacement'
+                $tab=@(Controls | Where-Object elementText -eq 'Touching')[0]
+                $tx=[int](($tab.bounds.x1+$tab.bounds.x2)/2);$ty=[int](($tab.bounds.y1+$tab.bounds.y2)/2)
+                IO $rendererBase "!PointDown:1,$tx,$ty"
+                IO $rendererBase "!PointUp:1,$tx,$ty"
+                Wait-For {$null -ne (Find-Raw)} 'rejected touch tab fallback'
+            }
             Test-SwipeAndText
-            if($NativeInjection) { & (Join-Path $PSScriptRoot 'Touching_NativeInput.ps1') -TargetProcessId $renderer.Id -Application RemotingTest_Rendering_Native -AsPort 8889 -CoreAsPort 8888 }
+            if($NativeInjection) {
+                if ($CppTest) { & (Join-Path $PSScriptRoot 'Touching_NativeInput.ps1') -TargetProcessId $renderer.Id -Application CppTest -AsPort 8888 -CoreAsPort 8888 }
+                else { & (Join-Path $PSScriptRoot 'Touching_NativeInput.ps1') -TargetProcessId $renderer.Id -Application RemotingTest_Rendering_Native -AsPort 8889 -CoreAsPort 8888 }
+            }
             IO $rendererBase '!Exit'
             Wait-For {$core.HasExited -and $renderer.HasExited} 'graceful exit'
             Write-Output "PASS $transportName $backendName renderer state, fallback and shutdown"
@@ -489,6 +517,8 @@ try {
         }
     }}
 } finally {
-    [IO.File]::WriteAllBytes($coreUser,$coreOriginal)
-    [IO.File]::WriteAllBytes($rendererUser,$rendererOriginal)
+    foreach ($path in $originals.Keys) {
+        if ($null -ne $originals[$path]) { [IO.File]::WriteAllBytes($path,$originals[$path]) }
+        elseif (Test-Path -LiteralPath $path) { Remove-Item -LiteralPath $path }
+    }
 }
