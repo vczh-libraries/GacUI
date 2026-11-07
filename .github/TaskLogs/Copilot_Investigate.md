@@ -81,3 +81,15 @@ No unresolved review comments.
 
 # PROPOSALS
 
+- No.1 Pair actual generated left clicks in their graphics host
+
+## No.1 Pair actual generated left clicks in their graphics host
+
+After public point End and fallback selection, sample the injectable UTC clock only for an actual deferred left click. Compare `osMilliseconds` with the host's last unpaired click, accepting nonnegative elapsed time strictly below 500 ms. Consume a pair before callbacks; otherwise remember the new time. Insert `MouseDoubleClick` after Down with the left flag set, preserving the existing Up and capture/button restoration. Reset history only on an actual native-window binding change. Keep point timestamps and gesture recognition separate.
+
+### CODE CHANGE
+
+- Add a protected host-local `Nullable<DateTime>` and update it before generated mouse callbacks in `PointSequenceEnded`; clear it in the changed-binding branch of `SetNativeWindow`.
+- Document the monotonic microsecond unit of `PointSequenceEndInfo::timestamp`.
+- Extend deterministic timing, exclusion, capture and modal regressions. Extend existing application helpers with a scoped mode and shared editor/file-dialog checks for CppTest, native renderer and browser acquisition.
+- Add a brief conversion note to the point-input KB and website article, then build, publish and synchronize both documented rounds with learning skipped and deployed WASM files preserved.
