@@ -1,5 +1,6 @@
 #include "TestRemote_GraphicsHost_Shared.h"
 #include "TestPointInput.h"
+#include "TestControls.h"
 #include "../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h"
 #include "../../../Source/Utilities/SharedServices/GuiSharedAutomationService_Controls.h"
 #include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
@@ -242,6 +243,7 @@ TEST_FILE
 		GuiButton* closer = nullptr;
 		PointProtocolInput input(nullptr, false);
 		vint clicks = 0;
+		bool nestedInput = true;
 		NativePoint dialogPoint;
 		protocol.OnNextFrame([&]()
 		{
@@ -267,27 +269,281 @@ TEST_FILE
 				auto mainOrigin = controlHost->GetNativeWindow()->GetClientBoundsInScreen().LeftTop();
 				dialogPoint = NativePoint(origin.x - mainOrigin.x + 50, origin.y - mainOrigin.y + 50);
 				// A synchronous dialog pumps the remaining End and a new Down before this click returns.
-				if (!accepted) input.End();
-				input.Start(dialogPoint);
-				TEST_ASSERT(closer->GetPointEventComposition() == closer->GetBoundsComposition());
+				if (nestedInput)
+				{
+					if (!accepted) input.End();
+					input.Start(dialogPoint);
+					TEST_ASSERT(closer->GetPointEventComposition() == closer->GetBoundsComposition());
+				}
 			});
 			controlHost->ForceCalculateSizeImmediately();
 		});
 		protocol.OnNextFrame([&]()
 		{
-			input.Start(NativePoint(50, 50));
-			input.Up(0, NativePoint(50, 50));
-			if (accepted) input.End();
-			TEST_ASSERT(clicks == 1);
-			TEST_ASSERT(closer->GetPointEventComposition() == closer->GetBoundsComposition());
-			input.Up(0, dialogPoint);
-			input.End();
-			TEST_ASSERT(clicks == 2 && !dialog->GetOpening());
-			TEST_ASSERT(!closer->GetPointEventComposition());
+			for (vint i = 0; i < 2; i++)
+			{
+				input.Start(NativePoint(50, 50));
+				input.Up(0, NativePoint(50, 50));
+				if (accepted) input.End();
+				TEST_ASSERT(clicks == i * 2 + 1);
+				TEST_ASSERT(closer->GetPointEventComposition() == closer->GetBoundsComposition());
+				input.Up(0, dialogPoint);
+				input.End();
+				TEST_ASSERT(clicks == i * 2 + 2 && !dialog->GetOpening());
+				TEST_ASSERT(!closer->GetPointEventComposition());
+			}
+			nestedInput = false;
+			protocol.LClick(NativePoint(50, 50));
+			protocol.LClick(dialogPoint);
+			TEST_ASSERT(clicks == 6 && !dialog->GetOpening());
 		});
 		protocol.OnNextFrame([&]()
 		{
 			SafeDeleteControl(dialog);
+			controlHost->Hide();
+		});
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		StartRemoteControllerTest(protocol);
+	});
+
+	TEST_CATEGORY(L"Deferred left clicks pair by UTC generation time")
+	{
+		GraphicsHostProtocol protocol;
+		List<WString> eventLogs;
+		GuiWindow* controlHost = nullptr;
+		GuiControl* surface = nullptr;
+		List<WString> mouseEvents;
+		Point expectedPosition(80, 70);
+		Func<void()> nestedClick;
+		Func<void()> onEnd;
+		protocol.OnNextFrame([&]()
+		{
+			surface = new GuiControl(theme::ThemeName::CustomControl);
+			surface->SetAcceptPointEvents(true);
+			surface->GetBoundsComposition()->SetExpectedBounds(Rect(20, 30, 220, 230));
+			controlHost->AddChild(surface);
+			auto receiver = surface->GetBoundsComposition()->GetEventReceiver();
+			receiver->pointSequenceEnded.AttachLambda([&](auto*, GuiPointSequenceEndedEventArgs&) { if (onEnd) onEnd(); });
+			auto record = [&](const wchar_t* name, GuiMouseEventArgs& a, bool pressed)
+			{
+				TEST_ASSERT(!surface->GetPointEventComposition());
+				TEST_ASSERT(a.button == NativeMouseButton::Left);
+				TEST_ASSERT(a.left == pressed && !a.right && !a.middle);
+				TEST_ASSERT(a.ctrl && a.shift && a.alt && a.osSuper);
+				TEST_ASSERT(Point(a.x, a.y) == expectedPosition);
+				mouseEvents.Add(name);
+			};
+			receiver->mouseMove.AttachLambda([record](auto*, GuiMouseEventArgs& a) { record(L"Move", a, false); });
+			receiver->mouseDown.AttachLambda([&, record](auto*, GuiMouseEventArgs& a)
+			{
+				record(L"Down", a, true);
+				if (nestedClick)
+				{
+					auto click = nestedClick;
+					nestedClick = {};
+					click();
+				}
+			});
+			receiver->mouseDoubleClick.AttachLambda([record](auto*, GuiMouseEventArgs& a) { record(L"Double", a, true); });
+			receiver->mouseUp.AttachLambda([record](auto*, GuiMouseEventArgs& a) { record(L"Up", a, false); });
+			controlHost->ForceCalculateSizeImmediately();
+		});
+		protocol.OnNextFrame([&]()
+		{
+			gacui_unittest_template::TooltipTimer clock;
+			PointProtocolInput input(protocol.GetEvents());
+			auto tap = [&]()
+			{
+				input.Start(NativePoint(100, 100));
+				input.Up(0, NativePoint(103, 104));
+				input.End(100000);
+			};
+			for (auto interval : { 0,499,500,501 })
+			{
+				clock.Advance(500);
+				tap();
+				AssertEventLogs(mouseEvents, L"Move", L"Down", L"Up");
+				clock.Advance(interval);
+				tap();
+				if (interval < 500) AssertEventLogs(mouseEvents, L"Move", L"Down", L"Double", L"Up");
+				else AssertEventLogs(mouseEvents, L"Move", L"Down", L"Up");
+			}
+			clock.Advance(500);
+			for (vint i = 0; i < 4; i++)
+			{
+				tap();
+				if (i % 2 == 0) AssertEventLogs(mouseEvents, L"Move", L"Down", L"Up");
+				else AssertEventLogs(mouseEvents, L"Move", L"Down", L"Double", L"Up");
+			}
+			tap();
+			AssertEventLogs(mouseEvents, L"Move", L"Down", L"Up");
+			clock.Advance(501);
+			tap();
+			AssertEventLogs(mouseEvents, L"Move", L"Down", L"Up");
+			clock.Advance(499);
+			tap();
+			AssertEventLogs(mouseEvents, L"Move", L"Down", L"Double", L"Up");
+
+			// Commit the first click before its Down callback pumps another complete sequence.
+			nestedClick = tap;
+			tap();
+			AssertEventLogs(mouseEvents, L"Move", L"Down", L"Move", L"Down", L"Double", L"Up", L"Up");
+			tap();
+			AssertEventLogs(mouseEvents, L"Move", L"Down", L"Up");
+
+			auto host = surface->GetBoundsComposition()->GetRelatedGraphicsHost();
+			auto window = host->GetNativeWindow();
+			host->SetNativeWindow(window);
+			tap();
+			AssertEventLogs(mouseEvents, L"Move", L"Down", L"Double", L"Up");
+			tap();
+			AssertEventLogs(mouseEvents, L"Move", L"Down", L"Up");
+			host->SetNativeWindow(nullptr);
+			host->SetNativeWindow(window);
+			tap();
+			AssertEventLogs(mouseEvents, L"Move", L"Down", L"Up");
+			tap();
+			AssertEventLogs(mouseEvents, L"Move", L"Down", L"Double", L"Up");
+			tap();
+			AssertEventLogs(mouseEvents, L"Move", L"Down", L"Up");
+			GuiWindow replacement(theme::ThemeName::Window);
+			host->SetNativeWindow(replacement.GetNativeWindow());
+			host->SetNativeWindow(window);
+			tap();
+			AssertEventLogs(mouseEvents, L"Move", L"Down", L"Up");
+			onEnd = [&]() { clock.Advance(500); };
+			tap();
+			AssertEventLogs(mouseEvents, L"Move", L"Down", L"Up");
+			onEnd = {};
+			clock.Advance(499);
+			tap();
+			AssertEventLogs(mouseEvents, L"Move", L"Down", L"Double", L"Up");
+			controlHost->Hide();
+		});
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		StartRemoteControllerTest(protocol);
+	});
+
+	TEST_CATEGORY(L"Only generated left clicks update host-local pairing")
+	{
+		GraphicsHostProtocol protocol;
+		List<WString> eventLogs;
+		GuiWindow* controlHost = nullptr;
+		GuiWindow* otherWindow = nullptr;
+		GuiControl* surfaces[3] = {};
+		vint doubles[3] = {}, downs[3] = {}, ups[3] = {};
+		vint flags = 3, selectGesture = 0;
+		bool accepted = true;
+		protocol.OnNextFrame([&]()
+		{
+			otherWindow = new GuiWindow(theme::ThemeName::Window);
+			otherWindow->SetClientSize(Size(240, 230));
+			for (vint i = 0; i < 3; i++)
+			{
+				auto surface = surfaces[i] = new GuiControl(theme::ThemeName::CustomControl);
+				surface->GetBoundsComposition()->SetExpectedBounds(i == 1 ? Rect(240, 30, 440, 230) : Rect(20, 30, 220, 230));
+				(i == 2 ? otherWindow : controlHost)->AddChild(surface);
+				auto receiver = surface->GetBoundsComposition()->GetEventReceiver();
+				receiver->pointSequenceStarted.AttachLambda([&, surface](auto*, GuiPointSequenceStartedEventArgs& a)
+				{
+					if (accepted) a.acceptedComposition = surface->GetBoundsComposition();
+					a.generateLeftButtonClick = (flags & 1) != 0;
+					a.generateRightButtonClick = (flags & 2) != 0;
+				});
+				receiver->pointGesture.AttachLambda([&](auto*, GuiPointGestureEventArgs& a)
+				{
+					a.selected = selectGesture == 1 && (a.gesture.TryGet<GuiPointGesture_ShortPressing>() || a.gesture.TryGet<GuiPointGesture_LongPressing>())
+						|| selectGesture == 2 && a.gesture.TryGet<GuiPointGesture_Scrolling>()
+						|| selectGesture == 3 && a.gesture.TryGet<GuiPointGesture_DraggingAndRotation>();
+				});
+				receiver->mouseDown.AttachLambda([&, i](auto*, GuiMouseEventArgs&) { downs[i]++; });
+				receiver->mouseUp.AttachLambda([&, i](auto*, GuiMouseEventArgs&) { ups[i]++; });
+				receiver->mouseDoubleClick.AttachLambda([&, i](auto*, GuiMouseEventArgs& a)
+				{
+					TEST_ASSERT(a.button == NativeMouseButton::Left && a.left);
+					TEST_ASSERT(!surfaces[i]->GetPointEventComposition());
+					doubles[i]++;
+				});
+			}
+			otherWindow->ShowWithOwner(controlHost);
+			otherWindow->GetNativeWindow()->SetBounds(NativeRect(400, 250, 640, 480));
+			otherWindow->ForceCalculateSizeImmediately();
+			controlHost->ForceCalculateSizeImmediately();
+		});
+		protocol.OnNextFrame([&]()
+		{
+			gacui_unittest_template::TooltipTimer clock;
+			PointProtocolInput input(protocol.GetEvents(), false);
+			auto tap = [&](NativePoint position, vuint64_t duration = 100000)
+			{
+				input.Start(position);
+				input.At(duration);
+				input.Up(0, position);
+				input.End(duration);
+			};
+			tap(NativePoint(100, 100));
+			tap(NativePoint(500, 350));
+			TEST_ASSERT(doubles[0] == 0 && doubles[2] == 0);
+			tap(NativePoint(300, 100));
+			tap(NativePoint(500, 350));
+			TEST_ASSERT(doubles[0] == 0 && doubles[1] == 1 && doubles[2] == 1);
+
+			// Neither physical mouse events nor rejected point compatibility can prime or consume a pair.
+			for (bool prime : { false,true })
+			for (vint scenario = 0; scenario < 11; scenario++)
+			{
+				clock.Advance(500);
+				auto before = doubles[0];
+				if (prime) tap(NativePoint(100, 100));
+				flags = scenario == 0 ? 0 : scenario == 1 ? 2 : 3;
+				selectGesture = scenario == 2 ? 1 : scenario == 6 ? 2 : scenario == 7 ? 3 : 0;
+				accepted = scenario != 9;
+				if (scenario == 10)
+				{
+					protocol.LClick(NativePoint(100, 100));
+				}
+				else
+				{
+					input.Start(NativePoint(100, 100));
+					if (scenario == 4) { input.Down(1, NativePoint(100, 100)); input.Up(1, NativePoint(100, 100)); }
+					if (scenario == 5 || scenario == 6) { input.Move(NativePoint(110, 100)); input.Move(NativePoint(100, 100)); }
+					if (scenario != 3) input.Up(0, NativePoint(100, 100));
+					input.End(scenario == 8 ? 500000 : 100000, scenario == 3 ? PointSequenceEndReason::Canceled_PlatformCanceled : PointSequenceEndReason::Succeeded);
+				}
+				TEST_ASSERT(doubles[0] == before);
+				flags = 3; selectGesture = 0; accepted = true;
+				tap(NativePoint(100, 100));
+				TEST_ASSERT(doubles[0] == before + (prime ? 1 : 0));
+			}
+			clock.Advance(500);
+			flags = 1;
+			auto before = doubles[0];
+			tap(NativePoint(100, 100), 500000);
+			TEST_ASSERT(doubles[0] == before);
+			tap(NativePoint(100, 100), 500000);
+			TEST_ASSERT(doubles[0] == before + 1);
+			flags = 3;
+
+			// A synthetic pair targets its own start position while physical capture stays on another control.
+			for (auto button : { NativeMouseButton::Left,NativeMouseButton::Right })
+			{
+				clock.Advance(500);
+				auto physical = MakeMouseInfoWithButton(button, button == NativeMouseButton::Left, false, button == NativeMouseButton::Right, 300, 100, 0);
+				protocol.GetEvents()->OnIOButtonDown(physical);
+				auto window = GetCurrentController()->WindowService()->GetMainWindow();
+				TEST_ASSERT(window->IsCapturing());
+				auto physicalDowns = downs[1], physicalUps = ups[1];
+				tap(NativePoint(100, 100));
+				tap(NativePoint(100, 100));
+				TEST_ASSERT(window->IsCapturing());
+				TEST_ASSERT(downs[1] == physicalDowns && ups[1] == physicalUps);
+				physical.info.left = physical.info.right = false;
+				physical.info.x = physical.info.y = 100;
+				protocol.GetEvents()->OnIOButtonUp(physical);
+				TEST_ASSERT(ups[1] == physicalUps + 1 && !window->IsCapturing());
+			}
+			for (vint i = 0; i < 3; i++) TEST_ASSERT(downs[i] == ups[i]);
+			delete otherWindow;
 			controlHost->Hide();
 		});
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
