@@ -1956,6 +1956,7 @@ Touch Experience
 		struct PointSequenceEndInfo
 		{
 			vuint64_t				sequenceId = 0;
+			/// <summary>Microseconds from a monotonic clock, unrelated to wall-clock time.</summary>
 			vuint64_t				timestamp = 0;
 			bool					accepted = false;
 			PointSequenceEndReason	reason = PointSequenceEndReason::Succeeded;
@@ -26936,6 +26937,7 @@ Host
 				GuiGraphicsComposition*					mouseCaptureComposition = nullptr;
 				bool									mouseButtonStates[5] = {};
 				bool									suppressNativeMouseCapture = false;
+				Nullable<DateTime>						lastGeneratedLeftClick;
 				CompositionList							mouseEnterCompositions;
 				void									RefreshRelatedHostRecord(INativeWindow* nativeWindow);
 

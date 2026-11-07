@@ -5228,6 +5228,18 @@ GuiGraphicsHost
 				PointUncapture();
 				if (!button) return;
 
+				bool doubleClick = false;
+				if (button.Value() == NativeMouseButton::Left)
+				{
+					auto now = DateTime::UtcTime();
+					doubleClick = lastGeneratedLeftClick
+						&& now.osMilliseconds >= lastGeneratedLeftClick.Value().osMilliseconds
+						&& now.osMilliseconds - lastGeneratedLeftClick.Value().osMilliseconds < 500;
+					// Consume the pair before mouse callbacks can pump another point sequence.
+					if (doubleClick) lastGeneratedLeftClick = Nullable<DateTime>();
+					else lastGeneratedLeftClick = now;
+				}
+
 				// The synchronous click needs only composition capture; leave physical native capture intact.
 				auto physicalCapture = mouseCaptureComposition;
 				suppressNativeMouseCapture = true;
@@ -5249,6 +5261,7 @@ GuiGraphicsHost
 				mouse.left = button.Value() == NativeMouseButton::Left;
 				mouse.right = button.Value() == NativeMouseButton::Right;
 				MouseDown(button.Value(), mouse);
+				if (doubleClick) MouseDoubleClick(NativeMouseButton::Left, mouse);
 				mouse.left = mouse.right = false;
 				MouseUp(button.Value(), mouse);
 				mouseCaptureComposition = physicalCapture;
@@ -5660,6 +5673,7 @@ GuiGraphicsHost
 			{
 				if (hostRecord.nativeWindow != _nativeWindow)
 				{
+					lastGeneratedLeftClick = Nullable<DateTime>();
 					if (hostRecord.nativeWindow)
 					{
 						ResetMouseCapture();
@@ -79535,21 +79549,21 @@ MomentumScrollingState
 			public:
 				struct Sample
 				{
-					vuint64_t time;
-					double position;
+					vuint64_t					time;
+					double						position;
 				};
 
-				MomentumScrolling* owner;
-				controls::GuiControl* control;
-				Ptr<controls::GuiDisposedFlag> disposed;
-				GuiGraphicsComposition* bounds;
-				GuiGraphicsHost* host = nullptr;
-				Ptr<IGuiGraphicsEventHandler> startedHandler, actionHandler, gestureHandler, endedHandler;
-				List<Sample> samples;
-				vuint64_t sequence = 0, started = 0, timestamp = 0, playbackStart = 0, version = 0;
-				double position = 0, velocity = 0, duration = 0, elapsed = 0, residue = 0;
-				vint boundary = 1;
-				bool vertical = false, scrolling = false, stopped = true, generating = false;
+				MomentumScrolling*				owner;
+				controls::GuiControl*			control;
+				Ptr<controls::GuiDisposedFlag>	disposed;
+				GuiGraphicsComposition*			bounds;
+				GuiGraphicsHost*				host = nullptr;
+				Ptr<IGuiGraphicsEventHandler> 	startedHandler, actionHandler, gestureHandler, endedHandler;
+				List<Sample>					samples;
+				vuint64_t						sequence = 0, started = 0, timestamp = 0, playbackStart = 0, version = 0;
+				double							position = 0, velocity = 0, duration = 0, elapsed = 0, residue = 0;
+				vint							boundary = 1;
+				bool							vertical = false, scrolling = false, stopped = true, generating = false;
 
 				MomentumScrollingState(MomentumScrolling* _owner, controls::GuiControl* _control)
 					:owner(_owner), control(_control), disposed(_control->GetDisposedFlag()), bounds(_control->GetBoundsComposition())
