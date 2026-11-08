@@ -15545,7 +15545,7 @@ namespace vl::presentation::windows
 			if (auto tab = dynamic_cast<GuiTab*>(node->control)) *result = tab->GetPages().Count() > 0;
 			else if (node->kind == Kind::RadioGroup) *result = From(node->Children()).Any([](auto child) { return child->IsSelected(); });
 			else if (auto combo = dynamic_cast<GuiComboBoxListControl*>(node->control)) *result = combo->GetSelectedIndex() >= 0;
-			else if (auto grid = dynamic_cast<GuiVirtualDataGrid*>(node->control)) *result = grid->GetSelectedCell().row >= 0;
+			else if (auto grid = dynamic_cast<GuiVirtualDataGrid*>(node->control); UiaDataGrid(node->control)) *result = grid->GetSelectedCell().row >= 0;
 			else *result = dynamic_cast<GuiDatePicker*>(node->control) != nullptr;
 			return S_OK;
 		}, UIA_SelectionPatternId);
@@ -15770,7 +15770,7 @@ namespace vl::presentation::windows
 	{
 		if (node->kind == Kind::Control)
 		{
-			if (auto grid = dynamic_cast<GuiVirtualDataGrid*>(node->control))
+			if (auto grid = dynamic_cast<GuiVirtualDataGrid*>(node->control); UiaDataGrid(node->control))
 			{
 				auto cell = grid->GetSelectedCell();
 				if (cell.row >= 0 && cell.column >= 0) selected.Add(node->context->Item(node, Kind::Cell, cell.row, cell.column));
@@ -16398,7 +16398,7 @@ namespace vl::presentation::windows
 				if (auto tab = dynamic_cast<GuiTab*>(control)) boolean(tab->GetPages().Count() > 0);
 				else if (kind == Kind::RadioGroup) boolean(From(Children()).Any([](auto child) { return child->IsSelected(); }));
 				else if (auto combo = dynamic_cast<GuiComboBoxListControl*>(control)) boolean(combo->GetSelectedIndex() >= 0);
-				else if (auto grid = dynamic_cast<GuiVirtualDataGrid*>(control)) boolean(grid->GetSelectedCell().row >= 0);
+				else if (auto grid = dynamic_cast<GuiVirtualDataGrid*>(control); UiaDataGrid(control)) boolean(grid->GetSelectedCell().row >= 0);
 				else boolean(dynamic_cast<GuiDatePicker*>(control) != nullptr);
 			}
 			break;
@@ -16595,7 +16595,7 @@ namespace vl::presentation::windows
 	list::IDataGridView* UiaDataGrid(GuiControl* control)
 	{
 		auto grid = dynamic_cast<GuiVirtualDataGrid*>(control);
-		return grid ? dynamic_cast<list::IDataGridView*>(grid->GetItemProvider()->RequestView(WString::Unmanaged(list::IDataGridView::Identifier))) : nullptr;
+		return grid && grid->GetView() == ListViewView::Detail ? dynamic_cast<list::IDataGridView*>(grid->GetItemProvider()->RequestView(WString::Unmanaged(list::IDataGridView::Identifier))) : nullptr;
 	}
 	list::IColumnItemView* UiaColumns(GuiControl* control)
 	{
@@ -16928,7 +16928,7 @@ namespace vl::presentation::windows
 		if (dynamic_cast<GuiMenu*>(control)) return control->GetControlThemeName() == theme::ThemeName::RibbonGroupMenu ? UIA_GroupControlTypeId : UIA_MenuControlTypeId;
 		if (dynamic_cast<GuiPopup*>(control)) return UIA_PaneControlTypeId;
 		if (dynamic_cast<GuiWindow*>(control)) return UIA_WindowControlTypeId;
-		if (dynamic_cast<GuiVirtualDataGrid*>(control)) return UIA_DataGridControlTypeId;
+		if (UiaDataGrid(control)) return UIA_DataGridControlTypeId;
 		if (auto listView = dynamic_cast<GuiVirtualListView*>(control); listView && listView->GetView() == ListViewView::Detail) return UIA_DataGridControlTypeId;
 		if (dynamic_cast<GuiVirtualTreeListControl*>(control)) return UIA_TreeControlTypeId;
 		if (dynamic_cast<GuiListControl*>(control)) return UIA_ListControlTypeId;
@@ -17030,7 +17030,7 @@ namespace vl::presentation::windows
 		case UIA_GridPatternId: return UiaSpatialGrid(control).x >= 0 || Supports(UIA_TablePatternId);
 		case UIA_TablePatternId: return UiaDataGrid(control) || listView && listView->GetView() == ListViewView::Detail || calendar;
 		case UIA_ItemContainerPatternId: return list || calendar;
-		case UIA_MultipleViewPatternId: return listView && !UiaDataGrid(control);
+		case UIA_MultipleViewPatternId: return listView && !dynamic_cast<GuiVirtualDataGrid*>(control);
 		case UIA_WindowPatternId: case UIA_TransformPatternId: return dynamic_cast<GuiWindow*>(control) && !dynamic_cast<GuiPopup*>(control);
 		default: return false;
 		}
@@ -17069,6 +17069,7 @@ namespace vl::presentation::windows
 	{
 		if (kind == Kind::CalendarDay) return UiaCalendar(control)->GetDayButton(row, column)->GetFocused();
 		if (!control->GetFocused()) return false;
+		if (auto window = dynamic_cast<GuiControlHost*>(control)) return !window->GetGraphicsHost()->GetFocusedComposition();
 		if (kind == Kind::Control)
 			for (auto parent = control->GetParent(); parent; parent = parent->GetParent())
 				if (auto calendar = UiaCalendar(parent))
@@ -17077,7 +17078,7 @@ namespace vl::presentation::windows
 						if (calendar->GetDayButton(r, c) == control) return false;
 					break;
 				}
-		if (auto grid = dynamic_cast<GuiVirtualDataGrid*>(control))
+		if (auto grid = dynamic_cast<GuiVirtualDataGrid*>(control); UiaDataGrid(control))
 		{
 			auto selected = grid->GetSelectedCell();
 			return selected.row >= 0 && selected.column >= 0 ? kind == Kind::Cell && IsSelected() : kind == Kind::Control;
