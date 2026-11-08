@@ -25,9 +25,11 @@ namespace vl
 			{
 				friend class MomentumScrollingState;
 			protected:
-				controls::GuiInstanceRootObject*                rootObject = nullptr;
-				collections::List<Ptr<MomentumScrollingState>>  states;
-				double                                          deceleration = 1.0;
+				using StateMap = collections::Dictionary<controls::GuiControl*, Ptr<MomentumScrollingState>>;
+
+				controls::GuiInstanceRootObject*                 rootObject = nullptr;
+				StateMap                                        states;
+				double                                          deceleration = 2.0;
 
 				void                                            RetireDisposedControls();
 			public:
@@ -43,7 +45,7 @@ namespace vl
 				/// <summary>Stop continuation and remove listeners. An unattached control is a no-op.</summary>
 				/// <param name="control">The control to detach.</param>
 				void                                            DetachControl(controls::GuiControl* control);
-				/// <summary>Get the positive deceleration multiplier, initially 1.0 (320 logical pixels per second squared).</summary>
+				/// <summary>Get the positive deceleration multiplier, initially 2.0 (640 logical pixels per second squared).</summary>
 				/// <returns>The multiplier.</returns>
 				double                                          GetDeceleration();
 				/// <summary>Set a finite positive multiplier for subsequent playbacks.</summary>

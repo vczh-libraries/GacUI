@@ -256,35 +256,35 @@
           </ev.Executed-eval>
         </ToolstripCommand>
 
-        <ToolstripCommand ref.Name="commandUndo" Text="Undo" Image-uri="res://ToolbarImages/Undo" LargeImage-uri="res://ToolbarImages/UndoLarge" ShortcutBuilder-bind="document.Focused ? &quot;Ctrl+Z&quot; : &quot;&quot;">
+        <ToolstripCommand ref.Name="commandUndo" Text="Undo" Image-uri="res://ToolbarImages/Undo" LargeImage-uri="res://ToolbarImages/UndoLarge" ShortcutBuilder="Ctrl+Z">
           <att.Enabled-bind>document.observe as _(_.CanUndo() on _.UndoRedoChanged)</att.Enabled-bind>
           <ev.Executed-eval>
             <![CDATA[document.Undo();]]>
           </ev.Executed-eval>
         </ToolstripCommand>
 
-        <ToolstripCommand ref.Name="commandRedo" Text="Redo" Image-uri="res://ToolbarImages/Redo" LargeImage-uri="res://ToolbarImages/RedoLarge" ShortcutBuilder-bind="document.Focused ? &quot;Ctrl+Y&quot; : &quot;&quot;">
+        <ToolstripCommand ref.Name="commandRedo" Text="Redo" Image-uri="res://ToolbarImages/Redo" LargeImage-uri="res://ToolbarImages/RedoLarge" ShortcutBuilder="Ctrl+Y">
           <att.Enabled-bind>document.observe as _(_.CanRedo() on _.UndoRedoChanged)</att.Enabled-bind>
           <ev.Executed-eval>
             <![CDATA[document.Redo();]]>
           </ev.Executed-eval>
         </ToolstripCommand>
 
-        <ToolstripCommand ref.Name="commandCopy" Text="Copy" Image-uri="res://ToolbarImages/Copy" LargeImage-uri="res://ToolbarImages/CopyLarge" ShortcutBuilder-bind="document.Focused ? &quot;Ctrl+C&quot; : &quot;&quot;">
+        <ToolstripCommand ref.Name="commandCopy" Text="Copy" Image-uri="res://ToolbarImages/Copy" LargeImage-uri="res://ToolbarImages/CopyLarge" ShortcutBuilder="Ctrl+C">
           <att.Enabled-bind>document.observe as _(_.CanCopy() on _.SelectionChanged)</att.Enabled-bind>
           <ev.Executed-eval>
             <![CDATA[document.Copy();]]>
           </ev.Executed-eval>
         </ToolstripCommand>
 
-        <ToolstripCommand ref.Name="commandCut" Text="Cut" Image-uri="res://ToolbarImages/Cut" LargeImage-uri="res://ToolbarImages/CutLarge" ShortcutBuilder-bind="document.Focused ? &quot;Ctrl+X&quot; : &quot;&quot;">
+        <ToolstripCommand ref.Name="commandCut" Text="Cut" Image-uri="res://ToolbarImages/Cut" LargeImage-uri="res://ToolbarImages/CutLarge" ShortcutBuilder="Ctrl+X">
           <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
           <ev.Executed-eval>
             <![CDATA[document.Cut();]]>
           </ev.Executed-eval>
         </ToolstripCommand>
 
-        <ToolstripCommand ref.Name="commandPaste" Text="Paste" Image-uri="res://ToolbarImages/Paste" LargeImage-uri="res://ToolbarImages/PasteLarge" ShortcutBuilder-bind="document.Focused ? &quot;Ctrl+V&quot; : &quot;&quot;">
+        <ToolstripCommand ref.Name="commandPaste" Text="Paste" Image-uri="res://ToolbarImages/Paste" LargeImage-uri="res://ToolbarImages/PasteLarge" ShortcutBuilder="Ctrl+V">
           <att.Enabled-bind>self.observe as _(document.CanPaste() on _.BoundsComposition.clipboardNotify)</att.Enabled-bind>
           <ev.Executed-eval>
             <![CDATA[document.Paste();]]>
@@ -298,7 +298,7 @@
           </ev.Executed-eval>
         </ToolstripCommand>
 
-        <ToolstripCommand ref.Name="commandSelect" Text="Select All" ShortcutBuilder-bind="document.Focused ? &quot;Ctrl+A&quot; : &quot;&quot;">
+        <ToolstripCommand ref.Name="commandSelect" Text="Select All" ShortcutBuilder="Ctrl+A">
           <ev.Executed-eval>
             <![CDATA[document.SelectAll();]]>
           </ev.Executed-eval>
@@ -502,19 +502,19 @@
           </ev.Executed-eval>
         </ToolstripCommand>
 
-        <ToolstripCommand ref.Name="commandViewOnly" Text="Preview" Image-uri="res://ToolbarImages/ViewOnly" LargeImage-uri="res://ToolbarImages/ViewOnlyLarge" ShortcutBuilder-bind="document.Focused ? &quot;Ctrl+Shift+P&quot; : &quot;&quot;">
+        <ToolstripCommand ref.Name="commandViewOnly" Text="Preview" Image-uri="res://ToolbarImages/ViewOnly" LargeImage-uri="res://ToolbarImages/ViewOnlyLarge" ShortcutBuilder="Ctrl+Shift+P">
           <ev.Executed-eval>
             <![CDATA[self.SetEditMode(ViewOnly);]]>
           </ev.Executed-eval>
         </ToolstripCommand>
 
-        <ToolstripCommand ref.Name="commandSelectable" Text="Selectable" Image-uri="res://ToolbarImages/Selectable" LargeImage-uri="res://ToolbarImages/SelectableLarge" ShortcutBuilder-bind="document.Focused ? &quot;Ctrl+Shift+S&quot; : &quot;&quot;">
+        <ToolstripCommand ref.Name="commandSelectable" Text="Selectable" Image-uri="res://ToolbarImages/Selectable" LargeImage-uri="res://ToolbarImages/SelectableLarge" ShortcutBuilder="Ctrl+Shift+S">
           <ev.Executed-eval>
             <![CDATA[self.SetEditMode(Selectable);]]>
           </ev.Executed-eval>
         </ToolstripCommand>
 
-        <ToolstripCommand ref.Name="commandEditable" Text="Editable" Image-uri="res://ToolbarImages/Editable" LargeImage-uri="res://ToolbarImages/EditableLarge" ShortcutBuilder-bind="document.Focused ? &quot;Ctrl+Shift+E&quot; : &quot;&quot;">
+        <ToolstripCommand ref.Name="commandEditable" Text="Editable" Image-uri="res://ToolbarImages/Editable" LargeImage-uri="res://ToolbarImages/EditableLarge" ShortcutBuilder="Ctrl+Shift+E">
           <ev.Executed-eval>
             <![CDATA[self.SetEditMode(Editable);]]>
           </ev.Executed-eval>

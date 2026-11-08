@@ -28,6 +28,7 @@ IGuiHostedApplication
 
 		virtual INativeWindow*				GetNativeWindowHost() = 0;
 		virtual INativeController*			GetNativeController() = 0;
+		virtual void						DismissUnrelatedPopups(INativeWindow* clickedWindow) = 0;
 	};
 
 	extern IGuiHostedApplication*			GetHostedApplication();

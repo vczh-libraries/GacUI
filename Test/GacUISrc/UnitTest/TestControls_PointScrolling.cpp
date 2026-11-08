@@ -4,6 +4,7 @@
 #include "../../../Source/GacUI.h"
 #include <limits>
 #include <cmath>
+#include <memory>
 
 extern void SetGuiMainProxy(const Func<void()>& proxy);
 
@@ -343,7 +344,7 @@ TEST_FILE
 				auto momentum = new MomentumScrolling;
 				root.AddComponent(momentum);
 				alignas(MomentumTestControl) char storage[sizeof(MomentumTestControl)];
-				auto control = new(storage) MomentumTestControl;
+				auto control = std::construct_at(reinterpret_cast<MomentumTestControl*>(storage));
 				MomentumTestControl survivor, absent;
 				momentum->AttachControl(control);
 				momentum->AttachControl(&survivor);
@@ -357,7 +358,7 @@ TEST_FILE
 				if (dispose)
 				{
 					control->~MomentumTestControl();
-					control = new(storage) MomentumTestControl;
+					control = std::construct_at(reinterpret_cast<MomentumTestControl*>(storage));
 				}
 				else momentum->DetachControl(control);
 				momentum->AttachControl(control);
@@ -390,13 +391,15 @@ TEST_FILE
 			auto momentum = new MomentumScrolling;
 			root.AddComponent(momentum);
 			MomentumTestControl first, second;
+			collections::List<MomentumTestControl*> disposed;
 			for (auto survivor : { &first,&second })
 			{
 				auto dead = new MomentumTestControl;
+				disposed.Add(dead);
 				momentum->AttachControl(dead);
 				momentum->AttachControl(survivor);
-				delete dead;
 			}
+			for (auto dead : disposed) delete dead;
 			momentum->EnvironmentChanged();
 			vint total = 0;
 			for (auto survivor : { &second,&first })
@@ -519,7 +522,7 @@ TEST_FILE
 		vint contextMenuOpened = 0;
 		Ptr<PointProtocolInput> pointInput;
 		vint shorts = 0, longs = 0, lefts = 0, rights = 0;
-		vint hyperlinks = 0, childPresses = 0;
+		vint hyperlinks = 0, childPresses = 0, childClicks = 0;
 		bool selected = false, suppressClicks = false;
 		auto position = [&](TextPos caret)
 		{
@@ -657,6 +660,26 @@ TEST_FILE
 				}
 				suppressClicks = false;
 			}
+			// Ordinary hit testing clamps blank viewport space to a valid caret.
+			control->SetText(family == 2 ? L"0123456789" : L"0123456789\r\n\r\nlast");
+			document->SetCaret(TextPos(), TextPos());
+			document->EnsureCaretVisible();
+			for (bool belowLast : { false,true })
+			{
+				if (belowLast && family == 2) continue;
+				auto origin = belowLast ? protocol.LocationOf(control, 0.8, 0.8) : position(TextPos(0, 10));
+				if (!belowLast) origin.x += 50;
+				document->SetCaret(TextPos(0, 2), TextPos(0, 6));
+				protocol.LClick(origin);
+				auto expected = document->GetCaretEnd();
+				TEST_ASSERT(document->GetCaretBegin() == expected);
+				TEST_ASSERT(expected == (belowLast ? TextPos(1, 4) : TextPos(0, 10)));
+				document->SetCaret(TextPos(0, 6), TextPos(0, 2));
+				other->SetFocused();
+				input.Start(origin); input.Up(0, origin); input.End(499999);
+				TEST_ASSERT(document->GetCaretBegin() == expected && document->GetCaretEnd() == expected);
+				TEST_ASSERT(control->GetFocused());
+			}
 			auto model = Ptr(new DocumentModel);
 			auto paragraph = Ptr(new DocumentParagraphRun);
 			auto text = Ptr(new DocumentTextRun);
@@ -683,6 +706,7 @@ TEST_FILE
 			{
 				if (a.gesture.TryGet<GuiPointGesture_LongPressing>()) childPresses++;
 			});
+			embeddedButton->Clicked.AttachLambda([&](auto*, auto&) { childClicks++; });
 		});
 		protocol.OnNextIdleFrame([&]()
 		{
@@ -695,6 +719,7 @@ TEST_FILE
 			for (bool childAccepts : { false,true })
 			{
 				embeddedButton->SetAcceptPointEvents(childAccepts);
+				document->SetCaret(TextPos(), TextPos());
 				other->SetFocused();
 				longs = 0; selected = false;
 				origin = protocol.LocationOf(embeddedButton);
@@ -704,8 +729,20 @@ TEST_FILE
 				TEST_ASSERT(longs == (childAccepts ? 0 : 1) && !selected);
 				TEST_ASSERT(document->GetCaretBegin() == TextPos() && document->GetCaretEnd() == TextPos());
 				TEST_ASSERT(!control->GetFocused());
+				protocol.LClick(origin);
+				TEST_ASSERT(childClicks == (childAccepts ? 3 : 1));
+				auto expectedBegin = document->GetCaretBegin();
+				auto expectedEnd = document->GetCaretEnd();
+				auto expectedFocus = control->GetFocused();
+				document->SetCaret(TextPos(), TextPos());
+				other->SetFocused();
+				input.Start(origin); input.Up(0, origin); input.End(499999);
+				TEST_ASSERT(childClicks == (childAccepts ? 4 : 2));
+				TEST_ASSERT(document->GetCaretBegin() == expectedBegin && document->GetCaretEnd() == expectedEnd);
+				TEST_ASSERT(control->GetFocused() == expectedFocus);
 			}
 			TEST_ASSERT(childPresses == 1);
+			document->SetCaret(TextPos(), TextPos());
 			if (viewer) control->SetControlTemplate([](const Value&) { return new darkskin::DocumentViewerTemplate; });
 			else control->SetControlTemplate([](const Value&) { return new darkskin::DocumentLabelTemplate; });
 		});
@@ -726,6 +763,7 @@ TEST_FILE
 			{
 				GetApplication()->RefreshThemes();
 				TEST_ASSERT(control->GetContextMenu() == contextMenu && control->GetDisplayContextMenuOnRightClick());
+				document->SetCaret(TextPos(), TextPos(0, 4));
 				origin = position(TextPos(0, 4));
 				auto opened = contextMenuOpened;
 				input.Start(origin);
@@ -734,7 +772,16 @@ TEST_FILE
 				input.Up(0, origin); input.End(500000);
 				TEST_ASSERT(contextMenu->GetOpening() && contextMenuOpened == opened + 1);
 				TEST_ASSERT(document->GetCaretBegin() == TextPos() && document->GetCaretEnd() == TextPos(0, 4));
-				contextMenu->Hide();
+				origin = position(TextPos());
+				input.Start(origin);
+				TEST_ASSERT(contextMenu->GetOpening());
+				input.End(0, PointSequenceEndReason::Canceled_PlatformCanceled);
+				TEST_ASSERT(contextMenu->GetOpening());
+				input.Start(origin); input.Up(0, origin);
+				TEST_ASSERT(contextMenu->GetOpening());
+				input.End(499999);
+				TEST_ASSERT(!contextMenu->GetOpening());
+				TEST_ASSERT(document->GetCaretBegin() == TextPos() && document->GetCaretEnd() == TextPos());
 			}
 			control->SetContextMenu(nullptr);
 			window->Hide();
@@ -1211,16 +1258,16 @@ TEST_FILE
 				selected();
 				clock->Advance(100);
 				GetApplication()->GetMainWindow()->GetTimerManager()->Play();
-				TEST_ASSERT(view->GetViewPosition().y == 190);
+				TEST_ASSERT(view->GetViewPosition().y == 189);
 			});
 			protocol->OnNextIdleFrame(L"Momentum scrolled with capture cleared", [&]()
 			{
 				selected();
-				clock->Advance(900);
+				clock->Advance(400);
 				GetApplication()->GetMainWindow()->GetTimerManager()->Play();
-				TEST_ASSERT(view->GetViewPosition().y == 320);
+				TEST_ASSERT(view->GetViewPosition().y == 240);
 			});
-			protocol->OnNextIdleFrame(L"Momentum stopped at one second", [&]()
+			protocol->OnNextIdleFrame(L"Momentum stopped at half a second", [&]()
 			{
 				selected();
 				input->Start(origin);
@@ -1228,7 +1275,7 @@ TEST_FILE
 				momentum->DetachControl(view);
 				clock->Advance(1000);
 				GetApplication()->GetMainWindow()->GetTimerManager()->Play();
-				TEST_ASSERT(view->GetViewPosition().y == 480);
+				TEST_ASSERT(view->GetViewPosition().y == 400);
 			});
 			protocol->OnNextIdleFrame(L"Detachment stopped continuation", [&]()
 			{
@@ -1310,7 +1357,9 @@ TEST_FILE
 					TEST_ASSERT(textBox->GetCaretBegin() != textBox->GetCaretEnd());
 					state->caretBegin = textBox->GetCaretBegin(); state->caretEnd = textBox->GetCaretEnd();
 					state->input->Start(state->origin); state->input->Up(0, state->origin); state->input->End(100000);
-					assertSelection();
+					TEST_ASSERT(textBox->GetCaretBegin() == state->caretEnd && textBox->GetCaretEnd() == state->caretEnd);
+					// Restore the range for subsequent scrolling and template checks.
+					textBox->SetCaret(state->caretBegin, state->caretEnd);
 					textBox->SetControlTemplate([](const description::Value&) { return new darkskin::DocumentViewerTemplate; });
 					textBox->SetEditMode(GuiDocumentEditMode::Selectable);
 				});

@@ -14,7 +14,7 @@ namespace vl::presentation::windows
 	{
 		if (node->kind == Kind::Control)
 		{
-			if (auto grid = dynamic_cast<GuiVirtualDataGrid*>(node->control))
+			if (auto grid = dynamic_cast<GuiVirtualDataGrid*>(node->control); UiaDataGrid(node->control))
 			{
 				auto cell = grid->GetSelectedCell();
 				if (cell.row >= 0 && cell.column >= 0) selected.Add(node->context->Item(node, Kind::Cell, cell.row, cell.column));

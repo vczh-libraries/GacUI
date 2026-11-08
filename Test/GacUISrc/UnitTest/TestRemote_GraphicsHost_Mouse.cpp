@@ -307,6 +307,79 @@ TEST_FILE
 		StartRemoteControllerTest(protocol);
 	});
 
+	TEST_CATEGORY(L"Generated clicks hit children and bubble independently of point ownership")
+	{
+		GraphicsHostProtocol protocol;
+		List<WString> eventLogs;
+		GuiWindow* controlHost = nullptr;
+		GuiControl* parent = nullptr;
+		GuiButton* child = nullptr;
+		GuiBoundsComposition* hit = nullptr;
+		bool handleChild = false;
+		PointProtocolInput input(nullptr, false);
+		vint clicks = 0;
+		vint phases[2][3] = {};
+		protocol.OnNextFrame([&]()
+		{
+			parent = new GuiControl(theme::ThemeName::CustomControl);
+			parent->SetAcceptPointEvents(true);
+			parent->GetBoundsComposition()->SetExpectedBounds(Rect(20, 30, 320, 230));
+			controlHost->AddChild(parent);
+			child = new GuiButton(theme::ThemeName::Button);
+			child->GetBoundsComposition()->SetExpectedBounds(Rect(30, 40, 130, 90));
+			parent->AddChild(child);
+			hit = new GuiBoundsComposition;
+			hit->SetAlignmentToParent(Margin(0, 0, 0, 0));
+			child->GetContainerComposition()->AddChild(hit);
+			child->Clicked.AttachLambda([&](auto*, auto&) { clicks++; });
+			for (vint i = 0; i < 2; i++)
+			{
+				auto receiver = (i ? child->GetBoundsComposition() : parent->GetBoundsComposition())->GetEventReceiver();
+				auto record = [&, i](GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments, vint phase)
+				{
+					TEST_ASSERT(arguments.eventSource == child->GetBoundsComposition() && arguments.compositionSource == hit);
+					TEST_ASSERT(sender == (i ? child->GetBoundsComposition() : parent->GetBoundsComposition()));
+					TEST_ASSERT(Point(arguments.x, arguments.y) == (i ? Point(20, 20) : Point(50, 60)));
+					phases[i][phase]++;
+					if (i && handleChild) arguments.handled = true;
+				};
+				receiver->mouseDown.AttachLambda([=](auto* sender, auto& args) { record(sender, args, 0); });
+				receiver->mouseUp.AttachLambda([=](auto* sender, auto& args) { record(sender, args, 1); });
+				receiver->mouseDoubleClick.AttachLambda([=](auto* sender, auto& args) { record(sender, args, 2); });
+			}
+			controlHost->ForceCalculateSizeImmediately();
+			input.events = protocol.GetEvents();
+		});
+		protocol.OnNextFrame([&]()
+		{
+			auto clock = Ptr(new gacui_unittest_template::TooltipTimer);
+			for (bool childAccepts : { false,true })
+			{
+				child->SetAcceptPointEvents(childAccepts);
+				input.Start(NativePoint(70, 90));
+				TEST_ASSERT(parent->GetPointEventComposition() == (childAccepts ? child->GetBoundsComposition() : parent->GetBoundsComposition()));
+				input.Up(0, NativePoint(70, 90)); input.End(100000);
+			}
+			TEST_ASSERT(clicks == 2);
+			TEST_ASSERT(phases[0][0] == 2 && phases[0][1] == 2 && phases[0][2] == 1);
+			TEST_ASSERT(phases[1][0] == 2 && phases[1][1] == 2 && phases[1][2] == 1);
+			protocol.LClick(NativePoint(70, 90));
+			TEST_ASSERT(clicks == 3);
+			TEST_ASSERT(phases[0][0] == 3 && phases[0][1] == 3 && phases[0][2] == 1);
+			TEST_ASSERT(phases[1][0] == 3 && phases[1][1] == 3 && phases[1][2] == 1);
+			handleChild = true;
+			clock->Advance(500);
+			input.Start(NativePoint(70, 90));
+			input.Up(0, NativePoint(70, 90)); input.End(100000);
+			TEST_ASSERT(clicks == 4);
+			TEST_ASSERT(phases[0][0] == 3 && phases[0][1] == 3 && phases[0][2] == 1);
+			TEST_ASSERT(phases[1][0] == 4 && phases[1][1] == 4 && phases[1][2] == 1);
+			controlHost->Hide();
+		});
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		StartRemoteControllerTest(protocol);
+	});
+
 	TEST_CATEGORY(L"Deferred left clicks pair by UTC generation time")
 	{
 		GraphicsHostProtocol protocol;
@@ -329,11 +402,11 @@ TEST_FILE
 			hit->GetEventReceiver();
 			auto receiver = surface->GetBoundsComposition()->GetEventReceiver();
 			receiver->pointSequenceEnded.AttachLambda([&](auto*, GuiPointSequenceEndedEventArgs&) { if (onEnd) onEnd(); });
-			auto record = [&](const wchar_t* name, GuiMouseEventArgs& a, bool pressed)
+			auto record = [&, hit](const wchar_t* name, GuiMouseEventArgs& a, bool pressed)
 			{
 				TEST_ASSERT(!surface->GetPointEventComposition());
-				TEST_ASSERT(a.eventSource == surface->GetBoundsComposition());
-				TEST_ASSERT(a.compositionSource == surface->GetBoundsComposition());
+				TEST_ASSERT(a.eventSource == hit);
+				TEST_ASSERT(a.compositionSource == hit);
 				TEST_ASSERT(a.button == NativeMouseButton::Left);
 				TEST_ASSERT(a.left == pressed && !a.right && !a.middle);
 				TEST_ASSERT(a.ctrl && a.shift && a.alt && a.osSuper);

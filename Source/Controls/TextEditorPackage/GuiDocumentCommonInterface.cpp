@@ -372,21 +372,15 @@ GuiDocumentCommonInterface
 				if (arguments.eventSource != documentPointEventComposition || arguments.compositionSource != documentPointEventComposition) return;
 				if (documentControl->GetPointEventComposition() != documentPointEventComposition) return;
 
-				auto shortPress = arguments.gesture.TryGet<GuiPointGesture_ShortPressing>();
 				auto longPress = arguments.gesture.TryGet<GuiPointGesture_LongPressing>();
-				if (!shortPress && !longPress) return;
-				auto position = shortPress ? shortPress->position : longPress->position;
+				if (!longPress) return;
+				auto position = longPress->position;
 				auto pointOrigin = documentPointEventComposition->GetGlobalBounds().LeftTop();
 				auto documentOrigin = documentComposition->GetGlobalBounds().LeftTop();
 				auto caret = documentElement->CalculateCaretFromPoint(Point(position.x + pointOrigin.x - documentOrigin.x, position.y + pointOrigin.y - documentOrigin.y));
 				auto begin = documentElement->GetCaretBegin();
 				auto end = documentElement->GetCaretEnd();
-				if (shortPress && begin != end && ((begin <= caret && caret <= end) || (end <= caret && caret <= begin)))
-				{
-					documentControl->SetFocused();
-					arguments.selected = arguments.handled = true;
-				}
-				else if (longPress && begin == end && caret != end)
+				if (begin == end && caret != end)
 				{
 					documentControl->SetFocused();
 					Move(caret, true, caret < end);
@@ -726,7 +720,7 @@ GuiDocumentCommonInterface
 							documentControl->SetFocused();
 							TextPos caret=documentElement->CalculateCaretFromPoint(Point(x, y));
 							TextPos oldCaret=documentElement->GetCaretEnd();
-							if(caret!=oldCaret)
+							if(caret!=oldCaret || (!arguments.shift && documentElement->GetCaretBegin() != oldCaret))
 							{
 								Move(caret, arguments.shift, caret<oldCaret);
 							}

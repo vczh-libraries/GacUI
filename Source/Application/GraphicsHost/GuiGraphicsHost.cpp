@@ -1,6 +1,7 @@
 #include "GuiGraphicsHost.h"
 #include "../Controls/GuiWindowControls.h"
 #include "../../GraphicsElement/GuiGraphicsResourceManager.h"
+#include "../../PlatformProviders/Hosted/GuiHostedApplication.h"
 
 namespace vl
 {
@@ -379,6 +380,8 @@ GuiGraphicsHost
 					if (doubleClick) lastGeneratedLeftClick = Nullable<DateTime>();
 					else lastGeneratedLeftClick = now;
 				}
+
+				if (auto hosted = GetHostedApplication()) hosted->DismissUnrelatedPopups(hostRecord.nativeWindow);
 
 				// The synchronous click needs only composition capture; leave physical native capture intact.
 				auto physicalCapture = mouseCaptureComposition;

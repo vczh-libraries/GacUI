@@ -272,29 +272,7 @@ GuiHostedController::INativeWindowListener (GetSelectedWindow)
 		{
 			if (!capturingWindow)
 			{
-				SortedList<GuiHostedWindow*> survivedPopups;
-				auto current = hoveringWindow;
-				while (current)
-				{
-					if (current->IsVisible() && current->GetWindowMode() != INativeWindow::Normal)
-					{
-						survivedPopups.Add(current);
-					}
-					current = current->wmWindow.parent ? current->wmWindow.parent->id : nullptr;
-				}
-
-				List<GuiHostedWindow*> closingPopups;
-				CopyFrom(
-					closingPopups,
-					From(wmManager->ordinaryWindowsInOrder)
-						.Concat(wmManager->topMostedWindowsInOrder)
-						.Select([](auto window) { return window->id; })
-						.Where([&](auto window) { return window->GetWindowMode() != INativeWindow::Normal && !survivedPopups.Contains(window); })
-					);
-				for (auto popupWindow : closingPopups)
-				{
-					popupWindow->Hide(false);
-				}
+				DismissUnrelatedPopups(hoveringWindow);
 			}
 
 			auto selectedWindow = capturingWindow ? capturingWindow : hoveringWindow;
@@ -1271,6 +1249,33 @@ GuiHostedController::INativeWindowService
 /***********************************************************************
 GuiHostedController::IGuiHostedApplication
 ***********************************************************************/
+
+		void GuiHostedController::DismissUnrelatedPopups(INativeWindow* clickedWindow)
+		{
+			SortedList<GuiHostedWindow*> survivedPopups;
+			auto current = static_cast<GuiHostedWindow*>(clickedWindow);
+			while (current)
+			{
+				if (current->IsVisible() && current->GetWindowMode() != INativeWindow::Normal)
+				{
+					survivedPopups.Add(current);
+				}
+				current = current->wmWindow.parent ? current->wmWindow.parent->id : nullptr;
+			}
+
+			List<GuiHostedWindow*> closingPopups;
+			CopyFrom(
+				closingPopups,
+				From(wmManager->ordinaryWindowsInOrder)
+					.Concat(wmManager->topMostedWindowsInOrder)
+					.Select([](auto window) { return window->id; })
+					.Where([&](auto window) { return window->GetWindowMode() != INativeWindow::Normal && !survivedPopups.Contains(window); })
+				);
+			for (auto popupWindow : closingPopups)
+			{
+				popupWindow->Hide(false);
+			}
+		}
 
 		INativeWindow* GuiHostedController::GetNativeWindowHost()
 		{

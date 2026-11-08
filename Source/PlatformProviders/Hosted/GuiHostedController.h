@@ -234,6 +234,7 @@ GuiHostedController
 			// =============================================================
 
 			INativeWindow*					GetNativeWindowHost() override;
+			void							DismissUnrelatedPopups(INativeWindow* clickedWindow) override;
 			INativeController*				GetNativeController() override;
 		public:
 			GuiHostedController(INativeController* _nativeController);

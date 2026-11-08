@@ -549,7 +549,10 @@ View Model (IFileDialogViewModel)
 				List<filesystem::FilePath> rawPaths;
 				CopyFrom(
 					rawPaths,
-					selectedPaths.Select([this, wd](auto path) { return wd / path; })
+					selectedPaths.Select([wd](auto path)
+					{
+						return filesystem::FilePath::IsAbsolutePath(path) ? filesystem::FilePath(path) : wd / path;
+					})
 					);
 
 				if (rawPaths.Count() == 0)

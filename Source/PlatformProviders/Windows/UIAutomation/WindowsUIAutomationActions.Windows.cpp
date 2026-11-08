@@ -155,7 +155,7 @@ namespace vl::presentation::windows
 			if (auto tab = dynamic_cast<GuiTab*>(node->control)) *result = tab->GetPages().Count() > 0;
 			else if (node->kind == Kind::RadioGroup) *result = From(node->Children()).Any([](auto child) { return child->IsSelected(); });
 			else if (auto combo = dynamic_cast<GuiComboBoxListControl*>(node->control)) *result = combo->GetSelectedIndex() >= 0;
-			else if (auto grid = dynamic_cast<GuiVirtualDataGrid*>(node->control)) *result = grid->GetSelectedCell().row >= 0;
+			else if (auto grid = dynamic_cast<GuiVirtualDataGrid*>(node->control); UiaDataGrid(node->control)) *result = grid->GetSelectedCell().row >= 0;
 			else *result = dynamic_cast<GuiDatePicker*>(node->control) != nullptr;
 			return S_OK;
 		}, UIA_SelectionPatternId);

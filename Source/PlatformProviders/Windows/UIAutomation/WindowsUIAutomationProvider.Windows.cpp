@@ -290,7 +290,7 @@ namespace vl::presentation::windows
 				if (auto tab = dynamic_cast<GuiTab*>(control)) boolean(tab->GetPages().Count() > 0);
 				else if (kind == Kind::RadioGroup) boolean(From(Children()).Any([](auto child) { return child->IsSelected(); }));
 				else if (auto combo = dynamic_cast<GuiComboBoxListControl*>(control)) boolean(combo->GetSelectedIndex() >= 0);
-				else if (auto grid = dynamic_cast<GuiVirtualDataGrid*>(control)) boolean(grid->GetSelectedCell().row >= 0);
+				else if (auto grid = dynamic_cast<GuiVirtualDataGrid*>(control); UiaDataGrid(control)) boolean(grid->GetSelectedCell().row >= 0);
 				else boolean(dynamic_cast<GuiDatePicker*>(control) != nullptr);
 			}
 			break;

@@ -12,6 +12,7 @@ namespace vl
 			using namespace collections;
 
 			constexpr vint StaticPointRange = 8;
+			constexpr vuint64_t MomentumHistoryWindow = 250000;
 
 /***********************************************************************
 MomentumScrollingState
@@ -80,7 +81,7 @@ MomentumScrollingState
 					{
 						samples.Add({ time,position });
 					}
-					auto left = time > 500000 ? time - 500000 : 0;
+					auto left = time > MomentumHistoryWindow ? time - MomentumHistoryWindow : 0;
 					while (samples.Count() > 1 && samples[1].time <= left) samples.RemoveAt(0);
 				}
 
@@ -131,7 +132,7 @@ MomentumScrollingState
 					if (arguments.reason != PointSequenceEndReason::Succeeded || !scrolling || !owner->rootObject) return;
 					if (bounds->GetRelatedGraphicsHost() != host) return;
 					Record(arguments.timestamp);
-					auto left = arguments.timestamp - started > 500000 ? arguments.timestamp - 500000 : started;
+					auto left = arguments.timestamp - started > MomentumHistoryWindow ? arguments.timestamp - MomentumHistoryWindow : started;
 					if (left == arguments.timestamp || samples.Count() < 2) return;
 					auto first = samples[0];
 					auto next = samples[1];
@@ -143,14 +144,8 @@ MomentumScrollingState
 					stopped = false;
 					// Start also resets an animation still awaiting retirement from the previous sequence.
 					Start();
-					for (auto state : owner->states)
-					{
-						if (state.Obj() == this)
-						{
-							owner->rootObject->AddAnimation(state);
-							break;
-						}
-					}
+					auto state = owner->states.Get(control);
+					owner->rootObject->AddAnimation(state);
 				}
 
 				void Start()override
@@ -232,7 +227,7 @@ MomentumScrolling
 
 			void MomentumScrolling::Detach(controls::GuiInstanceRootObject*)
 			{
-				for (auto state : states) state->Detach();
+				for (auto state : states.Values()) state->Detach();
 				states.Clear();
 				rootObject = nullptr;
 			}
@@ -240,17 +235,19 @@ MomentumScrolling
 			void MomentumScrolling::EnvironmentChanged()
 			{
 				RetireDisposedControls();
-				for (auto state : states) state->Stop();
+				for (auto state : states.Values()) state->Stop();
 			}
 
 			void MomentumScrolling::RetireDisposedControls()
 			{
 				for (vint i = states.Count() - 1; i >= 0; i--)
 				{
-					if (states[i]->disposed->IsDisposed())
+					auto control = states.Keys()[i];
+					auto state = states.Values()[i];
+					if (state->disposed->IsDisposed())
 					{
-						states[i]->Detach();
-						states.RemoveAt(i);
+						state->Detach();
+						states.Remove(control);
 					}
 				}
 			}
@@ -258,21 +255,19 @@ MomentumScrolling
 			void MomentumScrolling::AttachControl(controls::GuiControl* control)
 			{
 				RetireDisposedControls();
-				for (auto state : states) if (state->control == control) return;
-				states.Add(Ptr(new MomentumScrollingState(this, control)));
+				if (states.Keys().Contains(control)) return;
+				states.Add(control, Ptr(new MomentumScrollingState(this, control)));
 			}
 
 			void MomentumScrolling::DetachControl(controls::GuiControl* control)
 			{
 				RetireDisposedControls();
-				for (auto [state, index] : indexed(states))
+				auto index = states.Keys().IndexOf(control);
+				if (index != -1)
 				{
-					if (state->control == control)
-					{
-						state->Detach();
-						states.RemoveAt(index);
-						return;
-					}
+					auto state = states.Values()[index];
+					state->Detach();
+					states.Remove(control);
 				}
 			}
 

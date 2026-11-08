@@ -610,7 +610,7 @@ TEST_FILE
 			);
 		});
 
-		TEST_CASE(L"Open and Select")
+		TEST_CASE(L"Open and Select an absolute file from its parent folder")
 		{
 			Ptr<FileSystemMock> fsMock;
 			GacUIUnitTest_SetGuiMainProxy([&fsMock](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
@@ -635,6 +635,7 @@ TEST_FILE
 				});
 				protocol->OnNextIdleFrame(L"Click: a.txt", [=]()
 				{
+					TypeFile(protocol, FilePath(L"/A/a.txt").GetFullPath());
 					PressOpen(protocol);
 				});
 				protocol->OnNextIdleFrame(L"Open", [=]()

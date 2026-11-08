@@ -904,8 +904,8 @@ namespace tui_controls
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiMessageBoxButtonTemplateConstructor>;
 #endif
 	protected:
-		::tui_controls::TuiMessageBoxButtonTemplate* self;
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> Action;
+		::tui_controls::TuiMessageBoxButtonTemplate* self;
 		::vl::presentation::controls::GuiButton* buttonControl;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
 		void __vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize(::tui_controls::TuiMessageBoxButtonTemplate* __vwsn_this_);
@@ -2785,11 +2785,14 @@ Closures
 		__vwsnc55_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxLabelTemplateConstructor___vwsn_tui_controls_TuiMessageBoxLabelTemplate_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiMessageBoxLabelTemplateConstructor* __vwsnctorthis_0);
 
 		::tui_controls::TuiMessageBoxLabelTemplate* __vwsn_bind_cache_0 = nullptr;
+		::tui_controls::TuiMessageBoxLabelTemplate* __vwsn_bind_cache_1 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
 		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -2803,14 +2806,11 @@ Closures
 		__vwsnc56_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxLabelTemplateConstructor___vwsn_tui_controls_TuiMessageBoxLabelTemplate_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiMessageBoxLabelTemplateConstructor* __vwsnctorthis_0);
 
 		::tui_controls::TuiMessageBoxLabelTemplate* __vwsn_bind_cache_0 = nullptr;
-		::tui_controls::TuiMessageBoxLabelTemplate* __vwsn_bind_cache_1 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
 		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
