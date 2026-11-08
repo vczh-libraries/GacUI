@@ -374,6 +374,7 @@
                   <RibbonGroup Text="Style" LargeImage-uri="res://ToolbarImages/EditableLarge" Alt="S">
                     <att.Items>
                       <BindableRibbonGalleryList ref.Name="styleGallery" ItemTemplate="demo:StyleItemTemplate" MinCount="2" MaxCount="5" VisibleItemCount="5" env.ItemType="demo::StyleGroup^">
+                        <att.Enabled-bind>self.document.observe as _(_.EditMode == GuiDocumentEditMode::Editable on _.EditModeChanged)</att.Enabled-bind>
                         <att.ItemSource-bind>self.StyleGroups</att.ItemSource-bind>
                         <att.GroupTitleProperty>Name</att.GroupTitleProperty>
                         <att.GroupChildrenProperty>Items</att.GroupChildrenProperty>
@@ -392,7 +393,7 @@
                         <ev.ItemApplied-eval>
                           <![CDATA[
                             {
-                              if (arguments.itemIndex != -1)
+                              if (self.document.EditMode == GuiDocumentEditMode::Editable and arguments.itemIndex != -1)
                               {
                                 var pos = styleGallery.IndexToGalleryPos(arguments.itemIndex);
                                 self.document.ClearStyle(self.document.CaretBegin, self.document.CaretEnd);

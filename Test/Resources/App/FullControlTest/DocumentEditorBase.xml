@@ -57,7 +57,7 @@
           {
             var a = document.CaretBegin;
             var b = document.CaretEnd;
-            return a.row == b.row and a.column != b.column;
+            return self.HasEditableCursor() and a.row == b.row and a.column != b.column;
           }
       
           @cpp:Protected

@@ -2318,7 +2318,7 @@ public static class GacUIShowcaseTests
             EditorContextOpen(document);
             var readOnlyMenu = Popup(ControlType.Menu);
             Check(Named(readOnlyMenu, "Copy", ControlType.MenuItem).Current.IsEnabled, "Selectable retains Copy");
-            foreach (string command in new[] { "Cut", "Delete", "Set Font ...", "Text Color ...", "Background Color ..." })
+            foreach (string command in new[] { "Cut", "Delete", "Set Font ...", "Text Color ...", "Background Color ...", "Edit Hyperlink ...", "Remove Hyperlink" })
                 Check(!Named(readOnlyMenu, command, ControlType.MenuItem).Current.IsEnabled, "Selectable disables " + command);
             ContextMenuCommand("Copy", uia);
             EditorCommand(page, document, ribbon, "Editable", false, uia);
@@ -2453,6 +2453,15 @@ public static class GacUIShowcaseTests
             text = Pattern<TextPattern>(document, TextPattern.Pattern);
             var styleLists = Find(page, ControlType.List).FindAll(candidate => Items(candidate).Count == names.Length);
             Check(styleLists.Count == 1, "one gallery exposes all eight built-in styles");
+            var heading = text.DocumentRange.FindText(title, false, false);
+            heading.Select();
+            foreach (string mode in new[] { "Selectable", "Preview", "Editable" })
+            {
+                EditorCommand(page, document, true, mode, false, true);
+                Check(styleLists[0].Current.IsEnabled == (mode == "Editable"), mode + " sets gallery editability");
+                foreach (var item in Items(styleLists[0]))
+                    Check(item.Current.IsEnabled == (mode == "Editable"), mode + " sets style item editability");
+            }
             Action<int, TextPatternRange> checkStyle = (index, range) => {
                 double expectedSize = Math.Floor(baseSize / 0.75 * factors[index]) * 0.75;
                 int expectedColor = index < 2 ? 0x0080FF : index == 6 ? 0xFF8080 : 0xFFFFFF;
