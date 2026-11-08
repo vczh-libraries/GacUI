@@ -14996,6 +14996,9 @@ namespace demo
             (commandUndo = new (::presentation::controls::GuiToolstripCommand*)());
             <this>.SetNamedObject("commandUndo", commandUndo);
             {
+                (commandUndo.ShortcutBuilder = "Ctrl+Z");
+            }
+            {
                 (commandUndo.Text = "Undo");
             }
             {
@@ -15003,6 +15006,9 @@ namespace demo
             }
             (commandRedo = new (::presentation::controls::GuiToolstripCommand*)());
             <this>.SetNamedObject("commandRedo", commandRedo);
+            {
+                (commandRedo.ShortcutBuilder = "Ctrl+Y");
+            }
             {
                 (commandRedo.Text = "Redo");
             }
@@ -15012,6 +15018,9 @@ namespace demo
             (commandCopy = new (::presentation::controls::GuiToolstripCommand*)());
             <this>.SetNamedObject("commandCopy", commandCopy);
             {
+                (commandCopy.ShortcutBuilder = "Ctrl+C");
+            }
+            {
                 (commandCopy.Text = "Copy");
             }
             {
@@ -15020,6 +15029,9 @@ namespace demo
             (commandCut = new (::presentation::controls::GuiToolstripCommand*)());
             <this>.SetNamedObject("commandCut", commandCut);
             {
+                (commandCut.ShortcutBuilder = "Ctrl+X");
+            }
+            {
                 (commandCut.Text = "Cut");
             }
             {
@@ -15027,6 +15039,9 @@ namespace demo
             }
             (commandPaste = new (::presentation::controls::GuiToolstripCommand*)());
             <this>.SetNamedObject("commandPaste", commandPaste);
+            {
+                (commandPaste.ShortcutBuilder = "Ctrl+V");
+            }
             {
                 (commandPaste.Text = "Paste");
             }
@@ -15043,6 +15058,9 @@ namespace demo
             }
             (commandSelect = new (::presentation::controls::GuiToolstripCommand*)());
             <this>.SetNamedObject("commandSelect", commandSelect);
+            {
+                (commandSelect.ShortcutBuilder = "Ctrl+A");
+            }
             {
                 (commandSelect.Text = "Select All");
             }
@@ -15154,6 +15172,9 @@ namespace demo
             (commandViewOnly = new (::presentation::controls::GuiToolstripCommand*)());
             <this>.SetNamedObject("commandViewOnly", commandViewOnly);
             {
+                (commandViewOnly.ShortcutBuilder = "Ctrl+Shift+P");
+            }
+            {
                 (commandViewOnly.Text = "Preview");
             }
             {
@@ -15162,6 +15183,9 @@ namespace demo
             (commandSelectable = new (::presentation::controls::GuiToolstripCommand*)());
             <this>.SetNamedObject("commandSelectable", commandSelectable);
             {
+                (commandSelectable.ShortcutBuilder = "Ctrl+Shift+S");
+            }
+            {
                 (commandSelectable.Text = "Selectable");
             }
             {
@@ -15169,6 +15193,9 @@ namespace demo
             }
             (commandEditable = new (::presentation::controls::GuiToolstripCommand*)());
             <this>.SetNamedObject("commandEditable", commandEditable);
+            {
+                (commandEditable.ShortcutBuilder = "Ctrl+Shift+E");
+            }
             {
                 (commandEditable.Text = "Editable");
             }
@@ -15401,79 +15428,6 @@ namespace demo
                 <this>.AddSubscription(<created-subscription>);
             }
             {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::presentation::controls::GuiDocumentViewer* = null of (::presentation::controls::GuiDocumentViewer*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Focused ? "Ctrl+Z" : "" of (::system::String);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (document ?? null of (::presentation::controls::GuiDocumentViewer*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.FocusedChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.FocusedChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::presentation::controls::GuiDocumentViewer*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = commandUndo.ShortcutBuilder;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (commandUndo.ShortcutBuilder = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
                 (commandUndo.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolbarImages/UndoLarge", true)));
             }
             {
@@ -15556,79 +15510,6 @@ namespace demo
                         return;
                     }
                     (commandRedo.Enabled = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::presentation::controls::GuiDocumentViewer* = null of (::presentation::controls::GuiDocumentViewer*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Focused ? "Ctrl+Y" : "" of (::system::String);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (document ?? null of (::presentation::controls::GuiDocumentViewer*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.FocusedChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.FocusedChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::presentation::controls::GuiDocumentViewer*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = commandRedo.ShortcutBuilder;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (commandRedo.ShortcutBuilder = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -15719,79 +15600,6 @@ namespace demo
                 <this>.AddSubscription(<created-subscription>);
             }
             {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::presentation::controls::GuiDocumentViewer* = null of (::presentation::controls::GuiDocumentViewer*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Focused ? "Ctrl+C" : "" of (::system::String);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (document ?? null of (::presentation::controls::GuiDocumentViewer*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.FocusedChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.FocusedChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::presentation::controls::GuiDocumentViewer*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = commandCopy.ShortcutBuilder;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (commandCopy.ShortcutBuilder = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
                 (commandCopy.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolbarImages/CopyLarge", true)));
             }
             {
@@ -15878,79 +15686,6 @@ namespace demo
                 <this>.AddSubscription(<created-subscription>);
             }
             {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::presentation::controls::GuiDocumentViewer* = null of (::presentation::controls::GuiDocumentViewer*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Focused ? "Ctrl+X" : "" of (::system::String);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (document ?? null of (::presentation::controls::GuiDocumentViewer*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.FocusedChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.FocusedChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::presentation::controls::GuiDocumentViewer*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = commandCut.ShortcutBuilder;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (commandCut.ShortcutBuilder = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
                 (commandCut.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolbarImages/CutLarge", true)));
             }
             {
@@ -16033,79 +15768,6 @@ namespace demo
                         return;
                     }
                     (commandPaste.Enabled = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::presentation::controls::GuiDocumentViewer* = null of (::presentation::controls::GuiDocumentViewer*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Focused ? "Ctrl+V" : "" of (::system::String);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (document ?? null of (::presentation::controls::GuiDocumentViewer*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.FocusedChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.FocusedChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::presentation::controls::GuiDocumentViewer*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = commandPaste.ShortcutBuilder;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (commandPaste.ShortcutBuilder = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -16204,79 +15866,6 @@ namespace demo
                     document.SetSelectionText("");
                 };
                 attach(commandDelete.Executed, <event-handler>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::presentation::controls::GuiDocumentViewer* = null of (::presentation::controls::GuiDocumentViewer*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Focused ? "Ctrl+A" : "" of (::system::String);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (document ?? null of (::presentation::controls::GuiDocumentViewer*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.FocusedChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.FocusedChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::presentation::controls::GuiDocumentViewer*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = commandSelect.ShortcutBuilder;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (commandSelect.ShortcutBuilder = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
@@ -17639,79 +17228,6 @@ namespace demo
                 (commandViewOnly.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolbarImages/ViewOnly", true)));
             }
             {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::presentation::controls::GuiDocumentViewer* = null of (::presentation::controls::GuiDocumentViewer*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Focused ? "Ctrl+Shift+P" : "" of (::system::String);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (document ?? null of (::presentation::controls::GuiDocumentViewer*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.FocusedChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.FocusedChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::presentation::controls::GuiDocumentViewer*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = commandViewOnly.ShortcutBuilder;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (commandViewOnly.ShortcutBuilder = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
                 (commandViewOnly.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolbarImages/ViewOnlyLarge", true)));
             }
             {
@@ -17725,79 +17241,6 @@ namespace demo
                 (commandSelectable.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolbarImages/Selectable", true)));
             }
             {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::presentation::controls::GuiDocumentViewer* = null of (::presentation::controls::GuiDocumentViewer*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Focused ? "Ctrl+Shift+S" : "" of (::system::String);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (document ?? null of (::presentation::controls::GuiDocumentViewer*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.FocusedChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.FocusedChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::presentation::controls::GuiDocumentViewer*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = commandSelectable.ShortcutBuilder;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (commandSelectable.ShortcutBuilder = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
                 (commandSelectable.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolbarImages/SelectableLarge", true)));
             }
             {
@@ -17809,79 +17252,6 @@ namespace demo
             }
             {
                 (commandEditable.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolbarImages/Editable", true)));
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::presentation::controls::GuiDocumentViewer* = null of (::presentation::controls::GuiDocumentViewer*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Focused ? "Ctrl+Shift+E" : "" of (::system::String);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (document ?? null of (::presentation::controls::GuiDocumentViewer*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.FocusedChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.FocusedChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::presentation::controls::GuiDocumentViewer*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = commandEditable.ShortcutBuilder;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (commandEditable.ShortcutBuilder = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
             }
             {
                 (commandEditable.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolbarImages/EditableLarge", true)));

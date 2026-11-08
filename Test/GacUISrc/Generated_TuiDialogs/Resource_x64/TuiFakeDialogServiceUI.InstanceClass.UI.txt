@@ -2972,17 +2972,17 @@ namespace tui_controls
                 });
             }
             {
+                (treeView.HorizontalAlwaysVisible = false);
+            }
+            {
+                (treeView.VerticalAlwaysVisible = false);
+            }
+            {
                 (treeView.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var item = (cast (IFileDialogFolder^) <item>);
                     return item.Name;
                 });
-            }
-            {
-                (treeView.HorizontalAlwaysVisible = false);
-            }
-            {
-                (treeView.VerticalAlwaysVisible = false);
             }
             (<precompile>4 = treeView.BoundsComposition);
             {
@@ -3160,17 +3160,17 @@ namespace tui_controls
                 (<precompile>23 = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
             }
             {
+                (<precompile>23.HorizontalAlwaysVisible = false);
+            }
+            {
+                (<precompile>23.VerticalAlwaysVisible = false);
+            }
+            {
                 (<precompile>23.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var item = (cast (IFileDialogFilter^) <item>);
                     return item.Name;
                 });
-            }
-            {
-                (<precompile>23.HorizontalAlwaysVisible = false);
-            }
-            {
-                (<precompile>23.VerticalAlwaysVisible = false);
             }
             {
                 (comboBox = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, <precompile>23));
@@ -7119,10 +7119,10 @@ namespace tui_controls
     class TuiMessageBoxButtonTemplateConstructor
     {
         @cpp:Protected
-        var self : ::tui_controls::TuiMessageBoxButtonTemplate* = null of (::tui_controls::TuiMessageBoxButtonTemplate*);
+        var Action : ::presentation::IMessageBoxDialogAction^ = null of (::presentation::IMessageBoxDialogAction^);
 
         @cpp:Protected
-        var Action : ::presentation::IMessageBoxDialogAction^ = null of (::presentation::IMessageBoxDialogAction^);
+        var self : ::tui_controls::TuiMessageBoxButtonTemplate* = null of (::tui_controls::TuiMessageBoxButtonTemplate*);
 
         @cpp:Protected
         var buttonControl : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
@@ -7557,10 +7557,10 @@ namespace tui_controls
                 (<precompile>0.WrapLineHeightCalculation = true);
             }
             {
-                (<precompile>0.WrapLine = true);
+                (<precompile>0.Multiline = true);
             }
             {
-                (<precompile>0.Multiline = true);
+                (<precompile>0.WrapLine = true);
             }
             {
                 (self.OwnedElement = <precompile>0);
@@ -7635,79 +7635,6 @@ namespace tui_controls
                         return;
                     }
                     (<precompile>0.Text = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::tui_controls::TuiMessageBoxLabelTemplate* = null of (::tui_controls::TuiMessageBoxLabelTemplate*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Font of (::presentation::FontProperties);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (self ?? null of (::tui_controls::TuiMessageBoxLabelTemplate*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.FontChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.FontChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::tui_controls::TuiMessageBoxLabelTemplate*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>0.Font;
-                    var <new> = (cast (::presentation::FontProperties) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>0.Font = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -7799,6 +7726,79 @@ namespace tui_controls
                         return;
                     }
                     (<precompile>0.Color = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::tui_controls::TuiMessageBoxLabelTemplate* = null of (::tui_controls::TuiMessageBoxLabelTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Font of (::presentation::FontProperties);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::tui_controls::TuiMessageBoxLabelTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FontChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FontChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::tui_controls::TuiMessageBoxLabelTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>0.Font;
+                    var <new> = (cast (::presentation::FontProperties) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>0.Font = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -7920,10 +7920,10 @@ namespace tui_controls
             (self = <this>);
             (ViewModel = <this>.ViewModel);
             {
-                (self.SizeBox = false);
+                (self.IconVisible = false);
             }
             {
-                (self.IconVisible = false);
+                (self.SizeBox = false);
             }
             {
                 (self.MinimizedBox = false);
