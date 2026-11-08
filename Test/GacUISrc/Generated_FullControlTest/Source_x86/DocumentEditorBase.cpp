@@ -106,7 +106,7 @@ namespace demo
 	{
 		auto a = ::vl::__vwsn::This(this->document)->GetCaretBegin();
 		auto b = ::vl::__vwsn::This(this->document)->GetCaretEnd();
-		return ((a.row == b.row) && (a.column != b.column));
+		return ((::vl::__vwsn::This(this->self)->HasEditableCursor() && (a.row == b.row)) && (a.column != b.column));
 	}
 
 	::vl::presentation::compositions::GuiGraphicsComposition* DocumentEditorBase::GetMenuContainer()
