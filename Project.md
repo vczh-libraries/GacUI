@@ -176,7 +176,7 @@ After running `GacUI_Compiler`, you should always `git status` to find if there 
 - `GacUI_Compiler` may also fail by printing one line of error message or return non-zero exit code. If the `*.UI.errors.txt` file does not exist, you are recommended to debug the project to find out what happened.
 - Whenever `GacUI_Compiler` reports any error, you must fix the issue immediately, even those errors are unrelated to the issue you are working on.
 
-## Maintaining `darkskin::Theme`
+## Maintaining `darkskin::Theme` and `tuiskin::TuiTheme`
 
 This is a default skin that not only releases, but also used by all projects in this solution.
 To make a change:
@@ -253,6 +253,9 @@ By careful tell if a bug repro in some or all three ways, you can easily narrow 
 | `RemotingTest_RvmHost` | | | | | | ✓ | ✓ | ✓ | ✓ | ✓ | | | |
 
 ✓ means the argument has a supported effect in that application; blank cells do not imply that every parser rejects the argument. Argument spelling is case-sensitive. The table describes the projects in this solution; platform restrictions and the wGac/iGac replacements are listed under [Linux/macOS Specific](#linuxmacos-specific).
+
+**Known Issue**:
+- In any test app running `FullControlTest`, shortcut keys in `Document Editor (Toolstrip)` is expected to not working, as they are overrided by `Document Editor (Ribbon)`.
 
 ### /AsPort
 
