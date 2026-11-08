@@ -125,10 +125,10 @@ public:
 		if (accepted) arguments.acceptedComposition = control->GetBoundsComposition();
 		control->GetBoundsComposition()->GetEventReceiver()->pointSequenceStarted.Execute(arguments);
 	}
-	void Move(vuint64_t time, vint distance, bool vertical = true, vint contact = 0)
+	void Move(vuint64_t time, vint distance, bool vertical = true, vint contact = 0, GuiPointEventsType eventType = GuiPointEventsType::Update)
 	{
 		auto bounds = control->GetBoundsComposition();
-		GuiPointEventArgs action(bounds, contact == 0 ? GuiPointEventsType::Update : GuiPointEventsType::Down, points);
+		GuiPointEventArgs action(bounds, contact == 0 ? eventType : GuiPointEventsType::Down, points);
 		action.sequenceId = sequence;
 		action.timestamp = 1000000 + time;
 		action.pointId = contact;
@@ -177,7 +177,7 @@ TEST_FILE
 			for (auto multiplier : { 0.5,1.0,2.0 })
 			for (auto vertical : { false,true })
 			for (auto sign : { -1,1 })
-			for (vint scenario = 0; scenario < 11; scenario++)
+			for (vint scenario = 0; scenario < 15; scenario++)
 			{
 				TooltipTimer clock;
 				MomentumTestRoot root;
@@ -199,11 +199,15 @@ TEST_FILE
 				case 3: input.Move(100000, sign * 10000, vertical); input.Move(600000, sign * 160, vertical); input.End(600000); break;
 				case 4: input.Move(100000, sign * 160, vertical); input.End(1000000); expected = 0; break;
 				case 5: input.Move(0, sign * 160, vertical); input.End(0); expected = 0; break;
-				case 6: input.Move(250000, sign * 240, vertical); input.Move(500000, -sign * 80, vertical); input.End(500000); break;
-				case 7: input.Move(250000, sign * 80, vertical); input.Move(250000, sign * 80, vertical); input.End(500000); break;
+				case 6: input.Move(250000, sign * 240, vertical); input.Move(500000, -sign * 80, vertical); input.End(500000); expected = -160 / multiplier; break;
+				case 7: input.Move(250000, sign * 80, vertical); input.Move(250000, sign * 80, vertical); input.End(250000); expected = 640 / multiplier; break;
 				case 8: input.Move(500000, sign * 1, vertical); input.End(500000); expected = 0; break;
-				case 9: input.Move(250000, sign * 160, vertical); input.Move(500000, -sign * 160, vertical); input.End(500000); expected = 0; break;
+				case 9: input.Move(250000, sign * 160, vertical); input.Move(500000, -sign * 160, vertical); input.End(500000); expected = -640 / multiplier; break;
 				case 10: input.Move(500000, sign * 50, vertical); input.End(500000); expected = std::round(15.625 / multiplier); break;
+				case 11: input.Move(250000, sign * 160, vertical); input.End(250000); expected = 640 / multiplier; break;
+				case 12: input.Move(250000, sign * 160, vertical, 0, GuiPointEventsType::Up); input.End(375000); break;
+				case 13: input.Move(250000, sign * 160, vertical); input.End(500000); expected = 0; break;
+				case 14: input.Move(250000, sign * 160, vertical); input.End(1250000); expected = 0; break;
 				}
 				momentum->SetDeceleration(100);
 				vint total = 0;
@@ -213,21 +217,21 @@ TEST_FILE
 					TEST_ASSERT(args.eventSource == control.GetBoundsComposition() && args.compositionSource == args.eventSource);
 					auto scrolling = args.gesture.Get<GuiPointGesture_Scrolling>();
 					TEST_ASSERT(scrolling.isVertical == vertical);
-					TEST_ASSERT(scrolling.distance * sign > 0);
+					TEST_ASSERT(scrolling.distance * sign * expected > 0);
 					total += scrolling.distance;
 				});
 				root.Tick();
 				clock.Advance(99); root.Tick(); TEST_ASSERT(total == 0);
 				clock.Advance(1); root.Tick();
-				if (scenario < 4 || scenario == 6 || scenario == 7) TEST_ASSERT(total * sign > 0);
-				clock.Advance(1900); root.Tick();
+				if (scenario < 4 || scenario == 6 || scenario == 7 || scenario == 9 || scenario == 11 || scenario == 12) TEST_ASSERT(total * sign * expected > 0);
+				clock.Advance(3900); root.Tick();
 				TEST_ASSERT(total == sign * (vint)expected);
 				clock.Advance(3000); root.Tick();
 				TEST_ASSERT(total == sign * (vint)expected);
 			}
 		});
 
-		TEST_CASE(L"Momentum default emits elapsed tenth-second integrals and stops at one second")
+		TEST_CASE(L"Momentum default emits elapsed tenth-second integrals and stops at half a second")
 		{
 			TooltipTimer clock;
 			MomentumTestRoot root;
@@ -244,15 +248,15 @@ TEST_FILE
 				count++;
 			});
 			root.Tick();
-			for (vint i = 1; i <= 10; i++)
+			for (vint i = 1; i <= 5; i++)
 			{
 				clock.Advance(100); root.Tick();
 				auto time = i / 10.0;
-				TEST_ASSERT(total == (vint)std::round(320 * time - 160 * time * time));
+				TEST_ASSERT(total == (vint)std::round(320 * time - 320 * time * time));
 				TEST_ASSERT(count == i);
 			}
 			clock.Advance(1000); root.Tick();
-			TEST_ASSERT(total == 160 && count == 10);
+			TEST_ASSERT(total == 80 && count == 5);
 		});
 
 		TEST_CASE(L"Momentum rounding cannot reverse on a near-boundary final interval")
@@ -320,23 +324,102 @@ TEST_FILE
 				if (scenario == 8) root.Pause();
 				if (scenario == 9) root.FinalizeInstance();
 				clock.Advance(1000); root.Tick();
-				if (scenario == 2) TEST_ASSERT(totalA == 30);
-				else if (scenario == 3) TEST_ASSERT(totalA == 160);
+				if (scenario == 2) TEST_ASSERT(totalA == 29);
+				else if (scenario == 3) TEST_ASSERT(totalA == 80);
 				else TEST_ASSERT(totalA == 0);
-				if (scenario < 7 && scenario != 3) TEST_ASSERT(totalB == 160);
+				if (scenario < 7 && scenario != 3) TEST_ASSERT(totalB == 80);
 				clock.Advance(1000); root.Tick();
 				if (first) delete first;
 			}
 		});
 
+		TEST_CASE(L"Momentum replaces detached and disposed states without stale playback")
+		{
+			for (bool dispose : { false,true })
+			for (bool playing : { false,true })
+			{
+				TooltipTimer clock;
+				MomentumTestRoot root;
+				auto momentum = new MomentumScrolling;
+				root.AddComponent(momentum);
+				alignas(MomentumTestControl) char storage[sizeof(MomentumTestControl)];
+				auto control = new(storage) MomentumTestControl;
+				MomentumTestControl survivor, absent;
+				momentum->AttachControl(control);
+				momentum->AttachControl(&survivor);
+				momentum->DetachControl(&absent);
+				MomentumTestInput oldInput(control), survivingInput(&survivor);
+				if (playing)
+				{
+					oldInput.Start(); oldInput.Move(500000, 160); oldInput.End(500000);
+					root.Tick();
+				}
+				if (dispose)
+				{
+					control->~MomentumTestControl();
+					control = new(storage) MomentumTestControl;
+				}
+				else momentum->DetachControl(control);
+				momentum->AttachControl(control);
+				momentum->AttachControl(control);
+				MomentumTestInput replacement(control);
+				replacement.Start(); replacement.Move(500000, 160); replacement.End(500000);
+				survivingInput.Start(); survivingInput.Move(500000, -160); survivingInput.End(500000);
+				vint replacementTotal = 0, replacementCalls = 0, survivorTotal = 0;
+				control->GetBoundsComposition()->GetEventReceiver()->pointGesture.AttachLambda([&](auto*, auto& args)
+				{
+					replacementTotal += args.gesture.template Get<GuiPointGesture_Scrolling>().distance;
+					replacementCalls++;
+				});
+				survivor.GetBoundsComposition()->GetEventReceiver()->pointGesture.AttachLambda([&](auto*, auto& args)
+				{
+					survivorTotal += args.gesture.template Get<GuiPointGesture_Scrolling>().distance;
+				});
+				root.Tick(); clock.Advance(500); root.Tick();
+				TEST_ASSERT(replacementTotal == 80 && replacementCalls == 5 && survivorTotal == -80);
+				clock.Advance(500); root.Tick();
+				TEST_ASSERT(replacementTotal == 80 && replacementCalls == 5 && survivorTotal == -80);
+				control->~MomentumTestControl();
+			}
+		});
+
+		TEST_CASE(L"Momentum disposal sweeps preserve every surviving attachment")
+		{
+			TooltipTimer clock;
+			MomentumTestRoot root;
+			auto momentum = new MomentumScrolling;
+			root.AddComponent(momentum);
+			MomentumTestControl first, second;
+			for (auto survivor : { &first,&second })
+			{
+				auto dead = new MomentumTestControl;
+				momentum->AttachControl(dead);
+				momentum->AttachControl(survivor);
+				delete dead;
+			}
+			momentum->EnvironmentChanged();
+			vint total = 0;
+			for (auto survivor : { &second,&first })
+			{
+				MomentumTestInput input(survivor);
+				input.Start(); input.Move(500000, 160); input.End(500000);
+				survivor->GetBoundsComposition()->GetEventReceiver()->pointGesture.AttachLambda([&](auto*, auto& args)
+				{
+					total += args.gesture.template Get<GuiPointGesture_Scrolling>().distance;
+				});
+			}
+			root.Tick(); clock.Advance(500); root.Tick();
+			TEST_ASSERT(total == 160);
+		});
+
 		TEST_CASE(L"Momentum deceleration rejects invalid values")
 		{
 			MomentumScrolling momentum;
-			TEST_ASSERT(momentum.GetDeceleration() == 1.0);
+			TEST_ASSERT(momentum.GetDeceleration() == 2.0);
 			for (auto value : { 0.0,-1.0,std::numeric_limits<double>::infinity(),std::numeric_limits<double>::quiet_NaN() })
 			{
 				TEST_ERROR(momentum.SetDeceleration(value));
-				TEST_ASSERT(momentum.GetDeceleration() == 1.0);
+				TEST_ASSERT(momentum.GetDeceleration() == 2.0);
 			}
 		});
 
@@ -400,11 +483,11 @@ TEST_FILE
 			TEST_ASSERT(total == 0);
 			input.Start(); input.Move(500000, 160); input.End(500000);
 			root.Tick(); clock.Advance(1000); root.Tick();
-			TEST_ASSERT(total == 160);
+			TEST_ASSERT(total == 80);
 			momentum->SetDeceleration(std::numeric_limits<double>::max());
 			input.Start(); input.Move(500000, 160); input.End(500000);
 			root.Tick(); clock.Advance(1000); root.Tick();
-			TEST_ASSERT(total == 160);
+			TEST_ASSERT(total == 80);
 			momentum->SetDeceleration(1);
 			auto handler = parent.GetBoundsComposition()->GetEventReceiver()->pointSequenceStarted.AttachLambda([](auto* sender, auto& args)
 			{
@@ -412,7 +495,7 @@ TEST_FILE
 			});
 			input.Start(false); input.Move(500000, 160); input.End(500000);
 			root.Tick(); clock.Advance(1000); root.Tick();
-			TEST_ASSERT(total == 320);
+			TEST_ASSERT(total == 240);
 			parent.GetBoundsComposition()->GetEventReceiver()->pointSequenceStarted.Detach(handler);
 		});
 	});
@@ -489,10 +572,10 @@ TEST_FILE
 				document->SetCaret(begin, end);
 				other->SetFocused();
 				auto editable = mode != GuiDocumentEditMode::ViewOnly;
-				auto consume = editable && (longPress ? range == 0 && hit != end : range != 0 && column >= 2 && column <= 6);
+				auto consume = editable && longPress && range == 0 && hit != end;
 				press(hit, longPress, consume);
 				if (editable && longPress && consume) end = hit;
-				if (editable && !longPress && !consume && hit != end) begin = end = hit;
+				if (editable && !longPress) begin = end = hit;
 				TEST_ASSERT(document->GetCaretBegin() == begin && document->GetCaretEnd() == end);
 				auto focused = control->GetBoundsComposition()->GetRelatedGraphicsHost()->GetFocusedComposition();
 				TEST_ASSERT(focused == (editable && (!longPress || consume) ? control->GetFocusableComposition() : other->GetFocusableComposition()));

@@ -323,11 +323,17 @@ TEST_FILE
 			surface->SetAcceptPointEvents(true);
 			surface->GetBoundsComposition()->SetExpectedBounds(Rect(20, 30, 220, 230));
 			controlHost->AddChild(surface);
+			auto hit = new GuiBoundsComposition;
+			hit->SetExpectedBounds(Rect(10, 10, 180, 180));
+			surface->GetContainerComposition()->AddChild(hit);
+			hit->GetEventReceiver();
 			auto receiver = surface->GetBoundsComposition()->GetEventReceiver();
 			receiver->pointSequenceEnded.AttachLambda([&](auto*, GuiPointSequenceEndedEventArgs&) { if (onEnd) onEnd(); });
 			auto record = [&](const wchar_t* name, GuiMouseEventArgs& a, bool pressed)
 			{
 				TEST_ASSERT(!surface->GetPointEventComposition());
+				TEST_ASSERT(a.eventSource == surface->GetBoundsComposition());
+				TEST_ASSERT(a.compositionSource == surface->GetBoundsComposition());
 				TEST_ASSERT(a.button == NativeMouseButton::Left);
 				TEST_ASSERT(a.left == pressed && !a.right && !a.middle);
 				TEST_ASSERT(a.ctrl && a.shift && a.alt && a.osSuper);
