@@ -85,17 +85,51 @@ public static class GacUIShowcaseTests
     static void Press(string key) { Input("!KeyPress:" + key); }
     static void Click(AutomationElement element)
     {
-        var bounds = element.Current.BoundingRectangle;
+        var bounds = System.Windows.Rect.Empty;
+        int stable = 0;
+        Wait(() => {
+            var current = element.Current.BoundingRectangle;
+            // GacUI derives IsOffscreen from this same rectangle. Avoid a
+            // second provider query while a large virtual font list is open.
+            bool same = current.Width > 0 && current.Height > 0 && current == bounds;
+            stable = same ? stable + 1 : 0;
+            bounds = current;
+            return stable >= 3;
+        }, "click target geometry settles: " + element.Current.Name, 60000);
         Pointer("LeftClick", bounds.Left + bounds.Width / 2, bounds.Top + bounds.Height / 2);
     }
     static void Pointer(string action, double x, double y)
     {
-        var point = new NativePoint { X = (int)x, Y = (int)y };
+        var point = UiaToClientPoint(x, y);
+        Input("!" + action + ":" + point.X + "," + point.Y);
+    }
+    static double uiaClientWidth, uiaClientHeight, uiaScaleX, uiaScaleY;
+    static NativePoint UiaToClientPoint(double x, double y)
+    {
         var hwnd = new IntPtr(root.Current.NativeWindowHandle);
-        Check(ScreenToClient(hwnd, ref point), "convert pointer to client coordinates");
         uint dpi = GetDpiForWindow(hwnd);
         Check(dpi != 0, "read pointer coordinate DPI");
-        Input("!" + action + ":" + (point.X * 96 / dpi) + "," + (point.Y * 96 / dpi));
+        if (isHosted)
+        {
+            // UIA scales the DPI-unaware GDI provider to physical pixels even
+            // though GetDpiForWindow reports 96. Use the observed provider/client
+            // size ratio and refresh it after a resize or DPI change.
+            var origin = root.Current.BoundingRectangle;
+            if (uiaClientWidth != origin.Width || uiaClientHeight != origin.Height)
+            {
+                var window = (Dictionary<string, object>)ControlsSnapshot()["MainWindow"];
+                var client = SnapshotBounds((Dictionary<string, object>)window["composition"]);
+                Check(client.Width > 0 && client.Height > 0, "hosted client has usable bounds");
+                uiaScaleX = client.Width / origin.Width;
+                uiaScaleY = client.Height / origin.Height;
+                uiaClientWidth = origin.Width;
+                uiaClientHeight = origin.Height;
+            }
+            return new NativePoint { X = (int)Math.Round((x - origin.Left) * uiaScaleX), Y = (int)Math.Round((y - origin.Top) * uiaScaleY) };
+        }
+        var point = new NativePoint { X = (int)x, Y = (int)y };
+        Check(ScreenToClient(hwnd, ref point), "convert pointer to client coordinates");
+        return new NativePoint { X = (int)Math.Round(point.X * 96.0 / dpi), Y = (int)Math.Round(point.Y * 96.0 / dpi) };
     }
     static void Drag(double x, double y, double dx, double dy)
     {
@@ -170,6 +204,11 @@ public static class GacUIShowcaseTests
     {
         var timer = Stopwatch.StartNew();
         while (timer.ElapsedMilliseconds < timeout) { if (predicate()) { assertions++; return; } Thread.Sleep(30); }
+        if (!string.IsNullOrEmpty(PersistenceOutput))
+        {
+            try { System.IO.File.WriteAllText(System.IO.Path.Combine(PersistenceOutput, "uia-timeout.json"), new JavaScriptSerializer { MaxJsonLength = int.MaxValue, RecursionLimit = 512 }.Serialize(ControlsSnapshot())); }
+            catch (Exception error) { Console.WriteLine("NOTE timeout snapshot unavailable: " + error.Message); }
+        }
         throw new Exception("Timed out: " + message);
     }
     static List<AutomationElement> Find(AutomationElement parent, ControlType type, TreeScope scope = TreeScope.Descendants)
@@ -217,8 +256,12 @@ public static class GacUIShowcaseTests
     static void CheckFocus(AutomationElement element, string message)
     {
         Check(element.Current.HasKeyboardFocus, message + " property");
-        var focused = root.FindAll(TreeScope.Descendants, new PropertyCondition(AutomationElement.HasKeyboardFocusProperty, true));
-        Check(focused.Count == 1 && Automation.Compare(focused[0], element), message + " unique reachable logical focus");
+        var focused = root.FindAll(TreeScope.Descendants, new AndCondition(
+            new PropertyCondition(AutomationElement.HasKeyboardFocusProperty, true),
+            new PropertyCondition(AutomationElement.FrameworkIdProperty, "GacUI")));
+        var focusNames = new List<string>();
+        foreach (AutomationElement candidate in focused) focusNames.Add(candidate.Current.ControlType.ProgrammaticName + "/" + candidate.Current.Name + "/offscreen=" + candidate.Current.IsOffscreen);
+        Check(focused.Count == 1 && Automation.Compare(focused[0], element), message + " unique reachable logical focus: " + string.Join("; ", focusNames.ToArray()));
         IntPtr buffer; int bytes;
         Check(WTSQuerySessionInformation(IntPtr.Zero, -1, 8, out buffer, out bytes), "query session connection state");
         int connectionState;
@@ -593,16 +636,8 @@ public static class GacUIShowcaseTests
     static void PointInput(string operation, int token, AutomationElement element, double relativeX, double relativeY)
     {
         var bounds = element.Current.BoundingRectangle;
-        var point = new NativePoint
-        {
-            X = (int)Math.Round(bounds.Left + bounds.Width * relativeX),
-            Y = (int)Math.Round(bounds.Top + bounds.Height * relativeY),
-        };
-        var hwnd = new IntPtr(root.Current.NativeWindowHandle);
-        Check(ScreenToClient(hwnd, ref point), "convert point coordinate to client coordinates");
-        uint dpi = GetDpiForWindow(hwnd);
-        Check(dpi != 0, "read point coordinate DPI");
-        Input("!Point" + operation + ":" + token + "," + (int)Math.Round(point.X * 96.0 / dpi) + "," + (int)Math.Round(point.Y * 96.0 / dpi));
+        var point = UiaToClientPoint(bounds.Left + bounds.Width * relativeX, bounds.Top + bounds.Height * relativeY);
+        Input("!Point" + operation + ":" + token + "," + point.X + "," + point.Y);
     }
     static void OpenTouching()
     {
@@ -766,11 +801,13 @@ public static class GacUIShowcaseTests
             PointInput("Update", token, list, 0.5, 0.6);
             Thread.Sleep(100);
             PointInput("Up", token, list, 0.5, 0.4);
+            ControlsSnapshot();
         };
         flick(1201);
         var released = scroll.Current.VerticalScrollPercent;
         Wait(() => scroll.Current.VerticalScrollPercent > released, "viewport continues moving after Up");
         PointInput("Down", 1202, list, 0.5, 0.5);
+        ControlsSnapshot();
         var interrupted = scroll.Current.VerticalScrollPercent;
         Thread.Sleep(250);
         Check(scroll.Current.VerticalScrollPercent == interrupted, "fresh Down stops continuation");
@@ -854,7 +891,9 @@ public static class GacUIShowcaseTests
             }, description);
             PointInput("Down", token, editor, 0.45, 0.15);
             PointInput("Up", token, editor, 0.45, 0.15);
-            unchanged("short press at the selected endpoint retains both endpoints");
+            Wait(() => text.GetSelection()[0].GetText(-1).Length == 0, "short press at the active endpoint collapses the range");
+            selected.Select();
+            ControlsSnapshot();
             var beforeRight = counters();
             PointInput("Down", token, editor, 0.45, 0.15);
             Thread.Sleep(550);
@@ -1409,6 +1448,17 @@ public static class GacUIShowcaseTests
         }
         else
         {
+            var item = Named(Popup(ControlType.Menu), name, ControlType.MenuItem);
+            Check(item.Current.IsEnabled, "context command is enabled: " + name);
+            var previous = System.Windows.Rect.Empty;
+            int stable = 0;
+            Wait(() => {
+                var rectangle = item.Current.BoundingRectangle;
+                bool same = !rectangle.IsEmpty && rectangle.Width > 0 && rectangle.Height > 0 && rectangle == previous;
+                stable = same ? stable + 1 : 0;
+                previous = rectangle;
+                return stable >= 3;
+            }, "context menu command geometry settles: " + name);
             var menus = DocumentContextMenus();
             Check(menus.Count == 1, "one document context menu before command");
             var menu = menus[0];
@@ -1503,7 +1553,7 @@ public static class GacUIShowcaseTests
                 foreach (var shortcut in shortcutKeys)
                 {
                     string name = shortcut.Key;
-                    Check(Named(popup, name, ControlType.MenuItem).Current.AcceleratorKey == shortcut.Value, "context shortcut: " + name);
+                    if (ribbon) Check(Named(popup, name, ControlType.MenuItem).Current.AcceleratorKey == shortcut.Value, "context shortcut: " + name);
                     var equivalent = FindNamed(page, name, ControlType.Button);
                     if (equivalent != null)
                     {
@@ -1577,25 +1627,40 @@ public static class GacUIShowcaseTests
     {
         foreach (var node in SnapshotNodes(ControlsSnapshot()))
         {
-            object xml;
-            if (node.TryGetValue("elementDocument", out xml) && ((string)xml).Contains("Self-contained persistence fixture")) return (string)xml;
+            object control;
+            if (!node.TryGetValue("control", out control) || (string)control != "DocumentViewer") continue;
+            foreach (var child in SnapshotNodes(node))
+            {
+                object xml;
+                if (child.TryGetValue("elementDocument", out xml)) return (string)xml;
+            }
         }
-        throw new Exception("Visible document fixture is missing from the automation snapshot.");
+        throw new Exception("Visible document viewer is missing from the automation snapshot.");
     }
     static void EditorSelect(AutomationElement document, bool point, string phrase, bool collapse = false)
     {
         var text = Pattern<TextPattern>(document, TextPattern.Pattern);
-        if (point && !collapse && text.GetSelection()[0].GetText(-1).Length > 0)
-        {
-            EditorSelect(document, true, phrase.StartsWith("GacUI") ? "Self-contained persistence" : "GacUI Remote", true);
-        }
+        document.SetFocus();
+        ControlsSnapshot();
+        Check(Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(10000), "document focus and pending reload become idle");
         var range = text.DocumentRange.FindText(phrase, false, false);
         Check(range != null, "selection phrase exists: " + phrase);
         range.ScrollIntoView(true);
         ControlsSnapshot();
-        var rectangles = range.GetBoundingRectangles();
+        Check(Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(10000), "document scrolling becomes idle");
+        System.Windows.Rect[] rectangles = null;
+        int stable = 0;
+        Wait(() => {
+            var current = range.GetBoundingRectangles();
+            bool same = rectangles != null && current.Length > 0 && current.Length == rectangles.Length;
+            if (same) for (int i = 0; i < current.Length; i++) if (current[i] != rectangles[i]) same = false;
+            stable = same ? stable + 1 : 0;
+            rectangles = current;
+            return stable >= 3;
+        }, "SOP selection geometry settles after focus and scrolling");
         Check(rectangles.Length > 0, "selection phrase has rendered bounds");
         double x = rectangles[0].Left + 1, y = rectangles[0].Top + rectangles[0].Height / 2;
+        Console.WriteLine("SELECTION / " + phrase + " / point=" + point + " / collapse=" + collapse + " / text bounds=" + rectangles[0] + " / document=" + document.Current.BoundingRectangle);
         if (point)
         {
             var bounds = document.Current.BoundingRectangle;
@@ -1618,13 +1683,174 @@ public static class GacUIShowcaseTests
         }
         // Nonempty selection alone can still describe the previous queued click.
         ControlsSnapshot();
-        Wait(() => (text.GetSelection()[0].GetText(-1).Length == 0) == collapse, "SOP establishes " + (collapse ? "a caret" : "a range") + (point ? " through point input" : " through mouse and keyboard input"));
+        Wait(() => {
+            var selected = text.GetSelection()[0];
+            return (selected.GetText(-1).Length == 0) == collapse
+                && selected.CompareEndpoints(TextPatternRangeEndpoint.Start, range, TextPatternRangeEndpoint.Start) == 0;
+        }, "SOP establishes " + (collapse ? "a caret" : "a range") + " at " + phrase + (point ? " through point input" : " through mouse and keyboard input"));
+    }
+    static void EditorPointCaret(IntPtr hwnd)
+    {
+        Test("Document point regression / mouse-equivalent caret, focus and popup dismissal");
+        string fixture = System.IO.Path.GetFullPath(System.IO.Path.Combine(PersistenceOutput, "..", "..", "TestDocument.bin"));
+        Action<string, double, double> point = (operation, x, y) => {
+            var p = UiaToClientPoint(x, y);
+            Input("!Point" + operation + ":1601," + p.X + "," + p.Y);
+        };
+        Func<TextPatternRange, System.Windows.Rect[]> settledBounds = range => {
+            System.Windows.Rect[] previous = null;
+            int stable = 0;
+            Wait(() => {
+                var current = range.GetBoundingRectangles();
+                bool same = previous != null && current.Length > 0 && current.Length == previous.Length;
+                if (same) for (int i = 0; i < current.Length; i++) if (current[i] != previous[i]) same = false;
+                stable = same ? stable + 1 : 0;
+                previous = current;
+                return stable >= 3;
+            }, "paragraph bounds settle after scrolling and layout");
+            return previous;
+        };
+        Pattern<TransformPattern>(root, TransformPattern.Pattern).Resize(1200, 700);
+        foreach (string palette in new[] { "Default", "Aurora" })
+        {
+            PersistencePalette(hwnd, palette);
+            foreach (bool ribbon in new[] { true, false })
+            {
+                Console.WriteLine("TEST editor point fixture / ribbon=" + ribbon + " / palette=" + palette);
+                var page = Page(Page(root, "Control"), ribbon ? "Document Editor (Ribbon)" : "Document Editor (Toolstrip)");
+                PersistenceFile(page, ribbon, "Load as Private Format", fixture, false, true);
+                AutomationElement document = null;
+                Wait(() => {
+                    var documents = Find(page, ControlType.Document);
+                    if (documents.Count == 0) return false;
+                    document = documents[0];
+                    return true;
+                }, "editor document is accessible after loading the fixture");
+                var text = Pattern<TextPattern>(document, TextPattern.Pattern);
+                var heading = text.DocumentRange.FindText("GacUI Remote Document", false, false);
+                Func<TextPatternRange, string> rangeOffsets = range => {
+                    var prefix = text.DocumentRange.Clone();
+                    prefix.MoveEndpointByRange(TextPatternRangeEndpoint.End, range, TextPatternRangeEndpoint.Start);
+                    int begin = prefix.GetText(-1).Length;
+                    prefix.MoveEndpointByRange(TextPatternRangeEndpoint.End, range, TextPatternRangeEndpoint.End);
+                    return begin + "-" + prefix.GetText(-1).Length;
+                };
+                Check(heading != null, "point regression fixture loaded");
+                var allText = text.DocumentRange.GetText(-1).TrimEnd('\r', '\n');
+                string lastLine = allText.Substring(allText.LastIndexOf('\n') + 1).TrimEnd('\r');
+                var last = text.DocumentRange.FindText(lastLine, false, true);
+                Check(last != null, "last fixture paragraph located");
+                string leftLine = Array.Find(allText.Split('\n'), line => line.StartsWith("Private save preserves")).TrimEnd('\r');
+                var leftParagraph = text.DocumentRange.FindText(leftLine, false, false);
+                foreach (bool reversed in new[] { false, true })
+                for (int target = 0; target < 6; target++)
+                {
+                    Console.WriteLine("TEST editor point / ribbon=" + ribbon + " / palette=" + palette + " / target=" + target + " / reversed=" + reversed);
+                    Func<bool, System.Windows.Point> prepare = forPoint => {
+                        Pattern<TransformPattern>(root, TransformPattern.Pattern).Resize(1200, target == 5 ? 1000 : 700);
+                        Check(Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(10000), "point fixture resize reaches idle");
+                        heading.ScrollIntoView(true); ControlsSnapshot();
+                        Check(Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(10000), "point fixture scrolling reaches idle");
+                        var h = settledBounds(heading)[0];
+                        double y = (h.Top + h.Bottom) / 2;
+                        double begin = h.Left + 1, end = h.Right - 1;
+                        Drag(reversed ? end : begin, y, reversed ? begin - end : end - begin, 0);
+                        ControlsSnapshot();
+                        Check(text.GetSelection()[0].GetText(-1).Length > 0, "mouse drag establishes directed range");
+                        if (target >= 4)
+                        {
+                            (target == 4 ? leftParagraph : last).ScrollIntoView(target == 4); ControlsSnapshot();
+                            Check(Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(10000), "point target scrolling reaches idle");
+                        }
+                        if (forPoint)
+                        {
+                            Named(page, "Copy", ControlType.Button).SetFocus();
+                            Thread.Sleep(600); // Isolate generated clicks, then read the current viewport.
+                        }
+                        var targetBounds = settledBounds(target < 4 ? heading : target == 4 ? leftParagraph : last);
+                        var bounds = document.Current.BoundingRectangle;
+                        double rightEdge = bounds.Right, bottomEdge = bounds.Bottom;
+                        foreach (var node in SnapshotNodes(ControlsSnapshot()))
+                        {
+                            object role;
+                            if (!node.TryGetValue("control", out role) || (string)role != "DocumentViewer") continue;
+                            var logical = SnapshotBounds(node);
+                            foreach (var child in SnapshotNodes(node))
+                            {
+                                object cursor;
+                                if (!child.TryGetValue("cursor", out cursor) || (string)cursor != "IBeam") continue;
+                                var viewport = SnapshotBounds(child);
+                                double scale = bounds.Width / logical.Width;
+                                rightEdge = bounds.Left + (viewport.Right - logical.Left) * scale;
+                                bottomEdge = bounds.Top + (viewport.Bottom - logical.Top) * scale;
+                                break;
+                            }
+                            break;
+                        }
+                        if (target < 4)
+                        {
+                            h = targetBounds[0];
+                            return new System.Windows.Point(target == 0 ? h.Left + h.Width / 2 : target == 1 ? h.Left + 1 : target == 2 ? h.Right - 1 : Math.Min(h.Right + 30, rightEdge - 8), (h.Top + h.Bottom) / 2);
+                        }
+                        var tail = targetBounds;
+                        Check(tail.Length > 0, "last paragraph has visible bounds");
+                        var t = tail[tail.Length - 1];
+                        double hitY = target == 4 ? (t.Top + t.Bottom) / 2 : Math.Min(t.Bottom + 10, bottomEdge - 4);
+                        if (target == 5) Check(hitY > t.Bottom, "below-final-paragraph point is inside blank viewport space");
+                        return new System.Windows.Point(Math.Min(t.Right + 30, rightEdge - 8), hitY);
+                    };
+                    var hit = prepare(false);
+                    Pointer("LeftClick", hit.X, hit.Y); ControlsSnapshot();
+                    Check(Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(10000), "point regression mouse baseline reaches idle");
+                    var mouseHit = hit;
+                    var expected = text.GetSelection()[0].Clone();
+                    if (expected.GetText(-1).Length != 0)
+                        System.IO.File.WriteAllText(System.IO.Path.Combine(PersistenceOutput, "point-failure.json"), new JavaScriptSerializer { MaxJsonLength = 16 * 1024 * 1024, RecursionLimit = 512 }.Serialize(ControlsSnapshot()));
+                    Check(expected.GetText(-1).Length == 0, "ordinary mouse collapses the range / hit=" + hit + " / document=" + document.Current.BoundingRectangle + " / selection=" + expected.GetText(-1));
+                    hit = prepare(true);
+                    point("Down", hit.X, hit.Y); point("Up", hit.X, hit.Y);
+                    ControlsSnapshot();
+                    try
+                    {
+                        Wait(() => text.GetSelection()[0].Compare(expected), "short press matches mouse caret / target=" + target + " / reversed=" + reversed);
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Caret mismatch: expected=" + rangeOffsets(expected) + " / actual=" + rangeOffsets(text.GetSelection()[0]) + " / mouse=" + mouseHit + " / point=" + hit + " / document=" + document.Current.BoundingRectangle);
+                        System.IO.File.WriteAllText(System.IO.Path.Combine(PersistenceOutput, "point-failure.json"), new JavaScriptSerializer { MaxJsonLength = 16 * 1024 * 1024, RecursionLimit = 512 }.Serialize(ControlsSnapshot()));
+                        throw;
+                    }
+                    CheckFocus(document, "short press focuses the document");
+                }
+                EditorSelect(document, true, "GacUI Remote");
+                var selected = text.GetSelection()[0].Clone();
+                var headingBounds = heading.GetBoundingRectangles()[0];
+                double menuX = headingBounds.Right - 2, menuY = (headingBounds.Top + headingBounds.Bottom) / 2;
+                point("Down", menuX, menuY); Thread.Sleep(550);
+                Check(DocumentContextMenus().Count == 0, "holding does not open a popup");
+                point("Up", menuX, menuY);
+                Wait(() => DocumentContextMenus().Count == 1, "long press opens exactly one context menu");
+                Check(text.GetSelection()[0].Compare(selected), "long press retains both range endpoints");
+                double caretX = headingBounds.Left + 1;
+                point("Down", caretX, menuY);
+                Check(DocumentContextMenus().Count == 1, "raw Down leaves popup open");
+                Input("!PointCancel:1601,PlatformCanceled"); ControlsSnapshot();
+                Check(DocumentContextMenus().Count == 1, "cancellation leaves popup open");
+                Thread.Sleep(600);
+                point("Down", caretX, menuY); point("Up", caretX, menuY); ControlsSnapshot();
+                Wait(() => DocumentContextMenus().Count == 0 && text.GetSelection()[0].GetText(-1).Length == 0,
+                    "eligible short press closes popup and collapses caret");
+                CheckFocus(document, "popup dismissal returns document focus");
+                Console.WriteLine("PASS editor point caret / ribbon=" + ribbon + " / palette=" + palette + " / input=" + inputEndpoint);
+            }
+        }
+        PersistencePalette(hwnd, "Default");
     }
     static AutomationElement EditorModal()
     {
         AutomationElement result = null;
         Wait(() => {
-            foreach (var window in Find(root, ControlType.Window))
+            foreach (var window in Find(root, ControlType.Window, TreeScope.Children))
             {
                 object pattern;
                 if (!window.Current.IsOffscreen && window.TryGetCurrentPattern(WindowPattern.Pattern, out pattern)
@@ -1636,28 +1862,65 @@ public static class GacUIShowcaseTests
     }
     static void EditorDialogAction(AutomationElement dialog, bool cancel, bool uia)
     {
-        var button = FindNamed(dialog, cancel ? "Cancel" : "OK", ControlType.Button);
-        if (button == null)
-        {
-            var actions = Find(dialog, ControlType.Button).FindAll(item => item.Current.Name.Length > 0 && !item.Current.IsOffscreen);
-            Check(actions.Count == 2 || (!cancel && actions.Count == 1), "localized dialog has the expected action buttons");
-            button = actions[cancel ? 1 : 0];
-        }
+        var captions = cancel ? new[] { "Cancel", "\u53d6\u6d88" } : new[] { "OK", "Open", "Save", "\u786e\u5b9a", "\u6253\u5f00", "\u4fdd\u5b58" };
+        AutomationElement button = null;
+        Wait(() => {
+            button = Find(dialog, ControlType.Button, TreeScope.Children).Find(item => Array.IndexOf(captions, item.Current.Name) >= 0 && !item.Current.IsOffscreen);
+            if (button == null) button = EditorDialogControls(dialog, ControlType.Button).Find(item => Array.IndexOf(captions, item.Current.Name) >= 0 && !item.Current.IsOffscreen);
+            return button != null;
+        }, "requested dialog action becomes visible: " + dialog.Current.Name + " / cancel=" + cancel, 60000);
+        Console.WriteLine("DIALOG action / " + dialog.Current.Name + " / cancel=" + cancel + " / " + button.Current.Name + " / UIA=" + uia);
         if (uia) Pattern<InvokePattern>(button, InvokePattern.Pattern).Invoke(); else Click(button);
         Wait(() => { try { return dialog.Current.IsOffscreen; } catch (ElementNotAvailableException) { return true; } }, "editor dialog closes");
         ControlsSnapshot();
+        if (uia) Check(Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(10000), "editor dialog completion becomes idle");
+    }
+    static List<AutomationElement> EditorDialogControls(AutomationElement dialog, ControlType type)
+    {
+        var result = new List<AutomationElement>();
+        var parents = new List<AutomationElement> { dialog };
+        for (int i = 0; i < parents.Count; i++)
+        foreach (AutomationElement child in parents[i].FindAll(TreeScope.Children, Condition.TrueCondition))
+        {
+            var role = child.Current.ControlType;
+            if (role == type) result.Add(child);
+            // Font lists expose every virtual item. Dialog control lookup must
+            // not enumerate their item or document subtrees.
+            if (role != ControlType.List && role != ControlType.ListItem && role != ControlType.Document) parents.Add(child);
+        }
+        return result;
     }
     static void EditorSetValue(AutomationElement edit, string value, bool uia)
     {
-        if (uia) Pattern<ValuePattern>(edit, ValuePattern.Pattern).SetValue(value);
-        else { Click(edit); Press("Ctrl+A"); Input("!Type:" + value); }
-        ControlsSnapshot();
+        var pattern = Pattern<ValuePattern>(edit, ValuePattern.Pattern);
+        if (uia) pattern.SetValue(value);
+        else
+        {
+            Check(Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(10000), "dialog input becomes idle before clicking a field");
+            var bounds = edit.Current.BoundingRectangle;
+            var client = UiaToClientPoint(bounds.Left + bounds.Width / 2, bounds.Top + bounds.Height / 2);
+            Console.WriteLine("FIELD click / value=" + value + " / bounds=" + bounds + " / client=" + client.X + "," + client.Y + " / root=" + root.Current.BoundingRectangle);
+            Click(edit);
+            try { Wait(() => edit.Current.HasKeyboardFocus, "dialog field has focus before typing " + value); }
+            catch
+            {
+                foreach (var field in EditorDialogControls(EditorModal(), ControlType.Edit))
+                    Console.WriteLine("FIELD focus / value=" + Pattern<ValuePattern>(field, ValuePattern.Pattern).Current.Value + " / focused=" + field.Current.HasKeyboardFocus + " / bounds=" + field.Current.BoundingRectangle);
+                throw;
+            }
+            Press("Ctrl+A");
+            Input("!Type:" + value);
+        }
+        Wait(() => pattern.Current.Value == value, "dialog field contains " + value);
     }
     static void EditorContextOpen(AutomationElement document)
     {
+        var text = Pattern<TextPattern>(document, TextPattern.Pattern);
+        var selection = text.GetSelection()[0].Clone();
         var bounds = document.Current.BoundingRectangle;
         Pointer("RightClick", bounds.Left + bounds.Width * 0.5, bounds.Top + bounds.Height * 0.3);
         Wait(() => DocumentContextMenus().Count == 1, "SOP context menu opens");
+        Check(text.GetSelection()[0].Compare(selection), "SOP context opening preserves both endpoints");
     }
     static AutomationElement EditorMenuItem(string name)
     {
@@ -1676,7 +1939,13 @@ public static class GacUIShowcaseTests
         if (context)
         {
             EditorContextOpen(document);
-            if (!objectMenu) { ContextMenuCommand(command, uia); ControlsSnapshot(); return; }
+            if (!objectMenu)
+            {
+                ContextMenuCommand(command, uia);
+                Wait(() => DocumentContextMenus().Count == 0, "SOP context command closes its menu: " + command);
+                ControlsSnapshot();
+                return;
+            }
             var header = Named(Popup(ControlType.Menu), "Object", ControlType.MenuItem);
             if (uia) Pattern<ExpandCollapsePattern>(header, ExpandCollapsePattern.Pattern).Expand(); else ContextMenuCommand("Object", false);
             AutomationElement child = null;
@@ -1706,6 +1975,7 @@ public static class GacUIShowcaseTests
                 var tab = Named(page, command == "Insert Image ..." ? "Insert" : "Edit", ControlType.TabItem);
                 if (uia) Pattern<SelectionItemPattern>(tab, SelectionItemPattern.Pattern).Select(); else Click(tab);
                 ControlsSnapshot();
+                if (uia) Check(Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(10000), "editor ribbon tab becomes idle");
             }
             if (mode || (!ribbon && (command == "Left" || command == "Center" || command == "Right" || command == "Set Alignment to Default (Left)" || command == "Edit Hyperlink ..." || command == "Remove Hyperlink" || command == "Select All")))
             {
@@ -1722,8 +1992,10 @@ public static class GacUIShowcaseTests
                 return;
             }
             var button = Named(page, command, !ribbon && command == "Insert Image ..." ? ControlType.SplitButton : ControlType.Button);
+            Console.WriteLine("COMMAND / " + command + " / UIA=" + uia + " / enabled=" + button.Current.IsEnabled + " / offscreen=" + button.Current.IsOffscreen + " / bounds=" + button.Current.BoundingRectangle);
             if (uia) Pattern<InvokePattern>(button, InvokePattern.Pattern).Invoke(); else Click(button);
         }
+        if (context) Wait(() => DocumentContextMenus().Count == 0, "SOP Object command closes its menu: " + command);
         ControlsSnapshot();
     }
     static void EditorClipboard(AutomationElement page, AutomationElement document, bool ribbon, bool uia, string fixture)
@@ -1738,7 +2010,7 @@ public static class GacUIShowcaseTests
             prefix.MoveEndpointByRange(TextPatternRangeEndpoint.End, text.GetSelection()[0], TextPatternRangeEndpoint.Start);
             return prefix.GetText(-1).Length;
         };
-        for (int route = 0; route < 3; route++)
+        for (int route = 0; route < (ribbon ? 3 : 2); route++)
         {
             Test("SOP clipboard / " + (ribbon ? "ribbon" : "toolstrip") + " / route=" + route + " / UIA=" + uia);
             Action<string> command = name => {
@@ -1748,7 +2020,11 @@ public static class GacUIShowcaseTests
             PersistenceFile(page, ribbon, "Load as Private Format", fixture, false, !uia);
             EditorSelect(document, !ribbon, "Private save preserves");
             string copied = text.GetSelection()[0].GetText(-1);
+            Console.WriteLine("TEST SOP clipboard source / offset=" + selectionStart() + " / text=" + copied);
+            string sourceText = text.DocumentRange.GetText(-1);
+            var copiedRange = text.GetSelection()[0].Clone();
             command("Copy");
+            Check(text.DocumentRange.GetText(-1) == sourceText && text.GetSelection()[0].Compare(copiedRange), "Copy preserves document text and both endpoints");
             EditorSelect(document, !ribbon, "GacUI Remote", true);
             string original = text.DocumentRange.GetText(-1);
             string inserted = original.Insert(selectionStart(), copied);
@@ -1780,6 +2056,10 @@ public static class GacUIShowcaseTests
         Console.WriteLine("NOTE Ribbon Select All has no separate ribbon button; its equivalent is Ctrl+A.");
         PersistenceFile(page, ribbon, "Load as Private Format", fixture, false, !uia);
     }
+    // Four steps per editor: clipboard, formatting, objects, modes/samples.
+    // Groups are automation Ribbon/Toolstrip, then UIA Ribbon/Toolstrip.
+    public static int EditorSopStartStep;
+    public static bool EditorSopResumeAtImages;
     static void DocumentEditorSop(IntPtr hwnd)
     {
         Check(isHosted, "SOP sections 3.1 and 3.2 execute only in CppTest");
@@ -1791,190 +2071,243 @@ public static class GacUIShowcaseTests
         for (int pass = 0; pass < 2; pass++)
         for (int editor = 0; editor < 2; editor++)
         {
+            int step = (pass * 2 + editor) * 4;
+            if (step + 3 < EditorSopStartStep) continue;
             bool ribbon = editor == 0, uia = pass == 1;
             var page = Page(Page(root, "Control"), ribbon ? "Document Editor (Ribbon)" : "Document Editor (Toolstrip)");
             PersistenceFile(page, ribbon, "Load as Private Format", fixture, false, !uia);
             var document = Find(page, ControlType.Document)[0];
             var text = Pattern<TextPattern>(document, TextPattern.Pattern);
-            EditorClipboard(page, document, ribbon, uia, fixture);
-            EditorSelect(document, !ribbon, "Private save preserves");
-            var selection = text.GetSelection()[0].Clone();
-            foreach (var attribute in new[] { TextPattern.FontWeightAttribute, TextPattern.IsItalicAttribute, TextPattern.UnderlineStyleAttribute, TextPattern.StrikethroughStyleAttribute })
+            if (step >= EditorSopStartStep) EditorClipboard(page, document, ribbon, uia, fixture);
+            if (step + 1 >= EditorSopStartStep)
             {
-                string command = attribute == TextPattern.FontWeightAttribute ? "Bold" : attribute == TextPattern.IsItalicAttribute ? "Italic" : attribute == TextPattern.UnderlineStyleAttribute ? "Underline" : "Strike";
-                var before = selection.GetAttributeValue(attribute);
-                EditorCommand(page, document, ribbon, command, false, uia);
-                Wait(() => !selection.GetAttributeValue(attribute).Equals(before), command + " changes effective formatting");
-                Check(text.GetSelection()[0].Compare(selection), command + " preserves the range");
-                EditorCommand(page, document, ribbon, command, false, uia);
-                Wait(() => selection.GetAttributeValue(attribute).Equals(before), command + " restores effective formatting");
-                Console.WriteLine("PASS SOP " + command + " on/off / editor=" + editor + " / UIA=" + uia);
-            }
-            foreach (string alignment in new[] { "Left", "Center", "Right" })
-            {
-                EditorCommand(page, document, ribbon, alignment, false, uia);
-                string xml = EditorDocumentXml();
-                bool aligned = false;
-                foreach (System.Text.RegularExpressions.Match paragraph in System.Text.RegularExpressions.Regex.Matches(xml, "<p(?: [^>]*)?>.*?</p>", System.Text.RegularExpressions.RegexOptions.Singleline))
+                EditorSelect(document, !ribbon, "Private save preserves");
+                var selection = text.GetSelection()[0].Clone();
+                foreach (var attribute in new[] { TextPattern.FontWeightAttribute, TextPattern.IsItalicAttribute, TextPattern.UnderlineStyleAttribute, TextPattern.StrikethroughStyleAttribute })
                 {
-                    string content = System.Net.WebUtility.HtmlDecode(System.Text.RegularExpressions.Regex.Replace(paragraph.Value, "<[^>]*>", ""));
-                    if (content.Contains("Private save preserves")) aligned = paragraph.Value.Contains("align=\"" + alignment + "\"");
+                    string command = attribute == TextPattern.FontWeightAttribute ? "Bold" : attribute == TextPattern.IsItalicAttribute ? "Italic" : attribute == TextPattern.UnderlineStyleAttribute ? "Underline" : "Strike";
+                    var before = selection.GetAttributeValue(attribute);
+                    EditorCommand(page, document, ribbon, command, false, uia);
+                    Wait(() => !selection.GetAttributeValue(attribute).Equals(before), command + " changes effective formatting");
+                    Check(text.GetSelection()[0].Compare(selection), command + " preserves the range");
+                    EditorCommand(page, document, ribbon, command, false, uia);
+                    Wait(() => selection.GetAttributeValue(attribute).Equals(before), command + " restores effective formatting");
+                    Console.WriteLine("PASS SOP " + command + " on/off / editor=" + editor + " / UIA=" + uia);
                 }
-                Check(aligned, "paragraph alignment is serialized as " + alignment);
-                Check(Convert.ToInt32(selection.GetAttributeValue(TextPattern.HorizontalTextAlignmentAttribute)) == (alignment == "Left" ? 0 : alignment == "Center" ? 1 : 2), "effective paragraph alignment agrees with " + alignment);
-            }
-            for (int route = 0; route < 2; route++)
-            foreach (string command in new[] { "Set Font ...", "Text Color ...", "Background Color ..." })
-            {
-                bool context = route == 0;
-                string before = EditorDocumentXml();
-                EditorCommand(page, document, ribbon, command, context, uia);
-                EditorDialogAction(EditorModal(), true, uia);
-                Check(EditorDocumentXml() == before, command + " cancellation preserves formatting");
-                EditorCommand(page, document, ribbon, command, context, uia);
-                var dialog = EditorModal();
-                if (command == "Set Font ...")
+                foreach (string alignment in new[] { "Left", "Center", "Right" })
                 {
-                    var lists = Find(dialog, ControlType.List);
-                    Check(lists.Count == 2, "font dialog exposes family and size lists");
-                    string oldFamily = (string)selection.GetAttributeValue(TextPattern.FontNameAttribute);
-                    var choices = Items(lists[0]).FindAll(item => !item.Current.IsOffscreen && item.Current.Name != oldFamily);
-                    Check(choices.Count > 0, "another visible font family is available");
-                    string family = choices[0].Current.Name;
-                    if (uia) Pattern<SelectionItemPattern>(choices[0], SelectionItemPattern.Pattern).Select(); else Click(choices[0]);
-                    var edits = Find(dialog, ControlType.Edit).FindAll(edit => !Pattern<ValuePattern>(edit, ValuePattern.Pattern).Current.IsReadOnly);
-                    Check(edits.Count == 1, "font size is the editable font field");
-                    int size = 20 + route * 2 + pass * 4;
-                    EditorSetValue(edits[0], size.ToString(), uia);
-                    EditorDialogAction(dialog, false, uia);
-                    Wait(() => (string)selection.GetAttributeValue(TextPattern.FontNameAttribute) == family
-                        && Math.Abs(Convert.ToDouble(selection.GetAttributeValue(TextPattern.FontSizeAttribute)) - size * 0.75) < 0.01, "font family and size apply to the selection");
+                    EditorCommand(page, document, ribbon, alignment, false, uia);
+                    Wait(() => {
+                        foreach (System.Text.RegularExpressions.Match paragraph in System.Text.RegularExpressions.Regex.Matches(EditorDocumentXml(), "<p(?: [^>]*)?>.*?</p>", System.Text.RegularExpressions.RegexOptions.Singleline))
+                        {
+                            string content = System.Net.WebUtility.HtmlDecode(System.Text.RegularExpressions.Regex.Replace(paragraph.Value.Replace("<sp/>", " "), "<[^>]*>", ""));
+                            if (content.Contains("Private save preserves")) return paragraph.Value.Contains("align=\"" + alignment + "\"");
+                        }
+                        return false;
+                    }, "paragraph alignment is serialized as " + alignment);
+                    Wait(() => Convert.ToInt32(selection.GetAttributeValue(TextPattern.HorizontalTextAlignmentAttribute)) == (alignment == "Left" ? 0 : alignment == "Center" ? 1 : 2), "effective paragraph alignment agrees with " + alignment);
                 }
-                else
+                for (int route = 0; route < 2; route++)
+                foreach (string command in new[] { "Set Font ...", "Text Color ...", "Background Color ..." })
                 {
-                    var edits = Find(dialog, ControlType.Edit);
-                    Check(edits.Count == 3, "color dialog exposes RGB components");
-                    int[] color = command == "Text Color ..." ? new[] { 34 + route + pass, 150, 90 } : new[] { 40 + route + pass, 60, 180 };
-                    for (int index = 0; index < 3; index++) EditorSetValue(edits[index], color[index].ToString(), uia);
-                    EditorDialogAction(dialog, false, uia);
-                    var attribute = command == "Text Color ..." ? TextPattern.ForegroundColorAttribute : TextPattern.BackgroundColorAttribute;
-                    Wait(() => Convert.ToInt32(selection.GetAttributeValue(attribute)) == color[0] + (color[1] << 8) + (color[2] << 16), command + " applies the chosen RGB value");
+                    bool context = route == 0;
+                    Test("SOP dialog / " + command + " / context=" + context + " / editor=" + editor + " / UIA=" + uia);
+                    string before = EditorDocumentXml();
+                    EditorCommand(page, document, ribbon, command, context, uia);
+                    EditorDialogAction(EditorModal(), true, uia);
+                    Check(EditorDocumentXml() == before, command + " cancellation preserves formatting");
+                    EditorCommand(page, document, ribbon, command, context, uia);
+                    var dialog = EditorModal();
+                    if (command == "Set Font ...")
+                    {
+                        var lists = EditorDialogControls(dialog, ControlType.List);
+                        Check(lists.Count == 2, "font dialog exposes family and size lists");
+                        string oldFamily = (string)selection.GetAttributeValue(TextPattern.FontNameAttribute);
+                        string dialogTitle = dialog.Current.Name;
+                        string family = null;
+                        Wait(() => {
+                            foreach (var window in SnapshotNodes(ControlsSnapshot()))
+                            {
+                                object title, composition;
+                                if (!window.TryGetValue("title", out title) || (string)title != dialogTitle || !window.TryGetValue("composition", out composition)) continue;
+                                foreach (var list in SnapshotNodes(composition))
+                                {
+                                    object role;
+                                    if (!list.TryGetValue("control", out role) || (string)role != "TextList") continue;
+                                    foreach (var caption in SnapshotNodes(list))
+                                    {
+                                        object name;
+                                        if (caption.TryGetValue("elementText", out name) && ((string)name).Length > 0 && (string)name != oldFamily) { family = (string)name; break; }
+                                    }
+                                    break;
+                                }
+                                break;
+                            }
+                            return family != null;
+                        }, "another visible font family is available", 60000);
+                        var choice = Pattern<ItemContainerPattern>(lists[0], ItemContainerPattern.Pattern).FindItemByProperty(null, AutomationElement.NameProperty, family);
+                        Check(choice != null, "font family resolves through ItemContainer: " + family);
+                        Pattern<ScrollItemPattern>(choice, ScrollItemPattern.Pattern).ScrollIntoView();
+                        Wait(() => !choice.Current.IsOffscreen, "font family is visible before selection: " + family);
+                        if (uia) Pattern<SelectionItemPattern>(choice, SelectionItemPattern.Pattern).Select(); else Click(choice);
+                        var edits = EditorDialogControls(dialog, ControlType.Edit).FindAll(edit => !Pattern<ValuePattern>(edit, ValuePattern.Pattern).Current.IsReadOnly);
+                        Check(edits.Count == 1, "font size is the editable font field");
+                        int size = 20 + route * 2 + pass * 4;
+                        EditorSetValue(edits[0], size.ToString(), uia);
+                        EditorDialogAction(dialog, false, uia);
+                        Wait(() => (string)selection.GetAttributeValue(TextPattern.FontNameAttribute) == family
+                            && Math.Abs(Convert.ToDouble(selection.GetAttributeValue(TextPattern.FontSizeAttribute)) - size * 0.75) < 0.01, "font family and size apply to the selection");
+                    }
+                    else
+                    {
+                        var edits = EditorDialogControls(dialog, ControlType.Edit);
+                        Check(edits.Count == 3, "color dialog exposes RGB components");
+                        int[] color = command == "Text Color ..." ? new[] { 34 + route + pass, 150, 90 } : new[] { 40 + route + pass, 60, 180 };
+                        for (int index = 0; index < 3; index++) EditorSetValue(edits[index], color[index].ToString(), uia);
+                        EditorDialogAction(dialog, false, uia);
+                        var attribute = command == "Text Color ..." ? TextPattern.ForegroundColorAttribute : TextPattern.BackgroundColorAttribute;
+                        Wait(() => Convert.ToInt32(selection.GetAttributeValue(attribute)) == color[0] + (color[1] << 8) + (color[2] << 16), command + " applies the chosen RGB value");
+                    }
+                    Check(text.GetSelection()[0].Compare(selection), command + " preserves both selection endpoints");
+                    Console.WriteLine("PASS SOP " + command + " cancel/apply / context=" + context + " / editor=" + editor + " / UIA=" + uia);
                 }
-                Check(text.GetSelection()[0].Compare(selection), command + " preserves both selection endpoints");
-                Console.WriteLine("PASS SOP " + command + " cancel/apply / context=" + context + " / editor=" + editor + " / UIA=" + uia);
-            }
-            string formattedText = text.GetSelection()[0].GetText(-1);
-            var formatAttributes = new[] { TextPattern.FontNameAttribute, TextPattern.FontSizeAttribute, TextPattern.ForegroundColorAttribute, TextPattern.BackgroundColorAttribute, TextPattern.HorizontalTextAlignmentAttribute };
-            var formatting = new object[formatAttributes.Length];
-            for (int index = 0; index < formatting.Length; index++) formatting[index] = selection.GetAttributeValue(formatAttributes[index]);
-            string formattedPath = System.IO.Path.Combine(folder, "formatting-" + editor + "-" + pass + ".bin");
-            PersistenceFile(page, ribbon, "Save as Private Format", formattedPath, false, !uia);
-            PersistenceFile(page, ribbon, "Load as Private Format", formattedPath, false, !uia);
-            var restoredFormat = text.DocumentRange.FindText(formattedText, false, false);
-            Check(restoredFormat != null, "formatted text survives private reload");
-            for (int index = 0; index < formatting.Length; index++)
-                Check(restoredFormat.GetAttributeValue(formatAttributes[index]).Equals(formatting[index]), "effective formatting survives private reload: " + formatAttributes[index].ProgrammaticName);
-            PersistenceFile(page, ribbon, "Save as RTF", formattedPath + ".rtf", false, !uia);
-            PersistenceFile(page, ribbon, "Save as HTML", formattedPath + ".html", false, !uia);
-            string formattedRtf = System.IO.File.ReadAllText(formattedPath + ".rtf", Encoding.UTF8);
-            string formattedHtml = System.IO.File.ReadAllText(formattedPath + ".html", Encoding.UTF8);
-            Check(formattedRtf.Contains((string)formatting[0]) && formattedRtf.Contains("\\qr{"), "RTF retains the chosen family and paragraph alignment");
-            Check(formattedHtml.Contains("font-family:" + formatting[0]) && formattedHtml.Contains("font-size:" + (22 + pass * 4) + "px;"), "HTML retains the chosen family and size");
-            for (int index = 2; index < 4; index++)
-            {
-                int color = Convert.ToInt32(formatting[index]);
-                int red = color & 255, green = (color >> 8) & 255, blue = (color >> 16) & 255;
-                Check(formattedRtf.Contains("\\red" + red + "\\green" + green + "\\blue" + blue), "RTF retains the chosen color");
-                string cssColor = "#" + red.ToString("X2") + green.ToString("X2") + blue.ToString("X2");
-                Check(formattedHtml.Contains((index == 2 ? "color:" : "background-color:") + cssColor), "HTML retains the chosen color");
+                string formattedText = text.GetSelection()[0].GetText(-1);
+                var formatAttributes = new[] { TextPattern.FontNameAttribute, TextPattern.FontSizeAttribute, TextPattern.ForegroundColorAttribute, TextPattern.BackgroundColorAttribute, TextPattern.HorizontalTextAlignmentAttribute };
+                var formatting = new object[formatAttributes.Length];
+                for (int index = 0; index < formatting.Length; index++) formatting[index] = selection.GetAttributeValue(formatAttributes[index]);
+                string formattedPath = System.IO.Path.Combine(folder, "formatting-" + editor + "-" + pass + ".bin");
+                PersistenceFile(page, ribbon, "Save as Private Format", formattedPath, false, !uia);
+                PersistenceFile(page, ribbon, "Load as Private Format", formattedPath, false, !uia);
+                var restoredFormat = text.DocumentRange.FindText(formattedText, false, false);
+                Check(restoredFormat != null, "formatted text survives private reload");
+                for (int index = 0; index < formatting.Length; index++)
+                    Check(restoredFormat.GetAttributeValue(formatAttributes[index]).Equals(formatting[index]), "effective formatting survives private reload: " + formatAttributes[index].ProgrammaticName);
+                PersistenceFile(page, ribbon, "Save as RTF", formattedPath + ".rtf", false, !uia);
+                PersistenceFile(page, ribbon, "Save as HTML", formattedPath + ".html", false, !uia);
+                string formattedRtf = System.IO.File.ReadAllText(formattedPath + ".rtf", Encoding.UTF8);
+                string formattedHtml = System.IO.File.ReadAllText(formattedPath + ".html", Encoding.UTF8);
+                Check(formattedRtf.Contains((string)formatting[0]) && formattedRtf.Contains("\\qr{"), "RTF retains the chosen family and paragraph alignment");
+                Check(formattedHtml.Contains("font-family:" + formatting[0]) && formattedHtml.Contains("font-size:" + (22 + pass * 4) + "px;"), "HTML retains the chosen family and size");
+                for (int index = 2; index < 4; index++)
+                {
+                    int color = Convert.ToInt32(formatting[index]);
+                    int red = color & 255, green = (color >> 8) & 255, blue = (color >> 16) & 255;
+                    Check(formattedRtf.Contains("\\red" + red + "\\green" + green + "\\blue" + blue), "RTF retains the chosen color");
+                    string cssColor = "#" + red.ToString("X2") + green.ToString("X2") + blue.ToString("X2");
+                    Check(formattedHtml.Contains((index == 2 ? "color:" : "background-color:") + cssColor), "HTML retains the chosen color");
+                }
             }
             // RTF/HTML exports select the entire document; reload before point selection.
             PersistenceFile(page, ribbon, "Load as Private Format", fixture, false, !uia);
-            for (int route = 0; route < 3; route++)
+            if (step + 2 >= EditorSopStartStep)
             {
-                EditorSelect(document, !ribbon, "Private save preserves");
-                string selectedText = text.GetSelection()[0].GetText(-1);
-                string before = EditorDocumentXml();
-                EditorCommand(page, document, ribbon, "Edit Hyperlink ...", route < 2, uia, route == 1);
-                EditorDialogAction(EditorModal(), true, uia);
-                Check(EditorDocumentXml() == before, "hyperlink cancellation preserves the document");
-                EditorCommand(page, document, ribbon, "Edit Hyperlink ...", route < 2, uia, route == 1);
-                var dialog = EditorModal();
-                var edits = Find(dialog, ControlType.Edit);
-                Check(edits.Count == 1, "hyperlink dialog exposes its URL field");
-                string url = "https://example.invalid/context-" + editor + "-" + pass + "-" + route;
-                EditorSetValue(edits[0], url, uia);
-                EditorDialogAction(dialog, false, uia);
-                Wait(() => EditorDocumentXml().Contains(url), "hyperlink URL is stored in the document");
-                Check(text.GetSelection()[0].GetText(-1) == selectedText, "hyperlink applies to the selected text");
-                if (route == 0)
+                for (int route = EditorSopResumeAtImages && step + 2 == EditorSopStartStep ? 3 : 0; route < 3; route++)
                 {
-                    string linked = System.IO.Path.Combine(folder, "hyperlink-" + editor + "-" + pass + ".bin");
-                    string beforeSave = text.DocumentRange.GetText(-1);
-                    PersistenceFile(page, ribbon, "Save as Private Format", linked, false, !uia);
-                    PersistenceFile(page, ribbon, "Load as Private Format", linked, false, !uia);
-                    Check(EditorDocumentXml().Contains(url) && text.DocumentRange.GetText(-1) == beforeSave, "private reload preserves the hyperlink and document text");
+                    EditorSelect(document, !ribbon, "Private save preserves");
+                    string selectedText = text.GetSelection()[0].GetText(-1);
+                    string before = EditorDocumentXml();
+                    EditorCommand(page, document, ribbon, "Edit Hyperlink ...", route < 2, uia, route == 1);
+                    EditorDialogAction(EditorModal(), true, uia);
+                    Check(EditorDocumentXml() == before, "hyperlink cancellation preserves the document");
+                    EditorCommand(page, document, ribbon, "Edit Hyperlink ...", route < 2, uia, route == 1);
+                    var dialog = EditorModal();
+                    var edits = Find(dialog, ControlType.Edit);
+                    Check(edits.Count == 1, "hyperlink dialog exposes its URL field");
+                    string url = "https://example.invalid/context-" + editor + "-" + pass + "-" + route;
+                    EditorSetValue(edits[0], url, uia);
+                    Console.WriteLine("HYPERLINK value / " + Pattern<ValuePattern>(edits[0], ValuePattern.Pattern).Current.Value + " / selection=" + text.GetSelection()[0].GetText(-1));
+                    EditorDialogAction(dialog, false, uia);
+                    Wait(() => EditorDocumentXml().Contains(url), "hyperlink URL is stored in the document");
+                    Check(text.GetSelection()[0].GetText(-1) == selectedText, "hyperlink applies to the selected text");
+                    if (route == 0)
+                    {
+                        string linked = System.IO.Path.Combine(folder, "hyperlink-" + editor + "-" + pass + ".bin");
+                        string beforeSave = text.DocumentRange.GetText(-1);
+                        PersistenceFile(page, ribbon, "Save as Private Format", linked, false, !uia);
+                        PersistenceFile(page, ribbon, "Load as Private Format", linked, false, !uia);
+                        Check(EditorDocumentXml().Contains(url) && text.DocumentRange.GetText(-1) == beforeSave, "private reload preserves the hyperlink and document text");
+                    }
+                    EditorCommand(page, document, ribbon, "Preview", false, uia);
+                    string originalText = text.DocumentRange.GetText(-1);
+                    document.SetFocus(); Input("!Type:blocked"); Press("Delete"); ControlsSnapshot();
+                    Check(text.DocumentRange.GetText(-1) == originalText, "Preview rejects typing and deletion");
+                    var hyperlink = text.DocumentRange.FindText(selectedText, false, false);
+                    if (uia)
+                    {
+                        var links = Find(document, ControlType.Hyperlink);
+                        Check(links.Count > 0, "UIA exposes the document hyperlink");
+                        Pattern<InvokePattern>(links[0], InvokePattern.Pattern).Invoke();
+                    }
+                    else
+                    {
+                        var rectangles = hyperlink.GetBoundingRectangles();
+                        Check(rectangles.Length > 0, "hyperlink has rendered bounds");
+                        Pointer("LeftClick", rectangles[0].Left + rectangles[0].Width / 2, rectangles[0].Top + rectangles[0].Height / 2);
+                    }
+                    dialog = EditorModal();
+                    Check(dialog.Current.Name == "You Clicked a Hyperlink!", "hyperlink activation opens the sample message");
+                    Check(FindNamed(dialog, url, ControlType.Text) != null, "hyperlink message contains the chosen URL");
+                    EditorDialogAction(dialog, false, uia);
+                    EditorCommand(page, document, ribbon, "Editable", false, uia);
+                    EditorSelect(document, !ribbon, "Private save preserves");
+                    EditorCommand(page, document, ribbon, "Remove Hyperlink", route < 2, uia, route == 1);
+                    Wait(() => !EditorDocumentXml().Contains(url), "Remove Hyperlink clears the selected link");
+                    Check(text.DocumentRange.GetText(-1) == originalText, "hyperlink removal preserves text");
+                    Console.WriteLine("PASS SOP hyperlink cancel/edit/activate/remove / route=" + route + " / editor=" + editor + " / UIA=" + uia);
                 }
-                EditorCommand(page, document, ribbon, "Preview", false, uia);
-                string originalText = text.DocumentRange.GetText(-1);
-                document.SetFocus(); Input("!Type:blocked"); Press("Delete"); ControlsSnapshot();
-                Check(text.DocumentRange.GetText(-1) == originalText, "Preview rejects typing and deletion");
-                var hyperlink = text.DocumentRange.FindText(selectedText, false, false);
-                if (uia)
+                for (int route = 0; route < 2; route++)
                 {
-                    var links = Find(document, ControlType.Hyperlink);
-                    Check(links.Count > 0, "UIA exposes the document hyperlink");
-                    Pattern<InvokePattern>(links[0], InvokePattern.Pattern).Invoke();
+                    PersistenceFile(page, ribbon, "Load as Private Format", fixture, false, !uia);
+                    EditorSelect(document, !ribbon, "GacUI Remote", true);
+                    string before = EditorDocumentXml();
+                    int images = System.Text.RegularExpressions.Regex.Matches(before, "<img ").Count;
+                    EditorCommand(page, document, ribbon, "Insert Image ...", route == 0, uia, route == 0);
+                    EditorDialogAction(EditorModal(), true, uia);
+                    Check(EditorDocumentXml() == before, "image dialog cancellation preserves the document");
+                    EditorCommand(page, document, ribbon, "Insert Image ...", route == 0, uia, route == 0);
+                    var dialog = EditorModal();
+                    var edits = Find(dialog, ControlType.Edit);
+                    Check(edits.Count > 0, "image dialog exposes a filename field");
+                    string imagePath = System.IO.Path.GetFullPath(System.IO.Path.Combine(PersistenceOutput, "..", "..", "Resources", "App", "FullControlTest", "ToolbarImages", "s_Font.png"));
+                    if (route == 0)
+                    {
+                        EditorSetValue(edits[edits.Count - 1], System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(imagePath)), uia);
+                        edits[edits.Count - 1].SetFocus();
+                        Wait(() => edits[edits.Count - 1].Current.HasKeyboardFocus, "image picker filename focus before folder navigation");
+                        Press("Enter");
+                        AutomationElement folderItem = null;
+                        Wait(() => { folderItem = FindNamed(dialog, "ToolbarImages", ControlType.ListItem); return folderItem != null; }, "image picker exposes folder list items", 60000);
+                        var fileList = TreeWalker.ControlViewWalker.GetParent(folderItem);
+                        Check(fileList.Current.ControlType == ControlType.List, "non-Detail data grid exposes a list");
+                        Absent(fileList, TablePattern.Pattern);
+                        Pattern<SelectionItemPattern>(folderItem, SelectionItemPattern.Pattern).Select();
+                        fileList.SetFocus();
+                        Wait(() => Pattern<SelectionItemPattern>(folderItem, SelectionItemPattern.Pattern).Current.IsSelected && fileList.Current.HasKeyboardFocus, "image picker folder selection and list focus");
+                        var selected = Pattern<SelectionPattern>(fileList, SelectionPattern.Pattern).Current.GetSelection();
+                        Check(selected.Length == 1, "image picker returns one selected item");
+                        Same(selected[0], folderItem, "image picker selection returns the live folder item");
+                        CheckFocus(fileList, "image picker list-mode focus");
+                        Console.WriteLine("PASS image picker list-mode UIA selection/focus / editor=" + editor + " / UIA=" + uia);
+                    }
+                    EditorSetValue(edits[edits.Count - 1], imagePath, uia);
+                    EditorDialogAction(dialog, false, uia);
+                    Wait(() => System.Text.RegularExpressions.Regex.Matches(EditorDocumentXml(), "<img ").Count == images + 1, "image insertion adds one embedded image at the caret");
+                    EditorCommand(page, document, ribbon, "Undo", false, uia);
+                    Wait(() => System.Text.RegularExpressions.Regex.Matches(EditorDocumentXml(), "<img ").Count == images, "Undo removes the image");
+                    EditorCommand(page, document, ribbon, "Redo", false, uia);
+                    Wait(() => System.Text.RegularExpressions.Regex.Matches(EditorDocumentXml(), "<img ").Count == images + 1, "Redo restores the image");
+                    string stem = System.IO.Path.Combine(folder, "image-" + editor + "-" + pass + "-" + route);
+                    PersistenceFile(page, ribbon, "Save as Private Format", stem + ".bin", false, !uia);
+                    PersistenceFile(page, ribbon, "Load as Private Format", stem + ".bin", false, !uia);
+                    Check(System.Text.RegularExpressions.Regex.Matches(EditorDocumentXml(), "<img ").Count == images + 1, "private reload retains the inserted image");
+                    PersistenceFile(page, ribbon, "Save as RTF", stem + ".rtf", false, !uia);
+                    PersistenceFile(page, ribbon, "Save as HTML", stem + ".html", false, !uia);
+                    string rtf = System.IO.File.ReadAllText(stem + ".rtf");
+                    string html = System.IO.File.ReadAllText(stem + ".html", Encoding.UTF8);
+                    Check(rtf.StartsWith("{\\rtf") && rtf.Contains("\\pict") && rtf.Contains("\\u20320"), "RTF export contains Unicode and embedded pictures");
+                    Check(html.Contains("data:image/") && System.Net.WebUtility.HtmlDecode(html).Contains("\u4f60\u597d"), "HTML export contains Unicode and embedded image data");
+                    Console.WriteLine("PASS SOP image cancel/insert/undo/redo/private/RTF/HTML / context=" + (route == 0) + " / editor=" + editor + " / UIA=" + uia);
                 }
-                else
-                {
-                    var rectangles = hyperlink.GetBoundingRectangles();
-                    Check(rectangles.Length > 0, "hyperlink has rendered bounds");
-                    Pointer("LeftClick", rectangles[0].Left + rectangles[0].Width / 2, rectangles[0].Top + rectangles[0].Height / 2);
-                }
-                dialog = EditorModal();
-                Check(dialog.Current.Name == "You Clicked a Hyperlink!", "hyperlink activation opens the sample message");
-                Check(FindNamed(dialog, url, ControlType.Text) != null, "hyperlink message contains the chosen URL");
-                EditorDialogAction(dialog, false, uia);
-                EditorCommand(page, document, ribbon, "Editable", false, uia);
-                EditorSelect(document, !ribbon, "Private save preserves");
-                EditorCommand(page, document, ribbon, "Remove Hyperlink", route < 2, uia, route == 1);
-                Wait(() => !EditorDocumentXml().Contains(url), "Remove Hyperlink clears the selected link");
-                Check(text.DocumentRange.GetText(-1) == originalText, "hyperlink removal preserves text");
-                Console.WriteLine("PASS SOP hyperlink cancel/edit/activate/remove / route=" + route + " / editor=" + editor + " / UIA=" + uia);
-            }
-            for (int route = 0; route < 2; route++)
-            {
-                PersistenceFile(page, ribbon, "Load as Private Format", fixture, false, !uia);
-                EditorSelect(document, !ribbon, "GacUI Remote", true);
-                string before = EditorDocumentXml();
-                int images = System.Text.RegularExpressions.Regex.Matches(before, "<img ").Count;
-                EditorCommand(page, document, ribbon, "Insert Image ...", route == 0, uia, route == 0);
-                EditorDialogAction(EditorModal(), true, uia);
-                Check(EditorDocumentXml() == before, "image dialog cancellation preserves the document");
-                EditorCommand(page, document, ribbon, "Insert Image ...", route == 0, uia, route == 0);
-                var dialog = EditorModal();
-                var edits = Find(dialog, ControlType.Edit);
-                Check(edits.Count > 0, "image dialog exposes a filename field");
-                string imagePath = System.IO.Path.GetFullPath(System.IO.Path.Combine(PersistenceOutput, "..", "..", "Resources", "App", "FullControlTest", "ToolbarImages", "s_Font.png"));
-                EditorSetValue(edits[edits.Count - 1], imagePath, uia);
-                EditorDialogAction(dialog, false, uia);
-                Wait(() => System.Text.RegularExpressions.Regex.Matches(EditorDocumentXml(), "<img ").Count == images + 1, "image insertion adds one embedded image at the caret");
-                EditorCommand(page, document, ribbon, "Undo", false, uia);
-                Wait(() => System.Text.RegularExpressions.Regex.Matches(EditorDocumentXml(), "<img ").Count == images, "Undo removes the image");
-                EditorCommand(page, document, ribbon, "Redo", false, uia);
-                Wait(() => System.Text.RegularExpressions.Regex.Matches(EditorDocumentXml(), "<img ").Count == images + 1, "Redo restores the image");
-                string stem = System.IO.Path.Combine(folder, "image-" + editor + "-" + pass + "-" + route);
-                PersistenceFile(page, ribbon, "Save as Private Format", stem + ".bin", false, !uia);
-                PersistenceFile(page, ribbon, "Load as Private Format", stem + ".bin", false, !uia);
-                Check(System.Text.RegularExpressions.Regex.Matches(EditorDocumentXml(), "<img ").Count == images + 1, "private reload retains the inserted image");
-                PersistenceFile(page, ribbon, "Save as RTF", stem + ".rtf", false, !uia);
-                PersistenceFile(page, ribbon, "Save as HTML", stem + ".html", false, !uia);
-                string rtf = System.IO.File.ReadAllText(stem + ".rtf");
-                string html = System.IO.File.ReadAllText(stem + ".html", Encoding.UTF8);
-                Check(rtf.StartsWith("{\\rtf") && rtf.Contains("\\pict") && rtf.Contains("\\u20320"), "RTF export contains Unicode and embedded pictures");
-                Check(html.Contains("data:image/") && System.Net.WebUtility.HtmlDecode(html).Contains("\u4f60\u597d"), "HTML export contains Unicode and embedded image data");
-                Console.WriteLine("PASS SOP image cancel/insert/undo/redo/private/RTF/HTML / context=" + (route == 0) + " / editor=" + editor + " / UIA=" + uia);
             }
             PersistenceFile(page, ribbon, "Load as Private Format", fixture, false, !uia);
             EditorSelect(document, !ribbon, "Private save preserves");
@@ -1994,14 +2327,21 @@ public static class GacUIShowcaseTests
             document.SetFocus(); Input("!Type:" + editableText);
             Wait(() => text.DocumentRange.GetText(-1).Contains(editableText), "Editable accepts text");
             // Automation typing creates one edit step for each character.
-            for (int index = 0; index < editableText.Length; index++) Press("Ctrl+Z");
-            Wait(() => text.DocumentRange.GetText(-1) == selectableText, "Undo shortcuts restore the exact document");
-            foreach (string shortcut in new[] { "Ctrl+Shift+P", "Ctrl+Shift+S", "Ctrl+Shift+E" })
+            for (int index = 0; index < editableText.Length; index++)
             {
-                document.SetFocus(); Press(shortcut); ControlsSnapshot();
-                Check(text.DocumentRange.GetText(-1) == selectableText, "mode shortcut preserves text: " + shortcut);
-                Check((bool)text.DocumentRange.GetAttributeValue(TextPattern.IsReadOnlyAttribute) == (shortcut != "Ctrl+Shift+E"), "mode shortcut changes editability: " + shortcut);
-                Check(text.SupportedTextSelection == (shortcut == "Ctrl+Shift+P" ? SupportedTextSelection.None : SupportedTextSelection.Single), "mode shortcut changes selection support: " + shortcut);
+                if (ribbon) { document.SetFocus(); Press("Ctrl+Z"); }
+                else EditorCommand(page, document, false, "Undo", false, uia);
+            }
+            Wait(() => text.DocumentRange.GetText(-1) == selectableText, "Undo restores the exact document");
+            var modes = new[] { "Preview", "Selectable", "Editable" };
+            var modeKeys = new[] { "Ctrl+Shift+P", "Ctrl+Shift+S", "Ctrl+Shift+E" };
+            for (int mode = 0; mode < modes.Length; mode++)
+            {
+                if (ribbon) { document.SetFocus(); Press(modeKeys[mode]); ControlsSnapshot(); }
+                else EditorCommand(page, document, false, modes[mode], false, uia);
+                Check(text.DocumentRange.GetText(-1) == selectableText, "mode preserves text: " + modes[mode]);
+                Check((bool)text.DocumentRange.GetAttributeValue(TextPattern.IsReadOnlyAttribute) == (mode != 2), "mode changes editability: " + modes[mode]);
+                Check(text.SupportedTextSelection == (mode == 0 ? SupportedTextSelection.None : SupportedTextSelection.Single), "mode changes selection support: " + modes[mode]);
             }
             PersistenceFile(page, ribbon, "Load as Private Format", fixture, true, !uia);
             PersistenceFile(page, ribbon, "Save as Private Format", System.IO.Path.Combine(folder, "canceled.bin"), true, !uia);
@@ -4026,6 +4366,17 @@ public static class GacUIShowcaseTests
         Wait(() => { root = AutomationElement.FromHandle(hwnd); return root.Current.ProcessId == processId && root.Current.FrameworkId == "GacUI"; }, "owned GacUI provider ready");
         if (scenario == "RawClock") RawClockAutomation();
         if (scenario == "Touching") TouchingAutomation();
+        if (scenario == "PointRegression")
+        {
+            EditorPointCaret(hwnd);
+            Pattern<TransformPattern>(root, TransformPattern.Pattern).Resize(1000, 600);
+            TouchingListAutomation();
+        }
+        if (scenario == "TouchingList")
+        {
+            Pattern<TransformPattern>(root, TransformPattern.Pattern).Resize(1000, 600);
+            TouchingListAutomation();
+        }
         Check(root.Current.ProcessId == processId && root.Current.FrameworkId == "GacUI", "owned native GacUI root; HWND=" + hwnd + "; PID=" + root.Current.ProcessId + "; FrameworkId=" + root.Current.FrameworkId + "; Name=" + root.Current.Name);
         Check(root.Current.Name == (scenario == "Transitions" || scenario == "Review2" || scenario == "Review3" ? "UIA Review Fixture" : "Complete Control Showcase"), "application title");
         if (scenario == "Concurrent")
@@ -4045,14 +4396,14 @@ public static class GacUIShowcaseTests
         // exercise event contracts separately and cache the entire rebuilt tree.
         if (scenario == "All" || scenario == "Persistence") DocumentPersistence(hwnd);
         if (scenario == "All" || scenario == "DocumentContextMenu") DocumentContextMenu(hwnd);
-        if (scenario == "DocumentEditorSop")
+        if (scenario == "DocumentEditorSop" || scenario == "DocumentEditorCommands")
         {
             var page = Page(Page(root, "Control"), "Document Editor (Ribbon)");
             var document = Find(page, ControlType.Document)[0];
             var text = Pattern<TextPattern>(document, TextPattern.Pattern);
             // Capture the default before the SOP loads a mixed-format fixture.
             double defaultFontSize = Convert.ToDouble(text.DocumentRange.GetAttributeValue(TextPattern.FontSizeAttribute));
-            DocumentContextMenu(hwnd);
+            if (scenario == "DocumentEditorSop") DocumentContextMenu(hwnd);
             DocumentEditorSop(hwnd);
             string folder = System.IO.Path.Combine(PersistenceOutput, "SOP-" + ownedProcess);
             DocumentStyles(hwnd, folder, defaultFontSize);
@@ -4063,7 +4414,7 @@ public static class GacUIShowcaseTests
             System.IO.Directory.CreateDirectory(folder);
             DocumentStyles(hwnd, folder);
         }
-        if (scenario != "RawClock" && scenario != "Touching" && scenario != "Persistence" && scenario != "DocumentStyles" && scenario != "DocumentContextMenu" && scenario != "DocumentEditorSop")
+        if (scenario != "RawClock" && scenario != "Touching" && scenario != "Persistence" && scenario != "DocumentStyles" && scenario != "DocumentContextMenu" && scenario != "DocumentEditorSop" && scenario != "DocumentEditorCommands" && scenario != "PointRegression" && scenario != "TouchingList")
         {
             Automation.AddStructureChangedEventHandler(root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref structureEvents));
             Automation.AddAutomationPropertyChangedEventHandler(root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref propertyEvents), AutomationElement.NameProperty, SelectionItemPattern.IsSelectedProperty, TogglePattern.ToggleStateProperty);

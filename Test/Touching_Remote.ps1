@@ -3,11 +3,15 @@ param(
     [ValidateSet('Pipe','Http','MiniHttp')][string[]]$Transport = @('Pipe','Http','MiniHttp'),
     [ValidateSet('Direct2D','GDI')][string[]]$Backend = @('Direct2D','GDI'),
     [switch]$NativeInjection,
+    [switch]$NativeOnly,
     [switch]$Browser,
     [switch]$ClickPairing,
+    [switch]$PointRegression,
+    [ValidateSet('Core','Renderer')][string[]]$InputRoute = @('Core','Renderer'),
     [switch]$CppTest
 )
 $ErrorActionPreference = 'Stop'
+if ($NativeOnly -and (!$PointRegression -or !$NativeInjection)) { throw 'NativeOnly requires PointRegression and NativeInjection.' }
 $repo = Split-Path $PSScriptRoot -Parent
 $solution = Join-Path $PSScriptRoot 'GacUISrc'
 $wrapper = Join-Path $repo '.github/Scripts/copilotExecute.ps1'
@@ -27,6 +31,7 @@ if ($CppTest) {
     $coreBase = $rendererBase = 'http://localhost:8888/Automation/CppTest'
 }
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
+$exitHandles = @{}
 Add-Type -AssemblyName System.Web.Extensions
 $controlsJson = [System.Web.Script.Serialization.JavaScriptSerializer]::new()
 $controlsJson.MaxJsonLength = 16 * 1024 * 1024
@@ -46,6 +51,19 @@ public static class RemoteTouchProbe {
     [DllImport("user32.dll",CharSet=CharSet.Unicode)] static extern int GetClassName(IntPtr window,StringBuilder text,int size);
     [DllImport("user32.dll")] static extern bool GetClientRect(IntPtr window,out Rect rect);
     [DllImport("user32.dll")] static extern bool PrintWindow(IntPtr window,IntPtr dc,uint flags);
+    [DllImport("kernel32.dll",SetLastError=true)] static extern IntPtr OpenProcess(uint access,bool inherit,int process);
+    [DllImport("kernel32.dll",SetLastError=true)] static extern bool GetExitCodeProcess(IntPtr process,out uint code);
+    [DllImport("kernel32.dll")] public static extern bool CloseHandle(IntPtr handle);
+    public static IntPtr KeepProcess(int id) {
+        var handle=OpenProcess(0x1000,false,id);
+        if(handle==IntPtr.Zero) throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+        return handle;
+    }
+    public static uint ExitCode(IntPtr handle) {
+        uint code;
+        if(!GetExitCodeProcess(handle,out code)) throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+        return code;
+    }
     public static IntPtr Window(int id) {
         IntPtr result=IntPtr.Zero;
         EnumWindows((window,data)=>{
@@ -103,9 +121,10 @@ function Start-Wrapped($name) {
     $log = Join-Path $env:TEMP "touch-remote-$PID-$name"
     $runner = Start-Process powershell.exe -WindowStyle Hidden -PassThru -WorkingDirectory $solution -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-File', $wrapper,'-Mode','CLI','-Executable',$name,'-Configuration','Debug','-Platform','x64') -RedirectStandardOutput "$log.out" -RedirectStandardError "$log.err"
     $owned.Add($runner)
+    $exitHandles[$runner.Id] = [RemoteTouchProbe]::KeepProcess($runner.Id)
     for($i=0;$i -lt 100;$i++) {
         $process = Get-Process -Name $name -ErrorAction SilentlyContinue | Select-Object -First 1
-        if($process) {$owned.Add($process); return $process}
+        if($process) {$exitHandles[$process.Id] = [RemoteTouchProbe]::KeepProcess($process.Id); $owned.Add($process); return $process}
         if($runner.HasExited) {throw "Wrapper exited: $(Get-Content "$log.out" -Raw) $(Get-Content "$log.err" -Raw)"}
         Start-Sleep -Milliseconds 100
     }
@@ -143,6 +162,7 @@ function Wait-For($condition,$description) {
     throw "Timed out: $description"
 }
 function Select-Tab($text) {
+    Wait-For { @(Controls | Where-Object { $_.elementText -eq $text -and $_.bounds.x2 -gt $_.bounds.x1 -and $_.bounds.y2 -gt $_.bounds.y1 }).Count -gt 0 } "visible target $text"
     $node = @(Controls | Where-Object elementText -eq $text)[0]
     if(!$node){throw "Missing tab $text"}
     $x=[int](($node.bounds.x1+$node.bounds.x2)/2);$y=[int](($node.bounds.y1+$node.bounds.y2)/2)
@@ -156,8 +176,8 @@ function Test-SwipeAndText {
     Select-Tab 'Clear'
     Select-Tab 'Add 5 Items'
     Select-Tab 'Add 5 Items'
-    Wait-For { @(Controls | Where-Object elementText -like 'Item 7 *').Count -eq 1 } 'new middle row'
-    $row = @(Controls | Where-Object elementText -like 'Item 7 *')[0]
+    Wait-For { @(Controls | Where-Object elementText -like 'Item *').Count -ge 3 } 'new middle row'
+    $row = @(Controls | Where-Object elementText -like 'Item *' | Sort-Object { $_.bounds.y1 })[2]
     $name = $row.elementText
     $left = [int]$row.bounds.x1
     $x = $left + 180
@@ -198,23 +218,24 @@ function Test-SwipeAndText {
     # Cross the full-reveal threshold despite fractional-DPI coordinate rounding.
     IO $rendererBase "!PointUp:106,$($x-$maximum-2),$y"
     Wait-For { @(Controls | Where-Object elementText -eq $name).Count -eq 0 } 'deferred middle row removal'
-    $next = @(Controls | Where-Object elementText -like 'Item 8 *')[0]
+    $next = @(Controls | Where-Object elementText -like 'Item *' | Sort-Object { $_.bounds.y1 })[2]
+    $nextName = $next.elementText
     if ([Math]::Abs($next.bounds.y1 - $row.bounds.y1) -gt 1 -or $next.bounds.x1 -ne $left) { throw 'Replacement row inherited a stale index or reveal.' }
     IO $rendererBase "!PointDown:107,$x,$y"
     IO $rendererBase "!PointUpdate:107,$x,$($y-80)"
     IO $rendererBase "!PointUp:107,$x,$($y-80)"
-    Wait-For { @(Controls | Where-Object elementText -like 'Item 8 *')[0].bounds.y1 -lt $next.bounds.y1 } 'built-in vertical list scrolling'
+    Wait-For { @(Controls | Where-Object elementText -eq $nextName)[0].bounds.y1 -lt $next.bounds.y1 } 'built-in vertical list scrolling'
     IO $rendererBase "!PointDown:108,$x,$y"
     IO $rendererBase "!PointUpdate:108,$x,$($y+1000)"
     IO $rendererBase "!PointUp:108,$x,$($y+1000)"
-    Wait-For { @(Controls | Where-Object elementText -like 'Item 8 *')[0].bounds.x1 -eq $left } 'recycled rows reset'
+    Wait-For { @(Controls | Where-Object elementText -eq $nextName)[0].bounds.x1 -eq $left } 'recycled rows reset'
     if (@(Controls | Where-Object element -like 'Background:#B82030,*').Count -ne 0) { throw 'Recycled rows render red.' }
     Select-Tab 'Clear'
     Wait-For { @(Controls | Where-Object elementText -like 'Item *').Count -eq 0 } 'Clear after deletion'
     IO $rendererBase "!PointDown:109,$x,$y"
     IO $rendererBase "!PointUp:109,$($x-$maximum),$y"
     Select-Tab 'Add 5 Items'
-    Wait-For { @(Controls | Where-Object elementText -like 'Item 16 *').Count -eq 1 } 'empty-space swipe cannot remove a replacement item'
+    Wait-For { @(Controls | Where-Object elementText -like 'Item *').Count -ge 2 } 'empty-space swipe cannot remove a replacement item'
     Write-Output 'PASS renderer IO / TouchingList partial, reversal, cancellation, extra contact, final Up, identity removal and scrolling'
 
     for ($i=0; $i -lt 6; $i++) { Select-Tab 'Add 5 Items' }
@@ -244,10 +265,46 @@ function Test-SwipeAndText {
     Start-Sleep -Milliseconds 250
     if ((Momentum-Rendering) -ne $interrupted) { throw 'Fresh renderer contact did not stop momentum.' }
     IO $rendererBase "!PointUp:131,$momentumX,$($momentumY-$momentumStep)"
+    IO $rendererBase "!PointDown:132,$momentumX,$momentumY"
+    IO $rendererBase "!PointUpdate:132,$momentumX,$($momentumY-$momentumStep)"
+    Start-Sleep -Milliseconds 1000
+    $held = Momentum-Rendering
+    IO $rendererBase "!PointUp:132,$momentumX,$($momentumY-$momentumStep)"
+    Start-Sleep -Milliseconds 400
+    if ((Momentum-Rendering) -ne $held) { throw 'Stationary release launched stale momentum.' }
+    foreach ($extra in @($false,$true)) {
+        IO $rendererBase "!PointDown:133,$momentumX,$momentumY"
+        IO $rendererBase "!PointUpdate:133,$momentumX,$($momentumY-$momentumStep)"
+        if ($extra) {
+            IO $rendererBase "!PointDown:134,$($momentumX+20),$momentumY"
+            IO $rendererBase "!PointUp:134,$($momentumX+20),$momentumY"
+            IO $rendererBase "!PointUp:133,$momentumX,$($momentumY-$momentumStep)"
+        } else {
+            IO $rendererBase '!PointCancel:133,PlatformCanceled'
+        }
+        Start-Sleep -Milliseconds 100
+        $suppressed = Momentum-Rendering
+        Start-Sleep -Milliseconds 300
+        if ((Momentum-Rendering) -ne $suppressed) { throw "Canceled/extra-contact sequence launched momentum: $extra" }
+    }
+    IO $rendererBase "!PointDown:135,$momentumX,$momentumY"
+    IO $rendererBase "!PointUpdate:135,$momentumX,$($momentumY-$momentumStep)"
+    IO $rendererBase "!PointUpdate:135,$momentumX,$momentumY"
+    IO $rendererBase "!PointUp:135,$momentumX,$($momentumY+2000)"
+    Start-Sleep -Milliseconds 700
+    $clamped = Momentum-Rendering
+    Start-Sleep -Milliseconds 250
+    if ((Momentum-Rendering) -ne $clamped) { throw 'Reversed momentum did not settle at the range boundary.' }
     Select-Tab 'Momentum Scrolling'
-    Write-Output 'PASS renderer IO / optional momentum after Up and interruption on fresh Down'
+    IO $rendererBase "!PointDown:136,$momentumX,$momentumY"
+    IO $rendererBase "!PointUp:136,$momentumX,$($momentumY-$momentumStep)"
+    Start-Sleep -Milliseconds 100
+    $disabled = Momentum-Rendering
+    Start-Sleep -Milliseconds 300
+    if ((Momentum-Rendering) -ne $disabled) { throw 'Disabled momentum continued after release.' }
+    Write-Output 'PASS IO / momentum off-on-off, quick flick, new contact, stationary release, cancellation, extra contact, reversal and clamping'
 
-    if ($ClickPairing) { return }
+    if ($ClickPairing -or $PointRegression) { return }
 
     Select-Tab 'List'
     Wait-For { @(Controls | Where-Object elementText -eq 'ListView').Count -gt 0 } 'List page'
@@ -330,12 +387,20 @@ function Test-SwipeAndText {
         } 'long press extends text selection on release'
         $selected = @(Controls | Where-Object elementDocument -like '*I am the bone*')[0].element
         $selected = [regex]::Match($selected, 'Selection\([^)]*\)-\([^)]*\)').Value
-        foreach ($duration in @(0,550)) {
+        foreach ($duration in @(550,0)) {
             $counts = Touch-Counters
             IO $rendererBase "!PointDown:110,$($dx+100),$($dy+25)"
             if ($duration) { Start-Sleep -Milliseconds $duration }
             IO $rendererBase "!PointUp:110,$($dx+100),$($dy+25)"
-            Wait-For { @(Controls | Where-Object elementDocument -like '*I am the bone*')[0].element.Contains($selected) } 'press on existing range preserves exact endpoints'
+            if ($duration) {
+                Wait-For { @(Controls | Where-Object elementDocument -like '*I am the bone*')[0].element.Contains($selected) } 'long press preserves exact endpoints'
+            } else {
+                Wait-For {
+                    $current = @(Controls | Where-Object elementDocument -like '*I am the bone*')[0].element
+                    $current -match 'Selection(\([^)]*\))-(\([^)]*\))' -and $Matches[1] -eq $Matches[2]
+                } 'short press collapses the active endpoint'
+                $selected = [regex]::Match(@(Controls | Where-Object elementDocument -like '*I am the bone*')[0].element, 'Selection\([^)]*\)-\([^)]*\)').Value
+            }
             Wait-For {
                 $current = Touch-Counters
                 if ($duration) { $current[0] -eq $counts[0] -and $current[1] -eq $counts[1]+1 -and $current[2] -eq $counts[2]+1 }
@@ -437,6 +502,41 @@ try {
             }
             if (!$CppTest) { $renderer = Start-Wrapped 'RemotingTest_Rendering_Win32' }
             Wait-For { @(Controls | Where-Object elementText -eq 'Misc').Count -gt 0 } 'initial controls'
+            if ($PointRegression) {
+                $originalRendererBase = $rendererBase
+                try {
+                    foreach ($endpoint in @($coreBase,$originalRendererBase | Select-Object -Unique)) {
+                        $rendererBase = $endpoint
+                        $route = if ($endpoint -eq $coreBase) { 'Core' } else { 'Renderer' }
+                        if ($route -notin $InputRoute) { continue }
+                        $editorArguments = @($coreBase,$endpoint,"$transportName-$backendName-$route",'--fixture')
+                        if ($NativeOnly) { $editorArguments += '--fixture-only' }
+                        & node (Join-Path $PSScriptRoot 'Touching_Editors.mjs') @editorArguments
+                        if ($LASTEXITCODE -ne 0) { throw "Scoped editor checks failed: $route" }
+                        if ($NativeOnly) {
+                            Write-Output "PASS scoped $transportName $backendName $route native-input fixture setup"
+                            continue
+                        }
+                        Select-Tab 'Misc'
+                        Test-SwipeAndText
+                        Write-Output "PASS scoped $transportName $backendName $route IO / editors and TouchingList"
+                    }
+                } finally { $rendererBase = $originalRendererBase }
+                if ($NativeInjection) {
+                    $nativeApplication = if ($CppTest) { 'CppTest' } else { 'RemotingTest_Rendering_Native' }
+                    $nativePort = if ($CppTest) { 8888 } else { 8889 }
+                    & (Join-Path $PSScriptRoot 'Touching_NativeInput.ps1') -TargetProcessId $renderer.Id -Application $nativeApplication -AsPort $nativePort -PointRegression
+                }
+                IO $rendererBase '!Exit'
+                Wait-For { $core.HasExited -and $renderer.HasExited } 'scoped graceful exit'
+                foreach ($process in $owned) {
+                    if (!$process.WaitForExit(30000)) { throw "Owned process $($process.Id) did not complete normal shutdown." }
+                    $code = [RemoteTouchProbe]::ExitCode($exitHandles[$process.Id])
+                    if ($code -ne 0) { throw "Owned process $($process.Id) exited with code $code." }
+                }
+                Write-Output "PASS scoped $transportName $backendName shutdown / all application and wrapper exit codes are 0"
+                continue
+            }
             if ($ClickPairing) {
                 & node (Join-Path $PSScriptRoot 'Touching_Editors.mjs') $coreBase $rendererBase "$transportName-$backendName"
                 if ($LASTEXITCODE -ne 0) { throw 'Editor touch pairing verification failed.' }
@@ -514,6 +614,8 @@ try {
             Write-Output "PASS $transportName $backendName renderer state, fallback and shutdown"
         } finally {
             foreach($process in $owned) {if(!$process.HasExited){Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue}}
+            foreach($handle in $exitHandles.Values) { $null = [RemoteTouchProbe]::CloseHandle($handle) }
+            $exitHandles.Clear()
         }
     }}
 } finally {

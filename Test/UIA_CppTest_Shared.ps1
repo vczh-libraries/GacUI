@@ -3,8 +3,10 @@ param(
     [ValidateRange(1,65535)][int]$AsPort,
     [ValidateSet('Win32','x64')][string]$Platform = 'x64',
     [int]$ClientProcessId = 0,
+    [ValidateRange(0,15)][int]$EditorSopStartStep = 0,
+    [switch]$EditorSopResumeAtImages,
     [string]$BusyClick = '',
-    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Layout','Responsive','ResponsiveWindow','ResponsivePalette','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime','RawClock','Touching','Persistence','DocumentStyles','DocumentContextMenu','DocumentEditorSop')][string]$Scenario = 'All',
+    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Layout','Responsive','ResponsiveWindow','ResponsivePalette','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime','RawClock','Touching','Persistence','DocumentStyles','DocumentContextMenu','DocumentEditorSop','DocumentEditorCommands','PointRegression','TouchingList')][string]$Scenario = 'All',
     [switch]$HostedFixture,
     [switch]$GdiFixture,
     [switch]$Gdi,
@@ -24,6 +26,8 @@ if ($ClientProcessId) {
     Add-Type -Path (Join-Path $PSScriptRoot 'UIA_CppTest_Shared.cs') -ReferencedAssemblies UIAutomationClient, UIAutomationTypes, WindowsBase, System.Web.Extensions
     [GacUIShowcaseTests]::BusyCommand = $BusyClick
     [GacUIShowcaseTests]::PersistenceOutput = Join-Path $PSScriptRoot 'Output/Injection'
+    [GacUIShowcaseTests]::EditorSopStartStep = $EditorSopStartStep
+    [GacUIShowcaseTests]::EditorSopResumeAtImages = [bool]$EditorSopResumeAtImages
     try { [GacUIShowcaseTests]::Run($ClientProcessId, ($Application -eq 'CppTest' -or $HostedFixture), $Scenario, $AsPort, $Application) }
     catch { [Console]::Error.WriteLine($_.Exception.ToString()); exit 1 }
     exit 0
@@ -103,12 +107,17 @@ try {
     $endpoint = "http://localhost:$AsPort/Automation/$Application"
     do {
         Assert-Target
-        try { $state = Invoke-RestMethod "$endpoint/Controls" -TimeoutSec 15; break }
+        try {
+            $state = Invoke-RestMethod "$endpoint/Controls" -TimeoutSec 15
+            if ($state.MainWindow) { break }
+            Start-Sleep -Milliseconds 100
+        }
         catch { Assert-Target; Start-Sleep -Milliseconds 100 }
     } while ([DateTime]::UtcNow -lt $deadline)
     if (!$state.MainWindow) { throw 'Automation endpoint did not become ready.' }
     # A separate windowless MTA process provides a hard deadline even if a provider blocks.
-    $clientArguments = @('-NoProfile','-Mta','-File',"`"$PSCommandPath`"",'-Application',$Application,'-AsPort',$AsPort,'-ClientProcessId',$owned.Id,'-Scenario',$Scenario)
+    $clientArguments = @('-NoProfile','-Mta','-File',"`"$PSCommandPath`"",'-Application',$Application,'-AsPort',$AsPort,'-ClientProcessId',$owned.Id,'-Scenario',$Scenario,'-EditorSopStartStep',$EditorSopStartStep)
+    if ($EditorSopResumeAtImages) { $clientArguments += '-EditorSopResumeAtImages' }
     if ($Scenario -eq 'Review2') {
         function Find-Busy($node) {
             if ($node.elementText -eq 'Busy') { return $node.bounds }
@@ -123,7 +132,7 @@ try {
     $clientHandle = $client.Handle
     $lastCount = 0
     # Full showcase coverage includes repeated layout rebuilds and palette replacement.
-    $deadline = [DateTime]::UtcNow.AddMinutes($(if ($Scenario -eq 'DocumentEditorSop') { 90 } else { 30 }))
+    $deadline = [DateTime]::UtcNow.AddMinutes($(if ($Scenario -in @('DocumentEditorSop','DocumentEditorCommands')) { 90 } else { 30 }))
     do {
         $lines = @(Get-Content (Join-Path $env:TEMP "$Application-uia.stdout.txt") -ErrorAction SilentlyContinue)
         $lines | Select-Object -Skip $lastCount | Write-Host

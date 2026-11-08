@@ -2,7 +2,8 @@ param(
     [Parameter(Mandatory=$true)][int]$TargetProcessId,
     [ValidateSet('CppTest','CppTest_Metaonly','CppTest_Reflection','GacUI_Host','RemotingTest_Rendering_Native')][string]$Application = 'CppTest_Metaonly',
     [ValidateRange(1,65535)][int]$AsPort = 8890,
-    [ValidateRange(1,65535)][int]$CoreAsPort = 8888
+    [ValidateRange(1,65535)][int]$CoreAsPort = 8888,
+    [switch]$PointRegression
 )
 $ErrorActionPreference = 'Stop'
 # Run against an application already launched through copilotExecute.ps1.
@@ -38,7 +39,7 @@ public static class TouchingNativeInput {
     [DllImport("user32.dll", CharSet=CharSet.Unicode)] static extern int GetWindowText(IntPtr hwnd, StringBuilder text, int size);
     [DllImport("user32.dll")] static extern bool IsWindowVisible(IntPtr hwnd);
     [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hwnd);
-    [DllImport("user32.dll")] static extern uint GetDpiForWindow(IntPtr hwnd);
+    [DllImport("user32.dll")] static extern bool GetClientRect(IntPtr hwnd, out Rect rect);
     [DllImport("user32.dll", SetLastError=true)] static extern bool ClientToScreen(IntPtr hwnd, ref Point point);
     [DllImport("user32.dll")] public static extern IntPtr SetThreadDpiAwarenessContext(IntPtr context);
     [DllImport("user32.dll", SetLastError=true)] public static extern bool InitializeTouchInjection(uint maximum, uint feedback);
@@ -58,9 +59,13 @@ public static class TouchingNativeInput {
         }, IntPtr.Zero);
         return result;
     }
+    public static double LogicalClientWidth, LogicalClientHeight;
     public static Point ScreenPoint(IntPtr window, double x, double y) {
-        double dpi = GetDpiForWindow(window) / 96.0;
-        var point = new Point { X=(int)Math.Round(x*dpi), Y=(int)Math.Round(y*dpi) };
+        Rect client;
+        if (!GetClientRect(window, out client) || LogicalClientWidth <= 0 || LogicalClientHeight <= 0) throw new Exception("Native/logical client size is unavailable.");
+        // GetDpiForWindow reports 96 for the DPI-unaware GDI backend even
+        // when Windows scales its client. Observe both coordinate spaces.
+        var point = new Point { X=(int)Math.Round(x*(client.Right-client.Left)/LogicalClientWidth), Y=(int)Math.Round(y*(client.Bottom-client.Top)/LogicalClientHeight) };
         if (!ClientToScreen(window, ref point)) throw new Exception("ClientToScreen failed.");
         return point;
     }
@@ -162,6 +167,94 @@ $window = [TouchingNativeInput]::Window($TargetProcessId)
 if (!$window) { throw 'No visible owned GacUI HWND.' }
 $previousDpi = [TouchingNativeInput]::SetThreadDpiAwarenessContext([IntPtr](-4))
 try {
+    $clientBounds = (Read-Tree "$controlsBase/Controls").MainWindow.bounds
+    [TouchingNativeInput]::LogicalClientWidth = $clientBounds.x2 - $clientBounds.x1
+    [TouchingNativeInput]::LogicalClientHeight = $clientBounds.y2 - $clientBounds.y1
+    $origin = [TouchingNativeInput]::ScreenPoint($window,0,0)
+    $extent = [TouchingNativeInput]::ScreenPoint($window,[TouchingNativeInput]::LogicalClientWidth,[TouchingNativeInput]::LogicalClientHeight)
+    Write-Output "Native client: logical $([TouchingNativeInput]::LogicalClientWidth)x$([TouchingNativeInput]::LogicalClientHeight), physical $($extent.X-$origin.X)x$($extent.Y-$origin.Y)."
+    if ($PointRegression) {
+        foreach ($caption in @('Misc','TouchingList')) {
+            $b = Bounds (Caption $caption)
+            Command "!LeftClick:$([int](($b.x1+$b.x2)/2)),$([int](($b.y1+$b.y2)/2))"
+            Start-Sleep -Milliseconds 150
+        }
+        for ($i=0; $i -lt 4; $i++) {
+            $b = Bounds (Caption 'Add 5 Items')
+            Command "!LeftClick:$([int](($b.x1+$b.x2)/2)),$([int](($b.y1+$b.y2)/2))"
+        }
+        function List-State {
+            (Snapshot | Where-Object elementText -Like 'Item *' | ForEach-Object { "$($_.elementText):$($_.bounds.y1)" } | Sort-Object) -join ';'
+        }
+        $list = @(Snapshot | Where-Object control -EQ 'TextList')[0]
+        $x = ($list.bounds.x1+$list.bounds.x2)/2
+        $y = $list.bounds.y1+($list.bounds.y2-$list.bounds.y1)*0.75
+        $before = List-State
+        $p0 = [TouchingNativeInput]::ScreenPoint($window,$x,$y)
+        $p1 = [TouchingNativeInput]::ScreenPoint($window,$x,$y-80)
+        $null = [TouchingNativeInput]::SetForegroundWindow($window)
+        if (![TouchingNativeInput]::InitializeTouchInjection(10,3)) { throw "InitializeTouchInjection failed with Win32 error $([Runtime.InteropServices.Marshal]::GetLastWin32Error())." }
+        Frame @([TouchingNativeInput]::Contact(1,0x10006,$p0))
+        Frame @([TouchingNativeInput]::Contact(1,0x20006,$p1))
+        Frame @([TouchingNativeInput]::Contact(1,0x40000,$p1))
+        Start-Sleep -Milliseconds 250
+        if ((List-State) -eq $before) { throw 'Native WM_POINTER frames were not observed by TouchingList; desktop acquisition is unavailable.' }
+        Write-Output 'PASS native WM_POINTER acquisition, vertical scrolling and End on TouchingList.'
+        $b = Bounds (Caption 'Clear')
+        Command "!LeftClick:$([int](($b.x1+$b.x2)/2)),$([int](($b.y1+$b.y2)/2))"
+        Start-Sleep -Milliseconds 150
+        if ((List-State) -ne '') { throw 'Scoped native mouse setup did not clear the list.' }
+        $b = Bounds (Caption 'Add 5 Items')
+        $tap = [TouchingNativeInput]::ScreenPoint($window,($b.x1+$b.x2)/2,($b.y1+$b.y2)/2)
+        if (![TouchingNativeInput]::MouseClick($tap)) { throw 'Native mouse injection is unavailable on this desktop.' }
+        Start-Sleep -Milliseconds 200
+        if ((List-State) -eq '') { throw 'Native mouse click was not observed by the scoped toolbar.' }
+        Write-Output 'PASS native mouse injection on the scoped TouchingList toolbar.'
+        function Editor-Document {
+            $viewer = @(Snapshot | Where-Object control -EQ 'DocumentViewer')[0]
+            @(Get-Nodes $viewer | Where-Object elementDocument)[0]
+        }
+        function Editor-Selection { [regex]::Match((Editor-Document).element, 'Selection\([^)]*\)-\([^)]*\)').Value }
+        function Select-Document($reversed) {
+            Command $(if ($reversed) { '!KeyPress:CTRL+END' } else { '!KeyPress:CTRL+HOME' })
+            Command $(if ($reversed) { '!KeyPress:CTRL+SHIFT+HOME' } else { '!KeyPress:CTRL+SHIFT+END' })
+            for ($attempt=0; $attempt -lt 30; $attempt++) {
+                $selection = Editor-Selection
+                if ($selection -match 'Selection(\([^)]*\))-(\([^)]*\))' -and $Matches[1] -ne $Matches[2]) { return }
+                Start-Sleep -Milliseconds 50
+            }
+            throw 'Native editor comparison could not establish a selection.'
+        }
+        $b = Bounds (Caption 'Control')
+        Command "!LeftClick:$([int](($b.x1+$b.x2)/2)),$([int](($b.y1+$b.y2)/2))"
+        foreach ($variant in @('Ribbon','Toolstrip')) {
+            Start-Sleep -Milliseconds 150
+            $b = Bounds (Caption "Document Editor ($variant)")
+            Command "!LeftClick:$([int](($b.x1+$b.x2)/2)),$([int](($b.y1+$b.y2)/2))"
+            Start-Sleep -Milliseconds 150
+            $view = @(Snapshot | Where-Object control -EQ 'DocumentViewer')[0]
+            Command "!LeftClick:$([int]$view.bounds.x1+20),$([int]$view.bounds.y1+20)"
+            Command '!KeyPress:CTRL+HOME'
+            Start-Sleep -Milliseconds 150
+            foreach ($reversed in @($false,$true)) {
+                Select-Document $reversed
+                $view = @(Snapshot | Where-Object control -EQ 'DocumentViewer')[0]
+                $tap = [TouchingNativeInput]::ScreenPoint($window,$view.bounds.x1+($view.bounds.x2-$view.bounds.x1)*0.45,$view.bounds.y1+15)
+                if (![TouchingNativeInput]::MouseClick($tap)) { throw 'Native editor mouse input is unavailable.' }
+                Start-Sleep -Milliseconds 150
+                $expected = Editor-Selection
+                if ($expected -notmatch 'Selection(\([^)]*\))-(\([^)]*\))' -or $Matches[1] -ne $Matches[2]) { throw 'Native mouse did not collapse the editor range.' }
+                Select-Document $reversed
+                Start-Sleep -Milliseconds 600
+                Frame @([TouchingNativeInput]::Contact(1,0x10006,$tap))
+                Frame @([TouchingNativeInput]::Contact(1,0x40000,$tap))
+                Start-Sleep -Milliseconds 200
+                if ((Editor-Selection) -ne $expected) { throw "Native pointer caret differs from native mouse: $variant / reversed=$reversed" }
+            }
+            Write-Output "PASS native mouse/WM_POINTER editor caret parity: $variant, forward and reversed ranges."
+        }
+        return
+    }
     Open-Touching
     $initial = State
     $b = Bounds (Find-Element 'FullControlTest.Touching')
