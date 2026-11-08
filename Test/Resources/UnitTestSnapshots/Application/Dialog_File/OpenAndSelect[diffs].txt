@@ -319,6 +319,12 @@
 ========================================
 21
 ========================================
+{"id": 98, "diffType": "Modified", "content": null, "children": [684]}
+{"id": 680, "diffType": "Deleted", "content": null, "children": null}
+{"id": 684, "diffType": "Created", "content": {"hitTestResult": null, "cursor": null, "element": 171, "bounds": {"x1": 167, "y1": 364, "x2": 217, "y2": 380}, "validArea": {"x1": 167, "y1": 364, "x2": 217, "y2": 380}}, "children": null}
+========================================
+22
+========================================
 {"id": 8, "diffType": "Modified", "content": null, "children": [6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50, 54]}
 {"id": 58, "diffType": "Deleted", "content": null, "children": null}
 {"id": 62, "diffType": "Deleted", "content": null, "children": null}
@@ -379,7 +385,7 @@
 {"id": 668, "diffType": "Deleted", "content": null, "children": null}
 {"id": 672, "diffType": "Deleted", "content": null, "children": null}
 {"id": 676, "diffType": "Deleted", "content": null, "children": null}
-{"id": 680, "diffType": "Deleted", "content": null, "children": null}
+{"id": 684, "diffType": "Deleted", "content": null, "children": null}
 ========================================
-22
+23
 ========================================

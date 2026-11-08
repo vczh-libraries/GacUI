@@ -1,6 +1,6 @@
 ﻿{
   "frameId": 14,
-  "frameName": "Momentum stopped at one second",
+  "frameName": "Momentum stopped at half a second",
   "windowSize": {
     "bounds": {
       "x1": {"value": 212},
@@ -989,6 +989,166 @@
       ]
     ],
     [
+      89,
+      [
+        "ElementDesc_DocumentParagraphFull",
+        {
+          "paragraph": {
+            "id": 89,
+            "text": "Selected content 14 remains selected while momentum scrolls the viewport.",
+            "wrapLine": false,
+            "maxWidth": 525,
+            "alignment": "Left",
+            "runsDiff": [
+              {
+                "caretBegin": 0,
+                "caretEnd": 73,
+                "props": [
+                  "DocumentTextRunProperty",
+                  {
+                    "textColor": "#FFFFFF",
+                    "backgroundColor": "#00000000",
+                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
+                  }
+                ]
+              }
+            ],
+            "createdInlineObjects": null,
+            "removedInlineObjects": null
+          },
+          "caret": null
+        }
+      ]
+    ],
+    [
+      90,
+      [
+        "ElementDesc_DocumentParagraphFull",
+        {
+          "paragraph": {
+            "id": 90,
+            "text": "Selected content 15 remains selected while momentum scrolls the viewport.",
+            "wrapLine": false,
+            "maxWidth": 525,
+            "alignment": "Left",
+            "runsDiff": [
+              {
+                "caretBegin": 0,
+                "caretEnd": 73,
+                "props": [
+                  "DocumentTextRunProperty",
+                  {
+                    "textColor": "#FFFFFF",
+                    "backgroundColor": "#00000000",
+                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
+                  }
+                ]
+              }
+            ],
+            "createdInlineObjects": null,
+            "removedInlineObjects": null
+          },
+          "caret": null
+        }
+      ]
+    ],
+    [
+      91,
+      [
+        "ElementDesc_DocumentParagraphFull",
+        {
+          "paragraph": {
+            "id": 91,
+            "text": "Selected content 16 remains selected while momentum scrolls the viewport.",
+            "wrapLine": false,
+            "maxWidth": 525,
+            "alignment": "Left",
+            "runsDiff": [
+              {
+                "caretBegin": 0,
+                "caretEnd": 73,
+                "props": [
+                  "DocumentTextRunProperty",
+                  {
+                    "textColor": "#FFFFFF",
+                    "backgroundColor": "#00000000",
+                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
+                  }
+                ]
+              }
+            ],
+            "createdInlineObjects": null,
+            "removedInlineObjects": null
+          },
+          "caret": null
+        }
+      ]
+    ],
+    [
+      92,
+      [
+        "ElementDesc_DocumentParagraphFull",
+        {
+          "paragraph": {
+            "id": 92,
+            "text": "Selected content 17 remains selected while momentum scrolls the viewport.",
+            "wrapLine": false,
+            "maxWidth": 525,
+            "alignment": "Left",
+            "runsDiff": [
+              {
+                "caretBegin": 0,
+                "caretEnd": 73,
+                "props": [
+                  "DocumentTextRunProperty",
+                  {
+                    "textColor": "#FFFFFF",
+                    "backgroundColor": "#00000000",
+                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
+                  }
+                ]
+              }
+            ],
+            "createdInlineObjects": null,
+            "removedInlineObjects": null
+          },
+          "caret": null
+        }
+      ]
+    ],
+    [
+      93,
+      [
+        "ElementDesc_DocumentParagraphFull",
+        {
+          "paragraph": {
+            "id": 93,
+            "text": "Selected content 18 remains selected while momentum scrolls the viewport.",
+            "wrapLine": false,
+            "maxWidth": 525,
+            "alignment": "Left",
+            "runsDiff": [
+              {
+                "caretBegin": 0,
+                "caretEnd": 73,
+                "props": [
+                  "DocumentTextRunProperty",
+                  {
+                    "textColor": "#FFFFFF",
+                    "backgroundColor": "#00000000",
+                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
+                  }
+                ]
+              }
+            ],
+            "createdInlineObjects": null,
+            "removedInlineObjects": null
+          },
+          "caret": null
+        }
+      ]
+    ],
+    [
       94,
       [
         "ElementDesc_DocumentParagraphFull",
@@ -1252,166 +1412,6 @@
           "paragraph": {
             "id": 102,
             "text": "Selected content 27 remains selected while momentum scrolls the viewport.",
-            "wrapLine": false,
-            "maxWidth": 525,
-            "alignment": "Left",
-            "runsDiff": [
-              {
-                "caretBegin": 0,
-                "caretEnd": 73,
-                "props": [
-                  "DocumentTextRunProperty",
-                  {
-                    "textColor": "#FFFFFF",
-                    "backgroundColor": "#00000000",
-                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
-                  }
-                ]
-              }
-            ],
-            "createdInlineObjects": null,
-            "removedInlineObjects": null
-          },
-          "caret": null
-        }
-      ]
-    ],
-    [
-      103,
-      [
-        "ElementDesc_DocumentParagraphFull",
-        {
-          "paragraph": {
-            "id": 103,
-            "text": "Selected content 28 remains selected while momentum scrolls the viewport.",
-            "wrapLine": false,
-            "maxWidth": 525,
-            "alignment": "Left",
-            "runsDiff": [
-              {
-                "caretBegin": 0,
-                "caretEnd": 73,
-                "props": [
-                  "DocumentTextRunProperty",
-                  {
-                    "textColor": "#FFFFFF",
-                    "backgroundColor": "#00000000",
-                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
-                  }
-                ]
-              }
-            ],
-            "createdInlineObjects": null,
-            "removedInlineObjects": null
-          },
-          "caret": null
-        }
-      ]
-    ],
-    [
-      104,
-      [
-        "ElementDesc_DocumentParagraphFull",
-        {
-          "paragraph": {
-            "id": 104,
-            "text": "Selected content 29 remains selected while momentum scrolls the viewport.",
-            "wrapLine": false,
-            "maxWidth": 525,
-            "alignment": "Left",
-            "runsDiff": [
-              {
-                "caretBegin": 0,
-                "caretEnd": 73,
-                "props": [
-                  "DocumentTextRunProperty",
-                  {
-                    "textColor": "#FFFFFF",
-                    "backgroundColor": "#00000000",
-                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
-                  }
-                ]
-              }
-            ],
-            "createdInlineObjects": null,
-            "removedInlineObjects": null
-          },
-          "caret": null
-        }
-      ]
-    ],
-    [
-      105,
-      [
-        "ElementDesc_DocumentParagraphFull",
-        {
-          "paragraph": {
-            "id": 105,
-            "text": "Selected content 30 remains selected while momentum scrolls the viewport.",
-            "wrapLine": false,
-            "maxWidth": 525,
-            "alignment": "Left",
-            "runsDiff": [
-              {
-                "caretBegin": 0,
-                "caretEnd": 73,
-                "props": [
-                  "DocumentTextRunProperty",
-                  {
-                    "textColor": "#FFFFFF",
-                    "backgroundColor": "#00000000",
-                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
-                  }
-                ]
-              }
-            ],
-            "createdInlineObjects": null,
-            "removedInlineObjects": null
-          },
-          "caret": null
-        }
-      ]
-    ],
-    [
-      106,
-      [
-        "ElementDesc_DocumentParagraphFull",
-        {
-          "paragraph": {
-            "id": 106,
-            "text": "Selected content 31 remains selected while momentum scrolls the viewport.",
-            "wrapLine": false,
-            "maxWidth": 525,
-            "alignment": "Left",
-            "runsDiff": [
-              {
-                "caretBegin": 0,
-                "caretEnd": 73,
-                "props": [
-                  "DocumentTextRunProperty",
-                  {
-                    "textColor": "#FFFFFF",
-                    "backgroundColor": "#00000000",
-                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
-                  }
-                ]
-              }
-            ],
-            "createdInlineObjects": null,
-            "removedInlineObjects": null
-          },
-          "caret": null
-        }
-      ]
-    ],
-    [
-      107,
-      [
-        "ElementDesc_DocumentParagraphFull",
-        {
-          "paragraph": {
-            "id": 107,
-            "text": "Selected content 32 remains selected while momentum scrolls the viewport.",
             "wrapLine": false,
             "maxWidth": 525,
             "alignment": "Left",
@@ -2293,8 +2293,8 @@
                                               "hitTestResult": null,
                                               "cursor": null,
                                               "element": 56,
-                                              "bounds": {"x1": 564, "y1": 105, "x2": 576, "y2": 127},
-                                              "validArea": {"x1": 564, "y1": 105, "x2": 576, "y2": 127}
+                                              "bounds": {"x1": 564, "y1": 96, "x2": 576, "y2": 118},
+                                              "validArea": {"x1": 564, "y1": 96, "x2": 576, "y2": 118}
                                             },
                                             "children": null
                                           }
@@ -2303,7 +2303,7 @@
                                     ]
                                   },
                                   {
-                                    "id": 377,
+                                    "id": 357,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
@@ -2313,13 +2313,68 @@
                                     },
                                     "children": [
                                       {
+                                        "id": 356,
+                                        "content": {
+                                          "hitTestResult": null,
+                                          "cursor": null,
+                                          "element": 89,
+                                          "bounds": {"x1": 306, "y1": 34, "x2": 831, "y2": 50},
+                                          "validArea": {"x1": 306, "y1": 48, "x2": 560, "y2": 50}
+                                        },
+                                        "children": null
+                                      },
+                                      {
+                                        "id": 360,
+                                        "content": {
+                                          "hitTestResult": null,
+                                          "cursor": null,
+                                          "element": 90,
+                                          "bounds": {"x1": 306, "y1": 50, "x2": 831, "y2": 66},
+                                          "validArea": {"x1": 306, "y1": 50, "x2": 560, "y2": 66}
+                                        },
+                                        "children": null
+                                      },
+                                      {
+                                        "id": 364,
+                                        "content": {
+                                          "hitTestResult": null,
+                                          "cursor": null,
+                                          "element": 91,
+                                          "bounds": {"x1": 306, "y1": 66, "x2": 831, "y2": 82},
+                                          "validArea": {"x1": 306, "y1": 66, "x2": 560, "y2": 82}
+                                        },
+                                        "children": null
+                                      },
+                                      {
+                                        "id": 368,
+                                        "content": {
+                                          "hitTestResult": null,
+                                          "cursor": null,
+                                          "element": 92,
+                                          "bounds": {"x1": 306, "y1": 82, "x2": 831, "y2": 98},
+                                          "validArea": {"x1": 306, "y1": 82, "x2": 560, "y2": 98}
+                                        },
+                                        "children": null
+                                      },
+                                      {
+                                        "id": 372,
+                                        "content": {
+                                          "hitTestResult": null,
+                                          "cursor": null,
+                                          "element": 93,
+                                          "bounds": {"x1": 306, "y1": 98, "x2": 831, "y2": 114},
+                                          "validArea": {"x1": 306, "y1": 98, "x2": 560, "y2": 114}
+                                        },
+                                        "children": null
+                                      },
+                                      {
                                         "id": 376,
                                         "content": {
                                           "hitTestResult": null,
                                           "cursor": null,
                                           "element": 94,
-                                          "bounds": {"x1": 306, "y1": 34, "x2": 831, "y2": 50},
-                                          "validArea": {"x1": 306, "y1": 48, "x2": 560, "y2": 50}
+                                          "bounds": {"x1": 306, "y1": 114, "x2": 831, "y2": 130},
+                                          "validArea": {"x1": 306, "y1": 114, "x2": 560, "y2": 130}
                                         },
                                         "children": null
                                       },
@@ -2329,8 +2384,8 @@
                                           "hitTestResult": null,
                                           "cursor": null,
                                           "element": 95,
-                                          "bounds": {"x1": 306, "y1": 50, "x2": 831, "y2": 66},
-                                          "validArea": {"x1": 306, "y1": 50, "x2": 560, "y2": 66}
+                                          "bounds": {"x1": 306, "y1": 130, "x2": 831, "y2": 146},
+                                          "validArea": {"x1": 306, "y1": 130, "x2": 560, "y2": 146}
                                         },
                                         "children": null
                                       },
@@ -2340,8 +2395,8 @@
                                           "hitTestResult": null,
                                           "cursor": null,
                                           "element": 96,
-                                          "bounds": {"x1": 306, "y1": 66, "x2": 831, "y2": 82},
-                                          "validArea": {"x1": 306, "y1": 66, "x2": 560, "y2": 82}
+                                          "bounds": {"x1": 306, "y1": 146, "x2": 831, "y2": 162},
+                                          "validArea": {"x1": 306, "y1": 146, "x2": 560, "y2": 162}
                                         },
                                         "children": null
                                       },
@@ -2351,8 +2406,8 @@
                                           "hitTestResult": null,
                                           "cursor": null,
                                           "element": 97,
-                                          "bounds": {"x1": 306, "y1": 82, "x2": 831, "y2": 98},
-                                          "validArea": {"x1": 306, "y1": 82, "x2": 560, "y2": 98}
+                                          "bounds": {"x1": 306, "y1": 162, "x2": 831, "y2": 178},
+                                          "validArea": {"x1": 306, "y1": 162, "x2": 560, "y2": 178}
                                         },
                                         "children": null
                                       },
@@ -2362,8 +2417,8 @@
                                           "hitTestResult": null,
                                           "cursor": null,
                                           "element": 98,
-                                          "bounds": {"x1": 306, "y1": 98, "x2": 831, "y2": 114},
-                                          "validArea": {"x1": 306, "y1": 98, "x2": 560, "y2": 114}
+                                          "bounds": {"x1": 306, "y1": 178, "x2": 831, "y2": 194},
+                                          "validArea": {"x1": 306, "y1": 178, "x2": 560, "y2": 194}
                                         },
                                         "children": null
                                       },
@@ -2373,8 +2428,8 @@
                                           "hitTestResult": null,
                                           "cursor": null,
                                           "element": 99,
-                                          "bounds": {"x1": 306, "y1": 114, "x2": 831, "y2": 130},
-                                          "validArea": {"x1": 306, "y1": 114, "x2": 560, "y2": 130}
+                                          "bounds": {"x1": 306, "y1": 194, "x2": 831, "y2": 210},
+                                          "validArea": {"x1": 306, "y1": 194, "x2": 560, "y2": 210}
                                         },
                                         "children": null
                                       },
@@ -2384,8 +2439,8 @@
                                           "hitTestResult": null,
                                           "cursor": null,
                                           "element": 100,
-                                          "bounds": {"x1": 306, "y1": 130, "x2": 831, "y2": 146},
-                                          "validArea": {"x1": 306, "y1": 130, "x2": 560, "y2": 146}
+                                          "bounds": {"x1": 306, "y1": 210, "x2": 831, "y2": 226},
+                                          "validArea": {"x1": 306, "y1": 210, "x2": 560, "y2": 226}
                                         },
                                         "children": null
                                       },
@@ -2395,61 +2450,6 @@
                                           "hitTestResult": null,
                                           "cursor": null,
                                           "element": 101,
-                                          "bounds": {"x1": 306, "y1": 146, "x2": 831, "y2": 162},
-                                          "validArea": {"x1": 306, "y1": 146, "x2": 560, "y2": 162}
-                                        },
-                                        "children": null
-                                      },
-                                      {
-                                        "id": 408,
-                                        "content": {
-                                          "hitTestResult": null,
-                                          "cursor": null,
-                                          "element": 102,
-                                          "bounds": {"x1": 306, "y1": 162, "x2": 831, "y2": 178},
-                                          "validArea": {"x1": 306, "y1": 162, "x2": 560, "y2": 178}
-                                        },
-                                        "children": null
-                                      },
-                                      {
-                                        "id": 412,
-                                        "content": {
-                                          "hitTestResult": null,
-                                          "cursor": null,
-                                          "element": 103,
-                                          "bounds": {"x1": 306, "y1": 178, "x2": 831, "y2": 194},
-                                          "validArea": {"x1": 306, "y1": 178, "x2": 560, "y2": 194}
-                                        },
-                                        "children": null
-                                      },
-                                      {
-                                        "id": 416,
-                                        "content": {
-                                          "hitTestResult": null,
-                                          "cursor": null,
-                                          "element": 104,
-                                          "bounds": {"x1": 306, "y1": 194, "x2": 831, "y2": 210},
-                                          "validArea": {"x1": 306, "y1": 194, "x2": 560, "y2": 210}
-                                        },
-                                        "children": null
-                                      },
-                                      {
-                                        "id": 420,
-                                        "content": {
-                                          "hitTestResult": null,
-                                          "cursor": null,
-                                          "element": 105,
-                                          "bounds": {"x1": 306, "y1": 210, "x2": 831, "y2": 226},
-                                          "validArea": {"x1": 306, "y1": 210, "x2": 560, "y2": 226}
-                                        },
-                                        "children": null
-                                      },
-                                      {
-                                        "id": 424,
-                                        "content": {
-                                          "hitTestResult": null,
-                                          "cursor": null,
-                                          "element": 106,
                                           "bounds": {"x1": 306, "y1": 226, "x2": 831, "y2": 242},
                                           "validArea": {"x1": 306, "y1": 226, "x2": 560, "y2": 240}
                                         },

@@ -111,12 +111,7 @@
     [109, "DocumentParagraph"],
     [110, "DocumentParagraph"],
     [111, "DocumentParagraph"],
-    [112, "DocumentParagraph"],
-    [113, "DocumentParagraph"],
-    [114, "DocumentParagraph"],
-    [115, "DocumentParagraph"],
-    [116, "DocumentParagraph"],
-    [117, "DocumentParagraph"]
+    [112, "DocumentParagraph"]
   ],
   "imageCreations": [],
   "imageMetadatas": [],
@@ -204,7 +199,7 @@
     },
     {
       "frameId": 14,
-      "frameName": "Momentum stopped at one second",
+      "frameName": "Momentum stopped at half a second",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
