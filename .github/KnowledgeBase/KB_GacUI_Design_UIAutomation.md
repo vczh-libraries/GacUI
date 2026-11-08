@@ -65,7 +65,7 @@ FrameworkId is `GacUI`; ClassName is `GacUI.` plus role ID. AutomationId uses ex
 | Scroll / tracker / progress | RangeValue. Progress is read-only and reports NaN increments. |
 | Document / textbox | Text and Value outside password restrictions, with logical document children described below. |
 
-Single-selection AddToSelection rejects an already-selected different tab, calendar day, radio or grid/list item without changing selection. Radio SelectionContainer follows the actual mutex controller. Grid GetSelection returns the active logical cell; only that cell reports grid keyboard focus. Focusing and scrolling do not implicitly select another item.
+Single-selection AddToSelection rejects an already-selected different tab, calendar day, radio or grid/list item without changing selection. Radio SelectionContainer follows the actual mutex controller. In Detail view, grid GetSelection returns the active logical cell; only that cell reports grid keyboard focus. In other views, data grids expose ordinary list items for selection and report focus on the list control. Focusing and scrolling do not implicitly select another item.
 
 Default grid cells contain the active editor or realized visualizer controls. Their logical cell identity survives editor changes. String Value writes update the binding model without opening an editor or changing selection. Other editor types continue to use their exposed editor controls/Invoke.
 

@@ -20,9 +20,9 @@ The component selects scrolling offers without marking them handled. Normal cont
 
 ## Deceleration
 
-`Deceleration` is a finite positive double, initially `1.0`. Velocity is the signed average over the final half second, or the shorter sequence duration, including stationary time through End. Playback captures the current setting and decelerates at `320 * Deceleration` logical pixels per second squared.
+`Deceleration` is a finite positive double, initially `2.0`. Velocity is the signed average over the final quarter second, or the shorter sequence duration, including final-Up movement and stationary time through End. Playback captures the current setting and decelerates at `320 * Deceleration` logical pixels per second squared.
 
-Scrolling 160 logical pixels in the last 0.5 seconds yields 320 pixels per second. At the default setting, continuation stops after one second and adds 160 logical pixels before clamping. A value of 2.0 stops in 0.5 seconds; 0.5 stops in two seconds. Increments are integrated at 0.1-second elapsed boundaries plus the final partial interval, carrying fractional distance. Delayed timer callbacks catch up using elapsed time.
+Scrolling 160 logical pixels at constant speed over 0.5 seconds and releasing immediately yields 320 pixels per second. At the default setting, continuation stops after 0.5 seconds and adds 80 logical pixels before clamping. An explicit value of 1.0 stops in one second; 0.5 stops in two seconds. Resting for at least a quarter second before End leaves zero release velocity. Increments are integrated at 0.1-second elapsed boundaries plus the final partial interval, carrying fractional distance. Delayed timer callbacks catch up using elapsed time.
 
 ## XML example
 
