@@ -49,6 +49,7 @@ Fix some issue from the previous execution of `TODO_TASK1.md`:
     - Automation Service
     - Any platform provider message redirection, e.g. hosted mode
     - To add timestamp to all point events.
+- `MomentumScrolling::states` should be a `Dictionary<GuiControl*, xxx>` for high performance look ups.
 
 ### DETAILS
 
