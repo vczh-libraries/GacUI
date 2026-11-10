@@ -195,6 +195,7 @@ Propose any solution you can think of and write them down in the document, you m
   - When different `## Task X` happens in different repos, you are going to change the `Copilot_Investigate.md` in that repo.
     - If multiple repos are involved, for all involved repos that has the `Copilot_Investigate.md` file, decide which repo is the main repo for the task and update that file in the main repo.
     - If the repo does not have such document, you are allowed not to create one, skip writing such file.
+    - `Release` repo is an exception, never update the `Copilot_Investigate.md` file in this repo.
 - When `git push` is blocked because of needing to merge, you are allowed to rebase by yourself:
   - Always rebase to the latest change of the remote branch, instead of making a rebase commit.
   - Usually there is only documentation or instruction changes. In this case, you can rebase and skip the testing.

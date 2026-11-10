@@ -70,6 +70,9 @@ Check out [Coding_MultiThreading.md](./Coding_MultiThreading.md).
 - Rules for cpp files:
   - Use `using namespace` statement if necessary to prevent from repeating namespace everywhere.
   - `vl::stream::` is an exception, always use `stream::` with `using namespace vl;`, DO NOT use `using namespace vl::stream;`.
+- When a better way does not require additional super complex code, you should always seek for better space and time complexity, when picking data structures and algorithms.
+  - Unless explicitly instructed, keep the data structure straight forward, using predefined type decorator (e.g. Ptr, Nullable, Variant) and container classes.
+  - `VlppParser2` is an example of exception, where memory layout and runtime performance is extremely important, it invents its own contructions instead of using types from `Vlpp`.
 
 ## Basic C++ Library Leveraging
 
@@ -85,7 +88,15 @@ Check out [Coding_MultiThreading.md](./Coding_MultiThreading.md).
   - Always use `vint` instead of `int`.
   - Always use `L'x'`, `L"x"`, `wchar_t`, `const wchar_t` and `vl::WString`, instead of `std::string` or `std::wstring`.
   - Always use `FilePath` for file path operations.
-  - Use my own collection types vl::collections::* instead of std::*
+  - Use my own collection types vl::collections::* instead of std::*.
+    - There is no linked list container offered, you need to define specific data structure when needed.
+    - `Array<T>` is for fixed size container or buffering.
+      - You will find some `Array<wchar_t>` examples to prepare a buffer for Windows API. Note that `&xs[0]` will crash when the array has a 0 length.
+    - `List<T>` is for dynamic size container. `SortedList<T>` is a always sorted version of `List<T>`.
+    - `Dictionary<K, V>` and `Group<K, V>` is for representing key lookup on 1:1 and 1:n relationship. Binary search is used internally for key lookup. Avoid storing data in any list when frequently needing to scan through every items for key lookup.
+    - `PartialOrderingProcessor` is a helper class for doing partial ordering sorting, with automatic discovering of circlic dependencies.
+    - There are more container classes.
+    - Accessing elements in a container with out of bound index or unexisting key resulting in throwing an exception. When the code just should not having a wrong index or key at a certain point, using it directly and letting it straight crash when it is not a good index or key, is preferred and it helps a lot for debugging. This is a "crash early" way to use containers.
   - Check out `REPO-ROOT/.github/KnowledgeBase/Index.md` for more information on how to choose the correct C++ data types.
 - To attach availability semantic to a value:
   - If any number is expected to be valid only when non-negative, you could use `-1` to represent invalid value.
