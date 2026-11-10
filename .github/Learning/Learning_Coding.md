@@ -39,6 +39,8 @@
 - Expose supported variant fields directly in reflection [2]
 - Preserve complete style catalogs in private documents [2]
 - Detach tooltip positioning before its owner is destroyed [2]
+- Subscribe momentum to persistent bounds and retire callbacks safely [2]
+- Keep momentum input samples separate from playback time [2]
 - Nest EazyLayout descriptor groups under one owning layout [1]
 - Use /AsPort for automation with default 8888 [1]
 - Use channel `localClient` callbacks for remoting local-client detection [1]
@@ -118,10 +120,12 @@
 - Keep custom showcase rows themed and varied [1]
 - Keep ribbon gallery application independent of selection changes [1]
 - Keep Linux-only unit-test adapters in the Linux build inventory [1]
-- Subscribe momentum to persistent bounds and retire callbacks safely [1]
-- Keep momentum input samples separate from playback time [1]
-- Bind shared editor shortcuts to the focused document [1]
+- Keep FullControlTest shared editor shortcuts owned by Ribbon [1]
 - Render named TUI label templates directly with SolidLabel [1]
+- Prepare GDI paragraph layout independently from shaping [1]
+- Route deferred point clicks through ordinary mouse dispatch [1]
+- Match Windows UIA identity and focus to current control mode [1]
+- Preserve absolute filenames in file-dialog confirmation [1]
 
 # Refinements
 
@@ -688,14 +692,36 @@ Register the Linux skin adapter sources in `CPP_ADDS` in `<GacUI repo>/Test/Linu
 
 `GuiControl::GetPointEventComposition()` queries active capture and can be null while idle or after End; it is not a persistent subscription target. In `<GacUI repo>/Source/Application/GraphicsHost/GuiGraphicsHost_Point.cpp`, subscribe `MomentumScrolling` at the control's bounds and preserve child acceptance. Its retained `GuiDisposedFlag` is passive: discard disposed bookkeeping without touching destroyed receivers. Keep per-control state alive through generated callbacks, and stop animations for safe retirement instead of synchronously removing the scheduler's current entry. Detach live handlers normally and invalidate callbacks on component teardown.
 
+Keep the borrowed control key and retained state `Ptr` distinct in the attachment dictionary. Copy keys and owning values before removal or callbacks, retire disposed entries before accepting a reused control address, and ensure an old scheduler-held state cannot stop or remove a replacement under the same key. Keyed lookup replaces per-control scans; bulk disposal cleanup still visits the states.
+
 ## Keep momentum input samples separate from playback time
 
 In `<GacUI repo>/Source/Application/GraphicsHost/GuiGraphicsHost_Point.cpp`, compute momentum velocity solely from raw input timestamps and cumulative displacement, including final-Up movement and the stationary tail to End. Use the local animation clock only for elapsed playback; never subtract timestamps from different clocks. Retain the predecessor needed to interpolate the trailing sampling boundary and exclude synthetic gestures from sampling. Integrate elapsed intervals with fractional residue, avoid overflow for valid finite deceleration settings, and clamp rounded increments to the initial velocity's sign so a near-zero final interval cannot reverse direction.
 
-## Bind shared editor shortcuts to the focused document
+Before extending timestamps or protocol schemas, trace the existing raw Action and explicit End timestamps through the providers. Include stationary time between the last movement and End when computing release velocity, using the same named sampling-window constant in recording and launch calculations. Keep the unrelated press and generated-double-click timing rules independent.
 
-When both FullControlTest document editors coexist, bind their shared shortcuts to `document.Focused` in `<GacUI repo>/Test/Resources/App/FullControlTest/DocumentEditorBase.xml`, following the TuiControlTest resource. Static duplicate window-wide registrations can make `GuiShortcutKeyManager::CreateShortcutIfNotExist` leave the second editor without its shortcuts, so input changes the hidden editor. Reuse the existing commands for menu labels, states and accelerators, and verify the visible editor's actual mode/text result.
+## Keep FullControlTest shared editor shortcuts owned by Ribbon
+
+The shared literal `ShortcutBuilder` registrations in `<GacUI repo>/Test/Resources/App/FullControlTest/DocumentEditorBase.xml` are intentionally owned by Ribbon when both editor variants coexist. Preserve the historical literals for Ctrl+Z/Y/C/X/V/A and Ctrl+Shift+P/S/E; do not restore focus-dependent `ShortcutBuilder-bind` merely to make Toolstrip respond. Verify shortcuts only on Ribbon and use equivalent menu/toolbar commands on Toolstrip. Keep the owning SOP and executable helpers consistent with this choice.
 
 ## Render named TUI label templates directly with SolidLabel
 
 In `<GacUI repo>/Source/Utilities/FakeServices/TuiDialogs/MessageBox.xml`, declare the reusable label template as another named `<Instance/>` and reference its type directly through `ControlTemplate`. A `<LabelTemplate/>` should own a `<SolidLabel/>`, not a nested themed `<Label/>` or a constructor-assigned factory. Copy the necessary TUI label text/font/enabled-color bindings and neutral palette values from `<GacUI repo>/Test/Resources/App/TuiSkin/TuiSkin.xml`; this small rendering duplication is intentional. Preserve declarative multiline and wrapping flags. The Release TUI tutorial consumes the built-in dialog through its library dependencies, so update those generated dependencies without inventing a second dialog XML.
+
+## Prepare GDI paragraph layout independently from shaping
+
+In `WindowsGDIParagraph::PrepareUniscribeData` in `<GacUI repo>/Source/PlatformProviders/Windows/GDI/Renderers/GuiGraphicsLayoutProviderWindowsGDI.cpp`, built shaping does not prove virtual-line layout exists. Wrapping or alignment changes can build shaping before an available width is assigned. Prepare the unmeasured layout with its existing default width before caret or hit-test queries, then allow later measurement to rebuild wrapping. Fix the preparation boundary instead of accepting an invalid virtual-line index.
+
+## Route deferred point clicks through ordinary mouse dispatch
+
+In `<GacUI repo>/Source/Application/GraphicsHost/GuiGraphicsHost.cpp`, completed eligible point clicks use ordinary mouse hit testing and bubbling at the original contact position with current coordinate conversion. Point acceptance does not choose the mouse recipient. Preserve normal source fields, receiver-local coordinates, descendant activation, handled propagation and independent physical capture/button state after point cleanup. Remove direct bounds adapters and origin flags that exist only to support the rejected direct-delivery path.
+
+Keep document caret behavior in the original handlers in `<GacUI repo>/Source/Controls/TextEditorPackage/GuiDocumentCommonInterface.cpp`: an unmodified short press follows an ordinary click, including collapsing a range at its active endpoint and clamping hits in blank viewport space. Do not reintroduce point-specific forwarding to bypass normal bubbling. Dismiss unrelated hosted popups only once an eligible click is known, before mouse delivery; raw Down, canceled gestures and scrolling must not dismiss them.
+
+## Match Windows UIA identity and focus to current control mode
+
+In `<GacUI repo>/Source/PlatformProviders/Windows/UIAutomation`, apply data-grid cell roles, selection and focus only in Detail mode. Other views must expose live list-item selection and control focus without weakening provider liveness checks. In `WindowsUIAutomationNode::IsFocused`, native activation is a prerequisite, not proof that the window itself owns keyboard focus: a focused descendant composition must remain the unique logical focus target. Verify these properties on an actual file picker.
+
+## Preserve absolute filenames in file-dialog confirmation
+
+`FileDialogViewModel::TryConfirm` in `<GacUI repo>/Source/Utilities/FakeServices/GuiFakeDialogServiceBase_FileDialog.cpp` must distinguish absolute inputs with `filesystem::FilePath::IsAbsolutePath`. Normalize an absolute filename directly and join only relative inputs to the selected folder. Verify confirmation after navigating into a folder; an absolute path accepted at the initial location alone does not expose an accidental folder-prefix join.

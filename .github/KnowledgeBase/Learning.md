@@ -2,16 +2,16 @@
 
 # Orders
 
-- Keep design documentation aligned with code after refactoring [34]
+- Keep design documentation aligned with code after refactoring [35]
+- Proactively remove code made redundant by refactoring [34]
 - Verify generated artifacts with downstream consumer checks [33]
-- Proactively remove code made redundant by refactoring [33]
 - Process staged tasks one by one with verification [28]
 - Port fixes from imports to source repositories [23]
 - Extract abstractions only for real shared behavior [23]
 - Verify and localize portability on every target OS [21]
+- Fix behavior at the owning state instead of patching symptoms [18]
 - Crash early instead of adding error-tolerance fallbacks [16]
-- Fix behavior at the owning state instead of patching symptoms [16]
-- Validate expectations against implementation and existing tests [13]
+- Validate expectations against implementation and existing tests [15]
 - Make `Stop()` drain asynchronous work before returning [8]
 - Do not assume async callback owners are heap allocated [5]
 - Treat environment correlation as evidence, not a cause [5]
@@ -23,6 +23,8 @@
 - Use explicit positive compiler and platform guards [3]
 - Keep encoding and exception adapters at the C++/JavaScript boundary [3]
 - Treat Debug memory leak dumps as required failures [3]
+- Derive behavior thresholds from named constants [3]
+- Respect explicitly limited verification scope [3]
 - Capture dependent lambdas explicitly [2]
 - Use `ERROR_MESSAGE_PREFIX` for meaningful `CHECK_ERROR` / `CHECK_FAIL` messages [2]
 - Prefer simple calls before interface casts [2]
@@ -30,14 +32,15 @@
 - Prefer raw pointers unless shared ownership is required [2]
 - Start async callbacks after most-derived construction [2]
 - Sort serialization metadata by deterministic keys, not pointer addresses [2]
-- Derive behavior thresholds from named constants [2]
 - Reuse existing library algorithms before writing local equivalents [2]
 - Guard optional Workflow values with explicit conditionals [2]
+- Commit consumed event state before reentrant callbacks [2]
+- Avoid references into containers when mutating them [2]
+- Preserve an existing `Ptr` counter across asynchronous ownership handoffs [2]
 - Prefer `operator<=> = default` for lexicographic key structs [1]
 - Prefer two-pointer merge for sorted range maps [1]
 - Use named sentinel constants instead of raw values [1]
 - Use `Variant<T...>::Index()` to check active alternative [1]
-- Avoid references into containers when mutating them [1]
 - Prefer designated initializers for aggregate-like structs [1]
 - Construct `Nullable<WString>` explicitly in function calls [1]
 - Do not rely on `Event<T>` handler invocation order [1]
@@ -57,7 +60,6 @@
 - Keep generator compilation independent from runtime-backed tests [1]
 - Normalize checkout line endings at golden comparison boundaries [1]
 - Preserve ordered HTTP messages at upload and completion boundaries [1]
-- Preserve an existing `Ptr` counter across asynchronous ownership handoffs [1]
 - Reuse established MSBuild project configurations [1]
 - Revalidate mutable external state immediately before mutation [1]
 - Retain browser workers through asynchronous initialization [1]
@@ -67,8 +69,7 @@
 - Keep compiler-proven checks out of runtime execution [1]
 - Preserve ordinary conversion behavior when adding type-specific semantics [1]
 - Exercise each distinct semantic and runtime failure independently [1]
-- Respect explicitly limited verification scope [1]
-- Commit consumed event state before reentrant callbacks [1]
+- Synchronize instruction files after active wrappers finish [1]
 
 # Refinements
 
@@ -394,6 +395,8 @@ Audit language reference indexes against the authoritative lexer, grammar, diagn
 
 When correcting command-line spelling, update parsing, help, forwarding and existing active descriptions together. Keep wrapper-option syntax distinct from the executable arguments it emits, and preserve historical executed commands with a note explaining the new spelling rather than rewriting earlier verification evidence.
 
+When the user corrects a previously implemented design, remove the superseded guidance from active documentation and examples as well as code. Preserve historical results under their actual design and scope. If the task requests correction of existing facts only, avoid expanding the documentation into unrelated topics.
+
 ## Fix behavior at the owning state instead of patching symptoms
 
 When a bug is caused by state attached to a temporary or overly broad owner, move the state to the object or region that semantically owns it. Avoid compensating fixes such as forcing override values on every affected descendant, duplicating a template/resource just to mask inherited state, or adding side-channel code that only makes the symptom disappear. If a proposed fix looks like a patch, revisit the ownership boundary and preserve naturally correct inherited/default behavior for unaffected parts.
@@ -554,6 +557,14 @@ Map each new rejection or runtime-failure branch to a reachable assertion and it
 
 When a behavior-preserving refactor explicitly requests minimum limited testing, reuse the existing focused regression and extend only the assertions needed to preserve that behavior. Complete the generation, architecture builds and metadata checks required by the changed inputs, plus any specifically requested downstream consumer. Do not expand the task to unrelated runtime suites, and still inspect the complete execution log for failures after the passing summary.
 
+Apply later scope corrections to the remaining work, including exclusions of otherwise standard application matrices. Historical broader runs remain historical evidence; do not repeat excluded applications or claim they verified a later implementation.
+
 ## Commit consumed event state before reentrant callbacks
 
 When application callbacks can pump the event loop, advance validated input indices and the shared pending-event cursor before invoking them. Keep the undispatched remainder in its owning queue so nested dispatch preserves FIFO ahead of newly arrived input. Move a completed sequence out of active routing state before its End callback, retaining its payload separately; afterward, do not clear a replacement sequence created by nested dispatch. Preserve strict validation while fixing ownership and commit order.
+
+Consume pairing history or other one-shot state before callbacks that can pump nested input. Keep the state with its actual owner, preserve it across ordinary per-event cleanup, and reset it only at the relevant ownership or binding change.
+
+## Synchronize instruction files after active wrappers finish
+
+`<Tools repo>/Copilot/copilotInitAll.ps1` replaces each destination's `<consuming repo>/.github/Scripts` folder, including wrapper logs. Wait for active build/test wrappers to finish and archive authoritative completed logs outside the replaced folders before synchronizing. An overwritten execution log can break the wrapper's final rename and invalidate its leak-report audit even when stdout contains passing case totals.
