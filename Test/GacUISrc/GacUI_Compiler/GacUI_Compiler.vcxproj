@@ -185,6 +185,11 @@
     <Xml Include="..\..\..\Source\Utilities\FakeServices\Dialogs\FontDialog.xml" />
     <Xml Include="..\..\..\Source\Utilities\FakeServices\Dialogs\MessageBox.xml" />
     <Xml Include="..\..\..\Source\Utilities\FakeServices\Dialogs\Resource.xml" />
+    <Xml Include="..\..\..\Source\Utilities\FakeServices\TuiDialogs\ColorDialog.xml" />
+    <Xml Include="..\..\..\Source\Utilities\FakeServices\TuiDialogs\FileDialog.xml" />
+    <Xml Include="..\..\..\Source\Utilities\FakeServices\TuiDialogs\FontDialog.xml" />
+    <Xml Include="..\..\..\Source\Utilities\FakeServices\TuiDialogs\MessageBox.xml" />
+    <Xml Include="..\..\..\Source\Utilities\FakeServices\TuiDialogs\Resource.xml" />
     <Xml Include="..\..\Resources\App\DarkSkin\DarkSkin.xml" />
     <Xml Include="..\..\Resources\App\DarkSkin\Index.xml" />
     <Xml Include="..\..\Resources\App\DarkSkin\Resource.xml" />

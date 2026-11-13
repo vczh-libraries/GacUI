@@ -40,6 +40,9 @@
     <Filter Include="Resource Files\RemoteViewModelTest">
       <UniqueIdentifier>{2c5e6fed-24f7-4e96-92f8-7a7ac08ac980}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\TuiDialogs">
+      <UniqueIdentifier>{424e21aa-bd05-4ea7-b623-d94c3b4208d7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -236,6 +239,21 @@
     </Xml>
     <Xml Include="..\..\Resources\App\FullControlTest\RawElementTabPage.xml">
       <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Source\Utilities\FakeServices\TuiDialogs\Resource.xml">
+      <Filter>Resource Files\TuiDialogs</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Source\Utilities\FakeServices\TuiDialogs\ColorDialog.xml">
+      <Filter>Resource Files\TuiDialogs</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Source\Utilities\FakeServices\TuiDialogs\FileDialog.xml">
+      <Filter>Resource Files\TuiDialogs</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Source\Utilities\FakeServices\TuiDialogs\FontDialog.xml">
+      <Filter>Resource Files\TuiDialogs</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Source\Utilities\FakeServices\TuiDialogs\MessageBox.xml">
+      <Filter>Resource Files\TuiDialogs</Filter>
     </Xml>
   </ItemGroup>
   <ItemGroup>
