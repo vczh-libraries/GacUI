@@ -1,4 +1,4 @@
-﻿================================(1/25)================================
+﻿================================(1/27)================================
 module <constructor>tui_controls::TuiColorComponentControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -388,7 +388,7 @@ namespace tui_controls
     }
 }
 
-================================(2/25)================================
+================================(2/27)================================
 module <instance>tui_controls::TuiColorComponentControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -473,7 +473,7 @@ namespace tui_controls
     }
 }
 
-================================(3/25)================================
+================================(3/27)================================
 module <constructor>tui_controls::TuiColorDialogControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1630,7 +1630,7 @@ namespace tui_controls
     }
 }
 
-================================(4/25)================================
+================================(4/27)================================
 module <instance>tui_controls::TuiColorDialogControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1731,7 +1731,7 @@ namespace tui_controls
     }
 }
 
-================================(5/25)================================
+================================(5/27)================================
 module <constructor>tui_controls::TuiColorDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2207,7 +2207,7 @@ namespace tui_controls
     }
 }
 
-================================(6/25)================================
+================================(6/27)================================
 module <instance>tui_controls::TuiColorDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2282,7 +2282,7 @@ namespace tui_controls
     }
 }
 
-================================(7/25)================================
+================================(7/27)================================
 module <constructor>tui_controls::TuiFileDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2458,7 +2458,11 @@ namespace tui_controls
                 {
                     var <bind-cache>0 : ::presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
 
+                    var <bind-cache>1 : ::presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
+
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-opened> : ::system::Boolean = false;
 
@@ -2466,11 +2470,16 @@ namespace tui_controls
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = (!<bind-cache>0.IsLoadingFiles) of (::system::Boolean);
+                        var <bind-activator-result> = ((!<bind-cache>0.IsLoadingFiles) and (!<bind-cache>1.IsMutatingFiles)) of (::system::Boolean);
                         ValueChanged(<bind-activator-result>);
                     }
 
                     func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>1_0() : (::system::Void)
                     {
                         <bind-activator>();
                     }
@@ -2481,7 +2490,9 @@ namespace tui_controls
                         {
                             (<bind-opened> = true);
                             (<bind-cache>0 = (ViewModel ?? null of (::presentation::IFileDialogViewModel^)));
+                            (<bind-cache>1 = (ViewModel ?? null of (::presentation::IFileDialogViewModel^)));
                             (<bind-handler>0_0 = (attach(<bind-cache>0.IsLoadingFilesChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.FileOperationsChanged, <bind-callback>1_0) ?? null));
                             return true;
                         }
                         return false;
@@ -2507,8 +2518,15 @@ namespace tui_controls
                                 detach(<bind-cache>0.IsLoadingFilesChanged, <bind-handler>0_0);
                                 (<bind-handler>0_0 = null);
                             }
+                            if (<bind-handler>1_0 is not null)
+                            {
+                                detach(<bind-cache>1.FileOperationsChanged, <bind-handler>1_0);
+                                (<bind-handler>1_0 = null);
+                            }
                             (<bind-cache>0 = null of (::presentation::IFileDialogViewModel^));
+                            (<bind-cache>1 = null of (::presentation::IFileDialogViewModel^));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
                         return false;
@@ -2700,7 +2718,7 @@ namespace tui_controls
     }
 }
 
-================================(8/25)================================
+================================(8/27)================================
 module <instance>tui_controls::TuiFileDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2796,7 +2814,7 @@ namespace tui_controls
     }
 }
 
-================================(9/25)================================
+================================(9/27)================================
 module <constructor>tui_controls::TuiFilePickerControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2832,6 +2850,12 @@ namespace tui_controls
         var textBox : ::presentation::controls::GuiSinglelineTextBox* = null of (::presentation::controls::GuiSinglelineTextBox*);
 
         @cpp:Protected
+        var buttonNewFolder : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var buttonDelete : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
         var treeView : ::presentation::controls::GuiBindableTreeView* = null of (::presentation::controls::GuiBindableTreeView*);
 
         @cpp:Protected
@@ -2847,83 +2871,98 @@ namespace tui_controls
         var <precompile>1 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>2 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+        var <precompile>2 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
 
         @cpp:Protected
-        var <precompile>3 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>3 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
 
         @cpp:Protected
-        var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>4 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
-        var <precompile>5 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>5 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>6 : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
+        var <precompile>6 : ::presentation::compositions::eazy_layout::GuiEasyRightLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRightLayout^);
 
         @cpp:Protected
-        var <precompile>7 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>7 : ::presentation::compositions::eazy_layout::GuiEasyRightLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRightLayout^);
 
         @cpp:Protected
-        var <precompile>8 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+        var <precompile>8 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>9 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>9 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>10 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+        var <precompile>10 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>11 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>11 : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
 
         @cpp:Protected
-        var <precompile>12 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+        var <precompile>12 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>13 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>13 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
 
         @cpp:Protected
         var <precompile>14 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>15 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>15 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
-        var <precompile>16 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+        var <precompile>16 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>17 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>17 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
-        var <precompile>18 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+        var <precompile>18 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>19 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>20 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+        var <precompile>20 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>21 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>21 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
 
         @cpp:Protected
         var <precompile>22 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>23 : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
+        var <precompile>23 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
-        var <precompile>24 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>24 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>25 : ::presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
+        var <precompile>25 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+
+        @cpp:Protected
+        var <precompile>26 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>27 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>28 : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
+
+        @cpp:Protected
+        var <precompile>29 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>30 : ::presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
 
         @cpp:Protected
         func <tui_controls-TuiFilePickerControl>Initialize(<this> : ::tui_controls::TuiFilePickerControl*) : (::system::Void)
         {
             (self = <this>);
             (ViewModel = <this>.ViewModel);
-            (<precompile>25 = self.ViewModel);
+            (<precompile>30 = self.ViewModel);
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
                 (<precompile>0.CellPadding = 0 of (::system::Int32));
@@ -2947,18 +2986,63 @@ namespace tui_controls
             {
                 <precompile>1.SetSite(0, 0, 1, 2);
             }
+            (<precompile>2 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
             {
-                (<precompile>2 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                (<precompile>2.Border = false);
             }
             {
-                <precompile>1.AddChild(<precompile>2.BoundsComposition);
+                (<precompile>2.Padding = 1 of (::system::Int32));
+            }
+            (<precompile>3 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
+            {
+                (<precompile>4 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+            }
+            (<precompile>5 = <precompile>4.BoundsComposition);
+            {
+                (<precompile>5.MinSizeLimitation = NoLimit of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                (<precompile>3.Composition = <precompile>4.BoundsComposition);
+            }
+            (<precompile>6 = new (::presentation::compositions::eazy_layout::GuiEasyRightLayout^)());
+            {
+                (buttonNewFolder = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <this>.SetNamedObject("buttonNewFolder", buttonNewFolder);
+            }
+            {
+                (buttonNewFolder.Alt = "N");
+            }
+            {
+                (<precompile>6.Composition = buttonNewFolder.BoundsComposition);
+            }
+            (<precompile>7 = new (::presentation::compositions::eazy_layout::GuiEasyRightLayout^)());
+            {
+                (buttonDelete = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <this>.SetNamedObject("buttonDelete", buttonDelete);
+            }
+            {
+                (buttonDelete.Enabled = false);
+            }
+            {
+                (buttonDelete.Alt = "X");
+            }
+            {
+                (<precompile>7.Composition = buttonDelete.BoundsComposition);
+            }
+            {
+                <precompile>2.Layouts.Add(<precompile>3);
+                <precompile>2.Layouts.Add(<precompile>6);
+                <precompile>2.Layouts.Add(<precompile>7);
+            }
+            {
+                <precompile>1.AddChild(<precompile>2);
             }
             {
                 <precompile>0.AddChild(<precompile>1);
             }
-            (<precompile>3 = new (::presentation::compositions::GuiCellComposition*)());
+            (<precompile>8 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>3.SetSite(1, 0, 1, 1);
+                <precompile>8.SetSite(1, 0, 1, 1);
             }
             {
                 (treeView = new (::presentation::controls::GuiBindableTreeView*)(::presentation::theme::ThemeName::TreeView));
@@ -2984,210 +3068,210 @@ namespace tui_controls
                     return item.Name;
                 });
             }
-            (<precompile>4 = treeView.BoundsComposition);
+            (<precompile>9 = treeView.BoundsComposition);
             {
-                (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>9.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (treeView.Alt = "D");
             }
             {
-                <precompile>3.AddChild(treeView.BoundsComposition);
+                <precompile>8.AddChild(treeView.BoundsComposition);
             }
             {
-                <precompile>0.AddChild(<precompile>3);
+                <precompile>0.AddChild(<precompile>8);
             }
-            (<precompile>5 = new (::presentation::compositions::GuiCellComposition*)());
+            (<precompile>10 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>5.SetSite(1, 1, 1, 1);
+                <precompile>10.SetSite(1, 1, 1, 1);
             }
             {
                 (dataGrid = new (::presentation::controls::GuiBindableDataGrid*)(::presentation::theme::ThemeName::ListView));
                 <this>.SetNamedObject("dataGrid", dataGrid);
             }
-            (<precompile>8 = dataGrid.FocusableComposition);
             {
                 (dataGrid.View = ListViewView::Detail of (::presentation::controls::ListViewView));
             }
+            (<precompile>13 = dataGrid.FocusableComposition);
             {
                 (dataGrid.HorizontalAlwaysVisible = false);
             }
             {
                 (dataGrid.VerticalAlwaysVisible = false);
             }
-            (<precompile>7 = dataGrid.BoundsComposition);
+            (<precompile>12 = dataGrid.BoundsComposition);
             {
-                (<precompile>7.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>12.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (dataGrid.Alt = "F");
             }
-            (<precompile>6 = new (::presentation::controls::list::DataColumn^)());
+            (<precompile>11 = new (::presentation::controls::list::DataColumn^)());
             {
-                (<precompile>6.Size = 38 of (::system::Int32));
+                (<precompile>11.Size = 38 of (::system::Int32));
             }
             {
-                (<precompile>6.Text = "Name");
+                (<precompile>11.Text = "Name");
             }
             {
                 var <collection> = dataGrid.Columns;
-                <collection>.Add(<precompile>6);
+                <collection>.Add(<precompile>11);
             }
             {
-                <precompile>5.AddChild(dataGrid.BoundsComposition);
+                <precompile>10.AddChild(dataGrid.BoundsComposition);
             }
             {
-                <precompile>0.AddChild(<precompile>5);
-            }
-            (<precompile>9 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>9.SetSite(2, 0, 1, 1);
-            }
-            (<precompile>10 = new (::presentation::compositions::GuiTableComposition*)());
-            {
-                (<precompile>10.CellPadding = 0 of (::system::Int32));
-            }
-            {
-                (<precompile>10.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>10.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            {
-                <precompile>10.SetRowsAndColumns(3, 1);
-                <precompile>10.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>10.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>10.SetRowOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>10.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-            }
-            (<precompile>11 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>11.SetSite(1, 0, 1, 1);
-            }
-            {
-                (<precompile>12 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
-            }
-            (<precompile>13 = <precompile>12.BoundsComposition);
-            {
-                (<precompile>13.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                <precompile>11.AddChild(<precompile>12.BoundsComposition);
-            }
-            {
-                <precompile>10.AddChild(<precompile>11);
-            }
-            {
-                <precompile>9.AddChild(<precompile>10);
-            }
-            {
-                <precompile>0.AddChild(<precompile>9);
+                <precompile>0.AddChild(<precompile>10);
             }
             (<precompile>14 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>14.SetSite(2, 1, 1, 1);
+                <precompile>14.SetSite(2, 0, 1, 1);
+            }
+            (<precompile>15 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>15.CellPadding = 0 of (::system::Int32));
+            }
+            {
+                (<precompile>15.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>15.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                <precompile>15.SetRowsAndColumns(3, 1);
+                <precompile>15.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>15.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>15.SetRowOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>15.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>16 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>16.SetSite(1, 0, 1, 1);
+            }
+            {
+                (<precompile>17 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+            }
+            (<precompile>18 = <precompile>17.BoundsComposition);
+            {
+                (<precompile>18.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                <precompile>16.AddChild(<precompile>17.BoundsComposition);
+            }
+            {
+                <precompile>15.AddChild(<precompile>16);
+            }
+            {
+                <precompile>14.AddChild(<precompile>15);
+            }
+            {
+                <precompile>0.AddChild(<precompile>14);
+            }
+            (<precompile>19 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>19.SetSite(2, 1, 1, 1);
             }
             {
                 (textBox = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
                 <this>.SetNamedObject("textBox", textBox);
             }
-            (<precompile>16 = textBox.FocusableComposition);
-            (<precompile>15 = textBox.BoundsComposition);
+            (<precompile>21 = textBox.FocusableComposition);
+            (<precompile>20 = textBox.BoundsComposition);
             {
-                (<precompile>15.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>20.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (textBox.Alt = "S");
             }
             {
-                <precompile>14.AddChild(textBox.BoundsComposition);
+                <precompile>19.AddChild(textBox.BoundsComposition);
             }
             {
-                <precompile>0.AddChild(<precompile>14);
-            }
-            (<precompile>17 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>17.SetSite(3, 0, 1, 1);
-            }
-            (<precompile>18 = new (::presentation::compositions::GuiTableComposition*)());
-            {
-                (<precompile>18.CellPadding = 0 of (::system::Int32));
-            }
-            {
-                (<precompile>18.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>18.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            {
-                <precompile>18.SetRowsAndColumns(3, 1);
-                <precompile>18.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>18.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>18.SetRowOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>18.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-            }
-            (<precompile>19 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>19.SetSite(1, 0, 1, 1);
-            }
-            {
-                (<precompile>20 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
-            }
-            (<precompile>21 = <precompile>20.BoundsComposition);
-            {
-                (<precompile>21.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>20.Text = "File type:");
-            }
-            {
-                <precompile>19.AddChild(<precompile>20.BoundsComposition);
-            }
-            {
-                <precompile>18.AddChild(<precompile>19);
-            }
-            {
-                <precompile>17.AddChild(<precompile>18);
-            }
-            {
-                <precompile>0.AddChild(<precompile>17);
+                <precompile>0.AddChild(<precompile>19);
             }
             (<precompile>22 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>22.SetSite(3, 1, 1, 1);
+                <precompile>22.SetSite(3, 0, 1, 1);
+            }
+            (<precompile>23 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>23.CellPadding = 0 of (::system::Int32));
             }
             {
-                (<precompile>23 = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
+                (<precompile>23.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>23.HorizontalAlwaysVisible = false);
+                (<precompile>23.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                (<precompile>23.VerticalAlwaysVisible = false);
+                <precompile>23.SetRowsAndColumns(3, 1);
+                <precompile>23.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>23.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>23.SetRowOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>23.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>24 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>24.SetSite(1, 0, 1, 1);
             }
             {
-                (<precompile>23.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                (<precompile>25 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+            }
+            (<precompile>26 = <precompile>25.BoundsComposition);
+            {
+                (<precompile>26.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>25.Text = "File type:");
+            }
+            {
+                <precompile>24.AddChild(<precompile>25.BoundsComposition);
+            }
+            {
+                <precompile>23.AddChild(<precompile>24);
+            }
+            {
+                <precompile>22.AddChild(<precompile>23);
+            }
+            {
+                <precompile>0.AddChild(<precompile>22);
+            }
+            (<precompile>27 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>27.SetSite(3, 1, 1, 1);
+            }
+            {
+                (<precompile>28 = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
+            }
+            {
+                (<precompile>28.HorizontalAlwaysVisible = false);
+            }
+            {
+                (<precompile>28.VerticalAlwaysVisible = false);
+            }
+            {
+                (<precompile>28.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var item = (cast (IFileDialogFilter^) <item>);
                     return item.Name;
                 });
             }
             {
-                (comboBox = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, <precompile>23));
+                (comboBox = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, <precompile>28));
                 <this>.SetNamedObject("comboBox", comboBox);
             }
-            (<precompile>24 = comboBox.BoundsComposition);
+            (<precompile>29 = comboBox.BoundsComposition);
             {
-                (<precompile>24.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>29.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (comboBox.Alt = "E");
             }
             {
-                <precompile>22.AddChild(comboBox.BoundsComposition);
+                <precompile>27.AddChild(comboBox.BoundsComposition);
             }
             {
-                <precompile>0.AddChild(<precompile>22);
+                <precompile>0.AddChild(<precompile>27);
             }
             {
                 self.ContainerComposition.AddChild(<precompile>0);
@@ -3255,18 +3339,264 @@ namespace tui_controls
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>2.Text;
+                    var <old> = <precompile>4.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>2.Text = <new>);
+                    (<precompile>4.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
             {
-                (<precompile>6.TextProperty = [let file = (cast (IFileDialogFile^) $1) in (((file.Type == FileDialogFileType::Folder) ? "[+] " : "    " & file.Name))]);
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::tui_controls::TuiFilePickerControl* = null of (::tui_controls::TuiFilePickerControl*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Strings.FileDialogNewFolder();
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (<this> ?? null of (::tui_controls::TuiFilePickerControl*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::tui_controls::TuiFilePickerControl*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = buttonNewFolder.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (buttonNewFolder.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.CanModifyFolder of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (ViewModel ?? null of (::presentation::IFileDialogViewModel^)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FileOperationsChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FileOperationsChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::presentation::IFileDialogViewModel^));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = buttonNewFolder.Enabled;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (buttonNewFolder.Enabled = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    self.ShowNewFolder();
+                };
+                attach(buttonNewFolder.Clicked, <event-handler>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::tui_controls::TuiFilePickerControl* = null of (::tui_controls::TuiFilePickerControl*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Strings.FileDialogDelete();
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (<this> ?? null of (::tui_controls::TuiFilePickerControl*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::tui_controls::TuiFilePickerControl*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = buttonDelete.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (buttonDelete.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    self.DeleteSelection();
+                };
+                attach(buttonDelete.Clicked, <event-handler>);
+            }
+            {
+                (<precompile>11.TextProperty = [let file = (cast (IFileDialogFile^) $1) in (((file.Type == FileDialogFileType::Folder) ? "[+] " : "    " & file.Name))]);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiKeyEventArgs*) : (::system::Void)
+                {
+                    if ((((((!arguments.ctrl) and (!arguments.shift)) and (!arguments.alt)) and (!arguments.osSuper)) and (arguments.code == VKEY::KEY_RETURN)))
+                    {
+                        if (ViewModel.TryConfirm((cast (::presentation::controls::GuiWindow*) self.RelatedControlHost), self.Selection))
+                        {
+                            self.RequestClose();
+                        }
+                    }
+                };
+                attach(<precompile>13.keyUp, <event-handler>);
             }
             {
                 (dataGrid.MultiSelect = ViewModel.EnabledMultipleSelection);
@@ -3345,23 +3675,9 @@ namespace tui_controls
                 <this>.AddSubscription(<created-subscription>);
             }
             {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiKeyEventArgs*) : (::system::Void)
-                {
-                    if ((((((!arguments.ctrl) and (!arguments.shift)) and (!arguments.alt)) and (!arguments.osSuper)) and (arguments.code == VKEY::KEY_RETURN)))
-                    {
-                        if (ViewModel.TryConfirm((cast (::presentation::controls::GuiWindow*) self.RelatedControlHost), self.Selection))
-                        {
-                            self.RequestClose();
-                        }
-                    }
-                };
-                attach(<precompile>8.keyUp, <event-handler>);
-            }
-            {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
-                    (textBox.Text = ViewModel.GetDisplayString(self.GetSelectedFiles()));
-                    textBox.SetCaret({row : 0; column : 0;}, {row : 0; column : 0;});
+                    self.UpdateSelectionText();
                 };
                 attach(dataGrid.SelectionChanged, <event-handler>);
             }
@@ -3443,13 +3759,13 @@ namespace tui_controls
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>12.Text;
+                    var <old> = <precompile>17.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>12.Text = <new>);
+                    (<precompile>17.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -3464,10 +3780,20 @@ namespace tui_controls
                         }
                     }
                 };
-                attach(<precompile>16.keyUp, <event-handler>);
+                attach(<precompile>21.keyUp, <event-handler>);
             }
             {
-                (<precompile>23.ItemSource = ViewModel.Filters);
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    if ((!self.changingSelectionText))
+                    {
+                        (self.textFromSelection = false);
+                    }
+                };
+                attach(textBox.TextChanged, <event-handler>);
+            }
+            {
+                (<precompile>28.ItemSource = ViewModel.Filters);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -3532,13 +3858,13 @@ namespace tui_controls
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>25.SelectedFilter;
+                    var <old> = <precompile>30.SelectedFilter;
                     var <new> = (cast (::presentation::IFileDialogFilter^) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>25.SelectedFilter = <new>);
+                    (<precompile>30.SelectedFilter = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -3605,13 +3931,13 @@ namespace tui_controls
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>25.SelectedFolder;
+                    var <old> = <precompile>30.SelectedFolder;
                     var <new> = (cast (::presentation::IFileDialogFolder^) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>25.SelectedFolder = <new>);
+                    (<precompile>30.SelectedFolder = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -3620,7 +3946,14 @@ namespace tui_controls
                 {
                     self.LocateSelectedFolderInTreeView();
                 };
-                attach(<precompile>25.SelectedFolderChanged, <event-handler>);
+                attach(<precompile>30.SelectedFolderChanged, <event-handler>);
+            }
+            {
+                var <event-handler> = func () : (::system::Void)
+                {
+                    self.UpdateDeleteCommand();
+                };
+                attach(<precompile>30.FileOperationsChanged, <event-handler>);
             }
             {
                 var <event-handler> = func () : (::system::Void)
@@ -3630,7 +3963,7 @@ namespace tui_controls
                         dataGrid.SetViewPosition({x : 0; y : 0;});
                     }
                 };
-                attach(<precompile>25.IsLoadingFilesChanged, <event-handler>);
+                attach(<precompile>30.IsLoadingFilesChanged, <event-handler>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -3705,6 +4038,7 @@ namespace tui_controls
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
+            <precompile>2.BuildLayout();
         }
 
         new ()
@@ -3713,7 +4047,7 @@ namespace tui_controls
     }
 }
 
-================================(10/25)================================
+================================(10/27)================================
 module <instance>tui_controls::TuiFilePickerControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3743,6 +4077,52 @@ namespace tui_controls
         prop Selection : string{}{GetSelection}
 
         event RequestClose();
+
+        var changingSelectionText : bool = false;
+
+        var textFromSelection : bool = false;
+
+        func UpdateDeleteCommand() : (void)
+        {
+            (buttonDelete.Enabled = ViewModel.CanDeleteFiles(self.GetSelectedFiles()));
+        }
+
+        func UpdateSelectionText() : (void)
+        {
+            self.UpdateDeleteCommand();
+            if ((ViewModel.IsLoadingFiles and (!textFromSelection)))
+            {
+                return;
+            }
+            (changingSelectionText = true);
+            (textBox.Text = ViewModel.GetDisplayString(self.GetSelectedFiles()));
+            textBox.SetCaret({row : 0; column : 0;}, {row : 0; column : 0;});
+            (textFromSelection = (!ViewModel.IsLoadingFiles));
+            (changingSelectionText = false);
+        }
+
+        func ShowNewFolder() : (void)
+        {
+            if ((!ViewModel.CanModifyFolder))
+            {
+                return;
+            }
+            var window = new (tui_controls::TuiNewFolderWindow*)(ViewModel, ViewModel.SelectedFolder);
+            window.ShowModalAndDelete((cast (::presentation::controls::GuiWindow*) self.RelatedControlHost), func () : (void)
+            {
+            });
+        }
+
+        func DeleteSelection() : (void)
+        {
+            ViewModel.DeleteFiles((cast (::presentation::controls::GuiWindow*) self.RelatedControlHost), self.GetSelectedFiles(), func (folder : string, names : string) : (string)
+            {
+                return self.Strings.FileDialogConfirmDelete(folder, names, "\n");
+            }, func (folder : string, names : string) : (string)
+            {
+                return self.Strings.FileDialogDeleteFailed(folder, names, "\n");
+            });
+        }
 
         func GetSelectedFiles() : (IFileDialogFile^{})
         {
@@ -4016,7 +4396,890 @@ namespace tui_controls
     }
 }
 
-================================(11/25)================================
+================================(11/27)================================
+module <constructor>tui_controls::TuiNewFolderWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace tui_controls
+{
+    class TuiNewFolderWindowConstructor
+    {
+        @cpp:Protected
+        var self : ::tui_controls::TuiNewFolderWindow* = null of (::tui_controls::TuiNewFolderWindow*);
+
+        @cpp:Protected
+        var ViewModel : ::presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
+
+        @cpp:Protected
+        var Folder : ::presentation::IFileDialogFolder^ = null of (::presentation::IFileDialogFolder^);
+
+        @cpp:Protected
+        var folderName : ::presentation::controls::GuiSinglelineTextBox* = null of (::presentation::controls::GuiSinglelineTextBox*);
+
+        @cpp:Protected
+        var buttonCreate : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var buttonCancel : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::eazy_layout::GuiEasyTopLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyTopLayout^);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::compositions::eazy_layout::GuiEasyTopLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyTopLayout^);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+
+        @cpp:Protected
+        var <precompile>5 : ::presentation::compositions::eazy_layout::GuiEasyBottomLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyBottomLayout^);
+
+        @cpp:Protected
+        var <precompile>6 : ::presentation::compositions::eazy_layout::GuiEasyRightLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRightLayout^);
+
+        @cpp:Protected
+        var <precompile>7 : ::presentation::compositions::eazy_layout::GuiEasyRightLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRightLayout^);
+
+        @cpp:Protected
+        func <tui_controls-TuiNewFolderWindow>Initialize(<this> : ::tui_controls::TuiNewFolderWindow*) : (::system::Void)
+        {
+            (self = <this>);
+            (ViewModel = <this>.ViewModel);
+            (Folder = <this>.Folder);
+            {
+                (self.IconVisible = false);
+            }
+            {
+                (self.MinimizedBox = false);
+            }
+            {
+                (self.MaximizedBox = false);
+            }
+            {
+                (self.ShowInTaskBar = false);
+            }
+            {
+                (self.ClientSize = {x : 50; y : 9;} of (::presentation::Size));
+            }
+            (<precompile>0 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
+            {
+                (<precompile>0.Padding = 1 of (::system::Int32));
+            }
+            (<precompile>1 = new (::presentation::compositions::eazy_layout::GuiEasyTopLayout^)());
+            {
+                (<precompile>2 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+            }
+            {
+                (<precompile>1.Composition = <precompile>2.BoundsComposition);
+            }
+            (<precompile>3 = new (::presentation::compositions::eazy_layout::GuiEasyTopLayout^)());
+            {
+                (folderName = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
+                <this>.SetNamedObject("folderName", folderName);
+            }
+            (<precompile>4 = folderName.FocusableComposition);
+            {
+                (folderName.AcceptTabInput = false);
+            }
+            {
+                (folderName.Alt = "N");
+            }
+            {
+                (<precompile>3.Composition = folderName.BoundsComposition);
+            }
+            (<precompile>5 = new (::presentation::compositions::eazy_layout::GuiEasyBottomLayout^)());
+            (<precompile>6 = new (::presentation::compositions::eazy_layout::GuiEasyRightLayout^)());
+            {
+                (buttonCreate = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <this>.SetNamedObject("buttonCreate", buttonCreate);
+            }
+            {
+                (buttonCreate.Alt = "O");
+            }
+            {
+                (<precompile>6.Composition = buttonCreate.BoundsComposition);
+            }
+            (<precompile>7 = new (::presentation::compositions::eazy_layout::GuiEasyRightLayout^)());
+            {
+                (buttonCancel = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <this>.SetNamedObject("buttonCancel", buttonCancel);
+            }
+            {
+                (buttonCancel.Alt = "C");
+            }
+            {
+                (<precompile>7.Composition = buttonCancel.BoundsComposition);
+            }
+            {
+                <precompile>5.Layouts.Add(<precompile>6);
+                <precompile>5.Layouts.Add(<precompile>7);
+            }
+            {
+                <precompile>0.Layouts.Add(<precompile>1);
+                <precompile>0.Layouts.Add(<precompile>3);
+                <precompile>0.Layouts.Add(<precompile>5);
+            }
+            {
+                self.ContainerComposition.AddChild(<precompile>0);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::tui_controls::TuiNewFolderWindow* = null of (::tui_controls::TuiNewFolderWindow*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Strings.FileDialogEnterFolderName();
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (<this> ?? null of (::tui_controls::TuiNewFolderWindow*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::tui_controls::TuiNewFolderWindow*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>2.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>2.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (!<bind-cache>0.IsMutatingFiles) of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (ViewModel ?? null of (::presentation::IFileDialogViewModel^)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FileOperationsChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FileOperationsChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::presentation::IFileDialogViewModel^));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = folderName.Enabled;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (folderName.Enabled = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiKeyEventArgs*) : (::system::Void)
+                {
+                    if ((((((!arguments.ctrl) and (!arguments.shift)) and (!arguments.alt)) and (!arguments.osSuper)) and (arguments.code == VKEY::KEY_RETURN)))
+                    {
+                        self.CreateFolder();
+                    }
+                };
+                attach(<precompile>4.keyUp, <event-handler>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::tui_controls::TuiNewFolderWindow* = null of (::tui_controls::TuiNewFolderWindow*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Strings.OK();
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (<this> ?? null of (::tui_controls::TuiNewFolderWindow*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::tui_controls::TuiNewFolderWindow*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = buttonCreate.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (buttonCreate.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (!<bind-cache>0.IsMutatingFiles) of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (ViewModel ?? null of (::presentation::IFileDialogViewModel^)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FileOperationsChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FileOperationsChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::presentation::IFileDialogViewModel^));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = buttonCreate.Enabled;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (buttonCreate.Enabled = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    self.CreateFolder();
+                };
+                attach(buttonCreate.Clicked, <event-handler>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::tui_controls::TuiNewFolderWindow* = null of (::tui_controls::TuiNewFolderWindow*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Strings.Cancel();
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (<this> ?? null of (::tui_controls::TuiNewFolderWindow*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::tui_controls::TuiNewFolderWindow*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = buttonCancel.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (buttonCancel.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (!<bind-cache>0.IsMutatingFiles) of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (ViewModel ?? null of (::presentation::IFileDialogViewModel^)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FileOperationsChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FileOperationsChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::presentation::IFileDialogViewModel^));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = buttonCancel.Enabled;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (buttonCancel.Enabled = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    self.Close();
+                };
+                attach(buttonCancel.Clicked, <event-handler>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::tui_controls::TuiNewFolderWindow* = null of (::tui_controls::TuiNewFolderWindow*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Strings.FileDialogNewFolder();
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (<this> ?? null of (::tui_controls::TuiNewFolderWindow*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::tui_controls::TuiNewFolderWindow*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = self.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (self.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    self.MoveToScreenCenter();
+                    folderName.SetFocused();
+                };
+                attach(self.WindowOpened, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiRequestEventArgs*) : (::system::Void)
+                {
+                    (arguments.cancel = ViewModel.IsMutatingFiles);
+                };
+                attach(self.WindowClosing, <event-handler>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::presentation::controls::GuiApplication* = null of (::presentation::controls::GuiApplication*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = tui_controls::TuiDialogStrings::Get(<bind-cache>0.Locale);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (presentation::controls::GuiApplication::GetApplication() ?? null of (::presentation::controls::GuiApplication*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.LocaleChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.LocaleChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::presentation::controls::GuiApplication*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = self.Strings;
+                    var <new> = (cast (::tui_controls::ITuiDialogStringsStrings^) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (self.Strings = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            <precompile>0.BuildLayout();
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(12/27)================================
+module <instance>tui_controls::TuiNewFolderWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace tui_controls
+{
+    @cpp:Friend(typeof(TuiNewFolderWindowConstructor))
+    class TuiNewFolderWindow : ::presentation::controls::GuiWindow, TuiNewFolderWindowConstructor
+    {
+        func CreateFolder() : (void)
+        {
+            ViewModel.CreateFolder(self, Folder, folderName.Text, Strings.FileDialogFolderAlreadyExists(Folder.FullPath, folderName.Text), Strings.FileDialogFolderCannotCreate(Folder.FullPath, folderName.Text), func (created : bool) : (void)
+            {
+                if (created)
+                {
+                    self.Close();
+                }
+                else
+                {
+                    folderName.SetFocused();
+                }
+            });
+        }
+
+        @cpp:Private
+        var <prop>Strings : ::tui_controls::ITuiDialogStringsStrings^ = ::tui_controls::TuiDialogStrings::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::tui_controls::ITuiDialogStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::tui_controls::ITuiDialogStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::tui_controls::ITuiDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        @cpp:Private
+        var <parameter>ViewModel : presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
+
+        func GetViewModel() : (presentation::IFileDialogViewModel^)
+        {
+            return <parameter>ViewModel;
+        }
+
+        prop ViewModel : presentation::IFileDialogViewModel^{GetViewModel}
+
+        @cpp:Private
+        var <parameter>Folder : presentation::IFileDialogFolder^ = null of (::presentation::IFileDialogFolder^);
+
+        func GetFolder() : (presentation::IFileDialogFolder^)
+        {
+            return <parameter>Folder;
+        }
+
+        prop Folder : presentation::IFileDialogFolder^{GetFolder}
+
+        new* (<ctor-parameter>ViewModel : presentation::IFileDialogViewModel^, <ctor-parameter>Folder : presentation::IFileDialogFolder^)
+            :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
+        {
+            (<parameter>ViewModel = <ctor-parameter>ViewModel);
+            (<parameter>Folder = <ctor-parameter>Folder);
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("tui_controls::TuiNewFolderWindow");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<tui_controls-TuiNewFolderWindow>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(13/27)================================
 module <constructor>tui_controls::TuiFontNameControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4395,7 +5658,7 @@ namespace tui_controls
     }
 }
 
-================================(12/25)================================
+================================(14/27)================================
 module <instance>tui_controls::TuiFontNameControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4516,7 +5779,7 @@ namespace tui_controls
     }
 }
 
-================================(13/25)================================
+================================(15/27)================================
 module <constructor>tui_controls::TuiFontSizeControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4891,7 +6154,7 @@ namespace tui_controls
     }
 }
 
-================================(14/25)================================
+================================(16/27)================================
 module <instance>tui_controls::TuiFontSizeControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5001,7 +6264,7 @@ namespace tui_controls
     }
 }
 
-================================(15/25)================================
+================================(17/27)================================
 module <constructor>tui_controls::TuiFullFontDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6270,7 +7533,7 @@ namespace tui_controls
     }
 }
 
-================================(16/25)================================
+================================(18/27)================================
 module <instance>tui_controls::TuiFullFontDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6356,7 +7619,7 @@ namespace tui_controls
     }
 }
 
-================================(17/25)================================
+================================(19/27)================================
 module <constructor>tui_controls::TuiSimpleFontDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7010,7 +8273,7 @@ namespace tui_controls
     }
 }
 
-================================(18/25)================================
+================================(20/27)================================
 module <instance>tui_controls::TuiSimpleFontDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7092,7 +8355,7 @@ namespace tui_controls
     }
 }
 
-================================(19/25)================================
+================================(21/27)================================
 module <constructor>tui_controls::TuiMessageBoxButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7314,7 +8577,7 @@ namespace tui_controls
     }
 }
 
-================================(20/25)================================
+================================(22/27)================================
 module <instance>tui_controls::TuiMessageBoxButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7510,7 +8773,7 @@ namespace tui_controls
     }
 }
 
-================================(21/25)================================
+================================(23/27)================================
 module <constructor>tui_controls::TuiMessageBoxLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7810,7 +9073,7 @@ namespace tui_controls
     }
 }
 
-================================(22/25)================================
+================================(24/27)================================
 module <instance>tui_controls::TuiMessageBoxLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7852,7 +9115,7 @@ namespace tui_controls
     }
 }
 
-================================(23/25)================================
+================================(25/27)================================
 module <constructor>tui_controls::TuiMessageBoxWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8079,7 +9342,7 @@ namespace tui_controls
     }
 }
 
-================================(24/25)================================
+================================(26/27)================================
 module <instance>tui_controls::TuiMessageBoxWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8168,7 +9431,7 @@ namespace tui_controls
     }
 }
 
-================================(25/25)================================
+================================(27/27)================================
 module <localized-strings>tui_controls::TuiDialogStrings;
 
 namespace tui_controls
@@ -8193,6 +9456,14 @@ namespace tui_controls
 
         func FileDialogAskOverrideFile() : (::system::String);
 
+        func FileDialogConfirmDelete(<ls>0 : ::system::String, <ls>1 : ::system::String, <ls>2 : ::system::String) : (::system::String);
+
+        func FileDialogDelete() : (::system::String);
+
+        func FileDialogDeleteFailed(<ls>0 : ::system::String, <ls>1 : ::system::String, <ls>2 : ::system::String) : (::system::String);
+
+        func FileDialogEnterFolderName() : (::system::String);
+
         func FileDialogErrorEmptySelection() : (::system::String);
 
         func FileDialogErrorFileExpected() : (::system::String);
@@ -8204,6 +9475,12 @@ namespace tui_controls
         func FileDialogErrorMultipleSelectionNotEnabled() : (::system::String);
 
         func FileDialogFileName() : (::system::String);
+
+        func FileDialogFolderAlreadyExists(<ls>0 : ::system::String, <ls>1 : ::system::String) : (::system::String);
+
+        func FileDialogFolderCannotCreate(<ls>0 : ::system::String, <ls>1 : ::system::String) : (::system::String);
+
+        func FileDialogNewFolder() : (::system::String);
 
         func FileDialogOpen() : (::system::String);
 
@@ -8313,6 +9590,32 @@ namespace tui_controls
                     return "Do you want to override the following file(s):";
                 }
 
+                override func FileDialogConfirmDelete(<ls>0 : ::system::String, <ls>1 : ::system::String, <ls>2 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = <ls>0;
+                    var <ls>_1 = <ls>2;
+                    var <ls>_2 = <ls>1;
+                    return (((("Are you sure to delete the following items in folder \"" & <ls>_0) & "\"?") & <ls>_1) & <ls>_2);
+                }
+
+                override func FileDialogDelete() : (::system::String)
+                {
+                    return "Delete";
+                }
+
+                override func FileDialogDeleteFailed(<ls>0 : ::system::String, <ls>1 : ::system::String, <ls>2 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = <ls>0;
+                    var <ls>_1 = <ls>2;
+                    var <ls>_2 = <ls>1;
+                    return (((("The following items failed to delete in folder \"" & <ls>_0) & "\":") & <ls>_1) & <ls>_2);
+                }
+
+                override func FileDialogEnterFolderName() : (::system::String)
+                {
+                    return "Enter the folder name";
+                }
+
                 override func FileDialogErrorEmptySelection() : (::system::String)
                 {
                     return "At least one file must be selected.";
@@ -8341,6 +9644,25 @@ namespace tui_controls
                 override func FileDialogFileName() : (::system::String)
                 {
                     return "File Name:";
+                }
+
+                override func FileDialogFolderAlreadyExists(<ls>0 : ::system::String, <ls>1 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = <ls>0;
+                    var <ls>_1 = <ls>1;
+                    return (((("In folder \"" & <ls>_0) & "\", \"") & <ls>_1) & "\" folder cannot be created because it already exists.");
+                }
+
+                override func FileDialogFolderCannotCreate(<ls>0 : ::system::String, <ls>1 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = <ls>0;
+                    var <ls>_1 = <ls>1;
+                    return (((("In folder \"" & <ls>_0) & "\", \"") & <ls>_1) & "\" folder cannot be created.");
+                }
+
+                override func FileDialogNewFolder() : (::system::String)
+                {
+                    return "New Folder";
                 }
 
                 override func FileDialogOpen() : (::system::String)

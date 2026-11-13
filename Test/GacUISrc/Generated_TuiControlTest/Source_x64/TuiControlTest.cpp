@@ -10877,6 +10877,32 @@ Closures
 		return ::vl::WString::Unmanaged(L"你确定想要覆盖下列文件吗？");
 	}
 
+	::vl::WString __vwsnc161_TuiControlTest_tuidemo_TuiDialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__tui_controls_ITuiDialogStringsStrings::FileDialogConfirmDelete(const ::vl::WString& __vwsn_ls_0, const ::vl::WString& __vwsn_ls_1, const ::vl::WString& __vwsn_ls_2)
+	{
+		auto __vwsn_ls__0 = __vwsn_ls_0;
+		auto __vwsn_ls__1 = __vwsn_ls_2;
+		auto __vwsn_ls__2 = __vwsn_ls_1;
+		return ((((::vl::WString::Unmanaged(L"确定要删除文件夹“") + __vwsn_ls__0) + ::vl::WString::Unmanaged(L"”中的下列项目吗？")) + __vwsn_ls__1) + __vwsn_ls__2);
+	}
+
+	::vl::WString __vwsnc161_TuiControlTest_tuidemo_TuiDialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__tui_controls_ITuiDialogStringsStrings::FileDialogDelete()
+	{
+		return ::vl::WString::Unmanaged(L"删除");
+	}
+
+	::vl::WString __vwsnc161_TuiControlTest_tuidemo_TuiDialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__tui_controls_ITuiDialogStringsStrings::FileDialogDeleteFailed(const ::vl::WString& __vwsn_ls_0, const ::vl::WString& __vwsn_ls_1, const ::vl::WString& __vwsn_ls_2)
+	{
+		auto __vwsn_ls__0 = __vwsn_ls_0;
+		auto __vwsn_ls__1 = __vwsn_ls_2;
+		auto __vwsn_ls__2 = __vwsn_ls_1;
+		return ((((::vl::WString::Unmanaged(L"文件夹“") + __vwsn_ls__0) + ::vl::WString::Unmanaged(L"”中的下列项目删除失败：")) + __vwsn_ls__1) + __vwsn_ls__2);
+	}
+
+	::vl::WString __vwsnc161_TuiControlTest_tuidemo_TuiDialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__tui_controls_ITuiDialogStringsStrings::FileDialogEnterFolderName()
+	{
+		return ::vl::WString::Unmanaged(L"请输入文件夹名称");
+	}
+
 	::vl::WString __vwsnc161_TuiControlTest_tuidemo_TuiDialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__tui_controls_ITuiDialogStringsStrings::FileDialogErrorEmptySelection()
 	{
 		return ::vl::WString::Unmanaged(L"应该选中至少一个文件。");
@@ -10905,6 +10931,25 @@ Closures
 	::vl::WString __vwsnc161_TuiControlTest_tuidemo_TuiDialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__tui_controls_ITuiDialogStringsStrings::FileDialogFileName()
 	{
 		return ::vl::WString::Unmanaged(L"文件名：");
+	}
+
+	::vl::WString __vwsnc161_TuiControlTest_tuidemo_TuiDialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__tui_controls_ITuiDialogStringsStrings::FileDialogFolderAlreadyExists(const ::vl::WString& __vwsn_ls_0, const ::vl::WString& __vwsn_ls_1)
+	{
+		auto __vwsn_ls__0 = __vwsn_ls_0;
+		auto __vwsn_ls__1 = __vwsn_ls_1;
+		return ((((::vl::WString::Unmanaged(L"无法在文件夹“") + __vwsn_ls__0) + ::vl::WString::Unmanaged(L"”中创建文件夹“")) + __vwsn_ls__1) + ::vl::WString::Unmanaged(L"”，因为它已经存在。"));
+	}
+
+	::vl::WString __vwsnc161_TuiControlTest_tuidemo_TuiDialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__tui_controls_ITuiDialogStringsStrings::FileDialogFolderCannotCreate(const ::vl::WString& __vwsn_ls_0, const ::vl::WString& __vwsn_ls_1)
+	{
+		auto __vwsn_ls__0 = __vwsn_ls_0;
+		auto __vwsn_ls__1 = __vwsn_ls_1;
+		return ((((::vl::WString::Unmanaged(L"无法在文件夹“") + __vwsn_ls__0) + ::vl::WString::Unmanaged(L"”中创建文件夹“")) + __vwsn_ls__1) + ::vl::WString::Unmanaged(L"”。"));
+	}
+
+	::vl::WString __vwsnc161_TuiControlTest_tuidemo_TuiDialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__tui_controls_ITuiDialogStringsStrings::FileDialogNewFolder()
+	{
+		return ::vl::WString::Unmanaged(L"新建文件夹");
 	}
 
 	::vl::WString __vwsnc161_TuiControlTest_tuidemo_TuiDialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__tui_controls_ITuiDialogStringsStrings::FileDialogOpen()

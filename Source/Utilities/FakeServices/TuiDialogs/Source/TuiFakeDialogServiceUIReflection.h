@@ -60,6 +60,8 @@ namespace vl
 			DECL_TYPE_INFO(::tui_controls::TuiMessageBoxLabelTemplateConstructor)
 			DECL_TYPE_INFO(::tui_controls::TuiMessageBoxWindow)
 			DECL_TYPE_INFO(::tui_controls::TuiMessageBoxWindowConstructor)
+			DECL_TYPE_INFO(::tui_controls::TuiNewFolderWindow)
+			DECL_TYPE_INFO(::tui_controls::TuiNewFolderWindowConstructor)
 			DECL_TYPE_INFO(::tui_controls::TuiSimpleFontDialogWindow)
 			DECL_TYPE_INFO(::tui_controls::TuiSimpleFontDialogWindowConstructor)
 
@@ -102,6 +104,22 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FileDialogAskOverrideFile);
 				}
+				::vl::WString FileDialogConfirmDelete(const ::vl::WString& __vwsn_ls_0, const ::vl::WString& __vwsn_ls_1, const ::vl::WString& __vwsn_ls_2) override
+				{
+					INVOKEGET_INTERFACE_PROXY(FileDialogConfirmDelete, __vwsn_ls_0, __vwsn_ls_1, __vwsn_ls_2);
+				}
+				::vl::WString FileDialogDelete() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FileDialogDelete);
+				}
+				::vl::WString FileDialogDeleteFailed(const ::vl::WString& __vwsn_ls_0, const ::vl::WString& __vwsn_ls_1, const ::vl::WString& __vwsn_ls_2) override
+				{
+					INVOKEGET_INTERFACE_PROXY(FileDialogDeleteFailed, __vwsn_ls_0, __vwsn_ls_1, __vwsn_ls_2);
+				}
+				::vl::WString FileDialogEnterFolderName() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FileDialogEnterFolderName);
+				}
 				::vl::WString FileDialogErrorEmptySelection() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FileDialogErrorEmptySelection);
@@ -125,6 +143,18 @@ namespace vl
 				::vl::WString FileDialogFileName() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FileDialogFileName);
+				}
+				::vl::WString FileDialogFolderAlreadyExists(const ::vl::WString& __vwsn_ls_0, const ::vl::WString& __vwsn_ls_1) override
+				{
+					INVOKEGET_INTERFACE_PROXY(FileDialogFolderAlreadyExists, __vwsn_ls_0, __vwsn_ls_1);
+				}
+				::vl::WString FileDialogFolderCannotCreate(const ::vl::WString& __vwsn_ls_0, const ::vl::WString& __vwsn_ls_1) override
+				{
+					INVOKEGET_INTERFACE_PROXY(FileDialogFolderCannotCreate, __vwsn_ls_0, __vwsn_ls_1);
+				}
+				::vl::WString FileDialogNewFolder() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FileDialogNewFolder);
 				}
 				::vl::WString FileDialogOpen() override
 				{

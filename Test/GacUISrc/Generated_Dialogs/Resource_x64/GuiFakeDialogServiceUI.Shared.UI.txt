@@ -23,6 +23,14 @@ namespace gaclib_controls
 
         func FileDialogAskOverrideFile() : (::system::String);
 
+        func FileDialogConfirmDelete(<ls>0 : ::system::String, <ls>1 : ::system::String, <ls>2 : ::system::String) : (::system::String);
+
+        func FileDialogDelete() : (::system::String);
+
+        func FileDialogDeleteFailed(<ls>0 : ::system::String, <ls>1 : ::system::String, <ls>2 : ::system::String) : (::system::String);
+
+        func FileDialogEnterFolderName() : (::system::String);
+
         func FileDialogErrorEmptySelection() : (::system::String);
 
         func FileDialogErrorFileExpected() : (::system::String);
@@ -34,6 +42,12 @@ namespace gaclib_controls
         func FileDialogErrorMultipleSelectionNotEnabled() : (::system::String);
 
         func FileDialogFileName() : (::system::String);
+
+        func FileDialogFolderAlreadyExists(<ls>0 : ::system::String, <ls>1 : ::system::String) : (::system::String);
+
+        func FileDialogFolderCannotCreate(<ls>0 : ::system::String, <ls>1 : ::system::String) : (::system::String);
+
+        func FileDialogNewFolder() : (::system::String);
 
         func FileDialogOpen() : (::system::String);
 
@@ -143,6 +157,32 @@ namespace gaclib_controls
                     return "Do you want to override the following file(s):";
                 }
 
+                override func FileDialogConfirmDelete(<ls>0 : ::system::String, <ls>1 : ::system::String, <ls>2 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = <ls>0;
+                    var <ls>_1 = <ls>2;
+                    var <ls>_2 = <ls>1;
+                    return (((("Are you sure to delete the following items in folder \"" & <ls>_0) & "\"?") & <ls>_1) & <ls>_2);
+                }
+
+                override func FileDialogDelete() : (::system::String)
+                {
+                    return "Delete";
+                }
+
+                override func FileDialogDeleteFailed(<ls>0 : ::system::String, <ls>1 : ::system::String, <ls>2 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = <ls>0;
+                    var <ls>_1 = <ls>2;
+                    var <ls>_2 = <ls>1;
+                    return (((("The following items failed to delete in folder \"" & <ls>_0) & "\":") & <ls>_1) & <ls>_2);
+                }
+
+                override func FileDialogEnterFolderName() : (::system::String)
+                {
+                    return "Enter the folder name";
+                }
+
                 override func FileDialogErrorEmptySelection() : (::system::String)
                 {
                     return "At least one file must be selected.";
@@ -171,6 +211,25 @@ namespace gaclib_controls
                 override func FileDialogFileName() : (::system::String)
                 {
                     return "File Name:";
+                }
+
+                override func FileDialogFolderAlreadyExists(<ls>0 : ::system::String, <ls>1 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = <ls>0;
+                    var <ls>_1 = <ls>1;
+                    return (((("In folder \"" & <ls>_0) & "\", \"") & <ls>_1) & "\" folder cannot be created because it already exists.");
+                }
+
+                override func FileDialogFolderCannotCreate(<ls>0 : ::system::String, <ls>1 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = <ls>0;
+                    var <ls>_1 = <ls>1;
+                    return (((("In folder \"" & <ls>_0) & "\", \"") & <ls>_1) & "\" folder cannot be created.");
+                }
+
+                override func FileDialogNewFolder() : (::system::String)
+                {
+                    return "New Folder";
                 }
 
                 override func FileDialogOpen() : (::system::String)

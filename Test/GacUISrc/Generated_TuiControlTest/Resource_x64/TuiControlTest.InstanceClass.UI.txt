@@ -32588,6 +32588,32 @@ namespace tuidemo
                     return "你确定想要覆盖下列文件吗？";
                 }
 
+                override func FileDialogConfirmDelete(<ls>0 : ::system::String, <ls>1 : ::system::String, <ls>2 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = <ls>0;
+                    var <ls>_1 = <ls>2;
+                    var <ls>_2 = <ls>1;
+                    return (((("确定要删除文件夹“" & <ls>_0) & "”中的下列项目吗？") & <ls>_1) & <ls>_2);
+                }
+
+                override func FileDialogDelete() : (::system::String)
+                {
+                    return "删除";
+                }
+
+                override func FileDialogDeleteFailed(<ls>0 : ::system::String, <ls>1 : ::system::String, <ls>2 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = <ls>0;
+                    var <ls>_1 = <ls>2;
+                    var <ls>_2 = <ls>1;
+                    return (((("文件夹“" & <ls>_0) & "”中的下列项目删除失败：") & <ls>_1) & <ls>_2);
+                }
+
+                override func FileDialogEnterFolderName() : (::system::String)
+                {
+                    return "请输入文件夹名称";
+                }
+
                 override func FileDialogErrorEmptySelection() : (::system::String)
                 {
                     return "应该选中至少一个文件。";
@@ -32616,6 +32642,25 @@ namespace tuidemo
                 override func FileDialogFileName() : (::system::String)
                 {
                     return "文件名：";
+                }
+
+                override func FileDialogFolderAlreadyExists(<ls>0 : ::system::String, <ls>1 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = <ls>0;
+                    var <ls>_1 = <ls>1;
+                    return (((("无法在文件夹“" & <ls>_0) & "”中创建文件夹“") & <ls>_1) & "”，因为它已经存在。");
+                }
+
+                override func FileDialogFolderCannotCreate(<ls>0 : ::system::String, <ls>1 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = <ls>0;
+                    var <ls>_1 = <ls>1;
+                    return (((("无法在文件夹“" & <ls>_0) & "”中创建文件夹“") & <ls>_1) & "”。");
+                }
+
+                override func FileDialogNewFolder() : (::system::String)
+                {
+                    return "新建文件夹";
                 }
 
                 override func FileDialogOpen() : (::system::String)

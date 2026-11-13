@@ -272,26 +272,10 @@ namespace darkskin
                 });
             }
             {
-                (<precompile>0.ToolstripButton = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiToolstripButtonTemplate*)
-                {
-                    {
-                        return new (::darkskin::ToolstripButtonTemplate*)();
-                    }
-                });
-            }
-            {
                 (<precompile>0.ToolstripToolBarInMenu = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
                 {
                     {
                         return new (::darkskin::ToolstripInMenuTemplate*)();
-                    }
-                });
-            }
-            {
-                (<precompile>0.ToolstripToolBar = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
-                {
-                    {
-                        return new (::darkskin::ToolstripTemplate*)();
                     }
                 });
             }
@@ -447,6 +431,22 @@ namespace darkskin
                 {
                     {
                         return new (::darkskin::ComboBoxTemplate*)();
+                    }
+                });
+            }
+            {
+                (<precompile>0.ToolstripButton = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiToolstripButtonTemplate*)
+                {
+                    {
+                        return new (::darkskin::ToolstripButtonTemplate*)();
+                    }
+                });
+            }
+            {
+                (<precompile>0.ToolstripToolBar = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
+                {
+                    {
+                        return new (::darkskin::ToolstripTemplate*)();
                     }
                 });
             }

@@ -1,4 +1,4 @@
-﻿================================(1/13)================================
+﻿================================(1/14)================================
 module <instance>tui_controls::TuiColorComponentControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -79,7 +79,7 @@ namespace tui_controls
     }
 }
 
-================================(2/13)================================
+================================(2/14)================================
 module <instance>tui_controls::TuiColorDialogControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -172,7 +172,7 @@ namespace tui_controls
     }
 }
 
-================================(3/13)================================
+================================(3/14)================================
 module <instance>tui_controls::TuiColorDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -239,7 +239,7 @@ namespace tui_controls
     }
 }
 
-================================(4/13)================================
+================================(4/14)================================
 module <instance>tui_controls::TuiFileDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -316,7 +316,7 @@ namespace tui_controls
     }
 }
 
-================================(5/13)================================
+================================(5/14)================================
 module <instance>tui_controls::TuiFilePickerControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -345,6 +345,30 @@ namespace tui_controls
         prop Selection : string{}{GetSelection}
 
         event RequestClose();
+
+        var changingSelectionText : bool = false;
+
+        var textFromSelection : bool = false;
+
+        func UpdateDeleteCommand() : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        func UpdateSelectionText() : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        func ShowNewFolder() : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        func DeleteSelection() : (void)
+        {
+            raise "Not Implemented";
+        }
 
         func GetSelectedFiles() : (IFileDialogFile^{})
         {
@@ -412,7 +436,86 @@ namespace tui_controls
     }
 }
 
-================================(6/13)================================
+================================(6/14)================================
+module <instance>tui_controls::TuiNewFolderWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace tui_controls
+{
+    class TuiNewFolderWindow : ::presentation::controls::GuiWindow
+    {
+        func CreateFolder() : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        var <prop>Strings : ::tui_controls::ITuiDialogStringsStrings^ = ::tui_controls::TuiDialogStrings::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::tui_controls::ITuiDialogStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::tui_controls::ITuiDialogStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::tui_controls::ITuiDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        func GetViewModel() : (presentation::IFileDialogViewModel^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop ViewModel : presentation::IFileDialogViewModel^{GetViewModel}
+
+        func GetFolder() : (presentation::IFileDialogFolder^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop Folder : presentation::IFileDialogFolder^{GetFolder}
+
+        new* (<ctor-parameter>ViewModel : presentation::IFileDialogViewModel^, <ctor-parameter>Folder : presentation::IFileDialogFolder^)
+            :::presentation::controls::GuiWindow((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(7/14)================================
 module <instance>tui_controls::TuiFontNameControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -526,7 +629,7 @@ namespace tui_controls
     }
 }
 
-================================(7/13)================================
+================================(8/14)================================
 module <instance>tui_controls::TuiFontSizeControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -633,7 +736,7 @@ namespace tui_controls
     }
 }
 
-================================(8/13)================================
+================================(9/14)================================
 module <instance>tui_controls::TuiFullFontDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -700,7 +803,7 @@ namespace tui_controls
     }
 }
 
-================================(9/13)================================
+================================(10/14)================================
 module <instance>tui_controls::TuiSimpleFontDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -767,7 +870,7 @@ namespace tui_controls
     }
 }
 
-================================(10/13)================================
+================================(11/14)================================
 module <instance>tui_controls::TuiMessageBoxButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -865,7 +968,7 @@ namespace tui_controls
     }
 }
 
-================================(11/13)================================
+================================(12/14)================================
 module <instance>tui_controls::TuiMessageBoxLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -903,7 +1006,7 @@ namespace tui_controls
     }
 }
 
-================================(12/13)================================
+================================(13/14)================================
 module <instance>tui_controls::TuiMessageBoxWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -954,7 +1057,7 @@ namespace tui_controls
     }
 }
 
-================================(13/13)================================
+================================(14/14)================================
 module <localized-strings>tui_controls::TuiDialogStrings;
 
 namespace tui_controls
@@ -979,6 +1082,14 @@ namespace tui_controls
 
         func FileDialogAskOverrideFile() : (::system::String);
 
+        func FileDialogConfirmDelete(<ls>0 : ::system::String, <ls>1 : ::system::String, <ls>2 : ::system::String) : (::system::String);
+
+        func FileDialogDelete() : (::system::String);
+
+        func FileDialogDeleteFailed(<ls>0 : ::system::String, <ls>1 : ::system::String, <ls>2 : ::system::String) : (::system::String);
+
+        func FileDialogEnterFolderName() : (::system::String);
+
         func FileDialogErrorEmptySelection() : (::system::String);
 
         func FileDialogErrorFileExpected() : (::system::String);
@@ -990,6 +1101,12 @@ namespace tui_controls
         func FileDialogErrorMultipleSelectionNotEnabled() : (::system::String);
 
         func FileDialogFileName() : (::system::String);
+
+        func FileDialogFolderAlreadyExists(<ls>0 : ::system::String, <ls>1 : ::system::String) : (::system::String);
+
+        func FileDialogFolderCannotCreate(<ls>0 : ::system::String, <ls>1 : ::system::String) : (::system::String);
+
+        func FileDialogNewFolder() : (::system::String);
 
         func FileDialogOpen() : (::system::String);
 
@@ -1099,6 +1216,32 @@ namespace tui_controls
                     return "Do you want to override the following file(s):";
                 }
 
+                override func FileDialogConfirmDelete(<ls>0 : ::system::String, <ls>1 : ::system::String, <ls>2 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = <ls>0;
+                    var <ls>_1 = <ls>2;
+                    var <ls>_2 = <ls>1;
+                    return (((("Are you sure to delete the following items in folder \"" & <ls>_0) & "\"?") & <ls>_1) & <ls>_2);
+                }
+
+                override func FileDialogDelete() : (::system::String)
+                {
+                    return "Delete";
+                }
+
+                override func FileDialogDeleteFailed(<ls>0 : ::system::String, <ls>1 : ::system::String, <ls>2 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = <ls>0;
+                    var <ls>_1 = <ls>2;
+                    var <ls>_2 = <ls>1;
+                    return (((("The following items failed to delete in folder \"" & <ls>_0) & "\":") & <ls>_1) & <ls>_2);
+                }
+
+                override func FileDialogEnterFolderName() : (::system::String)
+                {
+                    return "Enter the folder name";
+                }
+
                 override func FileDialogErrorEmptySelection() : (::system::String)
                 {
                     return "At least one file must be selected.";
@@ -1127,6 +1270,25 @@ namespace tui_controls
                 override func FileDialogFileName() : (::system::String)
                 {
                     return "File Name:";
+                }
+
+                override func FileDialogFolderAlreadyExists(<ls>0 : ::system::String, <ls>1 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = <ls>0;
+                    var <ls>_1 = <ls>1;
+                    return (((("In folder \"" & <ls>_0) & "\", \"") & <ls>_1) & "\" folder cannot be created because it already exists.");
+                }
+
+                override func FileDialogFolderCannotCreate(<ls>0 : ::system::String, <ls>1 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = <ls>0;
+                    var <ls>_1 = <ls>1;
+                    return (((("In folder \"" & <ls>_0) & "\", \"") & <ls>_1) & "\" folder cannot be created.");
+                }
+
+                override func FileDialogNewFolder() : (::system::String)
+                {
+                    return "New Folder";
                 }
 
                 override func FileDialogOpen() : (::system::String)

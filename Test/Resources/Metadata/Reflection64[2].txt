@@ -2469,10 +2469,13 @@ class gaclib_controls::FilePickerControl : presentation::controls::GuiCustomCont
     property __vwsn_parameter_ViewModel : presentation::IFileDialogViewModel^;
     @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_Strings : gaclib_controls::IDialogStringsStrings^;
+    property changingSelectionText : system::Boolean;
     property imageFile : presentation::GuiImageData^;
     property imageFolder : presentation::GuiImageData^;
+    property textFromSelection : system::Boolean;
 
     function CreateFileFilter(filter : presentation::IFileDialogFilter^) : presentation::controls::list::IDataFilter^;
+    function DeleteSelection() : system::Void;
     function GetSelectedFiles() : system::Enumerable<presentation::IFileDialogFile^>^;
     function GetSelection() : system::Enumerable<system::String>^;
     function GetStrings() : gaclib_controls::IDialogStringsStrings^;
@@ -2480,6 +2483,9 @@ class gaclib_controls::FilePickerControl : presentation::controls::GuiCustomCont
     function LocateSelectedFolderInTreeView() : system::Void;
     function SetInitialFileName(value : system::String) : system::Void;
     function SetStrings(__vwsn_value_ : gaclib_controls::IDialogStringsStrings^) : system::Void;
+    function ShowNewFolder() : system::Void;
+    function UpdateDeleteCommand() : system::Void;
+    function UpdateSelectionText() : system::Void;
     function __vwsn_instance_ctor_() : system::Void;
 
     constructor (__vwsn_ctor_parameter_ViewModel : presentation::IFileDialogViewModel^) : gaclib_controls::FilePickerControl*;
@@ -2494,51 +2500,67 @@ class gaclib_controls::FilePickerControlConstructor : system::ReferenceType {
     @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_10 : presentation::controls::list::DataColumn^;
+    property __vwsn_precompile_10 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_11 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_11 : presentation::compositions::GuiTableComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_12 : presentation::compositions::GuiGraphicsComposition*;
+    property __vwsn_precompile_12 : presentation::compositions::GuiColumnSplitterComposition*;
     @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_13 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_14 : presentation::compositions::GuiTableComposition*;
+    property __vwsn_precompile_14 : presentation::compositions::GuiBoundsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_15 : presentation::compositions::GuiColumnSplitterComposition*;
+    property __vwsn_precompile_15 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_16 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_16 : presentation::controls::list::DataColumn^;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_17 : presentation::controls::GuiLabel*;
+    property __vwsn_precompile_17 : presentation::compositions::GuiBoundsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_18 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_18 : presentation::compositions::GuiGraphicsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_19 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_19 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_2 : presentation::controls::GuiLabel*;
+    property __vwsn_precompile_2 : presentation::compositions::eazy_layout::GuiEasyLayoutComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_20 : presentation::compositions::GuiGraphicsComposition*;
+    property __vwsn_precompile_20 : presentation::compositions::GuiTableComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_21 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_21 : presentation::compositions::GuiColumnSplitterComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_22 : presentation::controls::GuiBindableTextList*;
+    property __vwsn_precompile_22 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_23 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_23 : presentation::controls::GuiLabel*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_24 : presentation::IFileDialogViewModel^;
+    property __vwsn_precompile_24 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_3 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_25 : presentation::compositions::GuiBoundsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_4 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_26 : presentation::compositions::GuiGraphicsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_5 : presentation::compositions::GuiTableComposition*;
+    property __vwsn_precompile_27 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_6 : presentation::compositions::GuiColumnSplitterComposition*;
+    property __vwsn_precompile_28 : presentation::controls::GuiBindableTextList*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_7 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_29 : presentation::compositions::GuiBoundsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_8 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_3 : presentation::compositions::eazy_layout::GuiEasyFillLayout^;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_9 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_30 : presentation::IFileDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_4 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_5 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_6 : presentation::compositions::eazy_layout::GuiEasyRightLayout^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_7 : presentation::controls::GuiToolstripToolBar*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_8 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_9 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property buttonDelete : presentation::controls::GuiToolstripButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property buttonNewFolder : presentation::controls::GuiToolstripButton*;
     @system::workflow_attributes::att_cpp_Protected()
     property comboBox : presentation::controls::GuiComboBoxListControl*;
     @system::workflow_attributes::att_cpp_Protected()
@@ -2832,12 +2854,19 @@ interface gaclib_controls::IDialogStringsStrings : system::Interface {
     function Continue() : system::String;
     function FileDialogAskCreateFile() : system::String;
     function FileDialogAskOverrideFile() : system::String;
+    function FileDialogConfirmDelete(__vwsn_ls_0 : system::String, __vwsn_ls_1 : system::String, __vwsn_ls_2 : system::String) : system::String;
+    function FileDialogDelete() : system::String;
+    function FileDialogDeleteFailed(__vwsn_ls_0 : system::String, __vwsn_ls_1 : system::String, __vwsn_ls_2 : system::String) : system::String;
+    function FileDialogEnterFolderName() : system::String;
     function FileDialogErrorEmptySelection() : system::String;
     function FileDialogErrorFileExpected() : system::String;
     function FileDialogErrorFileNotExist() : system::String;
     function FileDialogErrorFolderNotExist() : system::String;
     function FileDialogErrorMultipleSelectionNotEnabled() : system::String;
     function FileDialogFileName() : system::String;
+    function FileDialogFolderAlreadyExists(__vwsn_ls_0 : system::String, __vwsn_ls_1 : system::String) : system::String;
+    function FileDialogFolderCannotCreate(__vwsn_ls_0 : system::String, __vwsn_ls_1 : system::String) : system::String;
+    function FileDialogNewFolder() : system::String;
     function FileDialogOpen() : system::String;
     function FileDialogSave() : system::String;
     function FileDialogTextLoadingFiles() : system::String;
@@ -3049,6 +3078,73 @@ class gaclib_controls::MessageBoxWindowConstructor : system::ReferenceType {
     function __vwsn_gaclib_controls_MessageBoxWindow_Initialize(__vwsn_this_ : gaclib_controls::MessageBoxWindow*) : system::Void;
 
     constructor () : gaclib_controls::MessageBoxWindowConstructor^;
+}
+
+@FullName:gaclib_controls::NewFolderWindow
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:gaclib_controls::NewFolderWindowConstructor)
+class gaclib_controls::NewFolderWindow : presentation::controls::GuiWindow, gaclib_controls::NewFolderWindowConstructor {
+    event StringsChanged : system::Function<system::Void>^ observing {
+        Strings,
+    }
+
+    property Folder : presentation::IFileDialogFolder^ { get:GetFolder }
+    property Strings : gaclib_controls::IDialogStringsStrings^ { get:GetStrings set:SetStrings event:StringsChanged }
+    property ViewModel : presentation::IFileDialogViewModel^ { get:GetViewModel }
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_parameter_Folder : presentation::IFileDialogFolder^;
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_parameter_ViewModel : presentation::IFileDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_prop_Strings : gaclib_controls::IDialogStringsStrings^;
+
+    function CreateFolder() : system::Void;
+    function GetFolder() : presentation::IFileDialogFolder^;
+    function GetStrings() : gaclib_controls::IDialogStringsStrings^;
+    function GetViewModel() : presentation::IFileDialogViewModel^;
+    function SetStrings(__vwsn_value_ : gaclib_controls::IDialogStringsStrings^) : system::Void;
+
+    constructor (__vwsn_ctor_parameter_ViewModel : presentation::IFileDialogViewModel^, __vwsn_ctor_parameter_Folder : presentation::IFileDialogFolder^) : gaclib_controls::NewFolderWindow*;
+}
+
+@FullName:gaclib_controls::NewFolderWindowConstructor
+class gaclib_controls::NewFolderWindowConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property Folder : presentation::IFileDialogFolder^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property ViewModel : presentation::IFileDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::compositions::eazy_layout::GuiEasyLayoutComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::eazy_layout::GuiEasyTopLayout^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_3 : presentation::compositions::eazy_layout::GuiEasyTopLayout^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_4 : presentation::compositions::GuiGraphicsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_5 : presentation::compositions::eazy_layout::GuiEasyBottomLayout^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_6 : presentation::compositions::eazy_layout::GuiEasyRightLayout^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_7 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_8 : presentation::compositions::eazy_layout::GuiEasyRightLayout^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_9 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property buttonCancel : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property buttonCreate : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property folderName : presentation::controls::GuiSinglelineTextBox*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : gaclib_controls::NewFolderWindow*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_gaclib_controls_NewFolderWindow_Initialize(__vwsn_this_ : gaclib_controls::NewFolderWindow*) : system::Void;
+
+    constructor () : gaclib_controls::NewFolderWindowConstructor^;
 }
 
 @FullName:gaclib_controls::SimpleFontDialogWindow
@@ -3635,6 +3731,10 @@ interface presentation::IFileDialogFolder : system::Interface {
 }
 
 interface presentation::IFileDialogViewModel : system::Interface {
+    event FileOperationsChanged : system::Function<system::Void>^ observing {
+        CanModifyFolder,
+        IsMutatingFiles,
+    }
     event IsLoadingFilesChanged : system::Function<system::Void>^ observing {
         IsLoadingFiles,
     }
@@ -3645,22 +3745,29 @@ interface presentation::IFileDialogViewModel : system::Interface {
         SelectedFolder,
     }
 
+    property CanModifyFolder : system::Boolean { get:GetCanModifyFolder event:FileOperationsChanged }
     property DefaultExtension : system::String { get:GetDefaultExtension }
     property EnabledMultipleSelection : system::Boolean { get:GetEnabledMultipleSelection }
     property Files : system::ObservableList<presentation::IFileDialogFile^>^ { get:GetFiles }
     property Filters : system::ReadonlyList<presentation::IFileDialogFilter^>^ { get:GetFilters }
     property IsLoadingFiles : system::Boolean { get:GetIsLoadingFiles event:IsLoadingFilesChanged }
+    property IsMutatingFiles : system::Boolean { get:GetIsMutatingFiles event:FileOperationsChanged }
     property RootFolder : presentation::IFileDialogFolder^ { get:GetRootFolder }
     property SelectedFilter : presentation::IFileDialogFilter^ { get:GetSelectedFilter set:SetSelectedFilter event:SelectedFilterChanged }
     property SelectedFolder : presentation::IFileDialogFolder^ { get:GetSelectedFolder set:SetSelectedFolder event:SelectedFolderChanged }
     property Title : system::String { get:GetTitle }
 
+    function CanDeleteFiles(selection : system::Enumerable<presentation::IFileDialogFile^>^) : system::Boolean;
+    function CreateFolder(owner : presentation::controls::GuiWindow*, folder : presentation::IFileDialogFolder^, name : system::String, alreadyExistsMessage : system::String, failureMessage : system::String, callback : system::Function<system::Void, system::Boolean>^) : system::Void;
+    function DeleteFiles(owner : presentation::controls::GuiWindow*, selection : system::Enumerable<presentation::IFileDialogFile^>^, confirmationMessage : system::Function<system::String, system::String, system::String>^, failureMessage : system::Function<system::String, system::String, system::String>^) : system::Void;
+    function GetCanModifyFolder() : system::Boolean;
     function GetDefaultExtension() : system::String;
     function GetDisplayString(files : system::Enumerable<presentation::IFileDialogFile^>^) : system::String;
     function GetEnabledMultipleSelection() : system::Boolean;
     function GetFiles() : system::ObservableList<presentation::IFileDialogFile^>^;
     function GetFilters() : system::ReadonlyList<presentation::IFileDialogFilter^>^;
     function GetIsLoadingFiles() : system::Boolean;
+    function GetIsMutatingFiles() : system::Boolean;
     function GetRootFolder() : presentation::IFileDialogFolder^;
     function GetSelectedFilter() : presentation::IFileDialogFilter^;
     function GetSelectedFolder() : presentation::IFileDialogFolder^;
@@ -10587,12 +10694,19 @@ interface tui_controls::ITuiDialogStringsStrings : system::Interface {
     function Continue() : system::String;
     function FileDialogAskCreateFile() : system::String;
     function FileDialogAskOverrideFile() : system::String;
+    function FileDialogConfirmDelete(__vwsn_ls_0 : system::String, __vwsn_ls_1 : system::String, __vwsn_ls_2 : system::String) : system::String;
+    function FileDialogDelete() : system::String;
+    function FileDialogDeleteFailed(__vwsn_ls_0 : system::String, __vwsn_ls_1 : system::String, __vwsn_ls_2 : system::String) : system::String;
+    function FileDialogEnterFolderName() : system::String;
     function FileDialogErrorEmptySelection() : system::String;
     function FileDialogErrorFileExpected() : system::String;
     function FileDialogErrorFileNotExist() : system::String;
     function FileDialogErrorFolderNotExist() : system::String;
     function FileDialogErrorMultipleSelectionNotEnabled() : system::String;
     function FileDialogFileName() : system::String;
+    function FileDialogFolderAlreadyExists(__vwsn_ls_0 : system::String, __vwsn_ls_1 : system::String) : system::String;
+    function FileDialogFolderCannotCreate(__vwsn_ls_0 : system::String, __vwsn_ls_1 : system::String) : system::String;
+    function FileDialogNewFolder() : system::String;
     function FileDialogOpen() : system::String;
     function FileDialogSave() : system::String;
     function FileDialogTextLoadingFiles() : system::String;
@@ -10923,8 +11037,11 @@ class tui_controls::TuiFilePickerControl : presentation::controls::GuiCustomCont
     property __vwsn_parameter_ViewModel : presentation::IFileDialogViewModel^;
     @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_Strings : tui_controls::ITuiDialogStringsStrings^;
+    property changingSelectionText : system::Boolean;
+    property textFromSelection : system::Boolean;
 
     function CreateFileFilter(filter : presentation::IFileDialogFilter^) : presentation::controls::list::IDataFilter^;
+    function DeleteSelection() : system::Void;
     function GetSelectedFiles() : system::Enumerable<presentation::IFileDialogFile^>^;
     function GetSelection() : system::Enumerable<system::String>^;
     function GetStrings() : tui_controls::ITuiDialogStringsStrings^;
@@ -10932,6 +11049,9 @@ class tui_controls::TuiFilePickerControl : presentation::controls::GuiCustomCont
     function LocateSelectedFolderInTreeView() : system::Void;
     function SetInitialFileName(value : system::String) : system::Void;
     function SetStrings(__vwsn_value_ : tui_controls::ITuiDialogStringsStrings^) : system::Void;
+    function ShowNewFolder() : system::Void;
+    function UpdateDeleteCommand() : system::Void;
+    function UpdateSelectionText() : system::Void;
     function __vwsn_instance_ctor_() : system::Void;
 
     constructor (__vwsn_ctor_parameter_ViewModel : presentation::IFileDialogViewModel^) : tui_controls::TuiFilePickerControl*;
@@ -10946,53 +11066,67 @@ class tui_controls::TuiFilePickerControlConstructor : system::ReferenceType {
     @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_10 : presentation::compositions::GuiTableComposition*;
+    property __vwsn_precompile_10 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_11 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_11 : presentation::controls::list::DataColumn^;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_12 : presentation::controls::GuiLabel*;
+    property __vwsn_precompile_12 : presentation::compositions::GuiBoundsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_13 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_13 : presentation::compositions::GuiGraphicsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_14 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_15 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_15 : presentation::compositions::GuiTableComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_16 : presentation::compositions::GuiGraphicsComposition*;
+    property __vwsn_precompile_16 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_17 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_17 : presentation::controls::GuiLabel*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_18 : presentation::compositions::GuiTableComposition*;
+    property __vwsn_precompile_18 : presentation::compositions::GuiBoundsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_19 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_2 : presentation::controls::GuiLabel*;
+    property __vwsn_precompile_2 : presentation::compositions::eazy_layout::GuiEasyLayoutComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_20 : presentation::controls::GuiLabel*;
+    property __vwsn_precompile_20 : presentation::compositions::GuiBoundsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_21 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_21 : presentation::compositions::GuiGraphicsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_22 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_23 : presentation::controls::GuiBindableTextList*;
+    property __vwsn_precompile_23 : presentation::compositions::GuiTableComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_24 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_24 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_25 : presentation::IFileDialogViewModel^;
+    property __vwsn_precompile_25 : presentation::controls::GuiLabel*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_26 : presentation::compositions::GuiBoundsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_27 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_28 : presentation::controls::GuiBindableTextList*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_6 : presentation::controls::list::DataColumn^;
+    property __vwsn_precompile_29 : presentation::compositions::GuiBoundsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_7 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_3 : presentation::compositions::eazy_layout::GuiEasyFillLayout^;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_8 : presentation::compositions::GuiGraphicsComposition*;
+    property __vwsn_precompile_30 : presentation::IFileDialogViewModel^;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_9 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_4 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_5 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_6 : presentation::compositions::eazy_layout::GuiEasyRightLayout^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_7 : presentation::compositions::eazy_layout::GuiEasyRightLayout^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_8 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_9 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property buttonDelete : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property buttonNewFolder : presentation::controls::GuiButton*;
     @system::workflow_attributes::att_cpp_Protected()
     property comboBox : presentation::controls::GuiComboBoxListControl*;
     @system::workflow_attributes::att_cpp_Protected()
@@ -11335,6 +11469,69 @@ class tui_controls::TuiMessageBoxWindowConstructor : system::ReferenceType {
     function __vwsn_tui_controls_TuiMessageBoxWindow_Initialize(__vwsn_this_ : tui_controls::TuiMessageBoxWindow*) : system::Void;
 
     constructor () : tui_controls::TuiMessageBoxWindowConstructor^;
+}
+
+@FullName:tui_controls::TuiNewFolderWindow
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tui_controls::TuiNewFolderWindowConstructor)
+class tui_controls::TuiNewFolderWindow : presentation::controls::GuiWindow, tui_controls::TuiNewFolderWindowConstructor {
+    event StringsChanged : system::Function<system::Void>^ observing {
+        Strings,
+    }
+
+    property Folder : presentation::IFileDialogFolder^ { get:GetFolder }
+    property Strings : tui_controls::ITuiDialogStringsStrings^ { get:GetStrings set:SetStrings event:StringsChanged }
+    property ViewModel : presentation::IFileDialogViewModel^ { get:GetViewModel }
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_parameter_Folder : presentation::IFileDialogFolder^;
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_parameter_ViewModel : presentation::IFileDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_prop_Strings : tui_controls::ITuiDialogStringsStrings^;
+
+    function CreateFolder() : system::Void;
+    function GetFolder() : presentation::IFileDialogFolder^;
+    function GetStrings() : tui_controls::ITuiDialogStringsStrings^;
+    function GetViewModel() : presentation::IFileDialogViewModel^;
+    function SetStrings(__vwsn_value_ : tui_controls::ITuiDialogStringsStrings^) : system::Void;
+
+    constructor (__vwsn_ctor_parameter_ViewModel : presentation::IFileDialogViewModel^, __vwsn_ctor_parameter_Folder : presentation::IFileDialogFolder^) : tui_controls::TuiNewFolderWindow*;
+}
+
+@FullName:tui_controls::TuiNewFolderWindowConstructor
+class tui_controls::TuiNewFolderWindowConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property Folder : presentation::IFileDialogFolder^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property ViewModel : presentation::IFileDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::compositions::eazy_layout::GuiEasyLayoutComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::eazy_layout::GuiEasyTopLayout^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_3 : presentation::compositions::eazy_layout::GuiEasyTopLayout^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_4 : presentation::compositions::GuiGraphicsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_5 : presentation::compositions::eazy_layout::GuiEasyBottomLayout^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_6 : presentation::compositions::eazy_layout::GuiEasyRightLayout^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_7 : presentation::compositions::eazy_layout::GuiEasyRightLayout^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property buttonCancel : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property buttonCreate : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property folderName : presentation::controls::GuiSinglelineTextBox*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tui_controls::TuiNewFolderWindow*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tui_controls_TuiNewFolderWindow_Initialize(__vwsn_this_ : tui_controls::TuiNewFolderWindow*) : system::Void;
+
+    constructor () : tui_controls::TuiNewFolderWindowConstructor^;
 }
 
 @FullName:tui_controls::TuiSimpleFontDialogWindow

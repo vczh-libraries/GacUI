@@ -371,6 +371,10 @@ interface presentation::IFileDialogFolder : system::Interface {
 }
 
 interface presentation::IFileDialogViewModel : system::Interface {
+    event FileOperationsChanged : system::Function<system::Void>^ observing {
+        CanModifyFolder,
+        IsMutatingFiles,
+    }
     event IsLoadingFilesChanged : system::Function<system::Void>^ observing {
         IsLoadingFiles,
     }
@@ -381,22 +385,29 @@ interface presentation::IFileDialogViewModel : system::Interface {
         SelectedFolder,
     }
 
+    property CanModifyFolder : system::Boolean { get:GetCanModifyFolder event:FileOperationsChanged }
     property DefaultExtension : system::String { get:GetDefaultExtension }
     property EnabledMultipleSelection : system::Boolean { get:GetEnabledMultipleSelection }
     property Files : system::ObservableList<presentation::IFileDialogFile^>^ { get:GetFiles }
     property Filters : system::ReadonlyList<presentation::IFileDialogFilter^>^ { get:GetFilters }
     property IsLoadingFiles : system::Boolean { get:GetIsLoadingFiles event:IsLoadingFilesChanged }
+    property IsMutatingFiles : system::Boolean { get:GetIsMutatingFiles event:FileOperationsChanged }
     property RootFolder : presentation::IFileDialogFolder^ { get:GetRootFolder }
     property SelectedFilter : presentation::IFileDialogFilter^ { get:GetSelectedFilter set:SetSelectedFilter event:SelectedFilterChanged }
     property SelectedFolder : presentation::IFileDialogFolder^ { get:GetSelectedFolder set:SetSelectedFolder event:SelectedFolderChanged }
     property Title : system::String { get:GetTitle }
 
+    function CanDeleteFiles(selection : system::Enumerable<presentation::IFileDialogFile^>^) : system::Boolean;
+    function CreateFolder(owner : presentation::controls::GuiWindow*, folder : presentation::IFileDialogFolder^, name : system::String, alreadyExistsMessage : system::String, failureMessage : system::String, callback : system::Function<system::Void, system::Boolean>^) : system::Void;
+    function DeleteFiles(owner : presentation::controls::GuiWindow*, selection : system::Enumerable<presentation::IFileDialogFile^>^, confirmationMessage : system::Function<system::String, system::String, system::String>^, failureMessage : system::Function<system::String, system::String, system::String>^) : system::Void;
+    function GetCanModifyFolder() : system::Boolean;
     function GetDefaultExtension() : system::String;
     function GetDisplayString(files : system::Enumerable<presentation::IFileDialogFile^>^) : system::String;
     function GetEnabledMultipleSelection() : system::Boolean;
     function GetFiles() : system::ObservableList<presentation::IFileDialogFile^>^;
     function GetFilters() : system::ReadonlyList<presentation::IFileDialogFilter^>^;
     function GetIsLoadingFiles() : system::Boolean;
+    function GetIsMutatingFiles() : system::Boolean;
     function GetRootFolder() : presentation::IFileDialogFolder^;
     function GetSelectedFilter() : presentation::IFileDialogFilter^;
     function GetSelectedFolder() : presentation::IFileDialogFolder^;
