@@ -1315,7 +1315,6 @@ namespace vl::workflow
 	public:
 		vl::Ptr<WfExpression> function;
 		vl::collections::List<vl::Ptr<WfExpression>> arguments;
-		vl::Ptr<WfType> typedResult;
 
 		void Accept(WfExpression::IVisitor* visitor) override;
 	};
@@ -2205,7 +2204,6 @@ namespace vl::workflow::builder
 	public:
 		MakeCallExpression& arguments(const vl::Ptr<WfExpression>& value);
 		MakeCallExpression& function(const vl::Ptr<WfExpression>& value);
-		MakeCallExpression& typedResult(const vl::Ptr<WfType>& value);
 	};
 
 	class MakeCastResultInterfaceDeclaration : public vl::glr::ParsingAstBuilder<WfCastResultInterfaceDeclaration>
@@ -4585,186 +4583,185 @@ namespace vl::workflow
 		BlockStatement_statements = 17,
 		CallExpression_arguments = 18,
 		CallExpression_function = 19,
-		CallExpression_typedResult = 20,
-		CastResultInterfaceDeclaration_baseType = 21,
-		CastResultInterfaceDeclaration_elementType = 22,
-		ChildExpression_name = 23,
-		ChildExpression_parent = 24,
-		ChildType_name = 25,
-		ChildType_parent = 26,
-		ClassDeclaration_baseTypes = 27,
-		ClassDeclaration_constructorType = 28,
-		ClassDeclaration_declarations = 29,
-		ClassDeclaration_kind = 30,
-		CoOperatorExpression_name = 31,
-		CoOperatorStatement_arguments = 32,
-		CoOperatorStatement_opName = 33,
-		CoOperatorStatement_varName = 34,
-		CoPauseStatement_statement = 35,
-		CoProviderStatement_name = 36,
-		CoProviderStatement_statement = 37,
-		ConstructorArgument_key = 38,
-		ConstructorArgument_value = 39,
-		ConstructorDeclaration_arguments = 40,
-		ConstructorDeclaration_baseConstructorCalls = 41,
-		ConstructorDeclaration_constructorType = 42,
-		ConstructorDeclaration_statement = 43,
-		ConstructorExpression_arguments = 44,
-		Declaration_attributes = 45,
-		Declaration_name = 46,
-		DeleteStatement_expression = 47,
-		DestructorDeclaration_statement = 48,
-		DetachEventExpression_event = 49,
-		DetachEventExpression_handler = 50,
-		EnumDeclaration_items = 51,
-		EnumDeclaration_kind = 52,
-		EnumItem_attributes = 53,
-		EnumItem_intersections = 54,
-		EnumItem_kind = 55,
-		EnumItem_name = 56,
-		EnumItem_number = 57,
-		EnumItemIntersection_name = 58,
-		EnumerableType_element = 59,
-		EventDeclaration_arguments = 60,
-		ExpectedTypeCastExpression_expression = 61,
-		ExpectedTypeCastExpression_strategy = 62,
-		ExpressionStatement_expression = 63,
-		FloatingExpression_value = 64,
-		ForEachStatement_collection = 65,
-		ForEachStatement_direction = 66,
-		ForEachStatement_name = 67,
-		ForEachStatement_statement = 68,
-		FormatExpression_value = 69,
-		FunctionArgument_attributes = 70,
-		FunctionArgument_name = 71,
-		FunctionArgument_type = 72,
-		FunctionDeclaration_anonymity = 73,
-		FunctionDeclaration_arguments = 74,
-		FunctionDeclaration_functionKind = 75,
-		FunctionDeclaration_returnType = 76,
-		FunctionDeclaration_statement = 77,
-		FunctionExpression_function = 78,
-		FunctionType_arguments = 79,
-		FunctionType_result = 80,
-		GotoStatement_label = 81,
-		IfExpression_condition = 82,
-		IfExpression_falseBranch = 83,
-		IfExpression_trueBranch = 84,
-		IfStatement_expression = 85,
-		IfStatement_falseBranch = 86,
-		IfStatement_name = 87,
-		IfStatement_trueBranch = 88,
-		IfStatement_type = 89,
-		InferExpression_expression = 90,
-		InferExpression_type = 91,
-		IntegerExpression_value = 92,
-		LetExpression_expression = 93,
-		LetExpression_variables = 94,
-		LetVariable_name = 95,
-		LetVariable_value = 96,
-		LiteralExpression_value = 97,
-		MapType_key = 98,
-		MapType_value = 99,
-		MapType_writability = 100,
-		MemberExpression_name = 101,
-		MemberExpression_parent = 102,
-		MixinCastExpression_expression = 103,
-		MixinCastExpression_type = 104,
-		Module_declarations = 105,
-		Module_moduleType = 106,
-		Module_name = 107,
-		Module_paths = 108,
-		ModuleUsingItem_fragments = 109,
-		ModuleUsingNameFragment_name = 110,
-		ModuleUsingPath_items = 111,
-		NamespaceDeclaration_declarations = 112,
-		NewClassExpression_arguments = 113,
-		NewClassExpression_type = 114,
-		NewCoroutineExpression_name = 115,
-		NewCoroutineExpression_statement = 116,
-		NewInterfaceExpression_declarations = 117,
-		NewInterfaceExpression_type = 118,
-		NullableType_element = 119,
-		ObservableListType_element = 120,
-		ObserveExpression_events = 121,
-		ObserveExpression_expression = 122,
-		ObserveExpression_name = 123,
-		ObserveExpression_observeType = 124,
-		ObserveExpression_parent = 125,
-		OrderedLambdaExpression_body = 126,
-		OrderedNameExpression_name = 127,
-		PredefinedType_name = 128,
-		PropertyDeclaration_getter = 129,
-		PropertyDeclaration_setter = 130,
-		PropertyDeclaration_type = 131,
-		PropertyDeclaration_valueChangedEvent = 132,
-		RaiseExceptionStatement_expression = 133,
-		RangeExpression_begin = 134,
-		RangeExpression_beginBoundary = 135,
-		RangeExpression_end = 136,
-		RangeExpression_endBoundary = 137,
-		RawPointerType_element = 138,
-		ReferenceExpression_name = 139,
-		ReferenceType_name = 140,
-		ReturnStatement_expression = 141,
-		SetTestingExpression_collection = 142,
-		SetTestingExpression_element = 143,
-		SetTestingExpression_test = 144,
-		SharedPointerType_element = 145,
-		StateDeclaration_arguments = 146,
-		StateDeclaration_name = 147,
-		StateDeclaration_statement = 148,
-		StateInput_arguments = 149,
-		StateInput_name = 150,
-		StateInvokeStatement_arguments = 151,
-		StateInvokeStatement_name = 152,
-		StateInvokeStatement_type = 153,
-		StateMachineDeclaration_inputs = 154,
-		StateMachineDeclaration_states = 155,
-		StateSwitchArgument_name = 156,
-		StateSwitchCase_arguments = 157,
-		StateSwitchCase_name = 158,
-		StateSwitchCase_statement = 159,
-		StateSwitchStatement_caseBranches = 160,
-		StateSwitchStatement_type = 161,
-		StaticInitDeclaration_statement = 162,
-		StringExpression_value = 163,
-		StructDeclaration_members = 164,
-		StructMember_attributes = 165,
-		StructMember_name = 166,
-		StructMember_type = 167,
-		SwitchCase_expression = 168,
-		SwitchCase_statement = 169,
-		SwitchStatement_caseBranches = 170,
-		SwitchStatement_defaultBranch = 171,
-		SwitchStatement_expression = 172,
-		TopQualifiedExpression_name = 173,
-		TopQualifiedType_name = 174,
-		TryStatement_catchStatement = 175,
-		TryStatement_finallyStatement = 176,
-		TryStatement_name = 177,
-		TryStatement_protectedStatement = 178,
-		TypeCastingExpression_expression = 179,
-		TypeCastingExpression_strategy = 180,
-		TypeCastingExpression_type = 181,
-		TypeOfExpressionExpression_expression = 182,
-		TypeOfTypeExpression_type = 183,
-		TypeTestingExpression_expression = 184,
-		TypeTestingExpression_test = 185,
-		TypeTestingExpression_type = 186,
-		UnaryExpression_op = 187,
-		UnaryExpression_operand = 188,
-		VariableDeclaration_expression = 189,
-		VariableDeclaration_type = 190,
-		VariableStatement_variable = 191,
-		VariantType_arguments = 192,
-		VirtualCfeDeclaration_expandedDeclarations = 193,
-		VirtualCfeExpression_expandedExpression = 194,
-		VirtualCseDeclaration_expandedDeclarations = 195,
-		VirtualCseExpression_expandedExpression = 196,
-		VirtualCseStatement_expandedStatement = 197,
-		WhileStatement_condition = 198,
-		WhileStatement_statement = 199,
+		CastResultInterfaceDeclaration_baseType = 20,
+		CastResultInterfaceDeclaration_elementType = 21,
+		ChildExpression_name = 22,
+		ChildExpression_parent = 23,
+		ChildType_name = 24,
+		ChildType_parent = 25,
+		ClassDeclaration_baseTypes = 26,
+		ClassDeclaration_constructorType = 27,
+		ClassDeclaration_declarations = 28,
+		ClassDeclaration_kind = 29,
+		CoOperatorExpression_name = 30,
+		CoOperatorStatement_arguments = 31,
+		CoOperatorStatement_opName = 32,
+		CoOperatorStatement_varName = 33,
+		CoPauseStatement_statement = 34,
+		CoProviderStatement_name = 35,
+		CoProviderStatement_statement = 36,
+		ConstructorArgument_key = 37,
+		ConstructorArgument_value = 38,
+		ConstructorDeclaration_arguments = 39,
+		ConstructorDeclaration_baseConstructorCalls = 40,
+		ConstructorDeclaration_constructorType = 41,
+		ConstructorDeclaration_statement = 42,
+		ConstructorExpression_arguments = 43,
+		Declaration_attributes = 44,
+		Declaration_name = 45,
+		DeleteStatement_expression = 46,
+		DestructorDeclaration_statement = 47,
+		DetachEventExpression_event = 48,
+		DetachEventExpression_handler = 49,
+		EnumDeclaration_items = 50,
+		EnumDeclaration_kind = 51,
+		EnumItem_attributes = 52,
+		EnumItem_intersections = 53,
+		EnumItem_kind = 54,
+		EnumItem_name = 55,
+		EnumItem_number = 56,
+		EnumItemIntersection_name = 57,
+		EnumerableType_element = 58,
+		EventDeclaration_arguments = 59,
+		ExpectedTypeCastExpression_expression = 60,
+		ExpectedTypeCastExpression_strategy = 61,
+		ExpressionStatement_expression = 62,
+		FloatingExpression_value = 63,
+		ForEachStatement_collection = 64,
+		ForEachStatement_direction = 65,
+		ForEachStatement_name = 66,
+		ForEachStatement_statement = 67,
+		FormatExpression_value = 68,
+		FunctionArgument_attributes = 69,
+		FunctionArgument_name = 70,
+		FunctionArgument_type = 71,
+		FunctionDeclaration_anonymity = 72,
+		FunctionDeclaration_arguments = 73,
+		FunctionDeclaration_functionKind = 74,
+		FunctionDeclaration_returnType = 75,
+		FunctionDeclaration_statement = 76,
+		FunctionExpression_function = 77,
+		FunctionType_arguments = 78,
+		FunctionType_result = 79,
+		GotoStatement_label = 80,
+		IfExpression_condition = 81,
+		IfExpression_falseBranch = 82,
+		IfExpression_trueBranch = 83,
+		IfStatement_expression = 84,
+		IfStatement_falseBranch = 85,
+		IfStatement_name = 86,
+		IfStatement_trueBranch = 87,
+		IfStatement_type = 88,
+		InferExpression_expression = 89,
+		InferExpression_type = 90,
+		IntegerExpression_value = 91,
+		LetExpression_expression = 92,
+		LetExpression_variables = 93,
+		LetVariable_name = 94,
+		LetVariable_value = 95,
+		LiteralExpression_value = 96,
+		MapType_key = 97,
+		MapType_value = 98,
+		MapType_writability = 99,
+		MemberExpression_name = 100,
+		MemberExpression_parent = 101,
+		MixinCastExpression_expression = 102,
+		MixinCastExpression_type = 103,
+		Module_declarations = 104,
+		Module_moduleType = 105,
+		Module_name = 106,
+		Module_paths = 107,
+		ModuleUsingItem_fragments = 108,
+		ModuleUsingNameFragment_name = 109,
+		ModuleUsingPath_items = 110,
+		NamespaceDeclaration_declarations = 111,
+		NewClassExpression_arguments = 112,
+		NewClassExpression_type = 113,
+		NewCoroutineExpression_name = 114,
+		NewCoroutineExpression_statement = 115,
+		NewInterfaceExpression_declarations = 116,
+		NewInterfaceExpression_type = 117,
+		NullableType_element = 118,
+		ObservableListType_element = 119,
+		ObserveExpression_events = 120,
+		ObserveExpression_expression = 121,
+		ObserveExpression_name = 122,
+		ObserveExpression_observeType = 123,
+		ObserveExpression_parent = 124,
+		OrderedLambdaExpression_body = 125,
+		OrderedNameExpression_name = 126,
+		PredefinedType_name = 127,
+		PropertyDeclaration_getter = 128,
+		PropertyDeclaration_setter = 129,
+		PropertyDeclaration_type = 130,
+		PropertyDeclaration_valueChangedEvent = 131,
+		RaiseExceptionStatement_expression = 132,
+		RangeExpression_begin = 133,
+		RangeExpression_beginBoundary = 134,
+		RangeExpression_end = 135,
+		RangeExpression_endBoundary = 136,
+		RawPointerType_element = 137,
+		ReferenceExpression_name = 138,
+		ReferenceType_name = 139,
+		ReturnStatement_expression = 140,
+		SetTestingExpression_collection = 141,
+		SetTestingExpression_element = 142,
+		SetTestingExpression_test = 143,
+		SharedPointerType_element = 144,
+		StateDeclaration_arguments = 145,
+		StateDeclaration_name = 146,
+		StateDeclaration_statement = 147,
+		StateInput_arguments = 148,
+		StateInput_name = 149,
+		StateInvokeStatement_arguments = 150,
+		StateInvokeStatement_name = 151,
+		StateInvokeStatement_type = 152,
+		StateMachineDeclaration_inputs = 153,
+		StateMachineDeclaration_states = 154,
+		StateSwitchArgument_name = 155,
+		StateSwitchCase_arguments = 156,
+		StateSwitchCase_name = 157,
+		StateSwitchCase_statement = 158,
+		StateSwitchStatement_caseBranches = 159,
+		StateSwitchStatement_type = 160,
+		StaticInitDeclaration_statement = 161,
+		StringExpression_value = 162,
+		StructDeclaration_members = 163,
+		StructMember_attributes = 164,
+		StructMember_name = 165,
+		StructMember_type = 166,
+		SwitchCase_expression = 167,
+		SwitchCase_statement = 168,
+		SwitchStatement_caseBranches = 169,
+		SwitchStatement_defaultBranch = 170,
+		SwitchStatement_expression = 171,
+		TopQualifiedExpression_name = 172,
+		TopQualifiedType_name = 173,
+		TryStatement_catchStatement = 174,
+		TryStatement_finallyStatement = 175,
+		TryStatement_name = 176,
+		TryStatement_protectedStatement = 177,
+		TypeCastingExpression_expression = 178,
+		TypeCastingExpression_strategy = 179,
+		TypeCastingExpression_type = 180,
+		TypeOfExpressionExpression_expression = 181,
+		TypeOfTypeExpression_type = 182,
+		TypeTestingExpression_expression = 183,
+		TypeTestingExpression_test = 184,
+		TypeTestingExpression_type = 185,
+		UnaryExpression_op = 186,
+		UnaryExpression_operand = 187,
+		VariableDeclaration_expression = 188,
+		VariableDeclaration_type = 189,
+		VariableStatement_variable = 190,
+		VariantType_arguments = 191,
+		VirtualCfeDeclaration_expandedDeclarations = 192,
+		VirtualCfeExpression_expandedExpression = 193,
+		VirtualCseDeclaration_expandedDeclarations = 194,
+		VirtualCseExpression_expandedExpression = 195,
+		VirtualCseStatement_expandedStatement = 196,
+		WhileStatement_condition = 197,
+		WhileStatement_statement = 198,
 	};
 
 	extern const wchar_t* WorkflowTypeName(WorkflowClasses type);
@@ -5390,6 +5387,7 @@ Scope Manager
 				typedef collections::Pair<WfConstructorDeclaration*, ITypeDescriptor*>						BaseConstructorCallKey;
 				typedef collections::Pair<WfBaseConstructorCall*, IMethodInfo*>								BaseConstructorCallValue;
 				typedef collections::Dictionary<BaseConstructorCallKey, BaseConstructorCallValue>			BaseConstructorCallResolvingMap;
+				typedef collections::Dictionary<Ptr<WfCallExpression>, Ptr<reflection::description::ITypeInfo>> CallExpressionTypedResultMap;
 
 				typedef collections::Dictionary<glr::ParsingAstBase*, Ptr<WfLexicalCapture>>				LambdaCaptureMap;
 				typedef collections::Dictionary<WfFunctionDeclaration*, IMethodInfo*>						InterfaceMethodImplementationMap;
@@ -5437,6 +5435,7 @@ Scope Manager
 				CoOperatorResolvingMap						coProviderResolvings;				// the constructor for the co-provider statement (e.g. AsyncCoroutine::Create)
 				CoOperatorResolvingMap						coCastResultResolvings;				// the method for the co-operator's type casting (e.g. IStringAsync::CastResult)
 				BaseConstructorCallResolvingMap				baseConstructorCallResolvings;		// all base constructor call resolvings
+				CallExpressionTypedResultMap					callExpressionTypedResults;			// resolved result types for generated calls
 
 				LambdaCaptureMap							lambdaCaptures;						// all captured symbols in a lambda AST
 				InterfaceMethodImplementationMap			interfaceMethodImpls;				// the IMethodInfo* that implemented by a function
@@ -5478,7 +5477,7 @@ Scope Manager
 				/// If there is no new reflectable native type that is registered after the last call to <see cref="Rebuild"/>,
 				/// using true for this argument saves times by reusing scopes created from global types.
 				/// </param>
-				/// <param name="deleteModules">Set to true to delete all added modules.</param>
+				/// <param name="deleteModules">Set to true to delete all added modules. Otherwise discard virtual expansions to regenerate them with fresh semantic information.</param>
 				void										Clear(bool keepTypeDescriptorNames, bool deleteModules);
 				/// <summary>Perform semantic analyzing for added modules.</summary>
 				/// <param name="keepTypeDescriptorNames">The same to the argument in <see cref="Clear"/>.</param>
@@ -5727,35 +5726,37 @@ Expanding Virtual Nodes
 			{
 			private:
 				bool										expandVirtualAst;
+				WfLexicalScopeManager*						scopeManager;
 
 				void										Expand(collections::List<Ptr<WfDeclaration>>& decls);
 
 				void										Visit(WfVirtualCfeExpression* node)override;
 				void										Visit(WfVirtualCseExpression* node)override;
 				void										Visit(WfVirtualCseStatement* node)override;
+				void										Visit(WfCallExpression* node)override;
 
 				void										Visit(WfNamespaceDeclaration* node)override;
 				void										Visit(WfClassDeclaration* node)override;
 				void										Visit(WfNewInterfaceExpression* node)override;
 
 			public:
-				CopyWithExpandVirtualVisitor(bool _expandVirtualAst);
+				CopyWithExpandVirtualVisitor(bool _expandVirtualAst, WfLexicalScopeManager* _scopeManager = nullptr);
 			};
 
 			extern Ptr<WfStatement>							SearchUntilNonVirtualStatement(Ptr<WfStatement> statement);
 			extern Ptr<WfExpression>						CreateDefaultValue(reflection::description::ITypeInfo* elementType);
 
 			extern Ptr<WfType>								CopyType(Ptr<WfType> type);
-			extern Ptr<WfExpression>						CopyExpression(Ptr<WfExpression> expression, bool expandVirtualExprStat);
-			extern Ptr<WfStatement>							CopyStatement(Ptr<WfStatement> statement, bool expandVirtualExprStat);
-			extern Ptr<WfDeclaration>						CopyDeclaration(Ptr<WfDeclaration> declaration, bool expandVirtualExprStat);
-			extern Ptr<WfModule>							CopyModule(Ptr<WfModule> module, bool expandVirtualExprStat);
+			extern Ptr<WfExpression>						CopyExpression(Ptr<WfExpression> expression, bool expandVirtualExprStat, WfLexicalScopeManager* manager = nullptr);
+			extern Ptr<WfStatement>							CopyStatement(Ptr<WfStatement> statement, bool expandVirtualExprStat, WfLexicalScopeManager* manager = nullptr);
+			extern Ptr<WfDeclaration>						CopyDeclaration(Ptr<WfDeclaration> declaration, bool expandVirtualExprStat, WfLexicalScopeManager* manager = nullptr);
+			extern Ptr<WfModule>							CopyModule(Ptr<WfModule> module, bool expandVirtualExprStat, WfLexicalScopeManager* manager = nullptr);
 
 			extern Ptr<WfType>								CopyType(WfType* type);
-			extern Ptr<WfExpression>						CopyExpression(WfExpression* expression, bool expandVirtualExprStat);
-			extern Ptr<WfStatement>							CopyStatement(WfStatement* statement, bool expandVirtualExprStat);
-			extern Ptr<WfDeclaration>						CopyDeclaration(WfDeclaration* declaration, bool expandVirtualExprStat);
-			extern Ptr<WfModule>							CopyModule(WfModule* module, bool expandVirtualExprStat);
+			extern Ptr<WfExpression>						CopyExpression(WfExpression* expression, bool expandVirtualExprStat, WfLexicalScopeManager* manager = nullptr);
+			extern Ptr<WfStatement>							CopyStatement(WfStatement* statement, bool expandVirtualExprStat, WfLexicalScopeManager* manager = nullptr);
+			extern Ptr<WfDeclaration>						CopyDeclaration(WfDeclaration* declaration, bool expandVirtualExprStat, WfLexicalScopeManager* manager = nullptr);
+			extern Ptr<WfModule>							CopyModule(WfModule* module, bool expandVirtualExprStat, WfLexicalScopeManager* manager = nullptr);
 
 			extern void										ExpandBindExpression(WfLexicalScopeManager* manager, WfBindExpression* node);
 			extern void										ExpandNewCoroutineExpression(WfLexicalScopeManager* manager, WfNewCoroutineExpression* node);
