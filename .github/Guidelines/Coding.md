@@ -127,6 +127,7 @@ When `VlppParser2` is available to the current project, complex parsers always r
   - `GacUI` project has a mechanism to register parsers dynamically.
 - Each parser should already provide functions for converting AST back to string, you should not invent it by your own, unless you are making a new parser.
 - Each parser should already provide multiple visitors, try to reuse them. To invent your own algorithm, especially recursive algorithm, you should always try to create visitors.
+- It is strongly recommended to only put parsing result in AST, if any caching data is needed during analyzing, using dedicated data structures is a better choice, usually a map whose key is the AST node.
 
 ### for Reflectable Types
 
