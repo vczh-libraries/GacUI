@@ -304,7 +304,7 @@
       21,
       [
         "ElementDesc_ImageFrame",
-        {"id": 21, "imageId": 8, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
+        {"id": 21, "imageId": 10, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
       ]
     ]
   ],
