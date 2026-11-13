@@ -438,6 +438,42 @@ TEST_FILE
 
 	TEST_CATEGORY(L"File Dialog Navigation")
 	{
+		TEST_CASE(L"Folder mutation commands are available in an ordinary directory")
+		{
+			Ptr<FileSystemMock> fsMock;
+			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dialog = FindObjectByName<GuiOpenFileDialog>(window, L"dialogOpen");
+					dialog->SetDirectory(L"/A");
+					auto button = FindControlByText<GuiButton>(window, L"Open DefaultOptions");
+					auto location = protocol->LocationOf(button);
+					GetApplication()->InvokeInMainThread(window, [=]() { protocol->LClick(location); });
+				});
+				protocol->OnNextIdleFrame(L"Folder mutation commands", [=]()
+				{
+					auto window = GetOpeningFileDialog();
+					auto create = FindControlByText<GuiButton>(window, L"New Folder");
+					auto remove = FindControlByText<GuiButton>(window, L"Delete");
+					TEST_ASSERT(create->GetEnabled());
+					TEST_ASSERT(!remove->GetEnabled());
+					PressCancel(protocol);
+				});
+				protocol->OnNextIdleFrame(L"Canceled", [=]()
+				{
+					GetApplication()->GetMainWindow()->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/Dialog_File/MutationCommands"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceFileDialogs,
+				CreateInstaller(fsMock)
+			);
+		});
+
 		TEST_CASE(L"Initial file names survive asynchronous folder loading")
 		{
 			for (auto save : { false,true })
