@@ -1,6 +1,6 @@
 param(
     [ValidateRange(1,65535)][int]$AsPort = 8888,
-    [ValidateSet('All','Layout','Responsive','ResponsiveWindow','RawClock','Touching','Persistence','DocumentStyles','DocumentContextMenu','DocumentEditorSop','DocumentEditorCommands','PointRegression','TouchingList')][string]$Scenario = 'All',
+    [ValidateSet('All','Layout','Responsive','ResponsiveWindow','RawClock','Touching','Persistence','DocumentStyles','DocumentContextMenu','DocumentEditorSop','DocumentEditorCommands','PointRegression','TouchingList','FileDialogMutations')][string]$Scenario = 'All',
     [switch]$Gdi,
     [ValidateRange(0,15)][int]$EditorSopStartStep = 0,
     [switch]$EditorSopResumeAtImages,

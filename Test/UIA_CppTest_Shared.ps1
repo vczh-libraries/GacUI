@@ -6,7 +6,7 @@ param(
     [ValidateRange(0,15)][int]$EditorSopStartStep = 0,
     [switch]$EditorSopResumeAtImages,
     [string]$BusyClick = '',
-    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Layout','Responsive','ResponsiveWindow','ResponsivePalette','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime','RawClock','Touching','Persistence','DocumentStyles','DocumentContextMenu','DocumentEditorSop','DocumentEditorCommands','PointRegression','TouchingList')][string]$Scenario = 'All',
+    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Layout','Responsive','ResponsiveWindow','ResponsivePalette','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime','RawClock','Touching','Persistence','DocumentStyles','DocumentContextMenu','DocumentEditorSop','DocumentEditorCommands','PointRegression','TouchingList','FileDialogMutations')][string]$Scenario = 'All',
     [switch]$HostedFixture,
     [switch]$GdiFixture,
     [switch]$Gdi,
@@ -26,6 +26,8 @@ if ($ClientProcessId) {
     Add-Type -Path (Join-Path $PSScriptRoot 'UIA_CppTest_Shared.cs') -ReferencedAssemblies UIAutomationClient, UIAutomationTypes, WindowsBase, System.Web.Extensions
     [GacUIShowcaseTests]::BusyCommand = $BusyClick
     [GacUIShowcaseTests]::PersistenceOutput = Join-Path $PSScriptRoot 'Output/Injection'
+    [GacUIShowcaseTests]::FileDialogPlayground = Join-Path $PSScriptRoot 'FileDialogPlayground'
+    if ($Scenario -eq 'FileDialogMutations') { [GacUIShowcaseTests]::PersistenceOutput = [GacUIShowcaseTests]::FileDialogPlayground }
     [GacUIShowcaseTests]::EditorSopStartStep = $EditorSopStartStep
     [GacUIShowcaseTests]::EditorSopResumeAtImages = [bool]$EditorSopResumeAtImages
     try { [GacUIShowcaseTests]::Run($ClientProcessId, ($Application -eq 'CppTest' -or $HostedFixture), $Scenario, $AsPort, $Application) }

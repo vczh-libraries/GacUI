@@ -50,6 +50,13 @@
         <String Name="FileDialogErrorMultipleSelectionNotEnabled" Text="Multiple selection is not enabled in this dialog." />
         <String Name="FileDialogAskCreateFile" Text="Do you want to create the following file(s):" />
         <String Name="FileDialogAskOverrideFile" Text="Do you want to override the following file(s):" />
+        <String Name="FileDialogNewFolder" Text="New Folder"/>
+        <String Name="FileDialogDelete" Text="Delete"/>
+        <String Name="FileDialogEnterFolderName" Text="Enter the folder name"/>
+        <String Name="FileDialogFolderAlreadyExists" Text="In folder &quot;$(0)&quot;, &quot;$(1)&quot; folder cannot be created because it already exists."/>
+        <String Name="FileDialogFolderCannotCreate" Text="In folder &quot;$(0)&quot;, &quot;$(1)&quot; folder cannot be created."/>
+        <String Name="FileDialogConfirmDelete" Text="Are you sure to delete the following items in folder &quot;$(0)&quot;?$(2)$(1)"/>
+        <String Name="FileDialogDeleteFailed" Text="The following items failed to delete in folder &quot;$(0)&quot;:$(2)$(1)"/>
       </Strings>
     </LocalizedStrings>
   </LocalizedStrings>

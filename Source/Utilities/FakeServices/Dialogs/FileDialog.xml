@@ -1,4 +1,72 @@
 <Folder>
+  <Instance name="NewFolderWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::NewFolderWindow">
+      <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::DialogStrings" Default="true"/>
+      <ref.Parameter Name="ViewModel" Class="presentation::IFileDialogViewModel"/>
+      <ref.Parameter Name="Folder" Class="presentation::IFileDialogFolder"/>
+      <ref.Members><![CDATA[
+        func CreateFolder(): void
+        {
+          ViewModel.CreateFolder(
+            self, Folder, folderName.Text,
+            Strings.FileDialogFolderAlreadyExists(Folder.FullPath, folderName.Text),
+            Strings.FileDialogFolderCannotCreate(Folder.FullPath, folderName.Text),
+            func(created: bool): void
+            {
+              if (created)
+              {
+                self.Close();
+              }
+              else
+              {
+                folderName.SetFocused();
+              }
+            }
+          );
+        }
+      ]]></ref.Members>
+      <Window ref.Name="self" Text-str="FileDialogNewFolder()" ClientSize="x:360 y:120" ShowInTaskBar="false" MaximizedBox="false" MinimizedBox="false" IconVisible="false">
+        <ev.WindowOpened-eval><![CDATA[{
+          self.MoveToScreenCenter();
+          folderName.SetFocused();
+        }]]></ev.WindowOpened-eval>
+        <ev.WindowClosing-eval><![CDATA[{
+          arguments.cancel = ViewModel.IsMutatingFiles;
+        }]]></ev.WindowClosing-eval>
+        <ez:Layout Padding="5">
+          <ez:Top>
+            <Label Text-str="FileDialogEnterFolderName()"/>
+          </ez:Top>
+          <ez:Top>
+            <SinglelineTextBox ref.Name="folderName" AcceptTabInput="false" Enabled-bind="not ViewModel.IsMutatingFiles" Alt="N">
+              <att.FocusableComposition-set>
+                <ev.keyUp-eval><![CDATA[{
+                  if (not arguments.ctrl and not arguments.shift and not arguments.alt and not arguments.osSuper and arguments.code == VKEY::KEY_RETURN)
+                  {
+                    self.CreateFolder();
+                  }
+                }]]></ev.keyUp-eval>
+              </att.FocusableComposition-set>
+            </SinglelineTextBox>
+          </ez:Top>
+          <ez:Bottom>
+            <ez:Right>
+              <Button ref.Name="buttonCreate" Text-str="OK()" Enabled-bind="not ViewModel.IsMutatingFiles" Alt="O">
+                <att.BoundsComposition-set PreferredMinSize="x:80 y:24"/>
+                <ev.Clicked-eval><![CDATA[{ self.CreateFolder(); }]]></ev.Clicked-eval>
+              </Button>
+            </ez:Right>
+            <ez:Right>
+              <Button ref.Name="buttonCancel" Text-str="Cancel()" Enabled-bind="not ViewModel.IsMutatingFiles" Alt="C">
+                <att.BoundsComposition-set PreferredMinSize="x:80 y:24"/>
+                <ev.Clicked-eval><![CDATA[{ self.Close(); }]]></ev.Clicked-eval>
+              </Button>
+            </ez:Right>
+          </ez:Bottom>
+        </ez:Layout>
+      </Window>
+    </Instance>
+  </Instance>
   <Instance name="FilePickerControl">
     <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::FilePickerControl">
       <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::DialogStrings" Default="true"/>
@@ -8,6 +76,54 @@
         var imageFile   : GuiImageData^ = null;
         prop Selection : string{} {GetSelection}
         event RequestClose();
+
+        var changingSelectionText : bool = false;
+        var textFromSelection : bool = false;
+
+        func UpdateDeleteCommand(): void
+        {
+          buttonDelete.Enabled = ViewModel.CanDeleteFiles(self.GetSelectedFiles());
+        }
+
+        func UpdateSelectionText(): void
+        {
+          self.UpdateDeleteCommand();
+          if (ViewModel.IsLoadingFiles and not textFromSelection)
+          {
+            return;
+          }
+          changingSelectionText = true;
+          textBox.Text = ViewModel.GetDisplayString(self.GetSelectedFiles());
+          textBox.SetCaret({row:0 column:0}, {row:0 column:0});
+          textFromSelection = not ViewModel.IsLoadingFiles;
+          changingSelectionText = false;
+        }
+
+        func ShowNewFolder(): void
+        {
+          if (not ViewModel.CanModifyFolder)
+          {
+            return;
+          }
+          var window = new gaclib_controls::NewFolderWindow*(ViewModel, ViewModel.SelectedFolder);
+          window.ShowModalAndDelete(cast * self.RelatedControlHost, func():void {});
+        }
+
+        func DeleteSelection(): void
+        {
+          ViewModel.DeleteFiles(
+            cast * self.RelatedControlHost, self.GetSelectedFiles(),
+            func(folder: string, names: string): string
+            {
+              return self.Strings.FileDialogConfirmDelete(folder, names, "\n");
+            },
+            func(folder: string, names: string): string
+            {
+              return self.Strings.FileDialogDeleteFailed(folder, names, "\n");
+            }
+          );
+        }
+
 
         func GetSelectedFiles(): IFileDialogFile^{}
         ${
@@ -112,6 +228,7 @@
               self.LocateSelectedFolderInTreeView();
             }
           ]]></ev.SelectedFolderChanged-eval>
+          <ev.FileOperationsChanged-eval><![CDATA[{ self.UpdateDeleteCommand(); }]]></ev.FileOperationsChanged-eval>
           <ev.IsLoadingFilesChanged-eval><![CDATA[
             {
               if (not ViewModel.IsLoadingFiles)
@@ -132,9 +249,25 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <Label Text-bind="ViewModel.SelectedFolder.FullPath ?? ''">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            </Label>
+            <ez:Layout Border="false">
+              <ez:Fill>
+                <Label Text-bind="ViewModel.SelectedFolder.FullPath ?? ''">
+                  <att.BoundsComposition-set MinSizeLimitation="NoLimit"/>
+                </Label>
+              </ez:Fill>
+              <ez:Right>
+                <ToolstripToolBar>
+                  <ToolstripButton ref.Name="buttonNewFolder" Text-str="FileDialogNewFolder()" Image-uri="res://Images/NewFolder" Enabled-bind="ViewModel.CanModifyFolder" Alt="N">
+                    <att.TooltipControl><Label Text-str="FileDialogNewFolder()"/></att.TooltipControl>
+                    <ev.Clicked-eval><![CDATA[{ self.ShowNewFolder(); }]]></ev.Clicked-eval>
+                  </ToolstripButton>
+                  <ToolstripButton ref.Name="buttonDelete" Text-str="FileDialogDelete()" Image-uri="res://Images/Delete" Enabled="false" Alt="X">
+                    <att.TooltipControl><Label Text-str="FileDialogDelete()"/></att.TooltipControl>
+                    <ev.Clicked-eval><![CDATA[{ self.DeleteSelection(); }]]></ev.Clicked-eval>
+                  </ToolstripButton>
+                </ToolstripToolBar>
+              </ez:Right>
+            </ez:Layout>
           </Cell>
 
           <Cell Site="row:1 column:0">
@@ -191,8 +324,7 @@
                   ]]></att.SmallImageProperty-eval>
                   <ev.SelectionChanged-eval><![CDATA[
                     {
-                      textBox.Text = ViewModel.GetDisplayString(self.GetSelectedFiles());
-                      textBox.SetCaret({row:0 column:0}, {row:0 column:0});
+                      self.UpdateSelectionText();
                     }
                   ]]></ev.SelectionChanged-eval>
                   <ev.ItemLeftButtonDoubleClick-eval><![CDATA[
@@ -232,6 +364,9 @@
 
               <Cell Site="row:0 column:1">
                 <SinglelineTextBox ref.Name="textBox" Alt="S">
+                  <ev.TextChanged-eval><![CDATA[{
+                    if (not self.changingSelectionText) { self.textFromSelection = false; }
+                  }]]></ev.TextChanged-eval>
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                   <att.FocusableComposition-set>
                     <ev.keyUp-eval><![CDATA[
@@ -327,7 +462,7 @@
           </Cell>
 
           <Cell Site="row:1 column:1">
-            <Button ref.Name="buttonOK" Enabled-bind="not ViewModel.IsLoadingFiles" Alt="O">
+            <Button ref.Name="buttonOK" Enabled-bind="not ViewModel.IsLoadingFiles and not ViewModel.IsMutatingFiles" Alt="O">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
               <ev.Clicked-eval><![CDATA[
                 {

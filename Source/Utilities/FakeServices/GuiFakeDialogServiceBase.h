@@ -373,6 +373,42 @@ View Models (FileDialog)
 			/// </summary>
 			Event<void()>					IsLoadingFilesChanged;
 
+			/// <summary>Raised when file mutation availability or progress changes.</summary>
+			Event<void()>					FileOperationsChanged;
+			/// <summary>Test whether the displayed directory is available for a mutation. The synthetic drive list is excluded.</summary>
+			virtual bool					GetCanModifyFolder() = 0;
+			/// <summary>Test whether a mutation or its confirmation is pending.</summary>
+			virtual bool					GetIsMutatingFiles() = 0;
+			/// <summary>Test whether the actual selected rows can be deleted. Placeholders, stale rows and drive rows are excluded.</summary>
+			/// <param name="selection">Selected rows obtained from the list's item provider.</param>
+			virtual bool					CanDeleteFiles(collections::LazyList<Ptr<IFileDialogFile>> selection) = 0;
+			/// <summary>Create one child directory on the worker queue. Completion and error prompts run on the UI thread while the owner is alive.</summary>
+			/// <param name="owner">The new-folder modal, which owns error prompts.</param>
+			/// <param name="folder">The directory captured when the modal opened.</param>
+			/// <param name="name">One child name, without path separators.</param>
+			/// <param name="alreadyExistsMessage">The localized complete message for an existing directory.</param>
+			/// <param name="failureMessage">The localized complete message for other expected creation failures.</param>
+			/// <param name="callback">Receives true only after successful creation; it is not invoked after the owner is disposed.</param>
+			virtual void					CreateFolder(
+												controls::GuiWindow* owner,
+												Ptr<IFileDialogFolder> folder,
+												const WString& name,
+												const WString& alreadyExistsMessage,
+												const WString& failureMessage,
+												const Func<void(bool)>& callback
+											) = 0;
+			/// <summary>Capture selected rows, request confirmation, then delete each target on the worker queue and refresh the directory.</summary>
+			/// <param name="owner">The file dialog, which owns confirmation and failure prompts.</param>
+			/// <param name="selection">Selected rows obtained from the list's item provider.</param>
+			/// <param name="confirmationMessage">Formats the localized message from the captured directory and ordered names.</param>
+			/// <param name="failureMessage">Formats the localized message from the captured directory and failed top-level names.</param>
+			virtual void					DeleteFiles(
+												controls::GuiWindow* owner,
+												collections::LazyList<Ptr<IFileDialogFile>> selection,
+												const Func<WString(const WString&, const WString&)>& confirmationMessage,
+												const Func<WString(const WString&, const WString&)>& failureMessage
+											) = 0;
+
 			/// <summary>
 			/// Get the title of this dialog.
 			/// </summary>

@@ -132,6 +132,9 @@ namespace gacui_unittest_template
 		}
 
 	public:
+		collections::SortedList<WString> blockedPaths;
+		collections::SortedList<WString> linkedPaths;
+
 		FileSystemMock(Ptr<FileItemMock> _root)
 			: root(_root)
 			, regexSeparators(L"[///\\]+")
@@ -242,6 +245,7 @@ namespace gacui_unittest_template
 			CHECK_ERROR(item, L"FileSystemMock::GetFileInfo()#Entry does not exist.");
 			vl::filesystem::FileInfo info;
 			info.isDirectory = !item->isFile;
+			info.isSymbolicLink = linkedPaths.Contains(path.GetFullPath());
 			return info;
 		}
 
@@ -333,10 +337,29 @@ namespace gacui_unittest_template
 			return relative;
 		}
 
-		bool FileDelete(const vl::filesystem::FilePath&) const override					{ CHECK_FAIL(L"Not Implemented!"); return false; }
+		bool FileDelete(const vl::filesystem::FilePath& path) const override
+		{
+			auto item = ResolvePath(path.GetFullPath());
+			if (!item || !item->isFile || blockedPaths.Contains(path.GetFullPath())) return false;
+			return ResolvePath(path.GetFolder().GetFullPath())->children.Remove(path.GetName());
+		}
+
+		bool CreateFolder(const vl::filesystem::FilePath& path) const override
+		{
+			auto parent = ResolvePath(path.GetFolder().GetFullPath());
+			if (!parent || parent->isFile || ResolvePath(path.GetFullPath())) return false;
+			parent->children.Add(path.GetName(), Ptr(new FileItemMock));
+			return true;
+		}
+
+		bool DeleteFolder(const vl::filesystem::FilePath& path) const override
+		{
+			auto item = ResolvePath(path.GetFullPath());
+			if (!item || item->isFile || item->children.Count() > 0 || blockedPaths.Contains(path.GetFullPath())) return false;
+			return ResolvePath(path.GetFolder().GetFullPath())->children.Remove(path.GetName());
+		}
+
 		bool FileRename(const vl::filesystem::FilePath&, const WString&) const override	{ CHECK_FAIL(L"Not Implemented!"); return false; }
-		bool CreateFolder(const vl::filesystem::FilePath&) const override					{ CHECK_FAIL(L"Not Implemented!"); return false; }
-		bool DeleteFolder(const vl::filesystem::FilePath&) const override					{ CHECK_FAIL(L"Not Implemented!"); return false; }
 		bool FolderRename(const vl::filesystem::FilePath&, const WString&) const override	{ CHECK_FAIL(L"Not Implemented!"); return false; }
 		Ptr<vl::stream::IFileStreamImpl> GetFileStreamImpl(const WString&, vl::stream::FileStream::AccessRight) const override
 		{

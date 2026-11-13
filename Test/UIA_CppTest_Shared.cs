@@ -4364,6 +4364,323 @@ public static class GacUIShowcaseTests
         Check(failures.Count == 0, "UIA review 3 failures: " + string.Join("; ", failures.ToArray()));
     }
 
+    public static string FileDialogPlayground;
+    static AutomationElement FileMutationWindow(string title, bool input = true)
+    {
+        AutomationElement result = null;
+        Wait(() => {
+            var windows = isHosted ? Find(root, ControlType.Window) : OwnedWindows();
+            result = windows.FindLast(window => window.Current.Name == title && window.Current.IsEnabled && !window.Current.IsOffscreen && (Find(window, ControlType.Edit).Count > 0) == input);
+            return result != null;
+        }, "active file dialog: " + title);
+        return result;
+    }
+    static void FileMutationAction(AutomationElement window, string caption, bool automation)
+    {
+        if (automation) Click(Named(window, caption, ControlType.Button));
+        else Invoke(window, caption);
+        ControlsSnapshot();
+    }
+    static void FileMutationText(AutomationElement edit, string value, bool automation)
+    {
+        Console.WriteLine("File dialog input: " + value);
+        if (automation)
+        {
+            Click(edit);
+            Wait(() => edit.Current.HasKeyboardFocus, "file dialog input receives focus");
+            Press("Home");
+            Press("Shift+End");
+            ControlsSnapshot();
+            if (value.Length == 0) Press("Delete"); else Input("!Type:" + value);
+        }
+        else Pattern<ValuePattern>(edit, ValuePattern.Pattern).SetValue(value);
+        ControlsSnapshot();
+        Wait(() => Pattern<ValuePattern>(edit, ValuePattern.Pattern).Current.Value == value, "file dialog text entered: " + value + "; observed: " + Pattern<ValuePattern>(edit, ValuePattern.Pattern).Current.Value);
+    }
+    static void FileMutationSelect(AutomationElement cell, bool first, bool automation)
+    {
+        if (automation)
+        {
+            if (first) Click(cell);
+            else
+            {
+                var bounds = cell.Current.BoundingRectangle;
+                var point = UiaToClientPoint(bounds.Left + bounds.Width / 2, bounds.Top + bounds.Height / 2);
+                Input("!LeftClick:" + point.X + "," + point.Y + ",ctrl");
+            }
+            ControlsSnapshot();
+        }
+        else
+        {
+            var selection = Pattern<SelectionItemPattern>(cell, SelectionItemPattern.Pattern);
+            if (first) selection.Select(); else selection.AddToSelection();
+        }
+    }
+    static void FileMutationNativeBatch(AutomationElement dialogs, AutomationElement page, string fixture, int sequence, bool automation, bool chinese)
+    {
+        Test("native file mutation failures / " + (automation ? "automation IO" : "UIA") + " / " + (chinese ? "Chinese" : "English"));
+        var batch = System.IO.Path.GetFullPath(System.IO.Path.Combine(fixture, "Native-" + sequence));
+        Check(batch.StartsWith(fixture + System.IO.Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase), "native fixture containment");
+        System.IO.Directory.CreateDirectory(batch);
+        foreach (var directory in new[] { "target", "c-unsafe", "d-partial/removed-child", "e-empty", "f-full" })
+            System.IO.Directory.CreateDirectory(System.IO.Path.Combine(batch, directory));
+        foreach (var file in new[] { "target/sentinel.txt", "c-unsafe/keep.txt", "d-partial/removed-child/data.txt", "d-partial/a-removable.txt", "d-partial/z-locked.txt", "a-locked.txt", "f-full/nested.txt", "z-success.txt" })
+            System.IO.File.WriteAllText(System.IO.Path.Combine(batch, file), "native sentinel");
+        var links = new[] { System.IO.Path.Combine(batch, "b-linked"), System.IO.Path.Combine(batch, "c-unsafe/link") };
+        var ready = System.IO.Path.Combine(batch, "lock-ready.flag");
+        var release = System.IO.Path.Combine(batch, "lock-release.flag");
+        Func<string, string> quote = value => "'" + value.Replace("'", "''") + "'";
+        string script = "$ErrorActionPreference='Stop'; try { ";
+        foreach (var link in links) script += "New-Item -ItemType Junction -Path " + quote(link) + " -Target " + quote(System.IO.Path.Combine(batch, "target")) + " | Out-Null; ";
+        script += "$a=[IO.File]::Open(" + quote(System.IO.Path.Combine(batch, "a-locked.txt")) + ",'Open','Read','ReadWrite'); ";
+        script += "$b=[IO.File]::Open(" + quote(System.IO.Path.Combine(batch, "d-partial/z-locked.txt")) + ",'Open','Read','ReadWrite'); ";
+        script += "[IO.File]::WriteAllText(" + quote(ready) + ",'ready'); while(-not [IO.File]::Exists(" + quote(release) + ")) { Start-Sleep -Milliseconds 20 } } finally { if($a){$a.Dispose()}; if($b){$b.Dispose()} }";
+        var start = new ProcessStartInfo("powershell.exe", "-NoProfile -EncodedCommand " + Convert.ToBase64String(Encoding.Unicode.GetBytes(script)));
+        start.UseShellExecute = false; start.CreateNoWindow = true; start.WindowStyle = ProcessWindowStyle.Hidden;
+        using (var holder = Process.Start(start))
+        {
+            try
+            {
+                Wait(() => { Check(!holder.HasExited, "native lock helper remains alive"); return System.IO.File.Exists(ready); }, "native junctions and separate-process locked handles ready", 30000);
+                SelectCombo(dialogs, Find(dialogs, ControlType.ComboBox)[0], chinese ? "zh-CN" : "en-US");
+                var fields = Find(page, ControlType.Edit);
+                FileMutationText(fields[1], batch, automation); FileMutationText(fields[2], "", automation);
+                var multiple = Pattern<TogglePattern>(Named(page, "FileDialogAllowMultipleSelection", ControlType.CheckBox), TogglePattern.Pattern);
+                if (multiple.Current.ToggleState != ToggleState.On) multiple.Toggle();
+                FileMutationAction(page, "Show Open File Dialog", automation);
+                var picker = FileMutationWindow("The Title");
+                string create = chinese ? "新建文件夹" : "New Folder", delete = chinese ? "删除" : "Delete", ok = chinese ? "确定" : "OK", cancel = chinese ? "取消" : "Cancel";
+                Wait(() => Named(picker, create, ControlType.Button).Current.IsEnabled, "native batch loaded");
+                Pattern<TransformPattern>(picker, TransformPattern.Pattern).Resize(850, 600);
+                var tree = Find(picker, ControlType.Tree)[0];
+                var batchNode = Named(tree, System.IO.Path.GetFileName(batch), ControlType.TreeItem);
+                Pattern<ExpandCollapsePattern>(batchNode, ExpandCollapsePattern.Pattern).Expand();
+                Wait(() => FindNamed(tree, "d-partial", ControlType.TreeItem) != null, "current directory tree expanded");
+                var partialNode = Named(tree, "d-partial", ControlType.TreeItem);
+                var expansion = Pattern<ExpandCollapsePattern>(partialNode, ExpandCollapsePattern.Pattern);
+                expansion.Expand();
+                Wait(() => FindNamed(tree, "removed-child", ControlType.TreeItem) != null, "partial directory tree loaded");
+                expansion.Collapse();
+                var selected = new List<string> { "a-locked.txt", "b-linked", "c-unsafe", "d-partial", "e-empty", "f-full", "z-success.txt" };
+                var failed = new List<string> { "a-locked.txt", "b-linked", "c-unsafe", "d-partial" };
+                var ordered = new List<string>(); var failures = new List<string>();
+                var listing = Find(picker, ControlType.List)[0];
+                foreach (var cell in Items(listing))
+                {
+                    var name = cell.Current.Name;
+                    if (!selected.Contains(name)) continue;
+                    FileMutationSelect(cell, ordered.Count == 0, automation);
+                    ordered.Add(name); if (failed.Contains(name)) failures.Add(name);
+                }
+                Check(ordered.Count == selected.Count, "all native batch targets selected");
+                FileMutationText(Find(picker, ControlType.Edit)[0], "target/sentinel.txt", automation);
+                FileMutationAction(picker, delete, automation);
+                var confirmation = FileMutationWindow("The Title", false);
+                string question = (chinese ? "确定要删除文件夹“" + batch + "”中的下列项目吗？\n" : "Are you sure to delete the following items in folder \"" + batch + "\"?\n") + string.Join("\n", ordered.ToArray());
+                Check(FindNamed(confirmation, question, ControlType.Text) != null, "native confirmation matches ordered selected rows");
+                FileMutationAction(confirmation, ok, automation);
+                var error = FileMutationWindow("The Title", false);
+                string message = (chinese ? "文件夹“" + batch + "”中的下列项目删除失败：\n" : "The following items failed to delete in folder \"" + batch + "\":\n") + string.Join("\n", failures.ToArray());
+                Wait(() => FindNamed(error, message, ControlType.Text) != null, "combined native failure report");
+                Check(System.IO.File.Exists(System.IO.Path.Combine(batch, "a-locked.txt")), "locked top-level file survives");
+                Check(System.IO.File.Exists(System.IO.Path.Combine(batch, "d-partial/z-locked.txt")), "locked descendant survives");
+                Check(!System.IO.Directory.Exists(System.IO.Path.Combine(batch, "d-partial/removed-child")), "recursive failure reflects actual partial removal");
+                Console.WriteLine("Partial directory remaining ordinary file: " + System.IO.File.Exists(System.IO.Path.Combine(batch, "d-partial/a-removable.txt")));
+                Check(!System.IO.Directory.Exists(System.IO.Path.Combine(batch, "e-empty")) && !System.IO.Directory.Exists(System.IO.Path.Combine(batch, "f-full")) && !System.IO.File.Exists(System.IO.Path.Combine(batch, "z-success.txt")), "later ordinary targets are attempted after failures");
+                Check(System.IO.File.ReadAllText(System.IO.Path.Combine(batch, "target/sentinel.txt")) == "native sentinel" && System.IO.File.Exists(System.IO.Path.Combine(batch, "c-unsafe/keep.txt")), "selected and nested junctions preserve target and subtree sentinels");
+                Check(System.IO.Directory.Exists(links[0]) && System.IO.Directory.Exists(links[1]), "rejected junction entries remain intact");
+                FileMutationAction(error, ok, automation);
+                Wait(() => picker.Current.IsEnabled, "native failure report dismissed");
+                expansion = Pattern<ExpandCollapsePattern>(Named(tree, "d-partial", ControlType.TreeItem), ExpandCollapsePattern.Pattern);
+                Wait(() => expansion.Current.ExpandCollapseState == ExpandCollapseState.LeafNode, "collapsed tree becomes a leaf after partial removal");
+                Wait(() => Pattern<SelectionItemPattern>(batchNode, SelectionItemPattern.Pattern).Current.IsSelected, "tree retains current directory after reconciliation");
+                Check(FindNamed(tree, "removed-child", ControlType.TreeItem) == null, "removed descendant stays absent");
+                System.IO.File.WriteAllText(release, "release");
+                Check(holder.WaitForExit(10000) && holder.ExitCode == 0, "locked handles released normally");
+                Pattern<SelectionItemPattern>(Named(tree, "target", ControlType.TreeItem), SelectionItemPattern.Pattern).Select();
+                Wait(() => Items(listing).Count == 1 && Items(listing)[0].Current.Name == "sentinel.txt", "remaining sibling navigates to its own contents");
+                Pattern<SelectionItemPattern>(batchNode, SelectionItemPattern.Pattern).Select();
+                Wait(() => Items(listing).Exists(item => item.Current.Name == "a-locked.txt"), "return to affected directory shows surviving entries");
+                bool first = true;
+                foreach (var cell in Items(listing))
+                {
+                    if (cell.Current.Name != "a-locked.txt" && cell.Current.Name != "d-partial") continue;
+                    FileMutationSelect(cell, first, automation); first = false;
+                }
+                FileMutationAction(picker, delete, automation);
+                FileMutationAction(FileMutationWindow("The Title", false), ok, automation);
+                Wait(() => !System.IO.File.Exists(System.IO.Path.Combine(batch, "a-locked.txt")) && !System.IO.Directory.Exists(System.IO.Path.Combine(batch, "d-partial")), "retry succeeds after releasing native handles");
+                Wait(() => Named(picker, create, ControlType.Button).Current.IsEnabled, "retry refresh completed");
+                FileMutationAction(picker, cancel, automation);
+                Wait(() => page.Current.IsEnabled, "native batch picker closed");
+                multiple.Toggle();
+            }
+            finally
+            {
+                System.IO.File.WriteAllText(release, "release");
+                if (!holder.WaitForExit(10000)) { holder.Kill(); holder.WaitForExit(); }
+                foreach (var link in links)
+                {
+                    Check(System.IO.Path.GetFullPath(link).StartsWith(batch + System.IO.Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase), "fixture link cleanup containment");
+                    if (System.IO.Directory.Exists(link))
+                    {
+                        Check((System.IO.File.GetAttributes(link) & System.IO.FileAttributes.ReparsePoint) != 0, "unlink only the owned junction");
+                        System.IO.Directory.Delete(link, false);
+                    }
+                }
+            }
+        }
+    }
+    static void FileDialogMutations(IntPtr hwnd)
+    {
+        Check(isHosted, "file mutation scenario requires hosted fake dialogs");
+        var playground = System.IO.Path.GetFullPath(FileDialogPlayground);
+        Check(System.IO.Path.GetFileName(playground) == "FileDialogPlayground", "dedicated mutation playground");
+        System.IO.Directory.CreateDirectory(playground);
+        Check((System.IO.File.GetAttributes(playground) & System.IO.FileAttributes.ReparsePoint) == 0, "playground is an ordinary directory");
+        var fixture = System.IO.Path.GetFullPath(System.IO.Path.Combine(playground, "UIA-" + ownedProcess));
+        Check(fixture.StartsWith(playground + System.IO.Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase), "fixture is contained in playground");
+        Check(!System.IO.Directory.Exists(fixture), "fresh owned fixture");
+        System.IO.Directory.CreateDirectory(fixture);
+        System.IO.Directory.CreateDirectory(System.IO.Path.Combine(fixture, "Existing"));
+        System.IO.File.WriteAllText(System.IO.Path.Combine(fixture, "sentinel.txt"), "unselected sentinel");
+        try
+        {
+            Pattern<TransformPattern>(root, TransformPattern.Pattern).Resize(1000, 700);
+            var dialogs = Page(Page(root, "Misc"), "Dialogs");
+            var page = Page(dialogs, "Open/Save FileDialog");
+            int sequence = 0;
+            foreach (bool automation in new[] { true, false })
+            foreach (bool chinese in new[] { false, true })
+            foreach (bool save in new[] { false, true })
+            {
+                Test("file mutations / " + (automation ? "automation IO" : "UIA") + " / " + (chinese ? "Chinese" : "English") + " / " + (save ? "Save" : "Open"));
+                SelectCombo(dialogs, Find(dialogs, ControlType.ComboBox)[0], chinese ? "zh-CN" : "en-US");
+                var edits = Find(page, ControlType.Edit);
+                Check(edits.Count == 6, "showcase file dialog fields");
+                FileMutationText(edits[1], fixture, automation);
+                FileMutationText(edits[2], "", automation);
+                FileMutationAction(page, save ? "Show Save File Dialog" : "Show Open File Dialog", automation);
+                var picker = FileMutationWindow("The Title");
+                string create = chinese ? "新建文件夹" : "New Folder", delete = chinese ? "删除" : "Delete";
+                string ok = chinese ? "确定" : "OK", cancel = chinese ? "取消" : "Cancel";
+                Wait(() => Named(picker, create, ControlType.Button).Current.IsEnabled, "directory load enables creation");
+                Check(!Named(picker, delete, ControlType.Button).Current.IsEnabled, "empty selection disables delete");
+                Pattern<TransformPattern>(picker, TransformPattern.Pattern).Resize(save ? 560 : 800, save ? 360 : 520);
+                foreach (var caption in new[] { create, delete })
+                {
+                    var command = Named(picker, caption, ControlType.Button);
+                    var bounds = command.Current.BoundingRectangle;
+                    Check(!command.Current.IsOffscreen && bounds.Width > 0 && bounds.Right <= picker.Current.BoundingRectangle.Right, "header action remains visible after resizing: " + caption);
+                }
+                var filename = Find(picker, ControlType.Edit)[0];
+                FileMutationText(filename, "independent.txt", automation);
+                FileMutationAction(picker, create, automation);
+                var modal = FileMutationWindow(create);
+                var input = Find(modal, ControlType.Edit)[0];
+                Check(input.Current.HasKeyboardFocus, "new folder input receives logical focus");
+                if (automation)
+                {
+                    Press("Tab"); ControlsSnapshot();
+                    Wait(() => Find(modal, ControlType.Button).Exists(button => button.Current.HasKeyboardFocus), "Tab reaches a new folder action");
+                    Press("Shift+Tab"); ControlsSnapshot();
+                    Wait(() => input.Current.HasKeyboardFocus, "Shift+Tab restores the new folder input");
+                }
+                var labelBounds = Named(modal, chinese ? "请输入文件夹名称" : "Enter the folder name", ControlType.Text).Current.BoundingRectangle;
+                var inputBounds = input.Current.BoundingRectangle;
+                var okBounds = Named(modal, ok, ControlType.Button).Current.BoundingRectangle;
+                var cancelBounds = Named(modal, cancel, ControlType.Button).Current.BoundingRectangle;
+                Check(labelBounds.Top < inputBounds.Top && okBounds.Top >= inputBounds.Bottom && cancelBounds.Top == okBounds.Top && okBounds.Left < cancelBounds.Left, "new folder label, input and right-aligned action order");
+                Check(cancelBounds.Right <= modal.Current.BoundingRectangle.Right && cancelBounds.Right > modal.Current.BoundingRectangle.Left + modal.Current.BoundingRectangle.Width * 0.75, "new folder actions remain on the right");
+                FileMutationText(input, "Canceled", automation);
+                FileMutationAction(modal, cancel, automation);
+                Wait(() => picker.Current.IsEnabled, "cancel restores picker");
+                Check(!System.IO.Directory.Exists(System.IO.Path.Combine(fixture, "Canceled")), "cancel creates nothing");
+                if (!automation)
+                {
+                    FileMutationAction(picker, create, false);
+                    var closing = FileMutationWindow(create);
+                    FileMutationText(Find(closing, ControlType.Edit)[0], "TitleClosed", false);
+                    Pattern<WindowPattern>(closing, WindowPattern.Pattern).Close();
+                    Wait(() => picker.Current.IsEnabled, "title close restores picker");
+                    Check(!System.IO.Directory.Exists(System.IO.Path.Combine(fixture, "TitleClosed")), "title close creates nothing");
+                }
+                FileMutationAction(picker, create, automation);
+                modal = FileMutationWindow(create);
+                input = Find(modal, ControlType.Edit)[0];
+                foreach (var invalid in new[] { "Existing", "sentinel.txt", "", ".", "..", "child\\escape", "/escaped", "C:\\escaped", new string('x', 300) })
+                {
+                    FileMutationText(input, invalid, automation);
+                    FileMutationAction(modal, ok, automation);
+                    var error = FileMutationWindow(create, false);
+                    Wait(() => Find(error, ControlType.Edit).Count == 0, "creation failure is a message box");
+                    string expected = chinese
+                        ? "无法在文件夹“" + fixture + "”中创建文件夹“" + invalid + "”" + (invalid == "Existing" ? "，因为它已经存在。" : "。")
+                        : "In folder \"" + fixture + "\", \"" + invalid + "\" folder cannot be created" + (invalid == "Existing" ? " because it already exists." : ".");
+                    Check(FindNamed(error, expected, ControlType.Text) != null, "complete localized creation failure");
+                    FileMutationAction(error, ok, automation);
+                    Wait(() => modal.Current.IsEnabled, "failure leaves input modal open");
+                    Check(Pattern<ValuePattern>(input, ValuePattern.Pattern).Current.Value == invalid, "failed input retained");
+                }
+                string child = "Created 文件夹 " + (++sequence);
+                FileMutationText(input, child, automation);
+                FileMutationAction(modal, ok, automation);
+                Wait(() => picker.Current.IsEnabled && System.IO.Directory.Exists(System.IO.Path.Combine(fixture, child)), "successful retry creates one child and closes modal");
+                Check(Pattern<ValuePattern>(filename, ValuePattern.Pattern).Current.Value == "independent.txt", "refresh preserves independently entered filename");
+                System.IO.File.WriteAllText(System.IO.Path.Combine(fixture, child, "nested.txt"), "recursive child");
+                var listing = Find(picker, ControlType.List)[0];
+                AutomationElement cell = null;
+                Wait(() => { cell = Items(listing).Find(item => item.Current.Name == child); return cell != null; }, "created folder appears in list");
+                FileMutationSelect(cell, true, automation);
+                FileMutationText(filename, "sentinel.txt", automation);
+                FileMutationAction(picker, delete, automation);
+                var confirmation = FileMutationWindow("The Title", false);
+                string question = chinese ? "确定要删除文件夹“" + fixture + "”中的下列项目吗？\n" + child : "Are you sure to delete the following items in folder \"" + fixture + "\"?\n" + child;
+                Check(FindNamed(confirmation, question, ControlType.Text) != null, "confirmation uses selected row and excludes typed sentinel");
+                FileMutationAction(confirmation, cancel, automation);
+                Wait(() => picker.Current.IsEnabled, "delete cancellation restores picker");
+                Check(System.IO.File.Exists(System.IO.Path.Combine(fixture, child, "nested.txt")), "cancel preserves recursive contents");
+                FileMutationAction(picker, delete, automation);
+                FileMutationAction(FileMutationWindow("The Title", false), ok, automation);
+                Wait(() => picker.Current.IsEnabled && !System.IO.Directory.Exists(System.IO.Path.Combine(fixture, child)), "recursive deletion succeeds");
+                Check(System.IO.File.ReadAllText(System.IO.Path.Combine(fixture, "sentinel.txt")) == "unselected sentinel", "unselected sentinel survives");
+                Wait(() => !Named(picker, delete, ControlType.Button).Current.IsEnabled, "refresh clears deleted selection");
+                var currentDirectory = Named(Find(picker, ControlType.Tree)[0], System.IO.Path.GetFileName(fixture), ControlType.TreeItem);
+                Wait(() => Pattern<SelectionItemPattern>(currentDirectory, SelectionItemPattern.Pattern).Current.IsSelected, "tree retains current directory after deletion");
+                Check(Pattern<ValuePattern>(filename, ValuePattern.Pattern).Current.Value == "sentinel.txt", "delete refresh preserves typed filename");
+                FileMutationAction(picker, chinese ? (save ? "保存" : "打开") : (save ? "Save" : "Open"), automation);
+                Wait(() => page.Current.IsEnabled, "ordinary file selection still completes");
+            }
+            foreach (bool automation in new[] { true, false })
+            foreach (bool chinese in new[] { false, true })
+                FileMutationNativeBatch(dialogs, page, fixture, ++sequence, automation, chinese);
+            foreach (bool automation in new[] { true, false })
+            {
+                Test("synthetic drive-list command boundaries / " + (automation ? "automation IO" : "UIA"));
+                SelectCombo(dialogs, Find(dialogs, ControlType.ComboBox)[0], "en-US");
+                var fields = Find(page, ControlType.Edit);
+                FileMutationText(fields[1], "", automation); FileMutationText(fields[2], "", automation);
+                FileMutationAction(page, "Show Open File Dialog", automation);
+                var picker = FileMutationWindow("The Title");
+                var listing = Find(picker, ControlType.List)[0];
+                AutomationElement drive = null;
+                Wait(() => { drive = Items(listing).Find(item => item.Current.Name.Length == 2 && item.Current.Name[1] == ':'); return drive != null; }, "synthetic Windows drive rows loaded");
+                Check(!Named(picker, "New Folder", ControlType.Button).Current.IsEnabled && !Named(picker, "Delete", ControlType.Button).Current.IsEnabled, "synthetic root disables both commands");
+                FileMutationSelect(drive, true, automation);
+                Check(!Named(picker, "Delete", ControlType.Button).Current.IsEnabled, "selecting a drive does not enable deletion");
+                FileMutationAction(picker, "Cancel", automation);
+                Wait(() => page.Current.IsEnabled, "drive-list inspection closed without mutation");
+            }
+        }
+        finally
+        {
+            Check(System.IO.Path.GetFullPath(fixture).StartsWith(playground + System.IO.Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase), "cleanup remains in playground");
+            foreach (var directory in System.IO.Directory.GetDirectories(fixture, "*", System.IO.SearchOption.AllDirectories))
+                Check((System.IO.File.GetAttributes(directory) & System.IO.FileAttributes.ReparsePoint) == 0, "owned fixture has no links before cleanup");
+            System.IO.Directory.Delete(fixture, true);
+        }
+    }
+
     public static void Run(int processId, bool hosted, string scenario, int port, string application)
     {
         Check(Thread.CurrentThread.GetApartmentState() == ApartmentState.MTA, "client must be MTA");
@@ -4386,6 +4703,7 @@ public static class GacUIShowcaseTests
             Pattern<TransformPattern>(root, TransformPattern.Pattern).Resize(1000, 600);
             TouchingListAutomation();
         }
+        if (scenario == "FileDialogMutations") FileDialogMutations(hwnd);
         Check(root.Current.ProcessId == processId && root.Current.FrameworkId == "GacUI", "owned native GacUI root; HWND=" + hwnd + "; PID=" + root.Current.ProcessId + "; FrameworkId=" + root.Current.FrameworkId + "; Name=" + root.Current.Name);
         Check(root.Current.Name == (scenario == "Transitions" || scenario == "Review2" || scenario == "Review3" ? "UIA Review Fixture" : "Complete Control Showcase"), "application title");
         if (scenario == "Concurrent")
@@ -4423,7 +4741,7 @@ public static class GacUIShowcaseTests
             System.IO.Directory.CreateDirectory(folder);
             DocumentStyles(hwnd, folder);
         }
-        if (scenario != "RawClock" && scenario != "Touching" && scenario != "Persistence" && scenario != "DocumentStyles" && scenario != "DocumentContextMenu" && scenario != "DocumentEditorSop" && scenario != "DocumentEditorCommands" && scenario != "PointRegression" && scenario != "TouchingList")
+        if (scenario != "RawClock" && scenario != "Touching" && scenario != "Persistence" && scenario != "DocumentStyles" && scenario != "DocumentContextMenu" && scenario != "DocumentEditorSop" && scenario != "DocumentEditorCommands" && scenario != "PointRegression" && scenario != "TouchingList" && scenario != "FileDialogMutations")
         {
             Automation.AddStructureChangedEventHandler(root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref structureEvents));
             Automation.AddAutomationPropertyChangedEventHandler(root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref propertyEvents), AutomationElement.NameProperty, SelectionItemPattern.IsSelectedProperty, TogglePattern.ToggleStateProperty);

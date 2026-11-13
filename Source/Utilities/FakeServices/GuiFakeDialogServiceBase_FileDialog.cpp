@@ -117,6 +117,7 @@ View Model (IFileDialogFolder)
 			Ptr<FileDialogTaskQueue>		taskQueue;
 			vint						taskId = 0;
 			bool						taskFired = false;
+			bool						enumerationRequested = false;
 
 		public:
 			FileDialogFolder*			parent = nullptr;
@@ -139,12 +140,13 @@ View Model (IFileDialogFolder)
 					childrenByName.Add(child->name, child);
 				}
 				child->index = HasPlaceholderChild() ? children.Count() - 1 : children.Count();
+				if (HasPlaceholderChild()) children[children.Count() - 1].Cast<FileDialogFolder>()->index = children.Count();
 				children.Insert(child->index, child);
 			}
 
 			bool HasPlaceholderChild()
 			{
-				return children.Count() > 0 && children[children.Count() - 1]->GetType() == FileDialogFolderType::Placeholder;
+				return children.Count() > 0 && children[children.Count() - 1].Cast<FileDialogFolder>()->type == FileDialogFolderType::Placeholder;
 			}
 
 			void AddPlaceholderChild()
@@ -160,7 +162,91 @@ View Model (IFileDialogFolder)
 			{
 				if (HasPlaceholderChild())
 				{
+					children[children.Count() - 1].Cast<FileDialogFolder>()->parent = nullptr;
+					children[children.Count() - 1].Cast<FileDialogFolder>()->index = -1;
 					children.RemoveAt(children.Count() - 1);
+				}
+			}
+
+			void InvalidateTasks()
+			{
+				++taskId;
+				for (auto child : children)
+				{
+					auto folder = child.Cast<FileDialogFolder>();
+					folder->taskFired = false;
+					folder->InvalidateTasks();
+				}
+			}
+
+			void ReconcileChildren(const List<filesystem::Folder>& folders)
+			{
+				++taskId;
+				enumerationRequested = true;
+				RemovePlaceholderChild();
+				SortedList<WString> names;
+				for (auto folder : folders)
+				{
+					names.Add(folder.GetFilePath().GetName());
+				}
+				for (vint i = children.Count() - 1; i >= 0; i--)
+				{
+					auto child = children[i].Cast<FileDialogFolder>();
+					if (!names.Contains(child->name))
+					{
+						child->InvalidateTasks();
+						child->parent = nullptr;
+						child->index = -1;
+						childrenByName.Remove(child->name);
+						for (vint j = i + 1; j < children.Count(); j++)
+						{
+							children[j].Cast<FileDialogFolder>()->index = j - 1;
+						}
+						children.RemoveAt(i);
+					}
+				}
+				for (auto folder : folders)
+				{
+					if (!childrenByName.Keys().Contains(folder.GetFilePath().GetName()))
+					{
+						auto child = Ptr(new FileDialogFolder(folder, taskQueue));
+						AddChild(child);
+						child->AddPlaceholderChild();
+					}
+				}
+			}
+
+			void RefreshChildren(bool recursively, const Func<void()>& refreshed = {})
+			{
+				enumerationRequested = true;
+				auto taskFolder = Ptr(this);
+				vint taskFolderId = ++taskId;
+				taskQueue->Queue([taskFolder, taskFolderId, refreshed]()
+				{
+					auto subFolders = Ptr(new List<filesystem::Folder>);
+					if (!taskFolder->folder.GetFolders(*subFolders.Obj()))
+					{
+						subFolders->Clear();
+					}
+					GetApplication()->InvokeInMainThread(nullptr, [taskFolder, taskFolderId, subFolders, refreshed]()
+					{
+						if (taskFolder->taskId == taskFolderId)
+						{
+							taskFolder->ReconcileChildren(*subFolders.Obj());
+							if (refreshed) refreshed();
+						}
+					});
+				});
+				if (recursively)
+				{
+					for (auto child : children)
+					{
+						auto folder = child.Cast<FileDialogFolder>();
+						if (folder->type == FileDialogFolderType::Folder && folder->enumerationRequested)
+						{
+							folder->RefreshChildren(true, refreshed);
+						}
+					}
 				}
 			}
 
@@ -187,33 +273,7 @@ View Model (IFileDialogFolder)
 				if (type == FileDialogFolderType::Placeholder && !taskFired)
 				{
 					taskFired = true;
-					auto taskFolder = Ptr(parent);
-					vint taskFolderId = ++taskFolder->taskId;
-					taskQueue->Queue([taskFolder, taskFolderId]()
-					{
-						auto subFolders = Ptr(new List<filesystem::Folder>);
-						if (!taskFolder->folder.GetFolders(*subFolders.Obj()))
-						{
-							subFolders->Clear();
-						}
-
-						GetApplication()->InvokeInMainThread(nullptr, [taskFolder, taskFolderId, subFolders]()
-						{
-							if (taskFolder->taskId == taskFolderId)
-							{
-								taskFolder->RemovePlaceholderChild();
-								for (auto subFolder : *subFolders.Obj())
-								{
-									if (!taskFolder->childrenByName.Keys().Contains(subFolder.GetFilePath().GetName()))
-									{
-										auto child = Ptr(new FileDialogFolder(subFolder, taskFolder->taskQueue));
-										taskFolder->AddChild(child);
-										child->AddPlaceholderChild();
-									}
-								}
-							}
-						});
-					});
+					if (parent) parent->RefreshChildren(false);
 				}
 				return type;
 			}
@@ -225,6 +285,8 @@ View Model (IFileDialogFolder)
 
 			WString GetName() override
 			{
+				// Text-only tree rows must also start visible placeholder enumeration.
+				GetType();
 				return name;
 			}
 
@@ -256,6 +318,7 @@ View Model (IFileDialogFile)
 			FileDialogFileType			type = FileDialogFileType::Placeholder;
 			Ptr<FileDialogFolder>		associatedFolder;
 			WString						name;
+			filesystem::FilePath		path;
 
 			FileDialogFileType GetType() override
 			{
@@ -292,6 +355,8 @@ View Model (IFileDialogViewModel)
 			WString						dialogAskOverrideFile;
 
 			bool						isLoadingFiles = false;
+			bool						filesAvailable = false;
+			bool						isMutatingFiles = false;
 			filesystem::FilePath		loadingPath;
 			vint						loadingTaskId = 0;
 			Files						files;
@@ -306,6 +371,7 @@ View Model (IFileDialogViewModel)
 			}
 
 			FakeDialogServiceBase*      dialogService = nullptr;
+			bool						active = true;
 
 			bool						selectToSave = false;
 			bool						confirmed = false;
@@ -325,6 +391,13 @@ View Model (IFileDialogViewModel)
 			WString						initialDirectory;
 			Ptr<FileDialogFolder>		rootFolder;
 			Ptr<FileDialogFolder>		selectedFolder;
+
+			void Deactivate()
+			{
+				active = false;
+				++loadingTaskId;
+				rootFolder->InvalidateTasks();
+			}
 
 			WString GetTitle() override
 			{
@@ -381,6 +454,7 @@ View Model (IFileDialogViewModel)
 					{
 						selectedFolder = folder;
 						SelectedFolderChanged();
+						FileOperationsChanged();
 
 						if (refreshFile && loadingPath != selectedFolder->folder.GetFilePath())
 						{
@@ -438,11 +512,12 @@ View Model (IFileDialogViewModel)
 
 			void RefreshFiles() override
 			{
-				if (!selectedFolder) return;
+				if (!active || !selectedFolder) return;
 
 				vint taskId = ++loadingTaskId;
 				auto taskFolder = selectedFolder;
 				auto taskPath = (loadingPath = selectedFolder->folder.GetFilePath());
+				filesAvailable = false;
 				if (!isLoadingFiles)
 				{
 					isLoadingFiles = true;
@@ -455,6 +530,7 @@ View Model (IFileDialogViewModel)
 						files.Add(item);
 					}
 				}
+				FileOperationsChanged();
 
 				auto vm = Ptr(this);
 				taskQueue->Queue([taskId, taskFolder, taskPath, vm]()
@@ -462,36 +538,27 @@ View Model (IFileDialogViewModel)
 					auto folders = Ptr(new List<filesystem::Folder>);
 					auto files = Ptr(new List<filesystem::File>);
 					filesystem::Folder loadingFolder = taskPath;
-					if (!loadingFolder.GetFolders(*folders.Obj()) || !loadingFolder.GetFiles(*files.Obj()))
+					auto available = loadingFolder.GetFolders(*folders.Obj()) && loadingFolder.GetFiles(*files.Obj());
+					if (!available)
 					{
 						folders->Clear();
 						files->Clear();
 					}
 
-					GetApplication()->InvokeInMainThread(nullptr, [taskId, taskFolder, folders, files, vm]()
+					GetApplication()->InvokeInMainThread(nullptr, [taskId, taskFolder, folders, files, available, vm]()
 					{
-						if (vm->loadingTaskId == taskId)
+						if (vm->active && vm->loadingTaskId == taskId && vm->selectedFolder == taskFolder)
 						{
 							vm->files.Clear();
+							taskFolder->ReconcileChildren(*folders.Obj());
 
 							for (auto folder : *folders.Obj())
 							{
 								auto item = Ptr(new FileDialogFile);
 								item->type = FileDialogFileType::Folder;
 								item->name = folder.GetFilePath().GetName();
-
-								vint index = taskFolder->childrenByName.Keys().IndexOf(item->name);
-								if (index == -1)
-								{
-									auto associatedFolder = Ptr(new FileDialogFolder(folder, vm->taskQueue));
-									taskFolder->AddChild(associatedFolder);
-									associatedFolder->AddPlaceholderChild();
-									item->associatedFolder = associatedFolder;
-								}
-								else
-								{
-									item->associatedFolder = taskFolder->childrenByName.Values()[index];
-								}
+								item->path = folder.GetFilePath();
+								item->associatedFolder = taskFolder->childrenByName[item->name];
 
 								vm->files.Add(item);
 							}
@@ -501,12 +568,289 @@ View Model (IFileDialogViewModel)
 								auto item = Ptr(new FileDialogFile);
 								item->type = FileDialogFileType::File;
 								item->name = file.GetFilePath().GetName();
+								item->path = file.GetFilePath();
 								vm->files.Add(item);
 							}
 
 							vm->isLoadingFiles = false;
+							vm->filesAvailable = available;
+							vm->SelectedFolderChanged();
 							vm->IsLoadingFilesChanged();
+							vm->FileOperationsChanged();
 						}
+					});
+				});
+			}
+
+			bool GetCanModifyFolder() override
+			{
+				return active && filesAvailable && !isLoadingFiles && !isMutatingFiles
+					&& selectedFolder && selectedFolder->type != FileDialogFolderType::Placeholder
+					&& selectedFolder->folder.GetFilePath() == loadingPath
+					&& loadingPath.GetFullPath().Length() > 0;
+			}
+
+			bool GetIsMutatingFiles() override
+			{
+				return isMutatingFiles;
+			}
+
+			bool CanDeleteFiles(LazyList<Ptr<IFileDialogFile>> selection) override
+			{
+				if (!GetCanModifyFolder()) return false;
+				bool selected = false;
+				for (auto item : selection)
+				{
+					auto file = item.Cast<FileDialogFile>();
+					if (!file || !files.Contains(file.Obj()) || file->type == FileDialogFileType::Placeholder
+						|| file->path.GetFolder() != loadingPath || file->path.IsRoot()
+						|| file->path.GetFolder().GetFullPath().Length() == 0)
+					{
+						return false;
+					}
+					selected = true;
+				}
+				return selected;
+			}
+
+			void RefreshAfterMutation(Ptr<FileDialogFolder> folder)
+			{
+				auto vm = Ptr(this);
+				folder->RefreshChildren(true, [vm]()
+				{
+					if (vm->active) vm->SelectedFolderChanged();
+				});
+				auto path = selectedFolder->folder.GetFilePath();
+				while (true)
+				{
+					if (path == folder->folder.GetFilePath())
+					{
+						RefreshFiles();
+						break;
+					}
+					if (path.IsRoot()) break;
+					path = path.GetFolder();
+				}
+			}
+
+			void CreateFolder(
+				GuiWindow* owner,
+				Ptr<IFileDialogFolder> folder,
+				const WString& name,
+				const WString& alreadyExistsMessage,
+				const WString& failureMessage,
+				const Func<void(bool)>& callback
+			) override
+			{
+				if (!GetCanModifyFolder() || folder != selectedFolder) return;
+				auto taskFolder = selectedFolder;
+				auto path = taskFolder->folder.GetFilePath();
+				auto ownerFlag = owner->GetDisposedFlag();
+				auto vm = Ptr(this);
+				isMutatingFiles = true;
+				FileOperationsChanged();
+
+				taskQueue->Queue([vm, taskFolder, path, name, owner, ownerFlag, alreadyExistsMessage, failureMessage, callback]()
+				{
+					bool created = false;
+					bool alreadyExists = false;
+					Nullable<filesystem::FilePath> candidate;
+					try
+					{
+						bool valid = name.Length() > 0 && name != L"." && name != L"..";
+						auto delimiters = filesystem::FilePath::GetCompatibleDelimiters();
+						for (vint i = 0; i < name.Length(); i++)
+						{
+							auto c = name[i];
+							if (c == filesystem::FilePath::GetPathDelimiter() || delimiters.IndexOf(c) != -1 || c == L'\0')
+							{
+								valid = false;
+							}
+						}
+						if (valid && !filesystem::FilePath::IsAbsolutePath(name))
+						{
+							auto child = path / name;
+							if (child != path && child.GetFolder() == path)
+							{
+								candidate = child;
+							}
+						}
+					}
+					catch (const ArgumentException&)
+					{
+						// Invalid or overlong user input can fail before Folder::Create.
+					}
+					if (candidate)
+					{
+						filesystem::Folder child(candidate.Value());
+						alreadyExists = child.Exists();
+						if (!alreadyExists) created = child.Create(false);
+					}
+					GetApplication()->InvokeInMainThread(nullptr, [vm, taskFolder, owner, ownerFlag, alreadyExistsMessage, failureMessage, callback, created, alreadyExists]()
+					{
+						if (!vm->active) return;
+						if (created)
+						{
+							taskFolder->InvalidateTasks();
+							vm->RefreshAfterMutation(taskFolder);
+						}
+						else if (!ownerFlag->IsDisposed())
+						{
+							vm->dialogService->ShowMessageBox(
+								owner->GetNativeWindow(),
+								alreadyExists ? alreadyExistsMessage : failureMessage,
+								owner->GetText(),
+								INativeDialogService::DisplayOK,
+								INativeDialogService::DefaultFirst,
+								INativeDialogService::IconError,
+								INativeDialogService::ModalWindow
+							);
+						}
+						vm->isMutatingFiles = false;
+						if (!vm->active) return;
+						vm->FileOperationsChanged();
+						if (!ownerFlag->IsDisposed()) callback(created);
+					});
+				});
+			}
+
+			static bool CanDeleteDirectory(const filesystem::Folder& folder)
+			{
+				List<filesystem::Folder> pending;
+				pending.Add(folder);
+				while (pending.Count() > 0)
+				{
+					auto current = pending[pending.Count() - 1];
+					pending.RemoveAt(pending.Count() - 1);
+					filesystem::FileInfo info;
+					try
+					{
+						info = current.GetFileInfo();
+					}
+					catch (const Error&)
+					{
+						// The metadata API throws when an entry disappears or cannot be inspected.
+						return false;
+					}
+					if (info.isSymbolicLink || info.isReparsePoint) return false;
+					List<filesystem::Folder> folders;
+					List<filesystem::File> files;
+					try
+					{
+						if (!current.GetFolders(folders) || !current.GetFiles(files)) return false;
+					}
+					catch (const ArgumentException&)
+					{
+						// A descendant path that cannot be represented makes traversal incomplete.
+						return false;
+					}
+					for (auto child : folders) pending.Add(child);
+				}
+				return true;
+			}
+
+			void DeleteFiles(
+				GuiWindow* owner,
+				LazyList<Ptr<IFileDialogFile>> selection,
+				const Func<WString(const WString&, const WString&)>& confirmationMessage,
+				const Func<WString(const WString&, const WString&)>& failureMessage
+			) override
+			{
+				auto selected = Ptr(new List<Ptr<IFileDialogFile>>);
+				CopyFrom(*selected.Obj(), selection);
+				if (!CanDeleteFiles(From(*selected.Obj()))) return;
+				struct Target
+				{
+					filesystem::FilePath	path;
+					WString					name;
+					FileDialogFileType		type;
+				};
+				auto targets = Ptr(new List<Target>);
+				for (auto selectedFile : *selected.Obj())
+				{
+					auto file = selectedFile.Cast<FileDialogFile>();
+					targets->Add({ file->path,file->name,file->type });
+				}
+				auto taskFolder = selectedFolder;
+				auto path = taskFolder->folder.GetFilePath();
+				auto names = stream::GenerateToStream([&](stream::TextWriter& writer)
+				{
+					for (auto [target, index] : indexed(*targets.Obj()))
+					{
+						if (index > 0) writer.WriteString(L"\n");
+						writer.WriteString(target.name);
+					}
+				});
+				auto ownerFlag = owner->GetDisposedFlag();
+				isMutatingFiles = true;
+				FileOperationsChanged();
+				auto answer = dialogService->ShowMessageBox(
+					owner->GetNativeWindow(),
+					confirmationMessage(path.GetFullPath(), names),
+					owner->GetText(),
+					INativeDialogService::DisplayOKCancel,
+					INativeDialogService::DefaultSecond,
+					INativeDialogService::IconQuestion,
+					INativeDialogService::ModalWindow
+				);
+				if (!active || ownerFlag->IsDisposed()) return;
+				if (answer != INativeDialogService::SelectOK)
+				{
+					isMutatingFiles = false;
+					FileOperationsChanged();
+					return;
+				}
+
+				taskFolder->InvalidateTasks();
+				if (selectedFolder == taskFolder) ++loadingTaskId;
+				auto vm = Ptr(this);
+				taskQueue->Queue([vm, taskFolder, path, targets, owner, ownerFlag, failureMessage]()
+				{
+					auto failures = stream::GenerateToStream([&](stream::TextWriter& writer)
+					{
+						bool first = true;
+						for (auto target : *targets.Obj())
+						{
+							bool deleted = false;
+							if (target.path.GetFolder() == path && !target.path.IsRoot() && path.GetFullPath().Length() > 0)
+							{
+								if (target.type == FileDialogFileType::File)
+								{
+									deleted = filesystem::File(target.path).Delete();
+								}
+								else
+								{
+									filesystem::Folder folder(target.path);
+									deleted = CanDeleteDirectory(folder) && folder.Delete(true);
+								}
+							}
+							if (!deleted)
+							{
+								if (!first) writer.WriteString(L"\n");
+								writer.WriteString(target.name);
+								first = false;
+							}
+						}
+					});
+					GetApplication()->InvokeInMainThread(nullptr, [vm, taskFolder, path, failures, owner, ownerFlag, failureMessage]()
+					{
+						if (!vm->active) return;
+						taskFolder->InvalidateTasks();
+						vm->RefreshAfterMutation(taskFolder);
+						if (!ownerFlag->IsDisposed() && failures.Length() > 0)
+						{
+							vm->dialogService->ShowMessageBox(
+								owner->GetNativeWindow(),
+								failureMessage(path.GetFullPath(), failures),
+								owner->GetText(),
+								INativeDialogService::DisplayOK,
+								INativeDialogService::DefaultFirst,
+								INativeDialogService::IconError,
+								INativeDialogService::ModalWindow
+							);
+						}
+						vm->isMutatingFiles = false;
+						if (vm->active && !ownerFlag->IsDisposed()) vm->FileOperationsChanged();
 					});
 				});
 			}
@@ -544,6 +888,7 @@ View Model (IFileDialogViewModel)
 
 			bool TryConfirm(controls::GuiWindow* owner, Selection selectedPaths) override
 			{
+				if (!active || isMutatingFiles) return false;
 				CHECK_ERROR(dialogService, L"vl::presentation::FileDialogViewModel::TryConfirm()#dialogService is not initialized.");
 				auto wd = selectedFolder->folder.GetFilePath();
 				List<filesystem::FilePath> rawPaths;
@@ -1036,6 +1381,8 @@ FakeDialogServiceBase
 				}
 				break;
 			}
+
+			vm->Deactivate();
 
 			if (vm->filters.Count() > 0)
 			{

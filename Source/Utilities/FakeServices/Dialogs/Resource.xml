@@ -19,6 +19,8 @@
         <Image Path="Images/Information" Format="Png" Width="240" Height="240"/>
         <Image Path="Images/File" Format="Png" Width="240" Height="240"/>
         <Image Path="Images/Folder" Format="Png" Width="240" Height="240"/>
+        <Image Path="Images/NewFolder" Format="Png" Width="16" Height="16"/>
+        <Image Path="Images/Delete" Format="Png" Width="16" Height="16"/>
       </ImageData>
     </Xml>
   </Folder>
@@ -31,6 +33,8 @@
     <Image name="Information" content="File">Images/Information.png</Image>
     <Image name="File" content="File">Images/File.png</Image>
     <Image name="Folder" content="File">Images/Folder.png</Image>
+    <Image name="NewFolder" content="File">ToolbarIcons/NewFolder.png</Image>
+    <Image name="Delete" content="File">ToolbarIcons/Delete.png</Image>
   </Folder>
 
   <LocalizedStrings name="DialogStrings">
@@ -79,6 +83,13 @@
         <String Name="FileDialogErrorMultipleSelectionNotEnabled" Text="Multiple selection is not enabled in this dialog."/>
         <String Name="FileDialogAskCreateFile" Text="Do you want to create the following file(s):"/>
         <String Name="FileDialogAskOverrideFile" Text="Do you want to override the following file(s):"/>
+        <String Name="FileDialogNewFolder" Text="New Folder"/>
+        <String Name="FileDialogDelete" Text="Delete"/>
+        <String Name="FileDialogEnterFolderName" Text="Enter the folder name"/>
+        <String Name="FileDialogFolderAlreadyExists" Text="In folder &quot;$(0)&quot;, &quot;$(1)&quot; folder cannot be created because it already exists."/>
+        <String Name="FileDialogFolderCannotCreate" Text="In folder &quot;$(0)&quot;, &quot;$(1)&quot; folder cannot be created."/>
+        <String Name="FileDialogConfirmDelete" Text="Are you sure to delete the following items in folder &quot;$(0)&quot;?$(2)$(1)"/>
+        <String Name="FileDialogDeleteFailed" Text="The following items failed to delete in folder &quot;$(0)&quot;:$(2)$(1)"/>
       </Strings>
     </LocalizedStrings>
   </LocalizedStrings>

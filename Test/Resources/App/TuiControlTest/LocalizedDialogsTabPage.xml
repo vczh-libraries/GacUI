@@ -41,6 +41,13 @@
         <String Name="FileDialogErrorMultipleSelectionNotEnabled" Text="本对话框不支持多选。" />
         <String Name="FileDialogAskCreateFile" Text="你确定想要创建下列文件吗？" />
         <String Name="FileDialogAskOverrideFile" Text="你确定想要覆盖下列文件吗？" />
+        <String Name="FileDialogNewFolder" Text="新建文件夹"/>
+        <String Name="FileDialogDelete" Text="删除"/>
+        <String Name="FileDialogEnterFolderName" Text="请输入文件夹名称"/>
+        <String Name="FileDialogFolderAlreadyExists" Text="无法在文件夹“$(0)”中创建文件夹“$(1)”，因为它已经存在。"/>
+        <String Name="FileDialogFolderCannotCreate" Text="无法在文件夹“$(0)”中创建文件夹“$(1)”。"/>
+        <String Name="FileDialogConfirmDelete" Text="确定要删除文件夹“$(0)”中的下列项目吗？$(2)$(1)"/>
+        <String Name="FileDialogDeleteFailed" Text="文件夹“$(0)”中的下列项目删除失败：$(2)$(1)"/>
       </Strings>
     </LocalizedStringsInjection>
   </LocalizedStrings>
