@@ -4923,7 +4923,7 @@ Copy(Type|Expression|Statement|Declaration)
 					if (index != -1)
 					{
 						auto type = scopeManager->callExpressionTypedResults.Values()[index];
-						scopeManager->callExpressionTypedResults.Add(result.Cast<WfCallExpression>(), type);
+						scopeManager->callExpressionTypedResults.Add(result.Cast<WfCallExpression>().Obj(), type);
 					}
 				}
 			}
@@ -9377,7 +9377,7 @@ ExpandForEachStatement
 								decl->name.value = node->name.value;
 								if (symbol->typeInfo->GetDecorator() == ITypeInfo::Variant)
 								{
-									manager->callExpressionTypedResults.Add(callExpr, symbol->typeInfo);
+									manager->callExpressionTypedResults.Add(callExpr.Obj(), symbol->typeInfo);
 									decl->expression = callExpr;
 								}
 								else

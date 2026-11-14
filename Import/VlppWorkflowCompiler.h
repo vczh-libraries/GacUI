@@ -5387,7 +5387,7 @@ Scope Manager
 				typedef collections::Pair<WfConstructorDeclaration*, ITypeDescriptor*>						BaseConstructorCallKey;
 				typedef collections::Pair<WfBaseConstructorCall*, IMethodInfo*>								BaseConstructorCallValue;
 				typedef collections::Dictionary<BaseConstructorCallKey, BaseConstructorCallValue>			BaseConstructorCallResolvingMap;
-				typedef collections::Dictionary<Ptr<WfCallExpression>, Ptr<reflection::description::ITypeInfo>> CallExpressionTypedResultMap;
+				typedef collections::Dictionary<WfCallExpression*, Ptr<reflection::description::ITypeInfo>> CallExpressionTypedResultMap;
 
 				typedef collections::Dictionary<glr::ParsingAstBase*, Ptr<WfLexicalCapture>>				LambdaCaptureMap;
 				typedef collections::Dictionary<WfFunctionDeclaration*, IMethodInfo*>						InterfaceMethodImplementationMap;
