@@ -70,6 +70,7 @@
 - Preserve ordinary conversion behavior when adding type-specific semantics [1]
 - Exercise each distinct semantic and runtime failure independently [1]
 - Synchronize instruction files after active wrappers finish [1]
+- Keep semantic compiler state out of syntax ASTs [1]
 
 # Refinements
 
@@ -570,3 +571,7 @@ Consume pairing history or other one-shot state before callbacks that can pump n
 ## Synchronize instruction files after active wrappers finish
 
 `<Tools repo>/Copilot/copilotInitAll.ps1` replaces each destination's `<consuming repo>/.github/Scripts` folder, including wrapper logs. Wait for active build/test wrappers to finish and archive authoritative completed logs outside the replaced folders before synchronizing. An overwritten execution log can break the wrapper's final rename and invalidate its leak-report audit even when stdout contains passing case totals.
+
+## Keep semantic compiler state out of syntax ASTs
+
+Keep parsing-visible AST fields limited to syntax. Store resolved types and other compiler-owned analysis state in the existing semantic manager's side tables, following its ownership and clearing conventions. Moving a field requires auditing every producer, consumer and generated-node copy path; preserve normal resolution before applying a generated override, and keep generic syntax copying independent of semantic state. When rebuilding retained syntax, regenerate dependent expansions and analysis instead of retaining stale resolved values to conceal lifecycle gaps.

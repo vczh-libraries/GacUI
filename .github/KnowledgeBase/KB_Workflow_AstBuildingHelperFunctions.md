@@ -46,6 +46,10 @@ For `CopyExpression`, `CopyStatement`, `CopyDeclaration`, and `CopyModule`, the 
 
 `CopyType` does not take `expandVirtualExprStat` because Workflow types do not use the same virtual expansion mechanism.
 
+`CopyExpression`, `CopyStatement`, `CopyDeclaration`, and `CopyModule` also accept an optional `WfLexicalScopeManager*` as their last argument. Supply the current manager when lowering copies already-analyzed generated code within the same compilation. `CopyWithExpandVirtualVisitor` then transfers `callExpressionTypedResults` entries from original calls to copied calls, preserving variant foreach element types through nested lowering and coroutine rewriting. It does not copy other semantic tables; the generated subtree still goes through normal scope construction and validation.
+
+Omit the manager for independent syntax copying. In particular, preserve original virtual nodes when copying modules for a separate compilation; `Clear` and `Rebuild` discard their existing expansions and regenerate semantic state from the original syntax. A flattened generated subtree with manager-owned type overrides is not a self-contained parsed module.
+
 ## Create Default-Value Expressions
 
 Use `CreateDefaultValue` when generated code needs a default expression for an `ITypeInfo`.

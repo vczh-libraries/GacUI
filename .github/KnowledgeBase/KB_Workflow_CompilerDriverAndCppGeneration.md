@@ -93,6 +93,8 @@ Ptr<runtime::WfAssembly> CompileWorkflowModules(
 
 `GenerateCppFiles` consumes an already analyzed `WfLexicalScopeManager`. It does not parse or rebuild modules by itself. The input object `WfCppInput` controls assembly naming, generated filename stems, file splitting, reflection-file generation, comments, header guard prefix, and includes.
 
+C++ module collection follows the expanded declarations of context-free virtual declarations. Their original expressions are source syntax rather than analyzed executable nodes; for example, an auto-property initializer containing a function expression is copied into its backing-field declaration before scopes are built. Collecting the original lambda would attempt to read a nonexistent scope.
+
 The result is not a single source file. `WfCppOutput::cppFiles` is the complete generated file set, and the caller decides how to store, log, or pass each entry to the C++ build. `WfCppOutput::entryFileName` names the header stem that downstream code should include, but it is not the only generated file.
 
 The generated filename patterns below are basenames, with output directories chosen by the caller. Generated file groups include:

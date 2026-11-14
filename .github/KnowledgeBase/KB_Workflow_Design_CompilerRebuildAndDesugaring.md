@@ -48,7 +48,13 @@ The first phase:
 - loads reflected type names with `BuildGlobalNameFromTypeDescriptors`;
 - calls `IWfCompilerCallback::OnInitialize`.
 
-`Clear` resets more than modules and errors. It clears semantic side tables such as `expressionResolvings`, coroutine resolution maps, `lambdaCaptures`, `interfaceMethodImpls`, declaration metadata maps, and state-machine maps. Any new analysis cache maintained by `WfLexicalScopeManager` should be cleared here and considered when generated AST is revalidated.
+`Clear` resets more than modules and errors. It clears semantic side tables such as `expressionResolvings`, `callExpressionTypedResults`, coroutine resolution maps, `lambdaCaptures`, `interfaceMethodImpls`, declaration metadata maps, and state-machine maps. Any new analysis cache maintained by `WfLexicalScopeManager` should be cleared here and considered when generated AST is revalidated.
+
+When modules are retained, `Clear` discards their context-free and context-sensitive virtual expansions. The next rebuild regenerates expansions and scopes from the original nodes. Context-free expansions must also be discarded because their copied descendants can contain already-lowered context-sensitive code. Keeping such generated calls after clearing their resolved types would leave them without the semantic state needed for revalidation and emission. Reusing old scopes or resolved types is not a substitute for rebuilding them.
+
+Variant foreach lowering records the resolved element type of its generated enumerator `GetCurrent()` call in `callExpressionTypedResults`. This is a generated-call return-type override, not an ordinary-call analysis cache. Semantic analysis selects the normal overload before applying the override; C++ generation uses membership in the map to unbox the reflected return value to the ordered variant type. The override is not exposed as an AST field.
+
+Analyzer lowering supplies the current manager to `CopyWithExpandVirtualVisitor` and the `CopyExpression`, `CopyStatement`, `CopyDeclaration`, and `CopyModule` helpers when copying analyzed generated code. The call visitor transfers override entries to copied nodes within that manager. Generic copies without a manager do not transfer semantic state; copied original modules can be rebuilt normally to produce fresh expansions and types.
 
 ### Context-Free Desugaring And Structure Validation
 
