@@ -93,6 +93,24 @@ Files in this folder are generic client and requester helpers used only by `CppT
 - You must read the knowledge base about reflection and try to find the pattern in any *.cpp file.
 - If the reflection registration is affected, you should always fix the reflection and run necessary code generation projects.
 
+## Smartly Deciding What to Verify
+
+`REPO-ROOT/.github/Jobs/DebugRemoteProtocolSop.md` and `REPO-ROOT/.github/Jobs/DebugTuiControlTestSop.md` describes a very heavy load of verification against test apps.
+But most of the time when the task is very specific and only touches a small portion of GacUI or test apps,
+you don't have to verify everything.
+
+When you are assigned a test scope, follow that scope instead. Otherwise unless explicitly required to run the whole SOP:
+- Usually limit your test target to one or more in `CppTest`, `CppTest_Metaonly`, `RemotingTest_Core` with the native renderer.
+  - Unless the task is required to update the `GacJS` repo, you are recommended to ignore `GacJS`, including updating and verification.
+  - If a task does not touch TUI or change controls' behavior, you don't have to test `CppTest_Tui`.
+- You are going to reduce verification to only a few test pages that you think could be affected.
+- Not all test apps need to cover:
+  - If running with or without hosted mode does not matter for verification, you are recommended to run `CppTest` and skip `CppTest_Metaonly`.
+  - If a task only affects hosted mode or non hosted mode, you are recommended to only run `CppTest` or `CppTest_Metaonly`.
+  - If a task affects remote protocol, you are recommended to run `RemotingTest_Core` with the native renderer. Furthermore if a task is only about remote protocol, you are commended to only run them.
+- When you are required to create a verification plan, write down explicitly what test pages and what test apps to cover.
+- When you think `FullControlTest` does not help at all, which means it does not include anything you can use for verification, you can totally skip the SOP, use `Playground` instead.
+
 ## Projects for Verification
 
 You are required to follow the guideline to run any project in this solution,
@@ -341,7 +359,7 @@ Test apps include `CppTest*`, `GacUI_Host` and `RemotingTest*`; they are demos a
 
 Remote-view-model requesters finish normal shutdown inside `GuiMain`: destroy the window, release service proxies and stop the RPC server while the host transport is available. `GuiApplicationInitialize` subsequently finalizes global storage, including the shared MiniHTTP listener. Keep unexpected host loss fatal as specified by the debugging SOP.
 
-`<GacUI repo>/.github/Jobs/DebugRemoteProtocolSop.md` defines their expected connection/disconnection behavior. Test apps running FullControlTest should follow its "Complete Control Showcase (`/FCT`)" section; apps running TuiControlTest should follow `<GacUI repo>/.github/Jobs/DebugTuiControlTestSop.md`.
+`REPO-ROOT/.github/Jobs/DebugRemoteProtocolSop.md` defines their expected connection/disconnection behavior. Test apps running FullControlTest should follow its "Complete Control Showcase (`/FCT`)" section; apps running TuiControlTest should follow `REPO-ROOT/.github/Jobs/DebugTuiControlTestSop.md`.
 
 ## Windows Specific
 
@@ -366,7 +384,7 @@ Use Windows with the UIAutomationClient/UIAutomationTypes assemblies, an out-of-
 
 Windows test applications include:
 - `CppTest`                       : Run FullControlTest in hosted mode, built without reflection (`VCZH_DEBUG_NO_REFLECTION`).
-- `CppTest_Tui`                   : Run TuiControlTest in Windows Terminal using TuiSkin and the hosted TUI provider, built without reflection. It has no automation endpoint. Follow [DebugTuiControlTestSop.md](.github/Jobs/DebugTuiControlTestSop.md).
+- `CppTest_Tui`                   : Run TuiControlTest in Windows Terminal using TuiSkin and the hosted TUI provider, built without reflection. It has no automation endpoint. Follow `REPO-ROOT/.github/Jobs/DebugTuiControlTestSop.md`.
 - `CppTest_Rvm`                   : Run RemoteViewModelTest in hosted mode after acquiring its service from `RemotingTest_RvmHost`.
 - `CppTest_Metaonly`              : Run FullControlTest, built with metaonly reflection (`VCZH_DEBUG_METAONLY_REFLECTION`).
 - `CppTest_Reflection`            : Run FullControlTest, built with full reflection.
