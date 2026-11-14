@@ -1,0 +1,14 @@
+- Add `Interpretor` to `GuiRawElementBase`, now both `Interpretor` and `Data` triggers repaint.
+  - Extra `SetInterpretorAndData` method.
+  - `GuiDirect2DElementRenderer` and `GuiGDIElementRenderer` reacts to `Interpretor`:
+    - When it is empty, the interpretor is removed.
+    - When it is not empty, it requests the interpretor factory and the interpretor will subscribe to events of the current `GuiRawElementBase` subclass.
+    - Inexisting interpretor is not a failure, it is treated as empty value.
+    - `Initialize` and `Finalize` will be called in the renderer. This might need to be implemented in a new base class `GuiRawElementRendererBase`.
+  - `IGuiGraphicsResourceManager` from ``GetGuiGraphicsResourceManager` will handle raw element interpretor registration and querying:
+    - A `IGuiGraphicsRawInterpretor` and `IGuiGraphicsRawInterpretorFactory` is defined just below `IGuiGraphicsRendererFactory`, the interpretor interface has an `void Initialize(IGuiGraphicsElement*)` and `void Finalize();`.
+- `FullControlTestRawElement.(h|cpp)` will be rewritten to use `IGuiGraphicsRawInterpretorFactory`.
+  - The interpretor will be hardcoded "FullControlTest::Clock". The registration is done in `GuiMain` before loading the main window.
+  - `FullControlTestRawElementRemote.(h|cpp)` will be no longer necessary, as it could reuse `FullControlTestRawElement.(h|cpp)`.
+- To verify, make sure `CppTest` and `RemotingTest_Rendering_Win32` both behaves correctly on the `RawClock` test page.
+- DO NOT perform any work on `wGac`, `iGac` and `GacJS`.
