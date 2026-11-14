@@ -193,6 +193,7 @@
 ../../GacUISrc/Generated_FullControlTest/Source_x64/FullControlTestResource.cpp
 ../../GacUISrc/Generated_FullControlTest/Source_x64/MainWindow.cpp
 ../../GacUISrc/Generated_FullControlTest/FullControlTestEventHandlers.cpp
+../../GacUISrc/SharedDocumentEditor.cpp
 ../../../Source/Skins/DarkSkin/Config/DarkSkinConfig.cpp
 ../../GacUISrc/Generated_RemoteViewModelTest/Source_x64/RemoteViewModelTest.cpp
 ../../GacUISrc/Generated_RemoteViewModelTest/Source_x64/RemoteViewModelTestReflection.cpp
