@@ -10,6 +10,7 @@ using System.Windows.Automation.Text;
 
 public static class GacUIShowcaseTests
 {
+    public static string ExchangeDocument;
     [ComImport, Guid("d22108aa-8ac5-49a5-837b-37bbb3d7591e"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface INativeAutomationElement {
         void SetFocus();
@@ -206,7 +207,7 @@ public static class GacUIShowcaseTests
         while (timer.ElapsedMilliseconds < timeout) { if (predicate()) { assertions++; return; } Thread.Sleep(30); }
         if (!string.IsNullOrEmpty(PersistenceOutput))
         {
-            try { System.IO.File.WriteAllText(System.IO.Path.Combine(PersistenceOutput, "uia-timeout.json"), new JavaScriptSerializer { MaxJsonLength = int.MaxValue, RecursionLimit = 512 }.Serialize(ControlsSnapshot())); }
+            try { System.IO.Directory.CreateDirectory(PersistenceOutput); System.IO.File.WriteAllText(System.IO.Path.Combine(PersistenceOutput, "uia-timeout.json"), new JavaScriptSerializer { MaxJsonLength = int.MaxValue, RecursionLimit = 512 }.Serialize(ControlsSnapshot())); }
             catch (Exception error) { Console.WriteLine("NOTE timeout snapshot unavailable: " + error.Message); }
         }
         throw new Exception("Timed out: " + message);
@@ -1311,10 +1312,10 @@ public static class GacUIShowcaseTests
             if (confirm == null) confirm = NativeFileDialogControl(dialog, "Button", cancel ? 2 : 1);
             if (confirm == null)
             {
-                // The fake dialog localizes its two action buttons independently
-                // of the operating system. FileDialog.xml orders OK then Cancel.
+                // The fake dialog localizes its action buttons independently of
+                // the OS. FileDialog.xml puts OK/Cancel after folder/delete actions.
                 var actions = Find(dialog, ControlType.Button).FindAll(candidate => candidate.Current.FrameworkId == "GacUI" && candidate.Current.Name.Length > 0);
-                if (actions.Count == 2) confirm = actions[cancel ? 1 : 0];
+                if (actions.Count >= 2) confirm = actions[actions.Count - (cancel ? 1 : 2)];
             }
             return confirm != null && confirm.Current.IsEnabled;
         }, "file dialog confirmation button");
@@ -1362,10 +1363,7 @@ public static class GacUIShowcaseTests
         var selection = Pattern<SelectionItemPattern>(palette, SelectionItemPattern.Pattern);
         if (selection.Current.IsSelected) return;
         selection.Select();
-        Wait(() => {
-            try { var caption = palette.Current.Name; return false; }
-            catch (ElementNotAvailableException) { return true; }
-        }, "persistence palette replaced", 30000);
+        Wait(() => PaletteAttachmentRetired(palette), "persistence palette replaced", 30000);
         // Retired providers can still have queued event-cache work. Allow
         // it to drain before requesting the rebuilt tree and layout.
         Thread.Sleep(2000);
@@ -2578,6 +2576,49 @@ public static class GacUIShowcaseTests
         }
         Pattern<TransformPattern>(root, TransformPattern.Pattern).Resize(originalBounds.Width, originalBounds.Height);
     }
+    static void DocumentExchange(IntPtr hwnd)
+    {
+        Test("Document exchange / both GUI editors preserve a supplied private document");
+        Check(!string.IsNullOrEmpty(ExchangeDocument) && System.IO.File.Exists(ExchangeDocument), "exchange fixture exists");
+        var original = System.IO.File.ReadAllBytes(ExchangeDocument);
+        string serialized = Encoding.UTF8.GetString(original);
+        int start = serialized.IndexOf("<Doc>", StringComparison.Ordinal);
+        int end = serialized.IndexOf("</Doc>", StringComparison.Ordinal);
+        Check(start >= 0 && end > start, "exchange fixture contains document XML");
+        var expected = new System.Xml.XmlDocument();
+        expected.LoadXml(serialized.Substring(start, end + 6 - start));
+        string folder = System.IO.Path.Combine(PersistenceOutput, "Exchange-" + ownedProcess);
+        System.IO.Directory.CreateDirectory(folder);
+        for (int index = 0; index < 2; index++)
+        {
+            bool ribbon = index == 0;
+            var page = Page(Page(root, "Control"), ribbon ? "Document Editor (Ribbon)" : "Document Editor (Toolstrip)");
+            PersistenceFile(page, ribbon, "Load as Private Format", ExchangeDocument, false);
+            var document = Find(page, ControlType.Document)[0];
+            var text = Pattern<TextPattern>(document, TextPattern.Pattern);
+            foreach (System.Xml.XmlNode node in expected.SelectNodes("/Doc/Content//text()"))
+                Check(text.DocumentRange.GetText(-1).Contains(node.Value), "exchange text is present: " + node.Value);
+            string before = text.DocumentRange.GetText(-1);
+            document.SetFocus();
+            Press("Ctrl+End");
+            Input("!Type:\u00a7");
+            Wait(() => text.DocumentRange.GetText(-1) == before + "\u00a7", "exchange document edit");
+            text.DocumentRange.FindText("\u00a7", true, false).Select();
+            PersistencePalette(hwnd, ribbon ? "Aurora" : "Default");
+            page = Page(Page(root, "Control"), ribbon ? "Document Editor (Ribbon)" : "Document Editor (Toolstrip)");
+            document = Find(page, ControlType.Document)[0];
+            text = Pattern<TextPattern>(document, TextPattern.Pattern);
+            Check(text.DocumentRange.GetText(-1) == before + "\u00a7" && text.GetSelection()[0].GetText(-1) == "\u00a7", "theme refresh preserves edited document and selection");
+            if (ribbon) { document.SetFocus(); Press("Ctrl+Z"); }
+            else EditorCommand(page, document, false, "Undo", false, true);
+            Wait(() => text.DocumentRange.GetText(-1) == before, "theme refresh preserves document undo history");
+            string saved = System.IO.Path.Combine(folder, "editor-" + index + ".bin");
+            PersistenceFile(page, ribbon, "Save as Private Format", saved, false);
+            Check(Convert.ToBase64String(original) == Convert.ToBase64String(System.IO.File.ReadAllBytes(saved)), "exchange preserves complete model and embedded image bytes in editor " + index);
+            Console.WriteLine("PASS exchange / " + (ribbon ? "Ribbon" : "Toolstrip") + " / " + saved);
+        }
+    }
+
     static void DocumentPersistence(IntPtr hwnd)
     {
         Test("Document persistence / independent viewers, private round trip, RTF, HTML and cancellation");
@@ -2940,6 +2981,99 @@ public static class GacUIShowcaseTests
         throw new Exception("Missing rendered " + theme + ": " + text);
     }
 
+    static bool PaletteAttachmentRetired(AutomationElement radio)
+    {
+        try { var name = radio.Current.Name; return false; }
+        catch (ElementNotAvailableException) { return true; }
+        // UIA can also report a COM failure when a template provider is retired.
+        // Callers must reacquire the window and verify its rebuilt controls.
+        catch (COMException error) { Console.WriteLine("NOTE retired palette provider: " + error.ErrorCode.ToString("X8")); return true; }
+    }
+
+    static void SkinItems(AutomationElement manager, string selected)
+    {
+        var names = new[] { "Default", "Aurora", "Ember", "Moonstone", "Lagoon", "Rosewood" };
+        var hwnd = new IntPtr(root.Current.NativeWindowHandle);
+        var radios = new List<AutomationElement>();
+        var previous = new List<System.Windows.Rect>();
+        int stable = 0;
+        Wait(() => {
+            Thread.Sleep(100);
+            root = AutomationElement.FromHandle(hwnd);
+            manager = Named(root, "Window Manager", ControlType.TabItem);
+            radios = Find(manager, ControlType.RadioButton);
+            if (radios.Count != names.Length) return false;
+            var current = radios.ConvertAll(radio => radio.Current.BoundingRectangle);
+            bool settled = previous.Count == current.Count;
+            for (int i = 0; i < current.Count; i++)
+                settled &= !current[i].IsEmpty && current[i].Width > 0 && current[i].Height > 0 && previous.Count == current.Count && previous[i] == current[i];
+            stable = settled ? stable + 1 : 0;
+            previous = current;
+            return stable >= 3;
+        }, "repeated skin item bounds settle", 30000);
+        Check(radios.Count == names.Length, "repeated skin item count");
+        int checkedCount = 0;
+        for (int i = 0; i < names.Length; i++)
+        {
+            Check(radios[i].Current.Name == names[i], "repeated skin item order " + i);
+            bool isSelected = Pattern<SelectionItemPattern>(radios[i], SelectionItemPattern.Pattern).Current.IsSelected;
+            Check(isSelected == (names[i] == selected), "skin item checked state " + names[i]);
+            if (isSelected) checkedCount++;
+            if (i > 0) Check(radios[i].Current.BoundingRectangle.Top > radios[i - 1].Current.BoundingRectangle.Top, "skin items remain vertical");
+        }
+        Check(checkedCount == 1, "skin items share one selection group");
+    }
+
+    static void SkinRefreshListState()
+    {
+        Test("skin refresh / hidden list selection and scrolling");
+        var hwnd = new IntPtr(root.Current.NativeWindowHandle);
+        var page = Page(Page(root, "List"), "TextList");
+        var lists = Find(page, ControlType.List);
+        Check(lists.Count == 2 && Items(lists[0]).Count == 0, "fresh paired TextLists");
+        for (int i = 0; i < 5; i++) Invoke(page, "Add 10 items");
+        Wait(() => Items(lists[0]).Count == 50 && Items(lists[1]).Count == 50, "both lists populated for scrolling");
+        var selected = new[] { "13", "37" };
+        var positions = new double[2];
+        for (int i = 0; i < lists.Count; i++)
+        {
+            Pattern<SelectionItemPattern>(Named(lists[i], selected[i], ControlType.ListItem), SelectionItemPattern.Pattern).Select();
+            var scroll = Pattern<ScrollPattern>(lists[i], ScrollPattern.Pattern);
+            Check(scroll.Current.VerticallyScrollable, "populated list scrolls " + i);
+            scroll.SetScrollPercent(ScrollPattern.NoScroll, i == 0 ? 50 : 70);
+            positions[i] = scroll.Current.VerticalScrollPercent;
+            Check(positions[i] > 0, "retained list offset starts away from zero " + i);
+            Console.WriteLine("LIST BEFORE " + i + " selected=" + selected[i] + " scroll=" + positions[i]);
+        }
+        foreach (var palette in new[] { "Aurora", "Default" })
+        {
+            var radio = Named(Page(root, "Window Manager"), palette, ControlType.RadioButton);
+            Pattern<SelectionItemPattern>(radio, SelectionItemPattern.Pattern).Select();
+            Wait(() => PaletteAttachmentRetired(radio), "list palette replaced", 30000);
+            Wait(() => {
+                root = AutomationElement.FromHandle(hwnd);
+                return FindNamed(root, "Window Manager", ControlType.TabItem) != null;
+            }, "list palette window rebuilt", 30000);
+            SkinItems(Page(root, "Window Manager"), palette);
+            page = Page(Page(root, "List"), "TextList");
+            lists = Find(page, ControlType.List);
+            Check(lists.Count == 2 && Items(lists[0]).Count == 50 && Items(lists[1]).Count == 50, "both list models survive " + palette);
+            for (int i = 0; i < lists.Count; i++)
+            {
+                var list = lists[i];
+                int index = i;
+                string lastState = null;
+                Wait(() => {
+                    var selection = Pattern<SelectionPattern>(list, SelectionPattern.Pattern).Current.GetSelection();
+                    double position = Pattern<ScrollPattern>(list, ScrollPattern.Pattern).Current.VerticalScrollPercent;
+                    string state = selection.Length + ":" + (selection.Length == 1 ? selection[0].Current.Name : "") + ":" + position;
+                    if (lastState != state) { Console.WriteLine("LIST AFTER " + palette + " " + index + " " + state); lastState = state; }
+                    return selection.Length == 1 && selection[0].Current.Name == selected[index] && Math.Abs(position - positions[index]) < 1;
+                }, "hidden list selection and scroll retained after " + palette + " / " + i, 30000);
+            }
+        }
+    }
+
     static void ResponsivePalette()
     {
         var hwnd = new IntPtr(root.Current.NativeWindowHandle);
@@ -2961,7 +3095,7 @@ public static class GacUIShowcaseTests
             var selection = Pattern<SelectionItemPattern>(radio, SelectionItemPattern.Pattern);
             bool changed = !selection.Current.IsSelected;
             selection.Select();
-            if (changed) Wait(() => { try { var name = radio.Current.Name; return false; } catch (ElementNotAvailableException) { return true; } }, "palette replaced");
+            if (changed) Wait(() => PaletteAttachmentRetired(radio), "palette replaced");
             root = AutomationElement.FromHandle(hwnd);
             var layout = Page(root, "Layout");
             // A Debug palette refresh rebuilds the complete showcase before laying out its new templates.
@@ -3406,11 +3540,12 @@ public static class GacUIShowcaseTests
             var manager = Page(root, "Window Manager");
             var oldRadio = Named(manager, palette, ControlType.RadioButton);
             Pattern<SelectionItemPattern>(oldRadio, SelectionItemPattern.Pattern).Select();
-            Wait(() => { try { var name = oldRadio.Current.Name; return false; } catch (ElementNotAvailableException) { return true; } }, "old palette attachment retired after " + palette);
+            Wait(() => PaletteAttachmentRetired(oldRadio), "old palette attachment retired after " + palette);
             root = AutomationElement.FromHandle(mainWindowHandle);
             manager = Page(root, "Window Manager");
             var currentRadio = Named(manager, palette, ControlType.RadioButton);
             Check(Pattern<SelectionItemPattern>(currentRadio, SelectionItemPattern.Pattern).Current.IsSelected, "palette " + palette + " selected after theme refresh");
+            SkinItems(manager, palette);
             page = Page(Page(root, "Layout"), "Easy Layout");
             Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(30000);
             root = AutomationElement.FromHandle(mainWindowHandle);
@@ -3609,7 +3744,7 @@ public static class GacUIShowcaseTests
             var manager = Page(root, "Window Manager");
             var radio = Named(manager, palette, ControlType.RadioButton);
             Pattern<SelectionItemPattern>(radio, SelectionItemPattern.Pattern).Select();
-            Wait(() => { try { var name = radio.Current.Name; return false; } catch (ElementNotAvailableException) { return true; } }, "table palette refresh completed");
+            Wait(() => PaletteAttachmentRetired(radio), "table palette refresh completed");
             root = AutomationElement.FromHandle(hwnd);
             page = Page(Page(root, "Layout"), "Easy Layout (Table)");
             Check(Pattern<ValuePattern>(Find(page, ControlType.Edit)[0], ValuePattern.Pattern).Current.Value == retainedText, "palette refresh retains table payload");
@@ -4722,6 +4857,7 @@ public static class GacUIShowcaseTests
         // template replacement before broad notification subscriptions; those
         // exercise event contracts separately and cache the entire rebuilt tree.
         if (scenario == "All" || scenario == "Persistence") DocumentPersistence(hwnd);
+        if (scenario == "DocumentExchange") DocumentExchange(hwnd);
         if (scenario == "All" || scenario == "DocumentContextMenu") DocumentContextMenu(hwnd);
         if (scenario == "DocumentEditorSop" || scenario == "DocumentEditorCommands")
         {
@@ -4741,7 +4877,7 @@ public static class GacUIShowcaseTests
             System.IO.Directory.CreateDirectory(folder);
             DocumentStyles(hwnd, folder);
         }
-        if (scenario != "RawClock" && scenario != "Touching" && scenario != "Persistence" && scenario != "DocumentStyles" && scenario != "DocumentContextMenu" && scenario != "DocumentEditorSop" && scenario != "DocumentEditorCommands" && scenario != "PointRegression" && scenario != "TouchingList" && scenario != "FileDialogMutations")
+        if (scenario != "RawClock" && scenario != "Touching" && scenario != "Persistence" && scenario != "DocumentExchange" && scenario != "DocumentStyles" && scenario != "DocumentContextMenu" && scenario != "DocumentEditorSop" && scenario != "DocumentEditorCommands" && scenario != "PointRegression" && scenario != "TouchingList" && scenario != "FileDialogMutations")
         {
             Automation.AddStructureChangedEventHandler(root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref structureEvents));
             Automation.AddAutomationPropertyChangedEventHandler(root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref propertyEvents), AutomationElement.NameProperty, SelectionItemPattern.IsSelectedProperty, TogglePattern.ToggleStateProperty);
@@ -4750,6 +4886,7 @@ public static class GacUIShowcaseTests
         }
         try
         {
+            if (scenario == "All" || scenario == "Layout" || scenario == "ShowcaseSkins") SkinItems(Page(root, "Window Manager"), "Default");
             if (scenario == "All" || scenario == "Review") ReviewContracts();
             if (scenario == "Transitions") TransitionContracts();
             if (scenario == "Review2") Review2Contracts();
@@ -4763,13 +4900,14 @@ public static class GacUIShowcaseTests
             // resize and palette checks use current properties and snapshots;
             // retaining subtree subscriptions makes their rebuilds cache every
             // intermediate template and can starve layout on Debug builds.
-            if (scenario == "All") Automation.RemoveAllEventHandlers();
+            if (scenario == "All" || scenario == "Layout" || scenario == "ShowcaseSkins" || scenario == "ResponsivePalette") Automation.RemoveAllEventHandlers();
             if (scenario == "All" || scenario == "RawClock") RawClock(scenario == "All");
             if (scenario == "All" || scenario == "Touching") Touching(scenario == "All");
             if (scenario == "All" || scenario == "Layout" || scenario == "Responsive") ResponsiveLayout();
             if (scenario == "ResponsiveWindow") { ResponsiveRegressions(); ResponsiveLayout(false); }
             if (scenario == "ResponsivePalette") ResponsivePalette();
-            if (scenario == "All" || scenario == "Layout") { EasyLayout(); EasyLayoutTables(); }
+            if (scenario == "All" || scenario == "Layout" || scenario == "ShowcaseSkins") { EasyLayout(); EasyLayoutTables(); }
+            if (scenario == "ShowcaseSkins") SkinRefreshListState();
             if (scenario == "All" || scenario == "Walk") WalkTabs(root, 0);
             if (scenario == "All" || scenario == "Window") {
             Test("Window / Transform.Move uses physical screen coordinates");
@@ -4855,7 +4993,7 @@ public static class GacUIShowcaseTests
             Check(structureEvents > 0 && propertyEvents > 0, "structure and property notifications");
             Test("palette replacement / preserved state");
             var palette = Named(page, "Aurora", ControlType.RadioButton); Pattern<SelectionItemPattern>(palette, SelectionItemPattern.Pattern).Select();
-            Wait(() => { try { var name = palette.Current.Name; return false; } catch (ElementNotAvailableException) { return true; } }, "old palette attachment retired by template replacement");
+            Wait(() => PaletteAttachmentRetired(palette), "old palette attachment retired by template replacement");
             root = AutomationElement.FromHandle(hwnd);
             page = Page(root, "Window Manager");
             palette = Named(page, "Aurora", ControlType.RadioButton);

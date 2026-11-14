@@ -25,7 +25,7 @@ void GuiMain()
 	theme::RegisterTheme(Ptr(new darkskin::Theme));
 	{
 		demo::MainWindow window;
-		demo::AttachFctEvents<demo::DocumentEditorBase>(&window);
+		demo::AttachFctEvents<demo::DocumentEditorBase, demo::FctSkinItem>(&window);
 		auto rawClockAttachment = demo::AttachFullControlTestRawElement(window.GetClockElement());
 		auto touchingAttachment = demo::AttachFullControlTestTouchingElement(window.GetTouchingElement());
 		window.ForceCalculateSizeImmediately();

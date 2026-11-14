@@ -38,7 +38,7 @@ void GuiMain()
 	theme::RegisterTheme(Ptr(new darkskin::Theme));
 #if defined GACUI_WASM_FCT
 	auto window = Ptr(new demo::MainWindow);
-	demo::AttachFctEvents<demo::DocumentEditorBase>(window.Obj());
+	demo::AttachFctEvents<demo::DocumentEditorBase, demo::FctSkinItem>(window.Obj());
 #elif defined GACUI_WASM_RPT
 	auto window = Ptr(new rptest::RpMainWindow);
 #elif defined GACUI_WASM_RVMT

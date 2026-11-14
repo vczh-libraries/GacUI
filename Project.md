@@ -211,7 +211,7 @@ TuiSkin follows the same ownership pattern. `Test/Resources/App/TuiSkin/TuiSkin.
 
 Both skin inventories and the direct configuration consumers (`UnitTest`, `CppTest_Tui`, the FullControlTest inventory and `GacUI_Host`) define `GACUI_SKIN_DEVELOPMENT` to select the matching `Generated_<Skin>/Source_x86` or `Source_x64` header. Linux development `vmake` inputs define the same macro. Without it, canonical config headers include the merged release `Source` header. CodePack ignores development branches and includes each `Config` folder in its own skin pair. The release workflow first packs current sources and builds/deploys GacGen and GacBuild, which do not depend on skins. It then regenerates both skins through native orchestration and packs the final release, preserving the config files throughout.
 
-`SetColorPackage` affects subsequent template construction. FullControlTest raises `PaletteSelected(int)` from its palette radios, following TuiControlTest. Its manually maintained `Generated_FullControlTest/FullControlTestEventHandlers.h/.cpp` owns `demo::OnPaletteSelected`, which queues preset creation, installation and `GuiApplication::RefreshThemes()` together after input dispatch. Every showcase entry point attaches that shared handler. All presets are always available; DarkSkin has no selector callback, plugin or availability state. `GacUI_Host` loads the showcase from Workflow binary and uses native DarkSkin from `Lib_GacUI_App_Reflection`, attaching the same handler through reflection. DarkSkin document templates construct palette-based baseline overrides, retaining dark text defaults and document state across refresh.
+`SetColorPackage` affects subsequent template construction. FullControlTest and TuiControlTest expose stable getter-only observable `SkinItems` collections of `FctSkinItem` and `TuiSkinItem`. Each Workflow item owns a readonly name and native callable. Their RepeatStack templates contain ordinary radios in one mutex group, with GUI spacing 5 and TUI spacing 0. Shared native helpers populate names/actions after window construction; Default and SkyBlue (default) remain initially selected without installing another palette. A real selection queues the retained item's `SelectSkin()` and `GuiApplication::RefreshThemes()` together. Deselection and template reconstruction execute no action, and selected-item identity survives refresh. Preset policy stays in showcase composition; the reusable skins keep their existing defaults. `GacUI_Host` constructs items and populates the collection through reflection without linking generated FullControlTest classes. DarkSkin document templates retain dark text defaults and document state across refresh.
 
 ## Debugging Remote Protocol Issues
 
@@ -231,12 +231,24 @@ copy it and `<GacUI repo>/Test/GacUISrc/SharedArguments.h` through their synchro
 scripts. See [Linux/macOS Specific](#linuxmacos-specific) for their replacement projects and launchers.
 
 `<GacUI repo>/Test/GacUISrc/Generated_FullControlTest/FullControlTestEventHandlers.h/.cpp`
-is authored code. It attaches the palette handler and four persistence events to
-each editor's own viewer. Private `.bin` save, RTF and HTML export finish encoding
-and stream close synchronously. Host attaches the same handlers through reflection
+is authored code. It populates the skin items and attaches four persistence events to
+each editor's own viewer. `<GacUI repo>/Test/GacUISrc/SharedDocumentEditor.h/.cpp`
+owns the common format operations without a skin dependency. Private `.bin` save,
+RTF and HTML export finish encoding and stream close synchronously. Host attaches
+the same operations through reflection
 without linking generated FullControlTest classes. Private files embed their images;
 remote image encoding is available independently of filesystem injection.
 Private saves retain the complete style catalog, including unused definitions.
+
+`<GacUI repo>/Test/GacUISrc/Generated_TuiControlTest/TuiControlTestEventHandlers.h/.cpp`
+provides the corresponding TUI composition. Its editor translates image runs into
+the existing embedded labels on load, retaining original image data and metadata.
+The saving model restores image runs before calling the shared formats. File-backed
+labels use `[Image: path, width x height]`; memory/private-loaded images use
+`[Image, width x height]` with decoded frame dimensions. Exports select the whole
+document without clearing its private modified state. Loading another document
+replaces its label items and retained image map. Both packaged tutorials receive
+these helpers through `<Tools repo>/Tools/BuildRelease.ps1`.
 
 Use `REPO-ROOT/.github/Jobs/DebugRemoteProtocolSop.md` for the shared end-to-end UI operations and
 observable results.

@@ -489,6 +489,7 @@ Lists inherit default point acceptance and one-finger locked-axis scrolling from
 - `OnRenderTargetChanged`: Reloads visible styles while retaining the provider, arranger and view position. Detaching the unchanged provider would temporarily empty the list and disable its scrollbars during ancestor template reconstruction.
 - `OnBeforeReleaseGraphicsHost`: Clears style and arranger to release resources
 - `AfterControlTemplateInstalled_`: Reloads visible styles, restores the view position transferred by `GuiScrollView`, and recalculates the valid scroll range. Explicit item-template/arranger changes still reset scrollbars in `SetStyleAndArranger`.
+- Arranger visual reload uses `GuiVirtualRepeatCompositionBase::ReloadVisibleStyles`, retaining the measured item-size cache and viewport while recreating row templates. A hidden page cannot yet measure replacement text; fully resetting its cache would publish a provisional short extent and clamp the saved offset. Explicit `ResetLayout` retains its full geometry/cache reset semantics.
 
 ### Focus Handling
 

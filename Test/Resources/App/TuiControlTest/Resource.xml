@@ -69,6 +69,20 @@
       </Window>
     </Instance>
   </Instance>
+  <Instance name="SkinItemTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiSkinItemTemplate">
+      <ref.Parameter Name="ViewModel" Class="tuidemo::TuiSkinItem"/>
+      <ref.Members><![CDATA[
+        func GetButton() : GuiSelectableButton* { return radioButton; }
+        prop Button : GuiSelectableButton* {GetButton}
+      ]]></ref.Members>
+      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren">
+        <RadioButton ref.Name="radioButton" Text-bind="ViewModel.Name">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+        </RadioButton>
+      </ControlTemplate>
+    </Instance>
+  </Instance>
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiMainWindow" xmlns:demo="tuidemo::*" xmlns:x="presentation::controls::GuiSelectableButton::*" ref.Styles="res://WindowManagerContentStyles">
       <ref.Members><![CDATA[
@@ -77,7 +91,38 @@
         prop closingCount : int = 0 {}
         prop readyToCloseCount : int = 0 {}
 
-        event PaletteSelected(int);
+        prop SkinItems : observe TuiSkinItem^[] = {} {const, not observe}
+        prop SelectedSkinItem : TuiSkinItem^ = null {not observe}
+
+        func SelectSkinItem(item : TuiSkinItem^) : void
+        {
+          if (self.SelectedSkinItem != item)
+          {
+            self.SelectedSkinItem = item;
+            GuiApplication::GetApplication().InvokeInMainThread(self, func() : void
+            {
+              item.SelectSkin();
+              GuiApplication::GetApplication().RefreshThemes();
+            });
+          }
+        }
+
+        func CreateSkinItemTemplate(value : object) : GuiTemplate*
+        {
+          var item = cast (TuiSkinItem^) value;
+          var itemTemplate = new TuiSkinItemTemplate*(item);
+          var button = itemTemplate.Button;
+          button.GroupController = paletteGroup;
+          button.Selected = self.SelectedSkinItem == item;
+          attach(button.SelectedChanged, func(sender : GuiGraphicsComposition*, arguments : GuiEventArgs*) : void
+          {
+            if (button.Selected)
+            {
+              self.SelectSkinItem(item);
+            }
+          });
+          return itemTemplate;
+        }
 
         func ShowMouseModifiers(alt: bool, osSuper: bool): void
         {
@@ -240,38 +285,8 @@
                 <Cell Site="row:0 column:1">
                   <GroupBox Text="Color Theme">
                     <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1" />
-                    <Stack Direction="Vertical" Padding="0" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-                      <StackItem>
-                        <RadioButton ref.Name="palettePink" Text="Pink" GroupController-ref="paletteGroup">
-                          <ev.SelectedChanged-eval><![CDATA[{if (palettePink.Selected) {self.PaletteSelected(0);}}]]></ev.SelectedChanged-eval>
-                        </RadioButton>
-                      </StackItem>
-                      <StackItem>
-                        <RadioButton ref.Name="paletteOrange" Text="Orange" GroupController-ref="paletteGroup">
-                          <ev.SelectedChanged-eval><![CDATA[{if (paletteOrange.Selected) {self.PaletteSelected(1);}}]]></ev.SelectedChanged-eval>
-                        </RadioButton>
-                      </StackItem>
-                      <StackItem>
-                        <RadioButton ref.Name="paletteGrass" Text="Grass" GroupController-ref="paletteGroup">
-                          <ev.SelectedChanged-eval><![CDATA[{if (paletteGrass.Selected) {self.PaletteSelected(2);}}]]></ev.SelectedChanged-eval>
-                        </RadioButton>
-                      </StackItem>
-                      <StackItem>
-                        <RadioButton ref.Name="paletteEmerald" Text="Emerald" GroupController-ref="paletteGroup">
-                          <ev.SelectedChanged-eval><![CDATA[{if (paletteEmerald.Selected) {self.PaletteSelected(3);}}]]></ev.SelectedChanged-eval>
-                        </RadioButton>
-                      </StackItem>
-                      <StackItem>
-                        <RadioButton ref.Name="paletteSkyblue" Text="SkyBlue (default)" GroupController-ref="paletteGroup" Selected="true">
-                          <ev.SelectedChanged-eval><![CDATA[{if (paletteSkyblue.Selected) {self.PaletteSelected(4);}}]]></ev.SelectedChanged-eval>
-                        </RadioButton>
-                      </StackItem>
-                      <StackItem>
-                        <RadioButton ref.Name="palettePurple" Text="Purple" GroupController-ref="paletteGroup">
-                          <ev.SelectedChanged-eval><![CDATA[{if (palettePurple.Selected) {self.PaletteSelected(5);}}]]></ev.SelectedChanged-eval>
-                        </RadioButton>
-                      </StackItem>
-                    </Stack>
+                    <RepeatStack ref.Name="skinItemsStack" Direction="Vertical" Padding="0" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren"
+                      ItemSource-eval="self.SkinItems" ItemTemplate-eval="self.CreateSkinItemTemplate"/>
                   </GroupBox>
                 </Cell>
               </Table>
@@ -367,6 +382,24 @@
         
         namespace tuidemo
         {
+          class TuiSkinItem
+          {
+            @cpp:Private
+            var selectSkin : func() : void = null;
+
+            prop Name : string = "" {const, not observe}
+
+            new(name : string, action : func() : void)
+            {
+              SetName(name);
+              selectSkin = action;
+            }
+
+            func SelectSkin() : void
+            {
+              selectSkin();
+            }
+          }
           class TuiMyTextItem
           {
             prop Name : string = "" {not observe}

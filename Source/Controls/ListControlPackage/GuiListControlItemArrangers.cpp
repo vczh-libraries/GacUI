@@ -177,7 +177,7 @@ RangedItemArrangerBase
 
 				void RangedItemArrangerBase::ReloadVisibleStyles()
 				{
-					if (repeat) repeat->ResetLayout(true);
+					if (repeat) repeat->ReloadVisibleStyles();
 				}
 
 				void RangedItemArrangerBase::OnViewChanged(Rect bounds)

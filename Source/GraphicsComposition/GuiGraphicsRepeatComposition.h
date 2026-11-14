@@ -235,6 +235,7 @@ GuiVirtualRepeatCompositionBase
 				ItemStyleRecord										GetVisibleStyle(vint itemIndex);
 				vint												GetVisibleIndex(ItemStyleRecord style);
 				void												ResetLayout(bool recreateVisibleStyles);
+				void												ReloadVisibleStyles();
 				void												InvalidateLayout();
 
 				Size												GetAdoptedSize(Size expectedSize);

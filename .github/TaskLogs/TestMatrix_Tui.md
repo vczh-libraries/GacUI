@@ -123,3 +123,71 @@ Windows locked desktop: physical input and displayed Windows Terminal font/color
 - Control/Document Editor: private-format callback displayed its documented not-implemented message, but the long path/message exceeded 120 columns; title, both side borders and message ends were clipped. Capture Tui-document-load-callback.json. Reproduced with long MessageDialog text, then enabled wrapping and wrapped-height calculation only on the message label template. Regenerated both architectures; all accepted callbacks and 18 live message cases now pass, alongside the multiline regression.
 
 ## Terminal Comparisons
+
+
+# Test Matrix Card 2026-11-14 / observable skins and document persistence
+
+## Environment
+
+| Field | Value |
+| --- | --- |
+| Platform / application / commit / build configuration | Windows; CppTest_Tui (packaged TuiSkin pending); task implementation after 7797a0ee8; Debug x64 with Win32 metadata verification |
+| Terminal name / version / profile / viewport sizes | Owned Windows ConPTY; 120x40 and 80x25; displayed terminal profile unverified |
+| Input methods / desktop availability | Interactive execution wrapper, native console-record replay, pseudoconsole resize and live cell-buffer capture |
+
+## Test Matrix
+
+| Test Item | 1st |
+| --- | --- |
+| Build / resource generation / import / sync | 2026-11-14; GacUI release flow passed; Release/platform work running |
+| Unit tests | 2026-11-14; Debug x64 and Release Win32/x64: 98 files / 1999 cases each; Debug has no leaks |
+| Platform launch and terminal/input capabilities | 2026-11-14 01:31; owned 120x40 and 80x25 consoles |
+| Startup, platform services and teardown | 2026-11-14 01:31; 120x40 and 80x25 exit 0; input/output modes restored |
+| Follow-up regression checks | 2026-11-14; arbitrary items, one action/refresh, image metadata |
+| List / TextList |  |
+| List / ListView |  |
+| List / TreeView |  |
+| List / BindableDataGrid |  |
+| Refresh List / TextList |  |
+| Refresh List / BindableTextList |  |
+| Refresh List / ListView |  |
+| Refresh List / BindableListView |  |
+| Refresh List / TreeView |  |
+| Refresh List / BindableTreeView |  |
+| Refresh List / BindableDataGrid |  |
+| Layout / Repeat / RepeatStack |  |
+| Layout / Repeat / RepeatFlow |  |
+| Layout / Repeat / SharedSize (RepeatFlow) |  |
+| Layout / Repeat / SharedSize (TextList) |  |
+| Layout / Responsive |  |
+| Control / Document Editor (Toolstrip) | 2026-11-14; private/RTF/HTML, rich images and styles, cross-editor exchange |
+| Control / TextBox / TextBox |  |
+| Control / TextBox / TextBox (No Tab) |  |
+| Control / TextBox / Document |  |
+| Control / TextBox / Document (No Tab) |  |
+| Control / Embedded Controls |  |
+| Misc / Localization |  |
+| Compact dialog and form layout checks | 2026-11-14; document Open/Save at 80x25 |
+| Misc / Dialogs / MessageDialog |  |
+| Misc / Dialogs / ColorDialog |  |
+| Misc / Dialogs / FontDialog |  |
+| Misc / Dialogs / Open/Save FileDialog | 2026-11-14; document commands, cancel, overwrite accept/cancel |
+| Misc / DatePicker |  |
+| Window Manager | 2026-11-14; six captions/order/default, mouse and keyboard at both sizes |
+| Live palette and clipping regression | 2026-11-14; document identity, selection and undo retained |
+| Exit | 2026-11-14; cancel-close and queued Hide retained |
+| Packaged tutorial checks (when requested) |  |
+| Linux/macOS legacy-terminal and Kitty comparison (when applicable) |  |
+
+## Observations and Limitations
+
+This card covers the skin selector, document persistence, related dialogs, refresh state retention and requested packaged tutorial. Unrelated full-page SOP operations remain unexecuted unless explicitly recorded. Both viewport runs used the rebuilt implementation through the interactive wrapper and ended with exit 0, preserving console modes 503/7. Physical terminal input and displayed terminal profile fidelity remain unverified. A fresh Windows Terminal 1.24.12741.0 session at 120x30 started the interactive wrapper, but the desktop returned no foreground HWND and screen capture failed with an invalid handle. It was closed through the TUI queued Hide path with exit 0 and unchanged modes 503/7; this is console verification only. The separate native GUI remoting session accepted desktop mouse and Tab/Space input with visible rendering; that does not establish terminal-display coverage. Native Linux/macOS and Wasm execution remain unverified. Evidence is kept under <GacUI repo>/Test/Output/ShowcaseVerification.
+
+Private-file verification retained all eight fixture styles and original image payload hashes. A newly inserted 123x456 image retained its file-backed label, then its exact pathless label after reload with the original file unavailable. GUI Ribbon and Toolstrip private copies reopened in the fresh 80x25 TUI process. Both CppTest and native Metaonly subsequently passed the two-editor exchange, preserving edited text/selection through refresh, undoing the edit and saving byte-identical private copies (120 and 124 assertions). HTML and RTF exports contain all three images and Unicode/hyperlink content. Live debugger inspection showed unchanged document identity, selection, undo step and modified state through exports and skin refresh; private save alone updated the saved step. Native operation breakpoints recorded one load/save/RTF/HTML callback each, with canceled dialogs adding none.
+
+## Issues Found and Fix
+
+- The new actual-showcase regression exposed the fake input service’s missing letter/function-key mapping; its shortcut lookup is now implemented and the unfiltered Debug suite passes.
+- Early console captures under the release linker load sometimes observed intermediate refresh geometry. Settled captures retain all text and image labels; these transient harness observations are not recorded as product failures.
+
+## Terminal Comparisons

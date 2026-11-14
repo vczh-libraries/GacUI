@@ -7,6 +7,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
+      <PreprocessorDefinitions>GACUI_SKIN_DEVELOPMENT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -88,5 +89,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\SharedDocumentEditor.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\SharedDocumentEditor.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)TuiControlTestEventHandlers.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)TuiControlTestEventHandlers.cpp" />
   </ItemGroup>
 </Project>

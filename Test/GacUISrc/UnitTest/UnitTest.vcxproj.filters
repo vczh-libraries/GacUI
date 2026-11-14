@@ -466,4 +466,11 @@
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\SharedDocumentEditor.h" />
+    <ClCompile Include="..\SharedDocumentEditor.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="TestShowcase.cpp" />
+  </ItemGroup>
 </Project>

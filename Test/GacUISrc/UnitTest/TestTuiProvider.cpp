@@ -77,8 +77,24 @@ namespace tui_provider_tests
 		bool IsTimerEnabled() override { return enabled; }
 		bool IsKeyPressing(VKEY) override { return false; }
 		bool IsKeyToggled(VKEY) override { return false; }
-		WString GetKeyName(VKEY) override { return L"TestKey"; }
-		VKEY GetKey(const WString&) override { return VKEY::KEY_UNKNOWN; }
+		WString GetKeyName(VKEY key) override
+		{
+			if (key >= VKEY::KEY_A && key <= VKEY::KEY_Z) return WString::FromChar((wchar_t)key);
+			if (key >= VKEY::KEY_F1 && key <= VKEY::KEY_F24) return L"F" + itow((vint)key - (vint)VKEY::KEY_F1 + 1);
+			return L"TestKey";
+		}
+		VKEY GetKey(const WString& name) override
+		{
+			for (vint key = (vint)VKEY::KEY_A; key <= (vint)VKEY::KEY_Z; key++)
+			{
+				if (GetKeyName((VKEY)key) == name) return (VKEY)key;
+			}
+			for (vint key = (vint)VKEY::KEY_F1; key <= (vint)VKEY::KEY_F24; key++)
+			{
+				if (GetKeyName((VKEY)key) == name) return (VKEY)key;
+			}
+			return VKEY::KEY_UNKNOWN;
+		}
 		vint RegisterGlobalShortcutKey(bool, bool, bool, bool, VKEY) override { return 1; }
 		bool UnregisterGlobalShortcutKey(vint) override { return true; }
 	};

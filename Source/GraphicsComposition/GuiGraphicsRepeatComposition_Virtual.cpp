@@ -441,6 +441,18 @@ GuiVirtualRepeatCompositionBase
 				}
 			}
 
+			void GuiVirtualRepeatCompositionBase::ReloadVisibleStyles()
+			{
+				// Keep the measured extent while replacement rows have no text measurements.
+				// A hidden list must not clamp its scroll position to a provisional size.
+				for (auto style : visibleStyles)
+				{
+					DeleteStyle(style);
+				}
+				visibleStyles.Clear();
+				InvalidateLayout();
+			}
+
 			void GuiVirtualRepeatCompositionBase::InvalidateLayout()
 			{
 				itemSourceUpdated = true;

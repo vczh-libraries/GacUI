@@ -3,7 +3,87 @@
     <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiDocumentEditorBase">
       <ref.Members><![CDATA[
           var nextImageId : int = 0;
-          var images : ImageData^[] = {};
+          var images : DocumentImageRun^[string] = {};
+
+          @cpp:Private
+          func CreateImageObject(image : DocumentImageRun^, fileName : string) : DocumentEmbeddedObjectRun^
+          {
+            var name = "TuiImage" & self.nextImageId;
+            self.nextImageId = self.nextImageId + 1;
+            self.images[name] = image;
+            var imageData = new ImageData^(image.image, image.frameIndex);
+            var size = image.image.GetFrame(image.frameIndex).GetSize();
+            var item = new GuiDocumentItem^(name);
+            var label = new GuiLabel*(ThemeName::Label);
+            label.Text = fileName == ""
+              ? $"[Image, $(size.x) x $(size.y)]"
+              : $"[Image: $(fileName), $(size.x) x $(size.y)]";
+            label.Context = imageData;
+            item.Container.AddChild(label.BoundsComposition);
+            document.AddDocumentItem(item);
+            var run = new DocumentEmbeddedObjectRun^();
+            run.name = name;
+            return run;
+          }
+
+          @cpp:Private
+          func PrepareImages(container : DocumentContainerRun^, forDisplay : bool) : void
+          {
+            for (i in range[0, container.runs.Count))
+            {
+              var run = container.runs[i];
+              if (forDisplay)
+              {
+                if (var image : DocumentImageRun^ = run as DocumentImageRun^)
+                {
+                  container.runs[i] = self.CreateImageObject(image, "");
+                }
+              }
+              else
+              {
+                if (var embedded : DocumentEmbeddedObjectRun^ = run as DocumentEmbeddedObjectRun^)
+                {
+                  if (self.images.Keys.Contains(embedded.name))
+                  {
+                    var original = self.images[embedded.name];
+                    var image = new DocumentImageRun^();
+                    image.image = original.image;
+                    image.frameIndex = original.frameIndex;
+                    image.source = original.source;
+                    image.sizeOverride = original.sizeOverride;
+                    image.baseline = original.baseline;
+                    container.runs[i] = image;
+                  }
+                }
+              }
+              if (var child : DocumentContainerRun^ = run as DocumentContainerRun^)
+              {
+                self.PrepareImages(child, forDisplay);
+              }
+            }
+          }
+
+          func LoadDocument(model : DocumentModel^) : void
+          {
+            while (document.DocumentItems.Count > 0)
+            {
+              document.RemoveDocumentItem(cast (GuiDocumentItem^) document.DocumentItems.Values[0]);
+            }
+            self.images.Clear();
+            for (paragraph in model.paragraphs)
+            {
+              self.PrepareImages(paragraph, true);
+            }
+            document.Document = model;
+          }
+
+          func PrepareDocumentForSaving(model : DocumentModel^) : void
+          {
+            for (paragraph in model.paragraphs)
+            {
+              self.PrepareImages(paragraph, false);
+            }
+          }
           @cpp:Protected
           prop EditModeCommand : ToolstripCommand* = null {const}
     
@@ -69,32 +149,16 @@
       
           
           
-          func LoadAsPrivateFormat(fileName: string): void
-          {
-            dialogNotImpl.Text = $"You want to load from \"$(fileName)\" as private format, but this function is not implemented in Workflow script.";
-            dialogNotImpl.ShowDialog();
-          }
+          event LoadAsPrivateFormat(string);
           
           
-          func SaveAsPrivateFormat(fileName: string): void
-          {
-            dialogNotImpl.Text = $"You want to save to \"$(fileName)\" as private format, but this function is not implemented in Workflow script.";
-            dialogNotImpl.ShowDialog();
-          }
+          event SaveAsPrivateFormat(string);
           
           
-          func SaveAsRTF(fileName: string): void
-          {
-            dialogNotImpl.Text = $"You want to save to \"$(fileName)\" as RTF, but this function is not implemented in Workflow script.";
-            dialogNotImpl.ShowDialog();
-          }
+          event SaveAsRTF(string);
           
           
-          func SaveAsHTML(fileName: string): void
-          {
-            dialogNotImpl.Text = $"You want to save to \"$(fileName)\" as HTML, but this function is not implemented in Workflow script.";
-            dialogNotImpl.ShowDialog();
-          }
+          event SaveAsHTML(string);
           
           @cpp:Private
           func SaveDocument(): void
@@ -149,7 +213,6 @@
       <CustomControl ref.Name="self" Text="Document Editor">
         <att.HasEditableSelection-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.HasEditableSelection-bind>
         <MessageDialog ref.Name="dialogMessage" Title="You Clicked a Hyperlink!" />
-        <MessageDialog ref.Name="dialogNotImpl" Title-bind="self.Text" />
         <OpenFileDialog ref.Name="dialogOpen" Title="Select an Image" Filter="Image Files (*.jpg;*.png;*.bmp)|*.jpg;*.png;*.bmp" EnabledPreview="true" Options="FileDialogFileMustExist|FileDialogDereferenceLinks" />
         <OpenFileDialog ref.Name="dialogOpenDoc" Title="Load a GacUI Document" Filter="Private Format (*.bin)|*.bin" Options="FileDialogFileMustExist|FileDialogDereferenceLinks" />
         <SaveFileDialog ref.Name="dialogSaveDoc" Title="Save a GacUI Document" Filter="Private Format (*.bin)|*.bin|RTF Document (*.rtf)|*.rtf|HTML Document (*.html)|*.html" Options="FileDialogPromptOverwriteFile" />
@@ -245,19 +308,11 @@
                 {
                   var imageService = INativeController::GetCurrentController().ImageService();
                   var image = imageService.CreateImageFromFile(dialogOpen.FileName);
-                  var imageData = new ImageData^(image, 0);
-                  var name = "TuiImage" & self.nextImageId;
-                  self.nextImageId = self.nextImageId + 1;
-                  self.images.Add(imageData);
-                  var size = image.GetFrame(0).GetSize();
-                  var item = new GuiDocumentItem^(name);
-                  var label = new GuiLabel*(ThemeName::Label);
-                  label.Text = $"[Image: $(dialogOpen.FileName), $(size.x) x $(size.y)]";
-                  label.Context = imageData;
-                  item.Container.AddChild(label.BoundsComposition);
-                  document.AddDocumentItem(item);
-                  var run = new DocumentEmbeddedObjectRun^();
-                  run.name = name;
+                  var imageRun = new DocumentImageRun^();
+                  imageRun.image = image;
+                  imageRun.frameIndex = 0;
+                  imageRun.source = "file://" & dialogOpen.FileName;
+                  var run = self.CreateImageObject(imageRun, dialogOpen.FileName);
                   var paragraph = new DocumentParagraphRun^();
                   paragraph.runs.Add(run);
                   var model = new DocumentModel^();

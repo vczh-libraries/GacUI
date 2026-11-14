@@ -41,4 +41,8 @@
     <ClInclude Include="..\Generated_FullControlTest\FullControlTestRawElement.h"><Filter>Source Files</Filter></ClInclude>
     <ClCompile Include="..\Generated_FullControlTest\FullControlTestRawElement.cpp"><Filter>Source Files</Filter></ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\SharedDocumentEditor.h" />
+    <ClCompile Include="..\SharedDocumentEditor.cpp" />
+  </ItemGroup>
 </Project>

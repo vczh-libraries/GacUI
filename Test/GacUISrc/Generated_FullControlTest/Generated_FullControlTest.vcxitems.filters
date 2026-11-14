@@ -89,4 +89,8 @@
       <Filter>x64</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\SharedDocumentEditor.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\SharedDocumentEditor.cpp" />
+  </ItemGroup>
 </Project>

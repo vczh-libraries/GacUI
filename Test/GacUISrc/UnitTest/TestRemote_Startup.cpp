@@ -345,12 +345,28 @@ namespace remote_startup_tests
 		}
 	};
 
+	class PersistenceSkinItem : public controls::GuiDocumentItem
+	{
+	public:
+		Func<void()> action;
+
+		PersistenceSkinItem(const WString& name, const Func<void()>& _action)
+			: GuiDocumentItem(name)
+			, action(_action)
+		{
+		}
+	};
+
 	class PersistenceWindow : public controls::GuiCustomControl
 	{
 	public:
-		Event<void(vint)> PaletteSelected;
+		Ptr<reflection::description::IValueObservableList> skinItems = reflection::description::IValueObservableList::Create();
+		Ptr<PersistenceSkinItem> selectedSkinItem;
 		PersistenceEditor* ribbon;
 		PersistenceEditor* toolstrip;
+
+		auto GetSkinItems() { return skinItems; }
+		void SetSelectedSkinItem(Ptr<PersistenceSkinItem> value) { selectedSkinItem = value; }
 
 		PersistenceWindow()
 			: GuiCustomControl(theme::ThemeName::CustomControl)
@@ -962,7 +978,15 @@ TEST_FILE
 			protocol.GetEvents()->OnControllerConnect(config);
 			{
 				PersistenceWindow window;
-				demo::AttachFctEvents<PersistenceEditor>(&window);
+				demo::AttachFctEvents<PersistenceEditor, PersistenceSkinItem>(&window);
+				TEST_ASSERT(window.skinItems->GetCount() == 6);
+				TEST_ASSERT(window.selectedSkinItem->GetName() == L"Default");
+				WString skinNames[] = { L"Default", L"Aurora", L"Ember", L"Moonstone", L"Lagoon", L"Rosewood" };
+				for (vint i = 0; i < 6; i++)
+				{
+					auto item = window.skinItems->Get(i).GetSharedPtr().Cast<PersistenceSkinItem>();
+					TEST_ASSERT(item->GetName() == skinNames[i]);
+				}
 				auto original = PersistenceDocument(L"Ribbon \x4e2d\x6587", true);
 				auto unusedStyle = Ptr(new DocumentStyle);
 				unusedStyle->parentStyleName = L"#Context";

@@ -57,16 +57,34 @@ void GuiMain()
 	}
 	{
 		auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
-		BoxValue(window).AttachEvent(L"PaletteSelected", BoxParameter(Func<void(vint)>(&demo::OnPaletteSelected)));
+		auto reflectedWindow = BoxValue(window);
+		auto skinItems = UnboxValue<Ptr<IValueObservableList>>(reflectedWindow.GetProperty(L"SkinItems"));
+		demo::InitializeFctSkinItems([&](const WString& name, const Func<void()>& action, bool selected)
+		{
+			Array<Value> arguments(2);
+			arguments[0] = BoxValue(name);
+			arguments[1] = BoxParameter(action);
+			auto item = Value::Create(L"demo::FctSkinItem", arguments);
+			if (selected) reflectedWindow.SetProperty(L"SelectedSkinItem", item);
+			skinItems->Add(item);
+		});
 		for (auto name : { L"editorRibbon", L"editorToolstrip" })
 		{
 			auto editor = window->GetNamedObject(name);
 			auto root = editor.GetRawPtr()->SafeAggregationCast<GuiInstanceRootObject>();
 			auto viewer = FindObjectByName<GuiDocumentViewer>(root, L"document");
-			editor.AttachEvent(L"LoadAsPrivateFormat", BoxParameter(Func<void(const WString&)>([viewer](const WString& fileName) { demo::LoadFctDocument(viewer, fileName); })));
-			editor.AttachEvent(L"SaveAsPrivateFormat", BoxParameter(Func<void(const WString&)>([viewer](const WString& fileName) { demo::SaveFctDocument(viewer, fileName); })));
-			editor.AttachEvent(L"SaveAsRTF", BoxParameter(Func<void(const WString&)>([viewer](const WString& fileName) { demo::ExportFctDocumentRtf(viewer, fileName); })));
-			editor.AttachEvent(L"SaveAsHTML", BoxParameter(Func<void(const WString&)>([viewer](const WString& fileName) { demo::ExportFctDocumentHtml(viewer, fileName); })));
+			editor.AttachEvent(L"LoadAsPrivateFormat", BoxParameter(Func<void(const WString&)>([viewer](const WString& fileName) { viewer->SetDocument(gacui_demo::LoadDocument(fileName)); })));
+			editor.AttachEvent(L"SaveAsPrivateFormat", BoxParameter(Func<void(const WString&)>([viewer](const WString& fileName) { gacui_demo::SaveDocument(viewer->GetDocument(), fileName); })));
+			editor.AttachEvent(L"SaveAsRTF", BoxParameter(Func<void(const WString&)>([viewer](const WString& fileName)
+			{
+				viewer->SelectAll();
+				gacui_demo::ExportDocumentRtf(viewer->GetSelectionModel(), fileName);
+			})));
+			editor.AttachEvent(L"SaveAsHTML", BoxParameter(Func<void(const WString&)>([viewer](const WString& fileName)
+			{
+				viewer->SelectAll();
+				gacui_demo::ExportDocumentHtml(viewer->GetSelectionModel(), fileName);
+			})));
 		}
 		auto rawClockAttachment = demo::AttachFullControlTestRawElement(UnboxValue<Ptr<GuiRawElementBase>>(BoxValue(window).GetProperty(L"ClockElement")));
 		auto touchingAttachment = demo::AttachFullControlTestTouchingElement(UnboxValue<Ptr<GuiRawElementBase>>(BoxValue(window).GetProperty(L"TouchingElement")));

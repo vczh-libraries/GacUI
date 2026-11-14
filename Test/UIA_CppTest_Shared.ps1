@@ -6,10 +6,11 @@ param(
     [ValidateRange(0,15)][int]$EditorSopStartStep = 0,
     [switch]$EditorSopResumeAtImages,
     [string]$BusyClick = '',
-    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Layout','Responsive','ResponsiveWindow','ResponsivePalette','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime','RawClock','Touching','Persistence','DocumentStyles','DocumentContextMenu','DocumentEditorSop','DocumentEditorCommands','PointRegression','TouchingList','FileDialogMutations')][string]$Scenario = 'All',
+    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Layout','ShowcaseSkins','Responsive','ResponsiveWindow','ResponsivePalette','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime','RawClock','Touching','Persistence','DocumentExchange','DocumentStyles','DocumentContextMenu','DocumentEditorSop','DocumentEditorCommands','PointRegression','TouchingList','FileDialogMutations')][string]$Scenario = 'All',
     [switch]$HostedFixture,
     [switch]$GdiFixture,
     [switch]$Gdi,
+    [string]$ExchangeDocument = '',
     [switch]$SkipBuild
 )
 $ErrorActionPreference = 'Stop'
@@ -23,8 +24,9 @@ if ($ClientProcessId) {
         exit 0
     }
     Add-Type -AssemblyName UIAutomationClient, UIAutomationTypes, WindowsBase, System.Web.Extensions
-    Add-Type -Path (Join-Path $PSScriptRoot 'UIA_CppTest_Shared.cs') -ReferencedAssemblies UIAutomationClient, UIAutomationTypes, WindowsBase, System.Web.Extensions
+    Add-Type -Path (Join-Path $PSScriptRoot 'UIA_CppTest_Shared.cs') -ReferencedAssemblies UIAutomationClient, UIAutomationTypes, WindowsBase, System.Web.Extensions, System.Xml
     [GacUIShowcaseTests]::BusyCommand = $BusyClick
+    [GacUIShowcaseTests]::ExchangeDocument = $ExchangeDocument
     [GacUIShowcaseTests]::PersistenceOutput = Join-Path $PSScriptRoot 'Output/Injection'
     [GacUIShowcaseTests]::FileDialogPlayground = Join-Path $PSScriptRoot 'FileDialogPlayground'
     if ($Scenario -eq 'FileDialogMutations') { [GacUIShowcaseTests]::PersistenceOutput = [GacUIShowcaseTests]::FileDialogPlayground }
@@ -120,6 +122,7 @@ try {
     # A separate windowless MTA process provides a hard deadline even if a provider blocks.
     $clientArguments = @('-NoProfile','-Mta','-File',"`"$PSCommandPath`"",'-Application',$Application,'-AsPort',$AsPort,'-ClientProcessId',$owned.Id,'-Scenario',$Scenario,'-EditorSopStartStep',$EditorSopStartStep)
     if ($EditorSopResumeAtImages) { $clientArguments += '-EditorSopResumeAtImages' }
+    if ($ExchangeDocument) { $clientArguments += @('-ExchangeDocument', "`"$ExchangeDocument`"") }
     if ($Scenario -eq 'Review2') {
         function Find-Busy($node) {
             if ($node.elementText -eq 'Busy') { return $node.bounds }

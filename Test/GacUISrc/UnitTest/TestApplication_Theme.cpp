@@ -295,6 +295,62 @@ TEST_FILE
 			GacUIUnitTest_Start(L"Application/DarkSkin/DetachedListScroll");
 		});
 
+		TEST_CASE(L"RefreshThemes preserves scrolling on a hidden list page")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				ConnectThemeTestProtocol(protocol);
+				auto skin = Ptr(new darkskin::Theme);
+				theme::RegisterTheme(skin);
+				{
+					GuiWindow window(theme::ThemeName::Window);
+					window.SetText(L"Hidden list refresh");
+					window.SetClientSize(Size(640, 480));
+					auto tab = new GuiTab(theme::ThemeName::Tab);
+					tab->GetBoundsComposition()->SetAlignmentToParent(Margin(5, 5, 5, 5));
+					window.GetContainerComposition()->AddChild(tab->GetBoundsComposition());
+					auto listPage = new GuiTabPage(theme::ThemeName::CustomControl);
+					listPage->SetText(L"List");
+					tab->GetPages().Add(listPage);
+					auto otherPage = new GuiTabPage(theme::ThemeName::CustomControl);
+					otherPage->SetText(L"Other");
+					tab->GetPages().Add(otherPage);
+					auto list = new GuiTextList(theme::ThemeName::TextList);
+					list->GetBoundsComposition()->SetAlignmentToParent(Margin(5, 5, 5, 5));
+					listPage->GetContainerComposition()->AddChild(list->GetBoundsComposition());
+					for (vint i = 0; i < 60; i++) list->GetItems().Add(Ptr(new TextItem(itow(i), false)));
+					protocol->OnNextIdleFrame(L"Initial list", [&]()
+					{
+						list->SetSelected(13, true);
+						list->SetViewPosition(Point(0, 192));
+					});
+					protocol->OnNextIdleFrame(L"Scrolled list", [&]()
+					{
+						TEST_ASSERT(list->GetViewPosition() == Point(0, 192));
+						tab->SetSelectedPage(otherPage);
+					});
+					protocol->OnNextIdleFrame(L"Hidden list page", [&]()
+					{
+						TEST_ASSERT(list->GetViewPosition() == Point(0, 192));
+						GetApplication()->RefreshThemes();
+					});
+					protocol->OnNextIdleFrame(L"Refreshed hidden list", [&]()
+					{
+						tab->SetSelectedPage(listPage);
+					});
+					protocol->OnNextIdleFrame(L"Returned list page", [&]()
+					{
+						TEST_ASSERT(list->GetViewPosition() == Point(0, 192));
+						TEST_ASSERT(list->GetSelected(13) && list->GetItems().Count() == 60);
+						window.Hide();
+					});
+					GetApplication()->Run(&window);
+				}
+				theme::UnregisterTheme(skin->Name);
+			});
+			GacUIUnitTest_Start(L"Application/RefreshThemes/HiddenListScroll");
+		});
+
 		TEST_CASE(L"RefreshThemes preserves overrides and safely snapshots windows")
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)

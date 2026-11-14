@@ -60,7 +60,7 @@ void GuiMain()
 	case 0:
 	{
 		auto fullControlTest = Ptr(new demo::MainWindow);
-		demo::AttachFctEvents<demo::DocumentEditorBase>(fullControlTest.Obj());
+		demo::AttachFctEvents<demo::DocumentEditorBase, demo::FctSkinItem>(fullControlTest.Obj());
 		window = fullControlTest;
 	}
 	}

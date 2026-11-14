@@ -48,4 +48,10 @@
       <Filter>x64</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\SharedDocumentEditor.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\SharedDocumentEditor.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)TuiControlTestEventHandlers.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)TuiControlTestEventHandlers.cpp" />
+  </ItemGroup>
 </Project>
