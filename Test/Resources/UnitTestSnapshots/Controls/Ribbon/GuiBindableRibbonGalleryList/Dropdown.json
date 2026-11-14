@@ -169,17 +169,7 @@
     [213, "SolidBackground"],
     [214, "SolidLabel"],
     [215, "SolidBackground"],
-    [216, "SolidLabel"],
-    [217, "SolidBackground"],
-    [218, "SolidLabel"],
-    [219, "SolidBackground"],
-    [220, "SolidLabel"],
-    [221, "SolidBackground"],
-    [222, "SolidLabel"],
-    [223, "SolidBackground"],
-    [224, "SolidLabel"],
-    [225, "SolidBackground"],
-    [226, "SolidLabel"]
+    [216, "SolidLabel"]
   ],
   "imageCreations": [],
   "imageMetadatas": [],
