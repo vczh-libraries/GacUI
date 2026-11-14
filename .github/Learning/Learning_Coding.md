@@ -19,6 +19,7 @@
 - Automation `/IO` parses synchronously and queues parsed commands [3]
 - `CppTest_Rvm` is a GUI app and stays console-free [3]
 - Omit redundant EazyLayout sample properties and wrappers [3]
+- Preserve complete style catalogs in private documents [3]
 - `vl::collections::ObservableList<T>` element access and replacement [2]
 - Extract helpers to remove duplicated conversion blocks [2]
 - Place helpers in the primary-responsibility namespace [2]
@@ -37,7 +38,6 @@
 - Separate raw painters from remote collection attachment [2]
 - Keep raw point lifecycle independent of gesture recognition [2]
 - Expose supported variant fields directly in reflection [2]
-- Preserve complete style catalogs in private documents [2]
 - Detach tooltip positioning before its owner is destroyed [2]
 - Subscribe momentum to persistent bounds and retire callbacks safely [2]
 - Keep momentum input samples separate from playback time [2]
@@ -126,6 +126,11 @@
 - Route deferred point clicks through ordinary mouse dispatch [1]
 - Match Windows UIA identity and focus to current control mode [1]
 - Preserve absolute filenames in file-dialog confirmation [1]
+- Reconcile file-dialog tree identities and selection after mutations [1]
+- Trigger lazy file-dialog enumeration from text-only bindings [1]
+- Pass localized line breaks as formatting parameters [1]
+- Preserve measured item extents when reloading list visuals [1]
+- Preserve TUI image labels across document serialization [1]
 
 # Refinements
 
@@ -532,7 +537,7 @@ In `vl::presentation::controls::GuiListControl::OnRenderTargetChanged` (`Source/
 
 DarkSkin and TuiSkin share the same ownership pattern: authored Workflow resources own the common palette initializer, complete default palette and one-time installed default. Native code in `Source/Skins/<Skin>/Config` supplies named accents through that initializer and forwards the default factory and setter to Workflow. `SetColorPackage` directly updates installed palette state; remove redundant `InstallColorPackage` wrappers and application startup default installation. Creating another theme or window must not reset the chosen palette. Keep internal palette-based document helpers that still have template callers, even when obsolete public wrappers or resource files are removed.
 
-Showcase selection stays outside reusable skins. FullControlTest raises `PaletteSelected(int)`, and each entry point attaches the shared native handler in `<GacUI repo>/Test/GacUISrc/Generated_FullControlTest/FullControlTestEventHandlers.h/.cpp`. Queue palette creation, installation and `GuiApplication::RefreshThemes()` together after input dispatch, capturing the selection by value. The Workflow-binary showcase attaches the same handler through reflection and uses native DarkSkin. Do not add selector plugins or availability policy to a skin.
+Showcase selection stays outside reusable skins. FullControlTest and TuiControlTest expose stable getter-only observable `SkinItems` collections of callable `FctSkinItem` and `TuiSkinItem` objects. Shared native composition populates ordered names and actions; the UI does not translate names or indices into preset policy. A RepeatStack creates ordinary radios in one mutex group. Set initial checked state before attaching handlers and retain selected-item identity across template refresh. Queue the retained item's `SelectSkin()` and `GuiApplication::RefreshThemes()` together after input dispatch; population, deselection and reconstruction execute no action. Retain the item rather than the temporary radio or template. The Workflow-binary host constructs items and accesses the observable collection through reflection without linking generated FullControlTest classes. Do not add selector plugins or availability policy to a skin.
 
 ## UiaList presents side-effect-free getters as readouts
 
@@ -670,7 +675,7 @@ Once generic variant reflection is supported, register `GuiPointGestureEventArgs
 
 ## Preserve complete style catalogs in private documents
 
-FullControlTest private documents are assumed to have been saved by CppTest. Preserve every style definition through document copying, save and load, including unused built-ins, so applying a named gallery style after loading uses its saved definition. Do not add missing-style restoration or replace loaded definitions at application time. Keep the persistence logic in the authored `<GacUI repo>/Test/GacUISrc/Generated_FullControlTest/FullControlTestEventHandlers.h/.cpp`.
+FullControlTest and TuiControlTest private documents use the same format. Preserve every style definition through document copying, save and load, including unused built-ins, so applying a named gallery style after loading uses its saved definition. Do not add missing-style restoration or replace loaded definitions at application time. Keep common private/RTF/HTML operations in the skin-independent `<GacUI repo>/Test/GacUISrc/SharedDocumentEditor.h/.cpp`; each showcase attaches its own four native events once to the appropriate editor. Complete encoding, writing and stream close before a private-save callback returns and XML marks the document clean. Exports retain whole-document selection behavior without clearing the private modified state.
 
 Keep complete-catalog cloning in the deep branch of `DocumentModel::CopyDocument(TextPos, TextPos, bool)` in `<GacUI repo>/Source/Resources/GuiDocument_Edit.cpp`; the parameterless overload delegates. Deep ranges retain all definitions with independent authored/resolved properties, while shallow ranges retain only referenced styles and their parents with shared objects. Reinsertion compares named ancestry and reuses equivalent aliases so repeated paste or undo/redo does not accumulate renamed definitions.
 
@@ -725,3 +730,27 @@ In `<GacUI repo>/Source/PlatformProviders/Windows/UIAutomation`, apply data-grid
 ## Preserve absolute filenames in file-dialog confirmation
 
 `FileDialogViewModel::TryConfirm` in `<GacUI repo>/Source/Utilities/FakeServices/GuiFakeDialogServiceBase_FileDialog.cpp` must distinguish absolute inputs with `filesystem::FilePath::IsAbsolutePath`. Normalize an absolute filename directly and join only relative inputs to the selected folder. Verify confirmation after navigating into a folder; an absolute path accepted at the initial location alone does not expose an accidental folder-prefix join.
+
+## Reconcile file-dialog tree identities and selection after mutations
+
+In `FileDialogViewModel` in `<GacUI repo>/Source/Utilities/FakeServices/GuiFakeDialogServiceBase_FileDialog.cpp`, reconcile child collections, name lookup, parent links and surviving indices together while retaining unaffected folder objects. Capture the current folder and selected provider rows before confirmation; sorting, filtering, filename edits and later enumeration must not redirect the confirmed operation. Reject obsolete enumeration results with generation checks and keep observable changes on the UI thread.
+
+Removing tree children can clear selection even when the current folder is unchanged. Reannounce that folder after reconciliation so the existing tree-location binding restores selection. Refresh the affected subtree without replacing a different directory's pending list generation, and clear selection-derived filenames without erasing independently typed save filenames.
+
+## Trigger lazy file-dialog enumeration from text-only bindings
+
+The file-dialog placeholder nodes in `<GacUI repo>/Source/Utilities/FakeServices/GuiFakeDialogServiceBase_FileDialog.cpp` must start lazy enumeration through `GetName()` as well as `GetType()`. GUI image bindings can hide an enumeration dependency that the text-only TUI tree never invokes. Verify a previously unloaded populated branch through the actual TUI resource.
+
+## Pass localized line breaks as formatting parameters
+
+For localized fake-dialog messages in `<GacUI repo>/Source/Utilities/FakeServices/Dialogs` and `<GacUI repo>/Source/Utilities/FakeServices/TuiDialogs`, pass an explicit newline argument from Workflow to parameterized formatters. The resource XML parser does not decode numeric newline entities, so embedding them in the localized string displays their spelling literally. Keep complete parameterized messages in both the base resources and showcase language injections.
+
+## Preserve measured item extents when reloading list visuals
+
+When theme replacement recreates list-row presentation, use `GuiVirtualRepeatCompositionBase::ReloadVisibleStyles` in `<GacUI repo>/Source/GraphicsComposition/GuiGraphicsRepeatComposition_Virtual.cpp` through the arranger hook in `<GacUI repo>/Source/Controls/ListControlPackage/GuiListControlItemArrangers.cpp`. Retain measured item-size caches and viewport geometry while deleting realized visuals and invalidating layout. A hidden page cannot measure replacement text yet; discarding its cache can publish a provisional short extent and clamp an otherwise retained scroll offset later in `GuiScrollView::AdjustView`. Preserve full geometry/cache reset behavior for explicit `ResetLayout` operations. Verify a hidden populated list across refresh, separately from temporary render-target detachment.
+
+## Preserve TUI image labels across document serialization
+
+Keep the existing embedded-label presentation in `<GacUI repo>/Test/Resources/App/TuiControlTest/DocumentEditorBase.xml`. A file-backed insertion uses `[Image: path, width x height]`; a memory/private-loaded image uses `[Image, width x height]`. Obtain dimensions from the decoded frame and do not invent a filesystem path: `INativeImage` does not expose one.
+
+Retain each original `DocumentImageRun`, including image/frame/source/size-override/baseline data, beside its named display object. On load, recursively replace image runs with labels and replace the old label-item/image map together. For save/export, the native adapter deep-copies the complete model and Workflow restores serializable image runs only in that copy. `CopyDocument` is native-only; do not expand reflection merely to call it from the showcase. Preserve live document identity, selection, history and the complete style catalog, and verify image data independently of its textual presentation.

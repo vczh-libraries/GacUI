@@ -6,18 +6,18 @@
 - Verify RVM requester/host lifetimes across every transport [12]
 - Validate GacJS through browser UI interactions [12]
 - Remote protocol frames: actions must change UI; organize frames carefully [9]
+- Keep FullControlTest UIA checks synchronized with showcase changes [9]
 - Stress remote core/renderer transport and terminal flows [8]
-- Keep FullControlTest UIA checks synchronized with showcase changes [8]
 - Don’t schedule redundant idle frames [7]
 - Seed key-behavior tests via `protocol->TypeString` [7]
 - Preserve existing idle-frame titles when requested [6]
 - Verify `/IO` synchronous errors and queued success separately [5]
 - Prefer automation geometry before screenshots for layout verification [5]
+- Exercise actual showcase XML in generated and interpreted consumers [5]
 - Add new unit test files to `UnitTest.vcxproj` and `.filters` [4]
 - Verify GacJS HTTP fatal errors through browser UI [4]
 - Use remote-protocol snapshots only for useful rendering [4]
 - Remote-debugging guides own complete Cartesian test matrices [4]
-- Exercise actual showcase XML in generated and interpreted consumers [4]
 - Caret navigation tests: type markers to expose caret [3]
 - Avoid duplicate tests across related categories [3]
 - Validate imported dependency APIs with GacUI build and unit test [3]
@@ -31,6 +31,8 @@
 - Observe deferred control-host destruction after a frame boundary [3]
 - Treat file-dialog snapshots as scheduling-sensitive contracts [3]
 - Derive native touch expectations from converted coordinates [3]
+- Verify palette refresh through retained state and actual host rendering [3]
+- Verify compiler releases through every tutorial architecture output [3]
 - Account for eager child preparation in item-provider tests [2]
 - Isolate callbacks per test case (fresh log + callback) [2]
 - Prefer comments that name the exercised interface [2]
@@ -43,12 +45,11 @@
 - Unit-test renderer `CaretLineLast` should treat CRLF as newline [2]
 - Verify remoting imports with both HTTP and named-pipe flows [2]
 - Verify `GacUICompiler` determinism with repeated no-change runs [2]
-- Verify palette refresh through retained state and actual host rendering [2]
-- Verify compiler releases through every tutorial architecture output [2]
 - Make snapshot fixture inputs independent of the host environment [2]
 - Editor smoke tests: deterministic caret placement (`Ctrl+Home`) [2]
 - Undo/redo tests: clear baselines and respect history granularity [2]
 - Focus the control before simulating keyboard input [2]
+- Keep rich document fixtures readable and self-contained [2]
 - Browser E2E tests must handle localized dialogs and host fixtures [1]
 - Verify GacGen RPC outputs with positive and negative resources [1]
 - Unit tests must own helper-thread and stack-callback lifetimes [1]
@@ -99,13 +100,13 @@
 - Keep UiaList verification drivers in PowerShell [1]
 - Verify transient row presentation before asynchronous layout settles [1]
 - Scope native-touch exclusions to the actual provider [1]
-- Keep rich document fixtures readable and self-contained [1]
 - Assert owned-popup closure at the owner's completion boundary [1]
 - Serialize metadata generation with its consumers stopped [1]
 - Route native popup automation through its owning window [1]
 - Verify touch-only modal input through reentrant remote dispatch [1]
 - Verify generated click timing with its actual clock [1]
 - Keep modal automation lookup bounded and action-specific [1]
+- Verify file-dialog mutations with owned native fixtures [1]
 
 # Refinements
 
@@ -566,6 +567,8 @@ For skin palette refactors, preserve exact default colors and alpha, shared neut
 
 After a live refresh, wait for settled control and label bounds before calculating coordinates for the next palette click; replacement templates can briefly report empty bounds. Keep date-picker highlight changes caused only by the current day out of unrelated palette snapshots, and distinguish them from rendering or state-preservation regressions.
 
+Include populated lists hidden on another page through palette replacement. Retain independent selected rows and nonzero scroll offsets, then return, reacquire providers and compare settled state. Navigation alone and immediate offset restoration do not establish correctness if a later layout recalculation clamps a provisional extent. Keep a rendered hidden-list regression beside the public showcase checks.
+
 ## Match native theme regressions to the initialized harness
 
 The native theme harness does not automatically register DarkSkin reflection descriptors, so a missing descriptor alone is not evidence of a skin defect. Test the native contract directly and use metadata and interpreted consumers to validate reflection. Set an explicit window client size before the first render, materialize a lazy template with `GetControlTemplateObject` before inspecting it, and keep final assertions and shutdown together when another idle frame would contain no rendering change.
@@ -614,6 +617,8 @@ When verifying a sibling Release tutorial, run that standalone executable from i
 
 For the shared document editors, verify shortcut effects and literal accelerator labels on Ribbon only; Toolstrip uses equivalent UI commands. The image picker should expose a live selected list item outside Detail view and one logically focused element. When the task narrows verification to CppTest and specified pages, use the focused scenario and retain the exact caret, popup and template-replacement assertions without adding other application variants.
 
+For repeated skin selectors, assert captions, order, default, one checked radio and ordinary observable-list insertion/removal. Verify exactly one action and refresh for a real selection, and none for initialization, deselection or reconstruction. Reacquire providers and wait for positive settled bounds after refresh. A retired provider may report either unavailable-provider or COM failure; require fresh-provider state and geometry assertions rather than treating that failure as proof of a successful rebuild.
+
 ## Verify GitView diffs against real repository states
 
 Use disposable repositories to distinguish staged, working-tree and historical contents in GitView tests. Assert exact source rows, line numbers, colors and context boundaries, including blank lines, large line numbers, missing final newlines, patch-like source text, BOMs and binary files. Construct binary fixtures as bytes and inspect them when Git classifies them unexpectedly; a text writer can invalidate a NUL-based fixture. Complement model assertions with terminal input/output checks of compact layout, splitter movement, scrolling, status wrapping and retained commit details.
@@ -625,6 +630,8 @@ For both pull modes, use disposable repositories to cover a different selected b
 ## Verify compiler releases through every tutorial architecture output
 
 After the GacUI release pipeline and UpdateRelease, rebuild/deploy the requested sibling Release tools and clear tutorial caches before running GacBuild. The resource cache does not track compiler binaries, and GacBuild can catch an individual failure and continue. Check every x32/x64 result for errors, fresh nonempty binary/Workflow outputs and matching deployment copies; compare generated C++ semantically and explain every change outside Import. CppMerge may preserve timestamps when output is identical. Keep compiler rejection and initialization/geometry assertions in ordinary unit tests, and separate unrelated scheduling or date-dependent snapshot drift.
+
+When shared showcase helpers change, audit deployment copies, explicit source inventories and retained tutorial entry points. Run the requested GacUI then Release build sequence and launch the standalone BlackSkin and TuiSkin tutorials from their expected resource directories. Verify selectors and private/RTF/HTML document operations there; successful source showcases or generated outputs do not establish packaged event wiring. Record native platform and Wasm builds separately from Windows generation.
 
 ## Cover every XML assignment route when batching loader validation
 
@@ -652,6 +659,8 @@ Link the actual affected FullControlTest XML into a fast resource fixture instea
 
 A visible-style lookup after scrolling may be null because the starting row was virtualized away. The interpreted resource can accept a null strong cast that generated C++ rejects, so include the actual generated/native consumer and an outside-window scroll that removes the starting row. Exercise normal End, cancellation/extra-contact cleanup and a fresh subsequent touch.
 
+For TuiControlTest regression fixtures, load the actual resource and provide the letter/function-key name mappings used by its shortcut bindings; a fake input service that returns `KEY_UNKNOWN` for every name can fail during construction before the behavior under test. Exercise both 80 by 25 and 120 by 40 cell sizes. For callable skin items, destroy the realized radio before the deferred action and verify retained-item execution, arbitrary collection changes and initialization without actions. Check the interpreted host separately from native typed construction.
+
 ## Verify transient row presentation before asynchronous layout settles
 
 A virtualized row's default presentation must be correct immediately when realized and recycled, not only after an idle frame. Check that closed rows expose no reveal background during rapid scrolling, cancellation and reset. Verify the measured reveal limit before the first swipe as well as partial/full/reset frames; hiding the measuring content can defer its size until interaction. Extend the actual-resource regression in `<GacUI repo>/Test/GacUISrc/UnitTest/TestControls_PointScrolling.cpp` so simplified fixtures or settled-only observations cannot conceal the flash.
@@ -663,6 +672,8 @@ wGac and iGac native providers do not support touch, so their native touch-speci
 ## Keep rich document fixtures readable and self-contained
 
 Use bright text colors against the dark editor background in `<GacUI repo>/Test/TestDocument.bin`. Verify effective heading, font, color and paragraph styles after private save/load, including built-in styles that were unused when saved. Reload through both editors with the original image files unavailable to prove embedded images and saved style definitions are sufficient.
+
+Preserve the original fixture and write outputs separately. Cross-open TUI private files in both GUI editors and reopen GUI copies in a fresh TUI process; compare complete saved bytes or image payload hashes and all style definitions. Assert the exact pathless image label and decoded dimensions as well as retained image data. Exercise edit, selection, refresh and undo through each editor's supported command route before saving, and require exports to preserve the private modified state. Canceled operations perform no native write or document replacement.
 
 ## Verify injection routing with fresh distinguishable calls
 
@@ -713,3 +724,9 @@ Generated left-click pairing in `<GacUI repo>/Test/GacUISrc/UnitTest/TestRemote_
 ## Keep modal automation lookup bounded and action-specific
 
 In `<GacUI repo>/Test/UIA_CppTest_Shared.cs`, locate hosted modal windows and action controls through bounded child searches. Discover a font family from the automation snapshot, use the supported UIA ItemContainer Name lookup, then scroll it into view before selection; avoid enumerating the entire virtual font tree. Wait for the requested localized OK/Open/Save or Cancel caption instead of selecting by index from a partially realized button list. Verify field focus and value before confirming, and use explicit resume points to preserve completed command coverage while rerunning a failed group.
+
+## Verify file-dialog mutations with owned native fixtures
+
+Confine mutable fixtures to the resolved `<GacUI repo>/Test/FileDialogPlayground`, including link targets and unselected sentinels. Verify actual filesystem contents beside GUI/TUI confirmation and failure lists. Use separately owned handles without delete sharing for top-level and descendant failures; a failed recursive delete can leave partial contents, and later selected targets must still be attempted. Verify captured sorted/filtered provider rows rather than editable filename text.
+
+Cover selected and nested directory links without following their targets, synthetic drive-list command rejection, navigation during confirmation, stale-result rejection and surviving tree selection. Release holders and unlink fixtures before removing the verified playground. Record console replay/cell output separately from physical terminal input and displayed appearance, and retain the explicitly requested application scope.

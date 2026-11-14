@@ -6,8 +6,8 @@
 - Proactively remove code made redundant by refactoring [34]
 - Verify generated artifacts with downstream consumer checks [33]
 - Process staged tasks one by one with verification [28]
+- Extract abstractions only for real shared behavior [24]
 - Port fixes from imports to source repositories [23]
-- Extract abstractions only for real shared behavior [23]
 - Verify and localize portability on every target OS [21]
 - Fix behavior at the owning state instead of patching symptoms [18]
 - Crash early instead of adding error-tolerance fallbacks [16]
@@ -18,13 +18,13 @@
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
 - Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [4]
+- Respect explicitly limited verification scope [4]
 - Don't assume observable changes are batched [3]
 - Use RAII scope cleanup instead of manual catch cleanup [3]
 - Use explicit positive compiler and platform guards [3]
 - Keep encoding and exception adapters at the C++/JavaScript boundary [3]
 - Treat Debug memory leak dumps as required failures [3]
 - Derive behavior thresholds from named constants [3]
-- Respect explicitly limited verification scope [3]
 - Capture dependent lambdas explicitly [2]
 - Use `ERROR_MESSAGE_PREFIX` for meaningful `CHECK_ERROR` / `CHECK_FAIL` messages [2]
 - Prefer simple calls before interface casts [2]
@@ -558,6 +558,8 @@ Map each new rejection or runtime-failure branch to a reachable assertion and it
 When a behavior-preserving refactor explicitly requests minimum limited testing, reuse the existing focused regression and extend only the assertions needed to preserve that behavior. Complete the generation, architecture builds and metadata checks required by the changed inputs, plus any specifically requested downstream consumer. Do not expand the task to unrelated runtime suites, and still inspect the complete execution log for failures after the passing summary.
 
 Apply later scope corrections to the remaining work, including exclusions of otherwise standard application matrices. Historical broader runs remain historical evidence; do not repeat excluded applications or claim they verified a later implementation.
+
+When a GUI/TUI task names only representative applications, keep runtime verification within that selection while completing required generation, metadata and unit checks for the changed library inputs. Do not expand a separate debugging SOP that the task explicitly excludes.
 
 ## Commit consumed event state before reentrant callbacks
 
