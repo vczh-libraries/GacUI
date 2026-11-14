@@ -1,4 +1,4 @@
-﻿================================(1/108)================================
+﻿================================(1/110)================================
 module <constructor>tuidemo::TuiDataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -792,7 +792,7 @@ namespace tuidemo
     }
 }
 
-================================(2/108)================================
+================================(2/110)================================
 module <instance>tuidemo::TuiDataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -844,7 +844,7 @@ namespace tuidemo
     }
 }
 
-================================(3/108)================================
+================================(3/110)================================
 module <constructor>tuidemo::TuiListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1382,7 +1382,7 @@ namespace tuidemo
     }
 }
 
-================================(4/108)================================
+================================(4/110)================================
 module <instance>tuidemo::TuiListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1441,7 +1441,7 @@ namespace tuidemo
     }
 }
 
-================================(5/108)================================
+================================(5/110)================================
 module <constructor>tuidemo::TuiMainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1639,6 +1639,9 @@ namespace tuidemo
         var labelMouseModifiers : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
+        var skinItemsStack : ::presentation::compositions::GuiRepeatStackComposition* = null of (::presentation::compositions::GuiRepeatStackComposition*);
+
+        @cpp:Protected
         var <precompile>39 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
@@ -1705,52 +1708,52 @@ namespace tuidemo
         var <precompile>60 : ::presentation::controls::GuiControl* = null of (::presentation::controls::GuiControl*);
 
         @cpp:Protected
-        var <precompile>61 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
+        var <precompile>61 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>62 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+        var <precompile>62 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
 
         @cpp:Protected
-        var <precompile>63 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+        var <precompile>63 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
 
         @cpp:Protected
         var <precompile>64 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>65 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+        var <precompile>65 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
         var <precompile>66 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>67 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+        var <precompile>67 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var <precompile>68 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>68 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>69 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
+        var <precompile>69 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var <precompile>70 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
+        var <precompile>70 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>71 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+        var <precompile>71 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var <precompile>72 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var <precompile>72 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
         var <precompile>73 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>74 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var <precompile>74 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
         var <precompile>75 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>76 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var <precompile>76 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
         var <precompile>77 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
@@ -1762,49 +1765,10 @@ namespace tuidemo
         var <precompile>79 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>80 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+        var <precompile>80 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var <precompile>81 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
-
-        @cpp:Protected
-        var <precompile>82 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
-
-        @cpp:Protected
-        var <precompile>83 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
-
-        @cpp:Protected
-        var <precompile>84 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
-
-        @cpp:Protected
-        var <precompile>85 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
-
-        @cpp:Protected
-        var <precompile>86 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
-
-        @cpp:Protected
-        var <precompile>87 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
-
-        @cpp:Protected
-        var <precompile>88 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var palettePink : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
-
-        @cpp:Protected
-        var paletteOrange : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
-
-        @cpp:Protected
-        var paletteGrass : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
-
-        @cpp:Protected
-        var paletteEmerald : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
-
-        @cpp:Protected
-        var paletteSkyblue : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
-
-        @cpp:Protected
-        var palettePurple : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+        var <precompile>81 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var checkCancelClose : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
@@ -1819,12 +1783,12 @@ namespace tuidemo
             {
                 (self.ClientSize = {x : 120; y : 40;} of (::presentation::Size));
             }
-            (<precompile>88 = self.BoundsComposition);
+            (<precompile>81 = self.BoundsComposition);
             {
-                (<precompile>88.PreferredMinSize = {x : 80; y : 25;} of (::presentation::Size));
+                (<precompile>81.PreferredMinSize = {x : 80; y : 25;} of (::presentation::Size));
             }
             {
-                (<precompile>88.MinSizeLimitation = NoLimit of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (<precompile>81.MinSizeLimitation = NoLimit of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
                 (self.Text = "Complete Control Showcase (TUI)");
@@ -2394,115 +2358,29 @@ namespace tuidemo
             {
                 (<precompile>60 = new (::presentation::controls::GuiControl*)(::presentation::theme::ThemeName::GroupBox));
             }
-            (<precompile>68 = <precompile>60.BoundsComposition);
+            (<precompile>61 = <precompile>60.BoundsComposition);
             {
-                (<precompile>68.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : (-1);} of (::presentation::Margin));
+                (<precompile>61.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : (-1);} of (::presentation::Margin));
             }
             {
                 (<precompile>60.Text = "Color Theme");
             }
-            (<precompile>61 = new (::presentation::compositions::GuiStackComposition*)());
+            (skinItemsStack = new (::presentation::compositions::GuiRepeatStackComposition*)());
+            <this>.SetNamedObject("skinItemsStack", skinItemsStack);
             {
-                (<precompile>61.Padding = 0 of (::system::Int32));
+                (skinItemsStack.Padding = 0 of (::system::Int32));
             }
             {
-                (<precompile>61.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
+                (skinItemsStack.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
             }
             {
-                (<precompile>61.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (skinItemsStack.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>61.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            (<precompile>62 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (palettePink = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::RadioButton));
-                <this>.SetNamedObject("palettePink", palettePink);
+                (skinItemsStack.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                (palettePink.Text = "Pink");
-            }
-            {
-                <precompile>62.AddChild(palettePink.BoundsComposition);
-            }
-            {
-                <precompile>61.AddChild(<precompile>62);
-            }
-            (<precompile>63 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (paletteOrange = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::RadioButton));
-                <this>.SetNamedObject("paletteOrange", paletteOrange);
-            }
-            {
-                (paletteOrange.Text = "Orange");
-            }
-            {
-                <precompile>63.AddChild(paletteOrange.BoundsComposition);
-            }
-            {
-                <precompile>61.AddChild(<precompile>63);
-            }
-            (<precompile>64 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (paletteGrass = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::RadioButton));
-                <this>.SetNamedObject("paletteGrass", paletteGrass);
-            }
-            {
-                (paletteGrass.Text = "Grass");
-            }
-            {
-                <precompile>64.AddChild(paletteGrass.BoundsComposition);
-            }
-            {
-                <precompile>61.AddChild(<precompile>64);
-            }
-            (<precompile>65 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (paletteEmerald = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::RadioButton));
-                <this>.SetNamedObject("paletteEmerald", paletteEmerald);
-            }
-            {
-                (paletteEmerald.Text = "Emerald");
-            }
-            {
-                <precompile>65.AddChild(paletteEmerald.BoundsComposition);
-            }
-            {
-                <precompile>61.AddChild(<precompile>65);
-            }
-            (<precompile>66 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (paletteSkyblue = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::RadioButton));
-                <this>.SetNamedObject("paletteSkyblue", paletteSkyblue);
-            }
-            {
-                (paletteSkyblue.Selected = true);
-            }
-            {
-                (paletteSkyblue.Text = "SkyBlue (default)");
-            }
-            {
-                <precompile>66.AddChild(paletteSkyblue.BoundsComposition);
-            }
-            {
-                <precompile>61.AddChild(<precompile>66);
-            }
-            (<precompile>67 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (palettePurple = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::RadioButton));
-                <this>.SetNamedObject("palettePurple", palettePurple);
-            }
-            {
-                (palettePurple.Text = "Purple");
-            }
-            {
-                <precompile>67.AddChild(palettePurple.BoundsComposition);
-            }
-            {
-                <precompile>61.AddChild(<precompile>67);
-            }
-            {
-                <precompile>60.ContainerComposition.AddChild(<precompile>61);
+                <precompile>60.ContainerComposition.AddChild(skinItemsStack);
             }
             {
                 <precompile>59.AddChild(<precompile>60.BoundsComposition);
@@ -2518,80 +2396,80 @@ namespace tuidemo
                 <collection>.Add(<precompile>37);
             }
             {
-                (<precompile>69 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
+                (<precompile>62 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
             }
             {
-                (<precompile>69.Alt = "X");
+                (<precompile>62.Alt = "X");
             }
             {
-                (<precompile>69.Text = "Exit");
+                (<precompile>62.Text = "Exit");
             }
-            (<precompile>70 = new (::presentation::compositions::GuiStackComposition*)());
+            (<precompile>63 = new (::presentation::compositions::GuiStackComposition*)());
             {
-                (<precompile>70.Padding = 0 of (::system::Int32));
-            }
-            {
-                (<precompile>70.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
+                (<precompile>63.Padding = 0 of (::system::Int32));
             }
             {
-                (<precompile>70.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>63.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
             }
             {
-                (<precompile>70.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            (<precompile>71 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (<precompile>72 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                (<precompile>63.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>72.Text = "self.Hide() (InvokeInMainThread)");
+                (<precompile>63.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>64 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (<precompile>65 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
             {
-                <precompile>71.AddChild(<precompile>72.BoundsComposition);
+                (<precompile>65.Text = "self.Hide() (InvokeInMainThread)");
             }
             {
-                <precompile>70.AddChild(<precompile>71);
-            }
-            (<precompile>73 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (<precompile>74 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <precompile>64.AddChild(<precompile>65.BoundsComposition);
             }
             {
-                (<precompile>74.Text = "self.Hide()");
+                <precompile>63.AddChild(<precompile>64);
+            }
+            (<precompile>66 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (<precompile>67 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
             {
-                <precompile>73.AddChild(<precompile>74.BoundsComposition);
+                (<precompile>67.Text = "self.Hide()");
             }
             {
-                <precompile>70.AddChild(<precompile>73);
-            }
-            (<precompile>75 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (<precompile>76 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <precompile>66.AddChild(<precompile>67.BoundsComposition);
             }
             {
-                (<precompile>76.Text = "self.Close() (InvokeInMainThread)");
+                <precompile>63.AddChild(<precompile>66);
+            }
+            (<precompile>68 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (<precompile>69 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
             {
-                <precompile>75.AddChild(<precompile>76.BoundsComposition);
+                (<precompile>69.Text = "self.Close() (InvokeInMainThread)");
             }
             {
-                <precompile>70.AddChild(<precompile>75);
-            }
-            (<precompile>77 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (<precompile>78 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <precompile>68.AddChild(<precompile>69.BoundsComposition);
             }
             {
-                (<precompile>78.Text = "self.Close()");
+                <precompile>63.AddChild(<precompile>68);
+            }
+            (<precompile>70 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (<precompile>71 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
             {
-                <precompile>77.AddChild(<precompile>78.BoundsComposition);
+                (<precompile>71.Text = "self.Close()");
             }
             {
-                <precompile>70.AddChild(<precompile>77);
+                <precompile>70.AddChild(<precompile>71.BoundsComposition);
             }
-            (<precompile>79 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                <precompile>63.AddChild(<precompile>70);
+            }
+            (<precompile>72 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkCancelClose = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("checkCancelClose", checkCancelClose);
@@ -2603,66 +2481,66 @@ namespace tuidemo
                 (checkCancelClose.Text = "Cancel Hide/Close requests");
             }
             {
-                <precompile>79.AddChild(checkCancelClose.BoundsComposition);
+                <precompile>72.AddChild(checkCancelClose.BoundsComposition);
             }
             {
-                <precompile>70.AddChild(<precompile>79);
+                <precompile>63.AddChild(<precompile>72);
             }
-            (<precompile>80 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>73 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
-                (<precompile>81 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
-            }
-            {
-                (<precompile>81.Text = "Hide/Close query WindowClosing; accepted requests stop TUI after WindowReadyToClose.");
+                (<precompile>74 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
             }
             {
-                <precompile>80.AddChild(<precompile>81.BoundsComposition);
+                (<precompile>74.Text = "Hide/Close query WindowClosing; accepted requests stop TUI after WindowReadyToClose.");
             }
             {
-                <precompile>70.AddChild(<precompile>80);
-            }
-            (<precompile>82 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (<precompile>83 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                <precompile>73.AddChild(<precompile>74.BoundsComposition);
             }
             {
-                <precompile>82.AddChild(<precompile>83.BoundsComposition);
+                <precompile>63.AddChild(<precompile>73);
+            }
+            (<precompile>75 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (<precompile>76 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
             }
             {
-                <precompile>70.AddChild(<precompile>82);
-            }
-            (<precompile>84 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (<precompile>85 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <precompile>75.AddChild(<precompile>76.BoundsComposition);
             }
             {
-                (<precompile>85.Text = "Stop TUI");
+                <precompile>63.AddChild(<precompile>75);
+            }
+            (<precompile>77 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (<precompile>78 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
             {
-                <precompile>84.AddChild(<precompile>85.BoundsComposition);
+                (<precompile>78.Text = "Stop TUI");
             }
             {
-                <precompile>70.AddChild(<precompile>84);
-            }
-            (<precompile>86 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (<precompile>87 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <precompile>77.AddChild(<precompile>78.BoundsComposition);
             }
             {
-                (<precompile>87.Text = "Stop TUI (InvokeInMainThread)");
+                <precompile>63.AddChild(<precompile>77);
+            }
+            (<precompile>79 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (<precompile>80 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
             {
-                <precompile>86.AddChild(<precompile>87.BoundsComposition);
+                (<precompile>80.Text = "Stop TUI (InvokeInMainThread)");
             }
             {
-                <precompile>70.AddChild(<precompile>86);
+                <precompile>79.AddChild(<precompile>80.BoundsComposition);
             }
             {
-                <precompile>69.ContainerComposition.AddChild(<precompile>70);
+                <precompile>63.AddChild(<precompile>79);
+            }
+            {
+                <precompile>62.ContainerComposition.AddChild(<precompile>63);
             }
             {
                 var <collection> = <precompile>0.Pages;
-                <collection>.Add(<precompile>69);
+                <collection>.Add(<precompile>62);
             }
             (<precompile>1 = <precompile>0.BoundsComposition);
             {
@@ -3594,82 +3472,10 @@ namespace tuidemo
                 attach(<precompile>58.Clicked, <event-handler>);
             }
             {
-                (palettePink.GroupController = paletteGroup);
+                (skinItemsStack.ItemTemplate = self.CreateSkinItemTemplate);
             }
             {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                {
-                    if (palettePink.Selected)
-                    {
-                        self.PaletteSelected(0);
-                    }
-                };
-                attach(palettePink.SelectedChanged, <event-handler>);
-            }
-            {
-                (paletteOrange.GroupController = paletteGroup);
-            }
-            {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                {
-                    if (paletteOrange.Selected)
-                    {
-                        self.PaletteSelected(1);
-                    }
-                };
-                attach(paletteOrange.SelectedChanged, <event-handler>);
-            }
-            {
-                (paletteGrass.GroupController = paletteGroup);
-            }
-            {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                {
-                    if (paletteGrass.Selected)
-                    {
-                        self.PaletteSelected(2);
-                    }
-                };
-                attach(paletteGrass.SelectedChanged, <event-handler>);
-            }
-            {
-                (paletteEmerald.GroupController = paletteGroup);
-            }
-            {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                {
-                    if (paletteEmerald.Selected)
-                    {
-                        self.PaletteSelected(3);
-                    }
-                };
-                attach(paletteEmerald.SelectedChanged, <event-handler>);
-            }
-            {
-                (paletteSkyblue.GroupController = paletteGroup);
-            }
-            {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                {
-                    if (paletteSkyblue.Selected)
-                    {
-                        self.PaletteSelected(4);
-                    }
-                };
-                attach(paletteSkyblue.SelectedChanged, <event-handler>);
-            }
-            {
-                (palettePurple.GroupController = paletteGroup);
-            }
-            {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                {
-                    if (palettePurple.Selected)
-                    {
-                        self.PaletteSelected(5);
-                    }
-                };
-                attach(palettePurple.SelectedChanged, <event-handler>);
+                (skinItemsStack.ItemSource = self.SkinItems);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
@@ -3680,7 +3486,7 @@ namespace tuidemo
                         (self.invocationCount = (self.invocationCount + 1));
                     });
                 };
-                attach(<precompile>72.Clicked, <event-handler>);
+                attach(<precompile>65.Clicked, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
@@ -3688,7 +3494,7 @@ namespace tuidemo
                     self.Hide();
                     (self.invocationCount = (self.invocationCount + 1));
                 };
-                attach(<precompile>74.Clicked, <event-handler>);
+                attach(<precompile>67.Clicked, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
@@ -3699,7 +3505,7 @@ namespace tuidemo
                         (self.invocationCount = (self.invocationCount + 1));
                     });
                 };
-                attach(<precompile>76.Clicked, <event-handler>);
+                attach(<precompile>69.Clicked, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
@@ -3707,7 +3513,7 @@ namespace tuidemo
                     self.Close();
                     (self.invocationCount = (self.invocationCount + 1));
                 };
-                attach(<precompile>78.Clicked, <event-handler>);
+                attach(<precompile>71.Clicked, <event-handler>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -3808,13 +3614,13 @@ namespace tuidemo
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>83.Text;
+                    var <old> = <precompile>76.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>83.Text = <new>);
+                    (<precompile>76.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -3823,7 +3629,7 @@ namespace tuidemo
                 {
                     GuiApplication::GetTuiApplication().Stop();
                 };
-                attach(<precompile>85.Clicked, <event-handler>);
+                attach(<precompile>78.Clicked, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
@@ -3833,7 +3639,7 @@ namespace tuidemo
                         GuiApplication::GetTuiApplication().Stop();
                     });
                 };
-                attach(<precompile>87.Clicked, <event-handler>);
+                attach(<precompile>80.Clicked, <event-handler>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -4296,7 +4102,7 @@ namespace tuidemo
     }
 }
 
-================================(6/108)================================
+================================(6/110)================================
 module <instance>tuidemo::TuiMainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4388,7 +4194,66 @@ namespace tuidemo
 
         prop readyToCloseCount : int{GetreadyToCloseCount, SetreadyToCloseCount : readyToCloseCountChanged}
 
-        event PaletteSelected(int);
+        @cpp:Private
+        var <prop>SkinItems : observe TuiSkinItem^[] = {};
+
+        func GetSkinItems() : (observe TuiSkinItem^[])
+        {
+            return <prop>SkinItems;
+        }
+
+        @cpp:Protected
+        func SetSkinItems(<value> : observe TuiSkinItem^[]) : (void)
+        {
+            (<prop>SkinItems = <value>);
+        }
+
+        prop SkinItems : observe TuiSkinItem^[]{GetSkinItems}
+
+        @cpp:Private
+        var <prop>SelectedSkinItem : TuiSkinItem^ = null;
+
+        func GetSelectedSkinItem() : (TuiSkinItem^)
+        {
+            return <prop>SelectedSkinItem;
+        }
+
+        func SetSelectedSkinItem(<value> : TuiSkinItem^) : (void)
+        {
+            (<prop>SelectedSkinItem = <value>);
+        }
+
+        prop SelectedSkinItem : TuiSkinItem^{GetSelectedSkinItem, SetSelectedSkinItem}
+
+        func SelectSkinItem(item : TuiSkinItem^) : (void)
+        {
+            if ((self.SelectedSkinItem != item))
+            {
+                (self.SelectedSkinItem = item);
+                GuiApplication::GetApplication().InvokeInMainThread(self, func () : (void)
+                {
+                    item.SelectSkin();
+                    GuiApplication::GetApplication().RefreshThemes();
+                });
+            }
+        }
+
+        func CreateSkinItemTemplate(value : object) : (GuiTemplate*)
+        {
+            var item = (cast (TuiSkinItem^) value);
+            var itemTemplate = new (TuiSkinItemTemplate*)(item);
+            var button = itemTemplate.Button;
+            (button.GroupController = paletteGroup);
+            (button.Selected = (self.SelectedSkinItem == item));
+            attach(button.SelectedChanged, func (sender : GuiGraphicsComposition*, arguments : GuiEventArgs*) : (void)
+            {
+                if (button.Selected)
+                {
+                    self.SelectSkinItem(item);
+                }
+            });
+            return itemTemplate;
+        }
 
         func ShowMouseModifiers(alt : bool, osSuper : bool) : (void)
         {
@@ -4442,7 +4307,7 @@ namespace tuidemo
     }
 }
 
-================================(7/108)================================
+================================(7/110)================================
 module <constructor>tuidemo::TuiRepeatTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5101,7 +4966,7 @@ namespace tuidemo
     }
 }
 
-================================(8/108)================================
+================================(8/110)================================
 module <instance>tuidemo::TuiRepeatTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5144,7 +5009,187 @@ namespace tuidemo
     }
 }
 
-================================(9/108)================================
+================================(9/110)================================
+module <constructor>tuidemo::TuiSkinItemTemplate;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace tuidemo
+{
+    class TuiSkinItemTemplateConstructor
+    {
+        @cpp:Protected
+        var ViewModel : ::tuidemo::TuiSkinItem^ = null of (::tuidemo::TuiSkinItem^);
+
+        @cpp:Protected
+        var <precompile>0 : ::tuidemo::TuiSkinItemTemplate* = null of (::tuidemo::TuiSkinItemTemplate*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var radioButton : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+
+        @cpp:Protected
+        func <tuidemo-TuiSkinItemTemplate>Initialize(<this> : ::tuidemo::TuiSkinItemTemplate*) : (::system::Void)
+        {
+            (<precompile>0 = <this>);
+            (ViewModel = <this>.ViewModel);
+            {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                (radioButton = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::RadioButton));
+                <this>.SetNamedObject("radioButton", radioButton);
+            }
+            (<precompile>1 = radioButton.BoundsComposition);
+            {
+                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                <precompile>0.AddChild(radioButton.BoundsComposition);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = ViewModel.Name of (::system::String);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = radioButton.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (radioButton.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(10/110)================================
+module <instance>tuidemo::TuiSkinItemTemplate;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace tuidemo
+{
+    @cpp:Friend(typeof(TuiSkinItemTemplateConstructor))
+    class TuiSkinItemTemplate : ::presentation::templates::GuiControlTemplate, TuiSkinItemTemplateConstructor
+    {
+        func GetButton() : (GuiSelectableButton*)
+        {
+            return radioButton;
+        }
+
+        prop Button : GuiSelectableButton*{GetButton}
+
+        @cpp:Private
+        var <parameter>ViewModel : tuidemo::TuiSkinItem^ = null of (::tuidemo::TuiSkinItem^);
+
+        func GetViewModel() : (tuidemo::TuiSkinItem^)
+        {
+            return <parameter>ViewModel;
+        }
+
+        prop ViewModel : tuidemo::TuiSkinItem^{GetViewModel}
+
+        new* (<ctor-parameter>ViewModel : tuidemo::TuiSkinItem^)
+        {
+            (<parameter>ViewModel = <ctor-parameter>ViewModel);
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("tuidemo::TuiSkinItemTemplate");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<tuidemo-TuiSkinItemTemplate>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
+        }
+    }
+}
+
+================================(11/110)================================
 module <constructor>tuidemo::TuiSubWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6366,7 +6411,7 @@ namespace tuidemo
     }
 }
 
-================================(10/108)================================
+================================(12/110)================================
 module <instance>tuidemo::TuiSubWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6411,7 +6456,7 @@ namespace tuidemo
     }
 }
 
-================================(11/108)================================
+================================(13/110)================================
 module <constructor>tuidemo::TuiTextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7134,7 +7179,7 @@ namespace tuidemo
     }
 }
 
-================================(12/108)================================
+================================(14/110)================================
 module <instance>tuidemo::TuiTextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7181,7 +7226,7 @@ namespace tuidemo
     }
 }
 
-================================(13/108)================================
+================================(15/110)================================
 module <constructor>tuidemo::TuiTreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7737,7 +7782,7 @@ namespace tuidemo
     }
 }
 
-================================(14/108)================================
+================================(16/110)================================
 module <instance>tuidemo::TuiTreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7788,7 +7833,7 @@ namespace tuidemo
     }
 }
 
-================================(15/108)================================
+================================(17/110)================================
 module <constructor>tuidemo::TuiDateEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7995,7 +8040,7 @@ namespace tuidemo
     }
 }
 
-================================(16/108)================================
+================================(18/110)================================
 module <instance>tuidemo::TuiDateEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8037,7 +8082,7 @@ namespace tuidemo
     }
 }
 
-================================(17/108)================================
+================================(19/110)================================
 module <constructor>tuidemo::TuiDateFilter;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8381,7 +8426,7 @@ namespace tuidemo
     }
 }
 
-================================(18/108)================================
+================================(20/110)================================
 module <instance>tuidemo::TuiDateFilter;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8484,7 +8529,7 @@ namespace tuidemo
     }
 }
 
-================================(19/108)================================
+================================(21/110)================================
 module <constructor>tuidemo::TuiTextEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8699,7 +8744,7 @@ namespace tuidemo
     }
 }
 
-================================(20/108)================================
+================================(22/110)================================
 module <instance>tuidemo::TuiTextEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8741,7 +8786,7 @@ namespace tuidemo
     }
 }
 
-================================(21/108)================================
+================================(23/110)================================
 module <constructor>tuidemo::TuiCellFocusTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8974,7 +9019,7 @@ namespace tuidemo
     }
 }
 
-================================(22/108)================================
+================================(24/110)================================
 module <instance>tuidemo::TuiCellFocusTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9016,7 +9061,7 @@ namespace tuidemo
     }
 }
 
-================================(23/108)================================
+================================(25/110)================================
 module <constructor>tuidemo::TuiCategoryDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9338,7 +9383,7 @@ namespace tuidemo
     }
 }
 
-================================(24/108)================================
+================================(26/110)================================
 module <instance>tuidemo::TuiCategoryDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9423,7 +9468,7 @@ namespace tuidemo
     }
 }
 
-================================(25/108)================================
+================================(27/110)================================
 module <constructor>tuidemo::TuiCategoryEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9767,7 +9812,7 @@ namespace tuidemo
     }
 }
 
-================================(26/108)================================
+================================(28/110)================================
 module <instance>tuidemo::TuiCategoryEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9811,7 +9856,7 @@ namespace tuidemo
     }
 }
 
-================================(27/108)================================
+================================(29/110)================================
 module <constructor>tuidemo::TuiCategoryItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10025,7 +10070,7 @@ namespace tuidemo
     }
 }
 
-================================(28/108)================================
+================================(30/110)================================
 module <instance>tuidemo::TuiCategoryItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10078,7 +10123,7 @@ namespace tuidemo
     }
 }
 
-================================(29/108)================================
+================================(31/110)================================
 module <constructor>tuidemo::TuiCategoryVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10352,7 +10397,7 @@ namespace tuidemo
     }
 }
 
-================================(30/108)================================
+================================(32/110)================================
 module <instance>tuidemo::TuiCategoryVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10394,7 +10439,7 @@ namespace tuidemo
     }
 }
 
-================================(31/108)================================
+================================(33/110)================================
 module <constructor>tuidemo::TuiGenderDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10597,7 +10642,7 @@ namespace tuidemo
     }
 }
 
-================================(32/108)================================
+================================(34/110)================================
 module <instance>tuidemo::TuiGenderDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10682,7 +10727,7 @@ namespace tuidemo
     }
 }
 
-================================(33/108)================================
+================================(35/110)================================
 module <constructor>tuidemo::TuiGenderEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11019,7 +11064,7 @@ namespace tuidemo
     }
 }
 
-================================(34/108)================================
+================================(36/110)================================
 module <instance>tuidemo::TuiGenderEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11063,7 +11108,7 @@ namespace tuidemo
     }
 }
 
-================================(35/108)================================
+================================(37/110)================================
 module <constructor>tuidemo::TuiGenderItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11277,7 +11322,7 @@ namespace tuidemo
     }
 }
 
-================================(36/108)================================
+================================(38/110)================================
 module <instance>tuidemo::TuiGenderItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11330,7 +11375,7 @@ namespace tuidemo
     }
 }
 
-================================(37/108)================================
+================================(39/110)================================
 module <constructor>tuidemo::TuiGenderVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11604,7 +11649,7 @@ namespace tuidemo
     }
 }
 
-================================(38/108)================================
+================================(40/110)================================
 module <instance>tuidemo::TuiGenderVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11646,7 +11691,7 @@ namespace tuidemo
     }
 }
 
-================================(39/108)================================
+================================(41/110)================================
 module <constructor>tuidemo::TuiHyperlinkWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11894,7 +11939,7 @@ namespace tuidemo
     }
 }
 
-================================(40/108)================================
+================================(42/110)================================
 module <instance>tuidemo::TuiHyperlinkWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11958,7 +12003,7 @@ namespace tuidemo
     }
 }
 
-================================(41/108)================================
+================================(43/110)================================
 module <constructor>tuidemo::TuiLocaleSelector;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12139,7 +12184,7 @@ namespace tuidemo
     }
 }
 
-================================(42/108)================================
+================================(44/110)================================
 module <instance>tuidemo::TuiLocaleSelector;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12202,7 +12247,7 @@ namespace tuidemo
     }
 }
 
-================================(43/108)================================
+================================(45/110)================================
 module <constructor>tuidemo::TuiTestWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12321,7 +12366,7 @@ namespace tuidemo
     }
 }
 
-================================(44/108)================================
+================================(46/110)================================
 module <instance>tuidemo::TuiTestWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12364,7 +12409,7 @@ namespace tuidemo
     }
 }
 
-================================(45/108)================================
+================================(47/110)================================
 module <constructor>tuidemo::TuiRefreshBindableDataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -13205,7 +13250,7 @@ namespace tuidemo
     }
 }
 
-================================(46/108)================================
+================================(48/110)================================
 module <instance>tuidemo::TuiRefreshBindableDataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -13255,7 +13300,7 @@ namespace tuidemo
     }
 }
 
-================================(47/108)================================
+================================(49/110)================================
 module <constructor>tuidemo::TuiRefreshBindableListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -13912,7 +13957,7 @@ namespace tuidemo
     }
 }
 
-================================(48/108)================================
+================================(50/110)================================
 module <instance>tuidemo::TuiRefreshBindableListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -13962,7 +14007,7 @@ namespace tuidemo
     }
 }
 
-================================(49/108)================================
+================================(51/110)================================
 module <constructor>tuidemo::TuiRefreshBindableTextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14288,7 +14333,7 @@ namespace tuidemo
     }
 }
 
-================================(50/108)================================
+================================(52/110)================================
 module <instance>tuidemo::TuiRefreshBindableTextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14333,7 +14378,7 @@ namespace tuidemo
     }
 }
 
-================================(51/108)================================
+================================(53/110)================================
 module <constructor>tuidemo::TuiRefreshBindableTreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14646,7 +14691,7 @@ namespace tuidemo
     }
 }
 
-================================(52/108)================================
+================================(54/110)================================
 module <instance>tuidemo::TuiRefreshBindableTreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14696,7 +14741,7 @@ namespace tuidemo
     }
 }
 
-================================(53/108)================================
+================================(55/110)================================
 module <constructor>tuidemo::TuiRefreshListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -15378,7 +15423,7 @@ namespace tuidemo
     }
 }
 
-================================(54/108)================================
+================================(56/110)================================
 module <instance>tuidemo::TuiRefreshListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -15421,7 +15466,7 @@ namespace tuidemo
     }
 }
 
-================================(55/108)================================
+================================(57/110)================================
 module <constructor>tuidemo::TuiRefreshTextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -15728,7 +15773,7 @@ namespace tuidemo
     }
 }
 
-================================(56/108)================================
+================================(58/110)================================
 module <instance>tuidemo::TuiRefreshTextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -15771,7 +15816,7 @@ namespace tuidemo
     }
 }
 
-================================(57/108)================================
+================================(59/110)================================
 module <constructor>tuidemo::TuiRefreshTreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -16067,7 +16112,7 @@ namespace tuidemo
     }
 }
 
-================================(58/108)================================
+================================(60/110)================================
 module <instance>tuidemo::TuiRefreshTreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -16110,7 +16155,7 @@ namespace tuidemo
     }
 }
 
-================================(59/108)================================
+================================(61/110)================================
 module <constructor>tuidemo::TuiEnglishNumbersController;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -16570,7 +16615,7 @@ namespace tuidemo
     }
 }
 
-================================(60/108)================================
+================================(62/110)================================
 module <instance>tuidemo::TuiEnglishNumbersController;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -16814,7 +16859,7 @@ namespace tuidemo
     }
 }
 
-================================(61/108)================================
+================================(63/110)================================
 module <constructor>tuidemo::TuiEnglishNumbersControllerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -16913,7 +16958,7 @@ namespace tuidemo
     }
 }
 
-================================(62/108)================================
+================================(64/110)================================
 module <instance>tuidemo::TuiEnglishNumbersControllerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -16995,7 +17040,7 @@ namespace tuidemo
     }
 }
 
-================================(63/108)================================
+================================(65/110)================================
 module <constructor>tuidemo::TuiRepeatItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17114,7 +17159,7 @@ namespace tuidemo
     }
 }
 
-================================(64/108)================================
+================================(66/110)================================
 module <instance>tuidemo::TuiRepeatItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17167,7 +17212,7 @@ namespace tuidemo
     }
 }
 
-================================(65/108)================================
+================================(67/110)================================
 module <constructor>tuidemo::TuiSharedSizeItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17302,7 +17347,7 @@ namespace tuidemo
     }
 }
 
-================================(66/108)================================
+================================(68/110)================================
 module <instance>tuidemo::TuiSharedSizeItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17355,7 +17400,7 @@ namespace tuidemo
     }
 }
 
-================================(67/108)================================
+================================(69/110)================================
 module <constructor>tuidemo::TuiSharedSizeTextItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17627,7 +17672,7 @@ namespace tuidemo
     }
 }
 
-================================(68/108)================================
+================================(70/110)================================
 module <instance>tuidemo::TuiSharedSizeTextItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17680,7 +17725,7 @@ namespace tuidemo
     }
 }
 
-================================(69/108)================================
+================================(71/110)================================
 module <constructor>tuidemo::TuiDocumentBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -18093,7 +18138,7 @@ namespace tuidemo
     }
 }
 
-================================(70/108)================================
+================================(72/110)================================
 module <instance>tuidemo::TuiDocumentBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -18157,7 +18202,7 @@ namespace tuidemo
     }
 }
 
-================================(71/108)================================
+================================(73/110)================================
 module <constructor>tuidemo::TuiTextBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -18436,7 +18481,7 @@ namespace tuidemo
     }
 }
 
-================================(72/108)================================
+================================(74/110)================================
 module <instance>tuidemo::TuiTextBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -18500,7 +18545,7 @@ namespace tuidemo
     }
 }
 
-================================(73/108)================================
+================================(75/110)================================
 module <constructor>tuidemo::TuiTextBoxTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -18904,7 +18949,7 @@ namespace tuidemo
     }
 }
 
-================================(74/108)================================
+================================(76/110)================================
 module <instance>tuidemo::TuiTextBoxTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -18963,7 +19008,7 @@ namespace tuidemo
     }
 }
 
-================================(75/108)================================
+================================(77/110)================================
 module <constructor>tuidemo::TuiDatePickerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -19834,7 +19879,7 @@ namespace tuidemo
     }
 }
 
-================================(76/108)================================
+================================(78/110)================================
 module <instance>tuidemo::TuiDatePickerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -19877,7 +19922,7 @@ namespace tuidemo
     }
 }
 
-================================(77/108)================================
+================================(79/110)================================
 module <constructor>tuidemo::TuiDocumentEditorBase;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20030,9 +20075,6 @@ namespace tuidemo
         var commandAlignRight : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
 
         @cpp:Protected
-        var dialogNotImpl : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
-
-        @cpp:Protected
         func <tuidemo-TuiDocumentEditorBase>Initialize(<this> : ::tuidemo::TuiDocumentEditorBase*) : (::system::Void)
         {
             (self = <this>);
@@ -20046,11 +20088,6 @@ namespace tuidemo
             }
             {
                 self.AddComponent(dialogMessage);
-            }
-            (dialogNotImpl = new (::presentation::controls::GuiMessageDialog*)());
-            <this>.SetNamedObject("dialogNotImpl", dialogNotImpl);
-            {
-                self.AddComponent(dialogNotImpl);
             }
             (dialogOpen = new (::presentation::controls::GuiOpenFileDialog*)());
             <this>.SetNamedObject("dialogOpen", dialogOpen);
@@ -20418,79 +20455,6 @@ namespace tuidemo
             }
             {
                 self.AddComponent(commandAlignRight);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::tuidemo::TuiDocumentEditorBase* = null of (::tuidemo::TuiDocumentEditorBase*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Text of (::system::String);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (self ?? null of (::tuidemo::TuiDocumentEditorBase*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.TextChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.TextChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::tuidemo::TuiDocumentEditorBase*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = dialogNotImpl.Title;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (dialogNotImpl.Title = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
             }
             {
                 (dialogQueryClose.Title = self.Text);
@@ -21524,19 +21488,11 @@ namespace tuidemo
                     {
                         var imageService = INativeController::GetCurrentController().ImageService();
                         var image = imageService.CreateImageFromFile(dialogOpen.FileName);
-                        var imageData = new (ImageData^)(image, 0);
-                        var name = ("TuiImage" & self.nextImageId);
-                        (self.nextImageId = (self.nextImageId + 1));
-                        self.images.Add(imageData);
-                        var size = image.GetFrame(0).GetSize();
-                        var item = new (GuiDocumentItem^)(name);
-                        var label = new (GuiLabel*)(ThemeName::Label);
-                        (label.Text = (((((("[Image: " & dialogOpen.FileName) & ", ") & size.x) & " x ") & size.y) & "]"));
-                        (label.Context = imageData);
-                        item.Container.AddChild(label.BoundsComposition);
-                        document.AddDocumentItem(item);
-                        var run = new (DocumentEmbeddedObjectRun^)();
-                        (run.name = name);
+                        var imageRun = new (DocumentImageRun^)();
+                        (imageRun.image = image);
+                        (imageRun.frameIndex = 0);
+                        (imageRun.source = ("file://" & dialogOpen.FileName));
+                        var run = self.CreateImageObject(imageRun, dialogOpen.FileName);
                         var paragraph = new (DocumentParagraphRun^)();
                         paragraph.runs.Add(run);
                         var model = new (DocumentModel^)();
@@ -23577,7 +23533,7 @@ namespace tuidemo
     }
 }
 
-================================(78/108)================================
+================================(80/110)================================
 module <instance>tuidemo::TuiDocumentEditorBase;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23606,7 +23562,107 @@ namespace tuidemo
     {
         var nextImageId : int = 0;
 
-        var images : ImageData^[] = {};
+        var images : DocumentImageRun^[string] = {};
+
+        @cpp:Private
+        func CreateImageObject(image : DocumentImageRun^, fileName : string) : (DocumentEmbeddedObjectRun^)
+        {
+            var name = ("TuiImage" & self.nextImageId);
+            (self.nextImageId = (self.nextImageId + 1));
+            (self.images[name] = image);
+            var imageData = new (ImageData^)(image.image, image.frameIndex);
+            var size = image.image.GetFrame(image.frameIndex).GetSize();
+            var item = new (GuiDocumentItem^)(name);
+            var label = new (GuiLabel*)(ThemeName::Label);
+            (label.Text = (fileName == "") ? (((("[Image, " & size.x) & " x ") & size.y) & "]") : (((((("[Image: " & fileName) & ", ") & size.x) & " x ") & size.y) & "]"));
+            (label.Context = imageData);
+            item.Container.AddChild(label.BoundsComposition);
+            document.AddDocumentItem(item);
+            var run = new (DocumentEmbeddedObjectRun^)();
+            (run.name = name);
+            return run;
+        }
+
+        @cpp:Private
+        func PrepareImages(container : DocumentContainerRun^, forDisplay : bool) : (void)
+        {
+            {
+                var <for-begin>i : ::system::Int32 = 0;
+                var <for-end>i : ::system::Int32 = (container.runs.Count - 1);
+                var i = <for-begin>i;
+                while ((i <= <for-end>i))
+                {
+                    {
+                        var run = container.runs[i];
+                        if (forDisplay)
+                        {
+                            if (var image : DocumentImageRun^ = (run as (DocumentImageRun^)))
+                            {
+                                (container.runs[i] = self.CreateImageObject(image, ""));
+                            }
+                        }
+                        else
+                        {
+                            if (var embedded : DocumentEmbeddedObjectRun^ = (run as (DocumentEmbeddedObjectRun^)))
+                            {
+                                if (self.images.Keys.Contains(embedded.name))
+                                {
+                                    var original = self.images[embedded.name];
+                                    var image = new (DocumentImageRun^)();
+                                    (image.image = original.image);
+                                    (image.frameIndex = original.frameIndex);
+                                    (image.source = original.source);
+                                    (image.sizeOverride = original.sizeOverride);
+                                    (image.baseline = original.baseline);
+                                    (container.runs[i] = image);
+                                }
+                            }
+                        }
+                        if (var child : DocumentContainerRun^ = (run as (DocumentContainerRun^)))
+                        {
+                            self.PrepareImages(child, forDisplay);
+                        }
+                    }
+                    (i = (i + 1));
+                }
+            }
+        }
+
+        func LoadDocument(model : DocumentModel^) : (void)
+        {
+            while ((document.DocumentItems.Count > 0))
+            {
+                document.RemoveDocumentItem((cast (GuiDocumentItem^) document.DocumentItems.Values[0]));
+            }
+            self.images.Clear();
+            {
+                var <for-enumerable>paragraph = model.paragraphs of (::system::Enumerable^);
+                var <for-enumerator>paragraph = <for-enumerable>paragraph.CreateEnumerator();
+                while (<for-enumerator>paragraph.Next())
+                {
+                    var paragraph = (cast (::presentation::DocumentParagraphRun^) <for-enumerator>paragraph.GetCurrent());
+                    {
+                        self.PrepareImages(paragraph, true);
+                    }
+                }
+            }
+            (document.Document = model);
+        }
+
+        func PrepareDocumentForSaving(model : DocumentModel^) : (void)
+        {
+            {
+                var <for-enumerable>paragraph = model.paragraphs of (::system::Enumerable^);
+                var <for-enumerator>paragraph = <for-enumerable>paragraph.CreateEnumerator();
+                while (<for-enumerator>paragraph.Next())
+                {
+                    var paragraph = (cast (::presentation::DocumentParagraphRun^) <for-enumerator>paragraph.GetCurrent());
+                    {
+                        self.PrepareImages(paragraph, false);
+                    }
+                }
+            }
+        }
 
         @cpp:Protected
         @cpp:Private
@@ -23721,29 +23777,13 @@ namespace tuidemo
             return menuContainer;
         }
 
-        func LoadAsPrivateFormat(fileName : string) : (void)
-        {
-            (dialogNotImpl.Text = (("You want to load from \"" & fileName) & "\" as private format, but this function is not implemented in Workflow script."));
-            dialogNotImpl.ShowDialog();
-        }
+        event LoadAsPrivateFormat(string);
 
-        func SaveAsPrivateFormat(fileName : string) : (void)
-        {
-            (dialogNotImpl.Text = (("You want to save to \"" & fileName) & "\" as private format, but this function is not implemented in Workflow script."));
-            dialogNotImpl.ShowDialog();
-        }
+        event SaveAsPrivateFormat(string);
 
-        func SaveAsRTF(fileName : string) : (void)
-        {
-            (dialogNotImpl.Text = (("You want to save to \"" & fileName) & "\" as RTF, but this function is not implemented in Workflow script."));
-            dialogNotImpl.ShowDialog();
-        }
+        event SaveAsRTF(string);
 
-        func SaveAsHTML(fileName : string) : (void)
-        {
-            (dialogNotImpl.Text = (("You want to save to \"" & fileName) & "\" as HTML, but this function is not implemented in Workflow script."));
-            dialogNotImpl.ShowDialog();
-        }
+        event SaveAsHTML(string);
 
         @cpp:Private
         func SaveDocument() : (void)
@@ -23827,7 +23867,7 @@ namespace tuidemo
     }
 }
 
-================================(79/108)================================
+================================(81/110)================================
 module <constructor>tuidemo::TuiDocumentEditorToolstrip;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24480,7 +24520,7 @@ namespace tuidemo
     }
 }
 
-================================(80/108)================================
+================================(82/110)================================
 module <instance>tuidemo::TuiDocumentEditorToolstrip;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24522,7 +24562,7 @@ namespace tuidemo
     }
 }
 
-================================(81/108)================================
+================================(83/110)================================
 module <constructor>tuidemo::TuiEmbeddedControlsSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25558,7 +25598,7 @@ namespace tuidemo
     }
 }
 
-================================(82/108)================================
+================================(84/110)================================
 module <instance>tuidemo::TuiEmbeddedControlsSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25601,7 +25641,7 @@ namespace tuidemo
     }
 }
 
-================================(83/108)================================
+================================(85/110)================================
 module <constructor>tuidemo::TuiLocalizedColorDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25952,7 +25992,7 @@ namespace tuidemo
     }
 }
 
-================================(84/108)================================
+================================(86/110)================================
 module <instance>tuidemo::TuiLocalizedColorDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -26016,7 +26056,7 @@ namespace tuidemo
     }
 }
 
-================================(85/108)================================
+================================(87/110)================================
 module <constructor>tuidemo::TuiLocalizedDialogsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -26277,7 +26317,7 @@ namespace tuidemo
     }
 }
 
-================================(86/108)================================
+================================(88/110)================================
 module <instance>tuidemo::TuiLocalizedDialogsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -26320,7 +26360,7 @@ namespace tuidemo
     }
 }
 
-================================(87/108)================================
+================================(89/110)================================
 module <constructor>tuidemo::TuiLocalizedFileDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -27385,7 +27425,7 @@ namespace tuidemo
     }
 }
 
-================================(88/108)================================
+================================(90/110)================================
 module <instance>tuidemo::TuiLocalizedFileDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -27476,7 +27516,7 @@ namespace tuidemo
     }
 }
 
-================================(89/108)================================
+================================(91/110)================================
 module <constructor>tuidemo::TuiLocalizedFontDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -27648,7 +27688,7 @@ namespace tuidemo
     }
 }
 
-================================(90/108)================================
+================================(92/110)================================
 module <instance>tuidemo::TuiLocalizedFontDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -27691,7 +27731,7 @@ namespace tuidemo
     }
 }
 
-================================(91/108)================================
+================================(93/110)================================
 module <constructor>tuidemo::TuiLocalizedMessageDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28423,7 +28463,7 @@ namespace tuidemo
     }
 }
 
-================================(92/108)================================
+================================(94/110)================================
 module <instance>tuidemo::TuiLocalizedMessageDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28490,7 +28530,7 @@ namespace tuidemo
     }
 }
 
-================================(93/108)================================
+================================(95/110)================================
 module <constructor>tuidemo::TuiLocalizedStringsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -29898,7 +29938,7 @@ namespace tuidemo
     }
 }
 
-================================(94/108)================================
+================================(96/110)================================
 module <instance>tuidemo::TuiLocalizedStringsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -29968,7 +30008,7 @@ namespace tuidemo
     }
 }
 
-================================(95/108)================================
+================================(97/110)================================
 module <constructor>tuidemo::TuiResponsiveGroupControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -30596,7 +30636,7 @@ namespace tuidemo
     }
 }
 
-================================(96/108)================================
+================================(98/110)================================
 module <instance>tuidemo::TuiResponsiveGroupControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -30639,7 +30679,7 @@ namespace tuidemo
     }
 }
 
-================================(97/108)================================
+================================(99/110)================================
 module <constructor>tuidemo::TuiResponsiveStackControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31267,7 +31307,7 @@ namespace tuidemo
     }
 }
 
-================================(98/108)================================
+================================(100/110)================================
 module <instance>tuidemo::TuiResponsiveStackControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31310,7 +31350,7 @@ namespace tuidemo
     }
 }
 
-================================(99/108)================================
+================================(101/110)================================
 module <constructor>tuidemo::TuiResponsiveTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31532,7 +31572,7 @@ namespace tuidemo
     }
 }
 
-================================(100/108)================================
+================================(102/110)================================
 module <instance>tuidemo::TuiResponsiveTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31575,7 +31615,7 @@ namespace tuidemo
     }
 }
 
-================================(101/108)================================
+================================(103/110)================================
 module <constructor>tuidemo::TuiResponsiveViewControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -32489,7 +32529,7 @@ namespace tuidemo
     }
 }
 
-================================(102/108)================================
+================================(104/110)================================
 module <instance>tuidemo::TuiResponsiveViewControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -32532,7 +32572,7 @@ namespace tuidemo
     }
 }
 
-================================(103/108)================================
+================================(105/110)================================
 module <localized-strings-injection>tuidemo::TuiDialogStringsInjection;
 
 namespace tuidemo
@@ -32799,7 +32839,7 @@ namespace tuidemo
     }
 }
 
-================================(104/108)================================
+================================(106/110)================================
 module listviewdata;
 using presentation::*;
 using presentation::controls::*;
@@ -33041,13 +33081,46 @@ func LoadListView(callback : (func (ListViewItem^) : (void))) : (void)
     }
 }
 
-================================(105/108)================================
+================================(107/110)================================
 module viewmodel;
 using system::*;
 using presentation::*;
 
 namespace tuidemo
 {
+    class TuiSkinItem
+    {
+        @cpp:Private
+        var selectSkin : (func () : (void)) = null;
+
+        @cpp:Private
+        var <prop>Name : string = "";
+
+        func GetName() : (string)
+        {
+            return <prop>Name;
+        }
+
+        @cpp:Protected
+        func SetName(<value> : string) : (void)
+        {
+            (<prop>Name = <value>);
+        }
+
+        prop Name : string{GetName}
+
+        new (name : string, action : (func () : (void)))
+        {
+            SetName(name);
+            (selectSkin = action);
+        }
+
+        func SelectSkin() : (void)
+        {
+            selectSkin();
+        }
+    }
+
     class TuiMyTextItem
     {
         @cpp:Private
@@ -33265,7 +33338,7 @@ namespace tuidemo
     }
 }
 
-================================(106/108)================================
+================================(108/110)================================
 module refresh_viewmodel;
 using system::*;
 using presentation::*;
@@ -33420,7 +33493,7 @@ namespace tuidemo
     }
 }
 
-================================(107/108)================================
+================================(109/110)================================
 module fontHelper;
 using presentation::*;
 
@@ -33429,7 +33502,7 @@ func ChangeFontSize(oldFont : FontProperties, deltaSize : int) : (FontProperties
     return {fontFamily : oldFont.fontFamily; size : (oldFont.size + deltaSize); antialias : true;};
 }
 
-================================(108/108)================================
+================================(110/110)================================
 module <localized-strings>tuidemo::TuiStringResource;
 
 namespace tuidemo

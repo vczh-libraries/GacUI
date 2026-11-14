@@ -247,6 +247,39 @@ using presentation::*;
 
 namespace tuidemo
 {
+    class TuiSkinItem
+    {
+        @cpp:Private
+        var selectSkin : (func () : (void)) = null;
+
+        @cpp:Private
+        var <prop>Name : string = "";
+
+        func GetName() : (string)
+        {
+            return <prop>Name;
+        }
+
+        @cpp:Protected
+        func SetName(<value> : string) : (void)
+        {
+            (<prop>Name = <value>);
+        }
+
+        prop Name : string{GetName}
+
+        new (name : string, action : (func () : (void)))
+        {
+            SetName(name);
+            (selectSkin = action);
+        }
+
+        func SelectSkin() : (void)
+        {
+            selectSkin();
+        }
+    }
+
     class TuiMyTextItem
     {
         @cpp:Private

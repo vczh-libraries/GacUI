@@ -35,6 +35,44 @@ Class (::demo::MainWindow)
 
 namespace demo
 {
+	::vl::Ptr<::vl::reflection::description::IValueObservableList> MainWindow::GetSkinItems()
+	{
+		return this->__vwsn_prop_SkinItems;
+	}
+	void MainWindow::SetSkinItems(::vl::Ptr<::vl::reflection::description::IValueObservableList> __vwsn_value_)
+	{
+		(this->__vwsn_prop_SkinItems = __vwsn_value_);
+	}
+
+	::vl::Ptr<::demo::FctSkinItem> MainWindow::GetSelectedSkinItem()
+	{
+		return this->__vwsn_prop_SelectedSkinItem;
+	}
+	void MainWindow::SetSelectedSkinItem(::vl::Ptr<::demo::FctSkinItem> __vwsn_value_)
+	{
+		(this->__vwsn_prop_SelectedSkinItem = __vwsn_value_);
+	}
+
+	void MainWindow::SelectSkinItem(::vl::Ptr<::demo::FctSkinItem> item)
+	{
+		if ((::vl::__vwsn::This(this->self)->GetSelectedSkinItem().Obj() != item.Obj()))
+		{
+			::vl::__vwsn::This(this->self)->SetSelectedSkinItem(item);
+			::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(static_cast<::vl::presentation::controls::GuiControlHost*>(this->self), vl::Func(::vl_workflow_global::__vwsnf84_FullControlTest_demo_MainWindow_SelectSkinItem_(item, this)));
+		}
+	}
+
+	::vl::presentation::templates::GuiTemplate* MainWindow::CreateSkinItemTemplate(const ::vl::reflection::description::Value& value)
+	{
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::FctSkinItem>>(value);
+		auto itemTemplate = new ::demo::FctSkinItemTemplate(item);
+		auto button = ::vl::__vwsn::This(itemTemplate)->GetButton();
+		::vl::__vwsn::This(button)->SetGroupController(static_cast<::vl::presentation::controls::GuiSelectableButton::GroupController*>(this->paletteGroup));
+		::vl::__vwsn::This(button)->SetSelected((::vl::__vwsn::This(this->self)->GetSelectedSkinItem().Obj() == item.Obj()));
+		::vl::__vwsn::EventAttach(::vl::__vwsn::This(button)->SelectedChanged, vl::Func(::vl_workflow_global::__vwsnf85_FullControlTest_demo_MainWindow_CreateSkinItemTemplate_(button, item, this)));
+		return static_cast<::vl::presentation::templates::GuiTemplate*>(itemTemplate);
+	}
+
 	::vl::Ptr<::vl::presentation::elements::GuiRawElementBase> MainWindow::GetClockElement()
 	{
 		return ::vl::__vwsn::This(this->rawClockPage)->GetClockElement();
@@ -84,6 +122,8 @@ namespace demo
 	MainWindow::MainWindow()
 		: ::vl::presentation::controls::GuiWindow(::vl::presentation::theme::ThemeName::Window)
 		, openedSubWindows(::vl::reflection::description::IValueList::Create())
+		, __vwsn_prop_SkinItems(::vl::reflection::description::IValueObservableList::Create())
+		, __vwsn_prop_SelectedSkinItem(::vl::Ptr<::demo::FctSkinItem>())
 	{
 		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"demo::MainWindow"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
