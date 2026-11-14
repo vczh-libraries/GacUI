@@ -72,3 +72,19 @@ Baseline and acceptance verification will follow the two matrices in the problem
 Baseline: the Debug x64 solution build passed with zero warnings and errors. Through the interactive CLI wrapper, CppTest_Tui opened Control / Document Editor (Toolstrip), File / Load as Private Format and selected <GacUI repo>/Test/TestDocument.bin. It displayed the explanatory not-implemented message and left the editor empty. Both authored showcase resources contain six fixed radios and PaletteSelected(int), with no SkinItems property. The baseline terminal session was closed through the queued Hide button.
 
 # PROPOSALS
+
+- No.1 Observable showcase skin items and shared native document formats
+
+## No.1 Observable showcase skin items and shared native document formats
+
+Define concrete callable FctSkinItem/TuiSkinItem classes in each showcase's ViewModelResource. Each main window owns a stable getter-only observable SkinItems collection and retained selected-item identity. A RepeatStack creates a small radio-only item template. The window factory assigns the shared mutex group and initial checked state before attaching its selection handler. Only a newly selected item queues SelectSkin followed by RefreshThemes; the queued closure retains the item, not the template or radio.
+
+Native shared showcase initialization supplies ordered names, palette factories and the initial item. The interpreted host uses the same preset composition with reflected construction and observable-list access. Keep reusable skin defaults and canonical configuration unchanged. Update every typed caller and the startup-helper fixture.
+
+Extract the existing synchronous private/RTF/HTML format operations into a skin-independent showcase helper. GUI and TUI attach their own four events exactly once. TUI keeps its embedded label presentation and retains each original DocumentImageRun by embedded-object name. At load, replace image runs recursively with labels using decoded frame dimensions and the native image's optional file path; at save/export, deep-copy the complete document and replace only those image objects with their retained serializable runs. Preserve source model identity and all styles during serialization, whole-document export selection, synchronous close and private modified-state semantics.
+
+Update source inventories, tutorial entry points and deployment, then regenerate through GacUI_Compiler and the prescribed metadata architecture sequence. Extend focused startup/persistence tests and actual UI selector assertions; exercise native, reflected, interpreted, remoting and terminal consumers, then run the requested GacUI/Release build sequence and standalone tutorials. Update canonical shared guidance in <Tools repo>/Copilot and synchronize only after active wrappers finish.
+
+### CODE CHANGE
+
+Implementation pending. Expected authored locations are <GacUI repo>/Test/Resources/App/FullControlTest/Resource.xml, <GacUI repo>/Test/Resources/App/TuiControlTest/Resource.xml, <GacUI repo>/Test/Resources/App/TuiControlTest/DocumentEditorBase.xml, shared native showcase helpers and their consumers/inventories, <Tools repo>/Tools/BuildRelease.ps1, and the retained BlackSkin/TuiSkin tutorial entry points. Generated architecture output remains tool-owned.
