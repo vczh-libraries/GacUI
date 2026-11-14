@@ -131,7 +131,7 @@ Windows locked desktop: physical input and displayed Windows Terminal font/color
 
 | Field | Value |
 | --- | --- |
-| Platform / application / commit / build configuration | Windows; CppTest_Tui (packaged TuiSkin pending); task implementation after 7797a0ee8; Debug x64 with Win32 metadata verification |
+| Platform / application / commit / build configuration | Windows; CppTest_Tui Debug x64 and packaged TuiSkin Debug Win32; implementation with the upstream compiler-cache update; Win32/x64 metadata verification |
 | Terminal name / version / profile / viewport sizes | Owned Windows ConPTY; 120x40 and 80x25; displayed terminal profile unverified |
 | Input methods / desktop availability | Interactive execution wrapper, native console-record replay, pseudoconsole resize and live cell-buffer capture |
 
@@ -139,8 +139,8 @@ Windows locked desktop: physical input and displayed Windows Terminal font/color
 
 | Test Item | 1st |
 | --- | --- |
-| Build / resource generation / import / sync | 2026-11-14; GacUI release flow passed; Release/platform work running |
-| Unit tests | 2026-11-14; Debug x64 and Release Win32/x64: 98 files / 1999 cases each; Debug has no leaks |
+| Build / resource generation / import / sync | 2026-11-14; GacUI and Release flows passed; post-rebase generation, metadata and builds passed; platform imports and Windows resources passed |
+| Unit tests | 2026-11-14; post-rebase Debug x64 and earlier Release Win32/x64: 98 files / 1999 cases each; Debug has no leaks |
 | Platform launch and terminal/input capabilities | 2026-11-14 01:31; owned 120x40 and 80x25 consoles |
 | Startup, platform services and teardown | 2026-11-14 01:31; 120x40 and 80x25 exit 0; input/output modes restored |
 | Follow-up regression checks | 2026-11-14; arbitrary items, one action/refresh, image metadata |
@@ -176,7 +176,7 @@ Windows locked desktop: physical input and displayed Windows Terminal font/color
 | Window Manager | 2026-11-14; six captions/order/default, mouse and keyboard at both sizes |
 | Live palette and clipping regression | 2026-11-14; document identity, selection and undo retained |
 | Exit | 2026-11-14; cancel-close and queued Hide retained |
-| Packaged tutorial checks (when requested) |  |
+| Packaged tutorial checks (when requested) | 2026-11-14 06:38; BlackSkin skin/exchange/persistence 1797/116/1670 assertions; TuiSkin 120x40 and fresh 80x25 private/RTF/HTML, images, dialogs and normal exit |
 | Linux/macOS legacy-terminal and Kitty comparison (when applicable) |  |
 
 ## Observations and Limitations
@@ -184,6 +184,10 @@ Windows locked desktop: physical input and displayed Windows Terminal font/color
 This card covers the skin selector, document persistence, related dialogs, refresh state retention and requested packaged tutorial. Unrelated full-page SOP operations remain unexecuted unless explicitly recorded. Both viewport runs used the rebuilt implementation through the interactive wrapper and ended with exit 0, preserving console modes 503/7. Physical terminal input and displayed terminal profile fidelity remain unverified. A fresh Windows Terminal 1.24.12741.0 session at 120x30 started the interactive wrapper, but the desktop returned no foreground HWND and screen capture failed with an invalid handle. It was closed through the TUI queued Hide path with exit 0 and unchanged modes 503/7; this is console verification only. The separate native GUI remoting session accepted desktop mouse and Tab/Space input with visible rendering; that does not establish terminal-display coverage. Native Linux/macOS and Wasm execution remain unverified. Evidence is kept under <GacUI repo>/Test/Output/ShowcaseVerification.
 
 Private-file verification retained all eight fixture styles and original image payload hashes. A newly inserted 123x456 image retained its file-backed label, then its exact pathless label after reload with the original file unavailable. GUI Ribbon and Toolstrip private copies reopened in the fresh 80x25 TUI process. Both CppTest and native Metaonly subsequently passed the two-editor exchange, preserving edited text/selection through refresh, undoing the edit and saving byte-identical private copies (120 and 124 assertions). HTML and RTF exports contain all three images and Unicode/hyperlink content. Live debugger inspection showed unchanged document identity, selection, undo step and modified state through exports and skin refresh; private save alone updated the saved step. Native operation breakpoints recorded one load/save/RTF/HTML callback each, with canceled dialogs adding none.
+
+Packaged BlackSkin Debug Win32 passed the selectors and both GUI editor format operations, including byte-identical exchange of the TUI file, style retention, cancellation, refresh/undo and normal shutdown. Packaged TuiSkin Debug Win32 passed both viewports with the source PNG still unavailable. Private copies stayed byte-identical after refresh and overwrite; both HTML and RTF outputs retained all three exact image payload hashes. Captured VT output includes all six preset RGB colors at both sizes. The exact pathless 123x456 label remained visible. Both queued Hide runs restored modes 503/7 and exited 0.
+
+The final post-rebase run regenerated both architectures, passed the required metadata sequence and full Debug suite, and left all snapshots unchanged. The actual TUI resource regression passed at both sizes. The refreshed interpreted GacUI_Host additionally passed 1784 assertions with exact hidden-list selection/scroll retention, normal shutdown and endpoint release.
 
 ## Issues Found and Fix
 
