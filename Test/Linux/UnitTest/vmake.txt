@@ -336,7 +336,10 @@
 ../../GacUISrc/UnitTest/TestRemote_Raw.cpp
 ../../GacUISrc/UnitTest/TestRawElement_Windows.cpp
 ../../GacUISrc/UnitTest/TestParagraph_Windows.cpp
+../../GacUISrc/Generated_FullControlTest/FullControlTestRawClockInterpretor.cpp
 ../../GacUISrc/Generated_FullControlTest/FullControlTestEventHandlers.cpp
+../../GacUISrc/SharedDocumentEditor.cpp
+../../GacUISrc/UnitTest/TestShowcase.cpp
 DarkSkin.Linux.cpp
 DarkSkinResource.Linux.cpp
 DarkSkinReflection.Linux.cpp

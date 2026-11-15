@@ -173,6 +173,7 @@
 ../../../Source/Utilities/GuiUtilitiesRegistration.cpp
 ../../../Source/Utilities/SharedServices/GuiSharedAutomationService_Controls.cpp
 ../../GacUISrc/Generated_FullControlTest/FullControlTestEventHandlers.cpp
+../../GacUISrc/SharedDocumentEditor.cpp
 ../Wasm/WasmApplication.cpp
 ../../RemotingHelpers/RemotingServer/Wasm/WasmNetworkProtocol.cpp
 ../../../Source/Skins/DarkSkin/Source/DarkSkinPartialClasses.cpp
