@@ -386,7 +386,7 @@
       29,
       [
         "ElementDesc_Raw",
-        {"id": 29, "rawId": "changed identifier", "data": "A long Unicode value: 时钟 — this text should be ellipsized on one line in the snapshot viewer."}
+        {"id": 29, "rawId": "changed identifier", "interpretor": "changed painter", "data": "A long Unicode value: 时钟 — this text should be ellipsized on one line in the snapshot viewer."}
       ]
     ]
   ],

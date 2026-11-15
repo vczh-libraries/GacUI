@@ -95,6 +95,9 @@ namespace gacuisrc_unittest
                 (raw.Data = "initial data");
             }
             {
+                (raw.Interpretor = "initial painter");
+            }
+            {
                 (raw.Id = "initial identifier");
             }
             {
@@ -121,7 +124,7 @@ namespace gacuisrc_unittest
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
-                    (raw.Data = "A long Unicode value: 时钟 — this text should be ellipsized on one line in the snapshot viewer.");
+                    raw.SetInterpretorAndData("changed painter", "A long Unicode value: 时钟 — this text should be ellipsized on one line in the snapshot viewer.");
                 };
                 attach(changeData.Clicked, <event-handler>);
             }
