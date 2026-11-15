@@ -6,16 +6,16 @@ The remote protocol renderer side receives protocol messages from the core side 
 
 GacJS's purpose is to run GacUI applications in the browser through WebAssembly. Its `@gaclib/renderer` package implements HTML5 rendering with DOM elements. The browser loads the core as the matching `app.mjs`, `app.wasm` and `app.worker.js` files; `@gaclib-website/remote-protocol-wasm` connects the renderer to it through exposed functions and callbacks while preserving the remote protocol and its JSON channel messages. HTTP is a parallel transport option, mainly for testing HTML5 rendering against a native core without WebAssembly.
 
-The TypeScript view-model host also supports this Wasm transport. `startRvmHostWithChannel` in `<GacJS repo>/Gaclib/website/rvmhost/src/index.ts` hosts the view model through Workflow RPC on a separate channel, while the renderer uses the GacUI remote protocol. GacJS's `/wasm-rvmt/` demo connects both to the same Wasm core; `/wasm-fct/` and `/wasm-rpt/` demonstrate FullControlTest and RemoteProtocolTest.
+The TypeScript view-model host also supports this Wasm transport. `startRvmHostWithChannel` in `<GacJS repo>/Gaclib/website/rvmhost/src/index.ts` hosts the view model through Workflow RPC on a separate channel, while the renderer uses the GacUI remote protocol. Both channels can share one Wasm core.
 
-The current transport and startup composition are owned by these sources:
+The Wasm transport is implemented in `<GacJS repo>/Gaclib/website/remote-protocol-wasm/src/`:
 
-- `<GacUI repo>/Test/RemotingHelpers/RemotingServer/Wasm/WasmNetworkProtocol.cpp` exposes `StartApplication(receiver, connectionCount)` and `SendDataToWasmCore(connectionId, data)` through Embind. Startup installs fixed connections; the receiver callback returns core messages and lifecycle notifications to JavaScript.
-- `<GacJS repo>/Gaclib/website/remote-protocol-wasm/src/worker.ts` loads the module and calls those exports. The module worker owns transport state, while blocking GacUI work runs on a C++ pthread. The page exchanges messages with the worker and remains available for HTML5 rendering, input and TypeScript RPC handling.
-- `<GacJS repo>/Gaclib/website/remote-protocol-wasm/src/index.ts` adapts the worker to the same `IChannelClient` contract used by the HTTP transport. Existing channel handshakes, the semicolon package envelope, and JSON arrays remain in use; protocol traffic does not use HTTP requests or Base64 framing.
-- `<GacJS repo>/Gaclib/website/entry/src/wasmPage.ts` starts the HTML5 renderer and, for RVMT, the TypeScript view-model host. After normal core shutdown, Reload recreates the page, core, renderer and host. Current Wasm demo connections last for the application lifetime and do not support renderer replacement.
+- `worker.ts` loads the module and owns transport state, while blocking GacUI work runs on a C++ pthread. The page exchanges messages with the worker and remains available for HTML5 rendering, input and TypeScript RPC handling.
+- `index.ts` adapts the worker to the same `IChannelClient` contract used by the HTTP transport. Existing channel handshakes, the semicolon package envelope, and JSON arrays remain in use; protocol traffic does not use HTTP requests or Base64 framing.
 
-These are working browser demos built from `<GacUI repo>/Test/Linux/WasmFCT`, `<GacUI repo>/Test/Linux/WasmRPT` and `<GacUI repo>/Test/Linux/WasmRVMT`. `<GacUI repo>/Project.md`, `<GacJS repo>/doc/Projects.md` and `<GacJS repo>/doc/NetworkProtocol.md` document their build, startup and transport details. Loading application assets from a web server is distinct from carrying remote-protocol and view-model traffic through Wasm functions.
+The application supplies exported Wasm functions for startup and incoming messages, plus a callback for outgoing messages and lifecycle notifications. Connection lifetime and renderer replacement depend on that application-owned transport contract.
+
+Loading application assets from a web server is distinct from carrying remote-protocol and view-model traffic through Wasm functions. Build and launcher instructions belong in the owning repository's project documentation.
 
 ## GuiRemoteRendererSingle
 
@@ -72,13 +72,13 @@ Actual painting happens in either `RequestRendererEndRendering` or `GlobalTimer(
 2. Applying a descriptor compares all three strings, sets ID and applies name/data through `SetInterpretorAndData` before raising one `RawElementChanged`, and emits nothing for an identical descriptor. Changed interpretor or data explicitly sets `needRefresh`, since remote elements have no owner composition to invalidate. An ID-only update does not independently request repaint. Core assignments are frame-batched rather than delivered as individual property events.
 3. Destruction raises `RawElementUninstalled` while the object is still in the collection and its native target is usable for handler cleanup. It then detaches the render target and removes the element. The same removal path handles numeric-ID replacement and final closing. Retained disconnected/fatal pictures keep their element attachments until actual teardown.
 
-On Windows, `GuiRawElementRendererBase` owns the factory-selected interpretor independently of collection membership and target lifetime. Register factories in renderer `GuiMain` before `ProcessPendingMessages`; `StartClient` is too early because backend setup has not installed the manager. A retained element keeps its interpretor after removal/target detachment until its final release. Concrete native destruction finalizes while event members still exist.
+On Windows, `GuiRawElementRendererBase` owns the factory-selected interpretor independently of collection membership and target lifetime. Register factories after backend setup and before processing queued descriptors, for example during controller-related plugin loading. A retained element keeps its interpretor after removal/target detachment until its final release. Concrete native destruction finalizes while event members still exist.
 
 For separately owned manual attachments, track attachments by object identity, not by application `Id`: empty and duplicate IDs are allowed. Reconcile on ID changes into or out of the painter's convention, enumerate existing elements for late subscription, and detach handler tokens on removal without assuming collection removal already happened.
 
 GacJS exposes `getRawElements()`, `rawElementInstalled`, `rawElementUpdated`, and `rawElementUninstalled` on `IGacUIRenderer` in `<GacJS repo>/Gaclib/gaclib/renderer/src/interfaces.ts`. Each subscription returns an unsubscribe function. The read-only `GacUIRawElement` record provides `id` (the application string), `data` and `element` (a stable owner `<div>` for application content); the numeric protocol identity remains internal. The renderer owns that container's layout and protocol identity; consumers own children such as canvas, drawing observers and their cleanup. Plain raw elements remain visually empty unless an application painter is attached. DOM visibility is distinct from protocol element lifetime, so hiding a node must not dispose its painter. Snapshot rendering can retain raw descriptors without installing the live application's painter.
 
-FullControlTest's Windows Clock uses `Interpretor="FullControlTest::Clock"`, independently of its retained `Id="FullControlTest.Clock"`. Windows Touching retains manual ID-based collection reconciliation and an empty interpretor. Other native/browser Clock attachments retain their ID-based conventions. All Clock painters draw strictly from received `HH:mm:ss`. The Core/Workflow timer owns time updates. Browser drawing resizes its canvas for current bounds/device pixel ratio and redraws the last received state without adding another clock timer.
+Application-defined raw drawing must use the received payload. For a clock, the Core or view model can own `HH:mm:ss` updates while native/browser painters render that value without a second timer. Browser drawing resizes its canvas for current bounds/device pixel ratio and redraws the last received state. Named painter selection remains independent of application IDs and optional manual attachments.
 
 ### Event Forwarding
 
@@ -158,39 +158,11 @@ Protocol types are code-generated from `<GacUI repo>/Source/PlatformProviders/Re
 
 `GuiRemoteProtocolAsyncJsonChannelRenderer` is the renderer-side async wrapper. It queues received packages and main-thread tasks, then schedules `ProcessPendingMessages()` through an `IGuiRemoteProtocolAsyncRendererInvoker`. Before `SetInvokeInMainThread(...)` is called by renderer `GuiMain`, work is cached. After the invoker is installed, it is drained in FIFO order on the renderer UI thread. `Initialize(reader)` requires a non-null reader; `Detach()` explicitly clears it, increments `messageVersion`, and drops queued work. The version check prevents callbacks queued before `Detach()` from running after detachment or a later reader installation.
 
-## Demo Project Pair
+## Protocol Stack Assembly
 
-Two projects in `<GacUI repo>/Test/GacUISrc/` demonstrate a full remote protocol deployment. They are paired: one is the core side (console application) and the other is the renderer side (Windows application).
+A Core composes its controller with the DOM-diff converter, protocol filter, Core channel and asynchronous JSON channel. A native renderer composes its network channel client with the asynchronous renderer channel, renderer channel and native renderer. The transport supplies `IJsonChannel` messages independently of those wrappers.
 
-Remote-view-model remoting support is organized in `<GacUI repo>/Test/RemotingHelpers/Rvmt/`. `<GacUI repo>/Test/RemotingHelpers/Rvmt/ViewModelShared.h` owns only generic channel aliases, fixed RVM constants, and inline Ready-message helpers; `<GacUI repo>/Test/RemotingHelpers/Rvmt/ViewModelHostClient.*` owns the generic network host client; and `<GacUI repo>/Test/RemotingHelpers/Rvmt/ViewModelHostServer.*` owns the protected generic `RpcServerHelpers` implementation and the application-facing `RemoteViewModelChannelServer<TServerBase>`. Concrete generated-RPC composition lives instead in `<GacUI repo>/Test/GacUISrc/Generated_RemoteViewModelTest/RemoteViewModelTestInitialize.*` and is invoked directly by each consuming application. The consolidated `<GacUI repo>/Test/GacUISrc/Source_RemotingHelpers/Source_RemotingHelpers.vcxitems` inventory lists only generic helpers under its `Rvmt` filter and is imported only by remoting applications; standalone applications receive reusable automation endpoints through GacUI Core instead.
-
-### RemotingTest_Core (Console Application)
-
-Located at `<GacUI repo>/Test/GacUISrc/RemotingTest_Core/`. Accepts `/Pipe`, `/Http`, or `/MiniHttp` arguments to start a named-pipe, Windows HTTP, or portable MiniHTTP server.
-
-**Protocol stack setup** (`StartServer<TServerBase>` in `<GacUI repo>/Test/GacUISrc/RemotingTest_Core/GuiMain.cpp`):
-1. `StartNamedPipeServer`, `StartHttpServer`, or `StartMiniHttpServer` constructs the matching `RemotingChannelServer<TServerBase>`. `/RVMT` constructs `RemoteViewModelChannelServer<TServerBase>`, which adds exact RVM-host admission while preserving the base renderer behavior.
-2. The shared run function starts the server, creates a local core client with `GuiRemoteProtocolLocalChannelClient`, and connects it to the server. Local clients are accepted directly because only the owning process can call `ConnectLocalClient`.
-3. It wraps the core client's protocol channel in `GuiRemoteProtocolAsyncJsonChannel` and creates `SwitchableRenderersCoreChannel<TServerBase>`. This `GuiRemoteProtocolCoreChannel` subclass verifies at submission time that its protocol renderer is still the transport server's current renderer. `Submit` evaluates this virtual guard before applying the base channel's default no-renderer behavior, so the switchable channel can report disconnection for both a stale renderer and renderer id `-1` while the default channel still treats `-1` as an idle state. After `BatchWrite`, it checks both renderer identity and the transport guard again: admission can detach a renderer while the batch delivers its responses. A cancelled batch clears both outstanding IDs and buffered responses in `GuiRemoteProtocolFilter`, so a replacement renderer cannot inherit partial results from its predecessor.
-4. It builds `GuiRemoteProtocolFilter` -> `GuiRemoteProtocolDomDiffConverter` -> `SetupRemoteNativeController`. The Core remains usable before a renderer connects.
-5. In `/RVMT`, the shared server owns the requester session. The application calls `Connect` once with the complete required-service-name list, initializes generated RPC objects with the exposed generic dispatcher and assigned client ID, then calls repeatable `RequestService`. The exact RVM host is admitted before service acquisition, while renderer admission remains closed until the first service acquisition moves the requester into its running phase.
-6. On shutdown, Core clears the server's stored JSON/protocol channel pointers, finalizes the optional requester session, and stops the channel server before stack-owned wrappers are destroyed.
-
-`RemotingChannelServer<TServerBase>::OnRemoteClientConnected` accepts replacement renderers. If a different renderer is already current, it calls `GuiRemoteProtocolCoreChannel::DetachRenderer(oldClientId)`, tries to send a raw `ControllerConnectionStopped` package to the old renderer, and disconnects the old transport only when notification fails. `RemoteViewModelChannelServer<TServerBase>` overrides this single remote-admission operation to accept the RVM host and to check the concrete requester phase before delegating renderer admission. If the RVM host disconnects, it broadcasts the business error when renderers are enabled and then terminates the requester.
-
-### RemotingTest_Rendering_Win32 (Windows Application)
-
-Located at `<GacUI repo>/Test/GacUISrc/RemotingTest_Rendering_Win32/`. Accepts `/Pipe`, `/Http`, or `/MiniHttp` arguments to start as a named-pipe, Windows HTTP, or portable MiniHTTP client.
-
-**Protocol stack setup** (`StartClient` in `<GacUI repo>/Test/GacUISrc/RemotingTest_Rendering_Win32/GuiMain.cpp`; this function is not a template):
-1. Receives a named-pipe, Windows HTTP, or MiniHTTP `INetworkProtocolClient` and creates the shared `RemoteProtocolRendererClient`, derived from `GuiRemoteProtocolChannelClient`, over it.
-2. Creates `GuiRemoteProtocolAsyncJsonChannelRenderer` over the client's protocol channel.
-3. Creates `GuiRemoteRendererSingle` and `GuiRemoteProtocolRendererChannel(&asyncRendererChannel, &remoteRenderer)`.
-4. Waits for the server, then calls `SetupRawWindowsDirect2DRenderer()` to run the native window event loop.
-5. In `GuiMain()`, creates the native window, registers it with `GuiRemoteRendererSingle`, creates a retained `Ptr<GuiMainAsyncRendererInvoker>`, installs it through `asyncChannel->SetInvokeInMainThread(invoker)`, drains startup work with `ProcessPendingMessages()`, and runs the window service.
-6. On exit, clears the invoker, unregisters the main window, stops the network connection, and clears stack-owned renderer/channel pointers.
-
-`RemoteProtocolRendererClient` queues both protocol packages and terminal actions through the async renderer's ordered main-thread FIFO. A Core-authored `!Error` arrives through `OnReadError`, claims the first fatal error, and opens the native Yes/No prompt. Choosing Yes calls `ForceExitByFatelError()`; choosing No calls `RetainByFatalError(message)`, keeps the native renderer window open with a `[STOPPED]` title and fatal overlay, and exposes the error through renderer automation. A fatal local channel error has different UI semantics: after VlppOS's `IChannelClient` promotes a post-connection protocol error, `OnLocalError(..., true)` queues the ordinary disconnected transition directly, without showing a fatal prompt and without waiting for `OnDisconnected`. `OnDisconnected` queues the same idempotent transition when it is delivered. FIFO ordering lets an earlier `ControllerConnectionStopped` or Core `!Error` win before detach.
+Install the native backend before creating consuming elements or processing queued renderer messages. Retain the main-thread invoker while messages can arrive; clear it and unregister the native window before stopping the connection and destroying stack-owned channel wrappers.
 
 ### Protocol Stack Direction
 
@@ -224,12 +196,7 @@ Windows native remote renderers accept touch locally and forward ordered point r
 
 ## Feature capabilities and encoded image output
 
-`GuiRemoteRendererSingle::GlobalConfig` defaults its DateTime, Locale and filesystem
-capabilities to true for native library consumers. Demo launchers explicitly pass
-all false unless `/remoteDT`, `/remoteLocale` or `/remoteFS` is supplied. Both ends
-must enable a feature. The Windows canonical renderer GuiMain and SharedArguments
-are synchronized into wGac/iGac; their launch scripts forward the exact switches
-in foreground and background modes. GacJS support is separate and is not implied.
+`GuiRemoteRendererSingle::GlobalConfig` defaults its DateTime, Locale and filesystem capabilities to true for native library consumers. Both the Core configuration and the renderer capability must enable a feature. Application startup can explicitly disable these capabilities. GacJS support is separate and is not implied.
 
 `ImageSave` requests encoded bytes for an existing image ID and requested format.
 The native renderer calls `INativeImage::SaveToStream`, so a JPEG source can become
@@ -238,33 +205,13 @@ renderer, checks disconnect and generation before retrieving the response, and
 rejects missing/empty encoded output. Image export does not depend on filesystem
 injection; a remote image can be serialized to a core-local output stream.
 
-FullControlTest's four filename-taking persistence events use the authored
-`<GacUI repo>/Test/GacUISrc/Generated_FullControlTest/FullControlTestEventHandlers.h/.cpp`.
-Generated entry points instantiate `AttachFctEvents` for both named editors; Host
-uses reflection event attachment. A named Workflow editor is an aggregate: use
-`SafeAggregationCast<GuiInstanceRootObject>` and scoped `FindObjectByName` to reach
-its native viewer; a direct C++ cast of the Workflow raw object returns null.
-Shared functions depend only on public document viewer APIs. Private saves use a
-complete `DocumentModel::CopyDocument()`, prepare clipboard-compatible content and
-serialize embedded images. Deep range copies retain every style definition, including unused definitions, parent
-names and independent authored/resolved properties. The full overload delegates to
-that policy. Shallow range copies alone filter referenced styles and transitive parents,
-sharing their objects. Reinsertion compares authored ancestry and reuses equivalent
-renamed definitions, keeping repeated copy/paste and undo/redo catalogs stable.
-RTF/HTML export uses the existing document serializers.
-The handler verifies the copied byte count and returns only after output close succeeds, preserving SaveDocument's
-synchronous modified-state contract.
+A named Workflow editor is an aggregate: use `SafeAggregationCast<GuiInstanceRootObject>` and scoped `FindObjectByName` to reach its native viewer; a direct C++ cast of the Workflow raw object returns null. Persistence code should depend on public document viewer APIs. Private saves can use a complete `DocumentModel::CopyDocument()` and serialize embedded images. Deep range copies retain every style definition, including unused definitions, parent names and independent authored/resolved properties. The full overload delegates to that policy. Shallow range copies alone filter referenced styles and transitive parents, sharing their objects. Reinsertion compares authored ancestry and reuses equivalent renamed definitions, keeping repeated copy/paste and undo/redo catalogs stable. RTF/HTML export uses the existing document serializers. Verify the copied byte count and finish output close before reporting synchronous save completion.
 
-Private documents loaded by CppTest are assumed to have been saved by CppTest.
-Keep their complete style catalog through save and load, including styles not yet
-applied to any text. The ribbon uses those definitions directly without restoring
-missing built-ins or replacing loaded definitions when a gallery item is chosen.
+Keep a private document's complete style catalog through save and load, including styles not yet applied to any text. Application style selectors should use loaded definitions without silently restoring built-ins or replacing authored definitions.
 
 ## Native destination selection
 
-The canonical parser is `<GacUI repo>/Test/GacUISrc/SharedArguments.h`. Native renderers and network `RemotingTest_RvmHost` accept one case-sensitive `/corehost:<host>`, default localhost. It accepts a DNS hostname, IPv4 or IPv6 address, strips one IPv6 bracket pair, and rejects empty, duplicate, URL/path/port values before transport startup. Only the fixed prefix is consumed, preserving IPv6 colons. Explicit `/corehost` is incompatible with the RVM host's local `/Cli` mode. Windows supports `/Pipe`, `/Http` and `/MiniHttp`; the portable renderers support `/MiniHttp`. Pipe destinations must be UNC server names or IPv4 addresses.
-
-Core and CppTest_Rvm are servers and have no destination option. Protocol TCP port 8888 is independent of local `/AsPort`. `<GacUI repo>/Test/StartRendrerer.ps1 -Protocol minihttp -CoreHost core.example.com -AsPort 8889` selects the destination and local automation separately. `<wGac repo>/test.sh` and `<iGac repo>/test.sh` accept `--corehost:<host>` only with `--app:renderer`; both launch branches forward one quoted argument. Their `--port` selects renderer automation (default 8889). Shared parsing and GuiMain are synchronized from GacUI; platform Main.cpp files remain separately maintained.
+Network clients receive their destination from application configuration. Keep the destination host and protocol transport port separate from the local automation endpoint. Named pipes accept server names or IPv4 addresses; HTTP and socket transports support the address formats exposed by their VlppOS implementations. Application command-line parsing and launch procedures belong in project instructions.
 
 ## Underlying process services
 

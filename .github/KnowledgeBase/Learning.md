@@ -94,7 +94,7 @@ Build-generation scripts must also preserve failures from compiler or dependency
 
 For HTTP automation endpoints, return protocol errors such as 404 only for recognized request rejection. Unexpected parser, automation, callback, or invariant failures should reach a process-terminating boundary instead of being translated into a healthy-looking endpoint response.
 
-Test applications should also preserve their intended executable boundary. When a lower layer already injects a terminal RPC exception, let the real proxy call escape and crash a fail-fast test app instead of wrapping it in an application-layer close flag, catch adapter, or exit-code shim. Keep a separate error-delivery boundary only for applications that must notify another active process before terminating.
+Preserve each application's intended executable boundary. When a lower layer delivers a terminal RPC exception, a fail-fast application can let the proxy call propagate it to the process boundary. Keep a separate error-delivery boundary for applications that must notify another active process before terminating.
 
 ## Process staged tasks one by one with verification
 
@@ -268,7 +268,7 @@ When a helper temporarily suppresses callbacks, changes ownership flags, or othe
 
 Use the same pattern for recursive readers that push non-owning current-input state before visitor dispatch. A scope object must pop that state on both successful return and nested conversion failure so later recursion never observes a stale input object.
 
-Do not add a scope wrapper solely to run normal-path finalization after an exception in a fail-fast test app. When the exception is intended to terminate the process and the OS releases the endpoint, keep ordinary shutdown calls straight-line at the end. Retain scoped ownership where destruction order prevents callbacks from reaching expired stack objects.
+Do not add a scope wrapper solely to run normal-path finalization after an exception in a fail-fast application. When the exception is intended to terminate the process and the OS releases the endpoint, keep ordinary shutdown calls straight-line at the end. Retain scoped ownership where destruction order prevents callbacks from reaching expired stack objects.
 
 ## `collections::Dictionary` copy assignment is deleted (use move/swap)
 
@@ -298,13 +298,13 @@ When generated build metadata must be platform-invariant, generate it with nativ
 
 For a generated reader that reverses a generated writer, reuse real serialized outputs at every existing logged or golden site, parse them through the public input parser, perform an exact writer-reader-writer round trip, and require byte-for-byte equality. Add focused valid and malformed inputs for every generated field category and validation branch so a successful generator run cannot hide an incomplete reader.
 
-When a generator produces runnable sample applications, verify the generated output through the actual app workflow too. For example, generated ChatBot RPC code should be checked by running the server and multiple clients through joins, chat messages, client exit, and server shutdown, not only by confirming generation succeeds.
+When a generator produces runnable applications, verify the generated output through the actual workflow. For generated RPC code, exercise server/client connections, requests, client exit and server shutdown rather than checking generation alone.
 
 When CodePack ownership is split, inspect the exact generated code pairs and their dependency boundaries. Confirm neutral output excludes platform-only dependencies, ordinary library pairs do not absorb the helper layer, and generated formatting is preserved rather than hand-edited.
 
 When a shared dispatcher schema such as `Rpc.d.ts` changes, type-check the shared schema itself as well as generated fixtures so envelope changes are caught even before concrete generated values instantiate every request shape.
 
-For a released VlppOS namespace change, validate Workflow through the ChatBot SOP and validate GacUI through `RemotingTest_Core /RPT /Http` with `RemotingTest_Rendering_Win32 /Http`, plus GacJS against the HTTP remoting core. An upstream build alone does not prove the imported public surface works.
+For a released dependency namespace change, validate representative downstream scripting, native remoting and browser consumers against the imported public surface. An upstream build alone does not establish downstream compatibility. Keep application-specific launch commands and results in the consuming repository's project instructions and task records.
 
 When relocating manually maintained configuration beside generated types, validate both development architectures and the normal and IncludeOnly release consumers. Generate prerequisite types before packing and verify that each canonical configuration implementation appears exactly once; a successful development build can otherwise conceal stale release dependencies.
 

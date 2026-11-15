@@ -2,6 +2,8 @@
 
 ## Guidance
 
+Keep knowledge pages focused on reusable library APIs, contracts and design. Put concrete test-application names, source examples, launch commands and run-specific results in the owning repository's project instructions, SOPs or task records.
+
 The following data types are preferred:
 
 - For any code interops with Windows API, use Windows API specific types.

@@ -22,7 +22,7 @@ Running GacUI in the browser through WebAssembly is the purpose of GacJS. Its HT
 
 Both the HTML5 renderer and a view model implemented in TypeScript can connect to the Wasm core. Rendering uses the GacUI remote protocol; the TypeScript view model uses Workflow RPC on a separate channel over the same Wasm transport. The HTTP option remains useful for testing the HTML5 renderer against a native core without building WebAssembly.
 
-The current demonstration apps are `<GacUI repo>/Test/Linux/WasmFCT`, `<GacUI repo>/Test/Linux/WasmRPT` and `<GacUI repo>/Test/Linux/WasmRVMT`, exposed by GacJS at `/wasm-fct/`, `/wasm-rpt/` and `/wasm-rvmt/`. The RVMT demo runs its TypeScript view model in the page. Each page owns a worker/module lifetime, and a fresh page reload restarts the application after normal shutdown. These demos use the existing remote controller initialization; they do not introduce a separate native graphics provider. See [GacJS rendering and transport](./KB_GacUI_Design_RemoteProtocolRendererAndSerialization.md#gacjs-html5-rendering-and-webassembly) for the implementation boundaries.
+A WebAssembly application uses the existing remote controller initialization rather than a separate native graphics provider. The browser owns the module worker and the renderer; a page reload can establish a fresh application lifetime after normal shutdown. See [GacJS rendering and transport](./KB_GacUI_Design_RemoteProtocolRendererAndSerialization.md#gacjs-html5-rendering-and-webassembly) for implementation boundaries.
 
 ## Entry Point Architecture
 

@@ -132,6 +132,7 @@ If you need to find any script files, they are in the `REPO-ROOT/.github/Ubuntu`
     - Each `## Project`: A copy of online manual for that project, organized in the same way as the knowledge base.
     - Not every project is included.
     - Manual for the unit test framework is in `## Unit Testing`.
+- When making changes to knowledge base, remember they are documents and explanations for the library. DO NOT put anything about test apps in it.
 
 ### Index_<PROJECT>.md/Choosing APIs
 

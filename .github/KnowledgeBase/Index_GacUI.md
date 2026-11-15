@@ -10,8 +10,8 @@ Use `<Raw/>` for application-defined drawing in native, hosted and remote-protoc
 
 - Use `GuiRawElementBase::Id` as independent metadata, `Interpretor` for optional named Windows painter selection, and `Data` for string state. `SetInterpretorAndData` updates name/payload atomically; the active resource manager selects the concrete element and hosted managers forward factory lookup.
 - Use `GuiDirect2DElement`, `GuiGDIElement`, `GuiWaylandElement` or `GuiCocoaElement` rendering events to draw with the platform's native API.
-- Register Windows raw interpretor factories after backend setup and before consumers. Each renderer owns a fresh interpretor that borrows its element and finalizes before concrete events die. Use `GuiRemoteRendererSingle::GetRawElements()` and its installation/change/uninstallation events for independent manual attachments such as Touching. GacJS exposes corresponding browser hooks for application-owned DOM/canvas content.
-- Use `<Release repo>/Tutorial/GacUI_Windows/RawClock` for a standalone Direct2D/GDI example, and FullControlTest's `Misc / Raw Clock` for native and remote examples.
+- Register Windows raw interpretor factories after backend setup and before consumers. Each renderer owns a fresh interpretor that borrows its element and finalizes before concrete events die. Use `GuiRemoteRendererSingle::GetRawElements()` and its installation/change/uninstallation events for independent manual drawing attachments. GacJS exposes corresponding browser hooks for application-owned DOM/canvas content.
+- Register application painters through controller-related plugins when automatic backend selection is needed; keep their translation units optional for applications that do not require them.
 
 [API Explanation](./KB_GacUI_Design_ImplementingIGuiGraphicsElement.md#ownerdraw-with-raw)
 
@@ -70,7 +70,7 @@ Use GitTui to browse working-tree diffs and local branch history in a terminal, 
 - All three accept an optional `TuiConfiguration`; its positive `tabInterval` defaults to 4.
 - The native Run boundary fits the main window to the terminal before Show; accepted main Hide/Close requests deliver close callbacks and stop that pump, while cancellation and hosted child dismissal keep it running.
 - Shared terminal classes implement cell geometry, rendering, paragraphs and input while platform adapters retain OS service plumbing.
-- TuiSkin, fake TUI dialogs and the TuiControlTest showcase have independent resources and generated inventories.
+- TuiSkin and fake TUI dialogs have independent resources and generated inventories.
 - Use the shared layout and skin guideline (`<Tools repo>/Copilot/Guidelines/GacUILayout.md`) when authoring GUI/TUI resources. Theme refresh rebuilds existing default-themed controls after a TuiSkin palette change.
 
 [Design Explanation](./KB_GacUI_Design_TuiPlatformProvider.md)
@@ -211,7 +211,7 @@ Use GitTui to browse working-tree diffs and local branch history in a terminal, 
 - Layered channel architecture for protocol serialization: `IGuiRemoteProtocol` is bridged by `GuiRemoteProtocolCoreChannel`/`GuiRemoteProtocolRendererChannel` over `IJsonChannel` packages, with network clients/servers using `glr::json::JsonNodeListSerializer`.
 - JSON envelope format with `semantic`, `id`, `name`, `arguments` fields; protocol types code-generated from `<GacUI repo>/Source/PlatformProviders/Remote/Protocol/*.txt` with `JsonHelper<T>` specializations.
 - `GuiRemoteProtocolAsyncJsonChannel` and `GuiRemoteProtocolAsyncJsonChannelRenderer` provide async channel separation with queued events/responses, connection-safe request matching, renderer main-thread dispatch, and startup message caching.
-- Demo project pair (`RemotingTest_Core` and `RemotingTest_Rendering_Win32`) demonstrates full protocol stack assembly for both core and renderer sides with named-pipe, Windows HTTP, and portable MiniHTTP transport.
+- Assemble core and renderer channel wrappers independently of named-pipe, Windows HTTP or portable MiniHTTP transport.
 
 [Design Explanation](./KB_GacUI_Design_RemoteProtocolRendererAndSerialization.md)
 
@@ -222,6 +222,6 @@ Touch input is supported by Windows and GacJS (WebAssembly or HTTP, including br
 - Four fixed recognizers provide exclusive End-time short/long press offers, deferred left/right clicks, locked-axis scrolling and selected translation/rotation/scaling, with a four-alternative typed variant shared by C++ and Workflow. Click flags control fallback only; selecting any gesture suppresses fallback. Generated mouse clicks use ordinary hit testing and bubbling independently of point capture; point Action/Gesture/End remain directed to the accepted composition.
 - `GuiScrollView` accepts point events by default and consumes eligible one-finger scrolling. It does not automatically zoom, rotate, add inertia or hand a captured sequence to a parent.
 - Both document families accept press selection through persistent bounds handlers. Selectable/Editable content uses the ordinary left-click path for short presses, collapsing ranges even at their active endpoint, and extends a collapsed caret on a different long press. Scrollable documents drag and optionally continue with momentum without changing selection; labels support press selection and their existing caret-visibility offset.
-- Composition capture, raw lifecycle, document content routing, remote forwarding, Touching/TouchingList and automation verification share the same sequence contract.
+- Composition capture, raw lifecycle, document content routing, remote forwarding and automation verification share the same sequence contract.
 
 [Design Explanation](./KB_GacUI_Design_PointInput.md)
