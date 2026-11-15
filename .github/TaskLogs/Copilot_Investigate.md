@@ -103,3 +103,15 @@ Success also requires protocol generation, ordered Debug Win32/x64 metadata gene
 # PROPOSALS
 
 Baseline: the Debug x64 solution build succeeded with 0 warnings and 0 errors. Running the compiled reflection regression under CDB with `/C /F:TestReflectionTypeList.cpp` reached the new raw-property test and printed `Assertion failure: property`; CDB stopped on the propagated test exception. The existing Id lookup passed and the new Interpretor lookup was absent. No production source had changed.
+
+- No.1 Select renderer-owned raw interpretors through the resource manager
+
+## No.1 Select renderer-owned raw interpretors through the resource manager
+
+Add the independent reflected Interpretor property and atomic name/data setter. The common resource manager owns named factories and hosted managers forward registration and lookup. A shared native raw-renderer base caches the selected name, owns one fresh interpretor, and finalizes it before replacement. Concrete Direct2D/GDI destructors finalize while their event objects remain alive; the later base finalization sees no installed instance. Target changes keep the interpretor and use existing native before/after events. The interpretor borrows its element. Unknown names remain stored and do not retry on data-only changes.
+
+Transport all three application strings and explicitly invalidate remote native rendering for name or data changes. Migrate only the Windows Clock painter to early factory registration; keep manual Touching collection attachment and non-Windows entry paths. Add the name to automation state, update targeted assertions, and update canonical raw guidance in the Tools repository before scoped synchronization.
+
+### CODE CHANGE
+
+Planned changes: raw interfaces/state and manager registry; hosted forwarding; shared native renderer lifetime and concrete destruction; reflection/schema/Core/native receiver; Windows Clock factory and consuming entry points; focused native lifetime/pixel, Core/JSON/reconnect and Workflow coverage; generated metadata/resources/protocol and affected raw snapshots; automation assertions and canonical documentation. No source implementation has been applied yet.
