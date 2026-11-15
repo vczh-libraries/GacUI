@@ -5070,6 +5070,9 @@ namespace demo
             (clock = ::presentation::elements::IGuiGraphicsElement::CreateRawElement());
             <this>.SetNamedObject("clock", clock);
             {
+                (clock.Interpretor = "FullControlTest::Clock");
+            }
+            {
                 (clock.Id = "FullControlTest.Clock");
             }
             {

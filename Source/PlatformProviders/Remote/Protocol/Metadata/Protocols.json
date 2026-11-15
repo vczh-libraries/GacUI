@@ -2423,6 +2423,13 @@
             }
         }, {
             "$ast": "StructMember",
+            "name": "interpretor",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "String"
+            }
+        }, {
+            "$ast": "StructMember",
             "name": "data",
             "type": {
                 "$ast": "PrimitiveType",

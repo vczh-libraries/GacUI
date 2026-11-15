@@ -427,6 +427,7 @@ namespace vl::presentation::remoteprotocol
 	{
 		::vl::vint id;
 		::vl::WString rawId;
+		::vl::WString interpretor;
 		::vl::WString data;
 	};
 

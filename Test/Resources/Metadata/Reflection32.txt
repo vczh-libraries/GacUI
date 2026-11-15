@@ -8063,11 +8063,15 @@ class presentation::elements::GuiPolygonElement : presentation::elements::IGuiGr
 class presentation::elements::GuiRawElementBase : presentation::elements::IGuiGraphicsElement {
     property Data : system::String { get:GetData set:SetData }
     property Id : system::String { get:GetId set:SetId }
+    property Interpretor : system::String { get:GetInterpretor set:SetInterpretor }
 
     function GetData() : system::String;
     function GetId() : system::String;
+    function GetInterpretor() : system::String;
     function SetData(value : system::String) : system::Void;
     function SetId(value : system::String) : system::Void;
+    function SetInterpretor(value : system::String) : system::Void;
+    function SetInterpretorAndData(interpretor : system::String, data : system::String) : system::Void;
 
 }
 
