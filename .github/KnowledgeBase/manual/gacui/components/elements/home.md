@@ -119,14 +119,16 @@ The **Size** property creates a coordinate space for **Points** with (0,0) in th
 
 `<Raw/>` is the standard, recommended way to implement owner drawing in GacUI, both in native applications and through the remote protocol. It places application-defined drawing inside a composition while keeping layout and input handling in GacUI. TUI does not support `<Raw/>`.
 
-Place one `<Raw/>` inside the composition that owns the drawing area. Its optional string properties are `Id` and `Data`; both default to an empty string. `ref.Name` exposes the element to generated code as `GuiRawElementBase`. The element has no intrinsic minimum size, so set a size on the composition when needed. For example, this fragment can appear inside an instance's composition tree:
+Place one `<Raw/>` inside the composition that owns the drawing area. Its optional string properties are `Id`, `Interpretor` and `Data`; all default to an empty string. `ref.Name` exposes the element to generated code as `GuiRawElementBase`. The element has no intrinsic minimum size, so set a size on the composition when needed. For example, this fragment can appear inside an instance's composition tree:
 ```xml
 <Bounds PreferredMinSize="x:240 y:240">
   <Raw ref.Name="clock" Id="Example.Clock" Data="10:20:30"/>
 </Bounds>
 ```
 
-`Id` selects the application's drawing convention; it is not a unique element key. Empty and duplicate IDs are valid, so track drawing attachments by element identity. `Data` carries application-defined state, such as the clock's `HH:mm:ss` string. Changing `Data` requests a repaint. Changing `Id` alone does not request one, and equal assignments do nothing. With the remote protocol, an ID-only change is sent on the next frame.
+`Id` is application-defined metadata; it is not a unique element key. Empty and duplicate IDs are valid, so track drawing attachments by element identity. `Data` carries application-defined state, such as the clock's `HH:mm:ss` string. Changing `Interpretor` or `Data` requests a repaint. Changing `Id` alone does not request one, and equal assignments do nothing. With the remote protocol, an ID-only change is sent on the next frame.
+
+On Windows, an interpretor groups the drawing code for a raw element. Register its factory with the graphics resource manager using `RegisterRawInterpretorFactory` before creating the UI, then set the element's `Interpretor` property to the registered name. GacUI attaches the matching drawing behavior automatically. For example, `FullControlTest` registers `FullControlTest::Clock` and selects it with `<Raw Interpretor="FullControlTest::Clock"/>`. Direct event handlers remain available without an interpretor.
 
 ### Native rendering APIs
 
@@ -142,9 +144,9 @@ The [RawClock tutorial](https://github.com/vczh-libraries/Release/tree/master/Tu
 
 ### Remote rendering
 
-A remote core creates a portable `GuiRemoteRawElement`, exposing the shared `GuiRawElementBase` state. The protocol sends the numeric renderer element `id`, application string `rawId` and string `data`. The receiving renderer draws locally; native pointers, drawing callbacks and rendered pixels are not transferred. Install a matching drawing implementation in each renderer that the application supports.
+A remote core creates a portable `GuiRemoteRawElement`, exposing the shared `GuiRawElementBase` state. The protocol sends the numeric renderer element `id` and application strings `rawId`, `interpretor` and `data`. The receiving renderer draws locally; native pointers, drawing callbacks and rendered pixels are not transferred. Install a matching drawing implementation in each renderer that the application supports.
 
-The native `GuiRemoteRendererSingle` exposes `GetRawElements()` and `RawElementInstalled`, `RawElementUninstalled` and `RawElementChanged`. Subscribe before processing messages and enumerate existing elements for late attachment. An installed element initially has empty state; select or replace its drawing attachment when its ID changes. Changed callbacks see both updated descriptor fields, including data-only changes. Uninstallation is the point to remove attachments; a temporarily hidden element or retained disconnected picture may still exist.
+The native `GuiRemoteRendererSingle` exposes `GetRawElements()` and `RawElementInstalled`, `RawElementUninstalled` and `RawElementChanged`. Subscribe before processing messages and enumerate existing elements for late attachment. An installed element initially has empty state; select or replace its drawing attachment when its ID changes. Changed callbacks see all updated descriptor fields, including data-only changes. Uninstallation is the point to remove attachments; a temporarily hidden element or retained disconnected picture may still exist.
 
 GacJS exposes `getRawElements()`, `rawElementInstalled`, `rawElementUninstalled` and `rawElementUpdated` on `IGacUIRenderer`. A `GacUIRawElement` contains a persistent `element` div plus application `id` and `data` strings. Application code owns any canvas or other drawing content placed inside that div, and must dispose its subscriptions and observers at teardown.
 
