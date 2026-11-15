@@ -69,12 +69,12 @@ TEST_FILE
 			TEST_ASSERT(displayType->GetTypeDescriptor() == GetTypeDescriptor<bool>());
 		});
 
-		TEST_CASE(L"Raw elements expose shared Id and Data without property events")
+		TEST_CASE(L"Raw elements expose shared Id, Interpretor and Data without property events")
 		{
 			auto rawType = GetTypeDescriptor(L"presentation::elements::GuiRawElementBase");
 			TEST_ASSERT(rawType);
 			TEST_ASSERT(rawType->CanConvertTo(GetTypeDescriptor<IGuiGraphicsElement>()));
-			for (auto name : { L"Id", L"Data" })
+			for (auto name : { L"Id", L"Interpretor", L"Data" })
 			{
 				auto property = rawType->GetPropertyByName(name, true);
 				TEST_ASSERT(property);
@@ -82,6 +82,9 @@ TEST_FILE
 				TEST_ASSERT(property->GetSetter());
 				TEST_ASSERT(!property->GetValueChangedEvent());
 			}
+			auto combinedSetter = rawType->GetMethodGroupByName(L"SetInterpretorAndData", true);
+			TEST_ASSERT(combinedSetter && combinedSetter->GetMethodCount() == 1);
+			TEST_ASSERT(combinedSetter->GetMethod(0)->GetParameterCount() == 2);
 		});
 
 		TEST_CASE(L"Ensure GUIREFLECTIONELEMENT_CLASS_TYPELIST has all IGuiGraphicsElement sub classes")
