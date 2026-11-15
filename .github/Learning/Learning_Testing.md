@@ -50,6 +50,7 @@
 - Undo/redo tests: clear baselines and respect history granularity [2]
 - Focus the control before simulating keyboard input [2]
 - Keep rich document fixtures readable and self-contained [2]
+- Separate raw painters from remote collection attachment [2]
 - Browser E2E tests must handle localized dialogs and host fixtures [1]
 - Verify GacGen RPC outputs with positive and negative resources [1]
 - Unit tests must own helper-thread and stack-callback lifetimes [1]
@@ -107,6 +108,7 @@
 - Verify generated click timing with its actual clock [1]
 - Keep modal automation lookup bounded and action-specific [1]
 - Verify file-dialog mutations with owned native fixtures [1]
+- Register optional Clock painters through controller-related plugins [1]
 
 # Refinements
 
@@ -730,3 +732,17 @@ In `<GacUI repo>/Test/UIA_CppTest_Shared.cs`, locate hosted modal windows and ac
 Confine mutable fixtures to the resolved `<GacUI repo>/Test/FileDialogPlayground`, including link targets and unselected sentinels. Verify actual filesystem contents beside GUI/TUI confirmation and failure lists. Use separately owned handles without delete sharing for top-level and descendant failures; a failed recursive delete can leave partial contents, and later selected targets must still be attempted. Verify captured sorted/filtered provider rows rather than editable filename text.
 
 Cover selected and nested directory links without following their targets, synthetic drive-list command rejection, navigation during confirmation, stale-result rejection and surviving tree selection. Release holders and unlink fixtures before removing the verified playground. Record console replay/cell output separately from physical terminal input and displayed appearance, and retain the explicitly requested application scope.
+
+## Separate raw painters from remote collection attachment
+
+Keep the optional Clock module in `<GacUI repo>/Test/GacUISrc/Generated_FullControlTest/FullControlTestRawClockInterpretor.h` and `.cpp`, separate from the manually attached Touching painter in `<GacUI repo>/Test/GacUISrc/Generated_FullControlTest/FullControlTestRawElement.h` and `.cpp`. The renderer-local `<GacUI repo>/Test/GacUISrc/RemotingTest_Rendering_Win32/FullControlTestRawElementRemote.h` and `.cpp` own collection subscription for manual Touching. Painter implementations must not depend on that remote collection adapter.
+
+Expose only the non-template `RawClockInterpretorBase` declaration in the Clock header, with parsing and geometry definitions in the matching `.cpp` and virtual drawing hooks for concrete backends. Keep Windows includes, D2D/GDI interpretors, factories and registration behind `VCZH_MSVC`. Platform ports can reuse the portable base while supplying their own native drawing and collection attachments.
+
+Keep each shared implementation compiled exactly once through its owning inventory. `RemotingTest_Rendering_Win32` deliberately excludes the Clock module, so its Clock surface stays blank while manual Touching continues to draw. Do not restore Clock registration or a Clock source dependency merely to recover the superseded remote behavior.
+
+## Register optional Clock painters through controller-related plugins
+
+In `<GacUI repo>/Test/GacUISrc/Generated_FullControlTest/FullControlTestRawClockInterpretor.cpp`, register the active backend's concrete Clock factory through an `IGuiPlugin` with `GUI_REGISTER_PLUGIN` during controller-related loading. Consumers obtain the factory before `GuiMain` without explicit registration calls. Keep the plugin in the optional Clock translation unit so project source selection controls whether it loads; preserve the independent manual Touching attachment.
+
+Verify automatic registration at `GuiMain` entry in consumers that include the module, and retain a renderer control that omits it. Keep actual native pixel evidence separate from automation assertions about the interpretor name, data and bounds.

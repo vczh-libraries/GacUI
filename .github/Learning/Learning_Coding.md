@@ -35,7 +35,6 @@
 - Render GitView diffs as numbered source rows [2]
 - Keep GitView commit metadata in the status panel [2]
 - Apply EazyLayout configuration only through BuildLayout [2]
-- Separate raw painters from remote collection attachment [2]
 - Keep raw point lifecycle independent of gesture recognition [2]
 - Expose supported variant fields directly in reflection [2]
 - Detach tooltip positioning before its owner is destroyed [2]
@@ -632,12 +631,6 @@ In `Test/Linux/Wasm/vmake-common`, compile DarkSkin from its merged `Source/Skin
 ## Keep raw factories concrete while inheriting common state
 
 Keep `Id`, `Data` and shared behavior in `GuiRawElementBase`, while concrete raw types retain their own construction and renderer registration. The remote Core uses the behavior-free `elements_remoteprotocol::GuiRemoteRawElement` subclass; native managers create their platform subclasses. `IGuiGraphicsResourceManager::CreateRawElement` owns that choice. Removing an empty class is incorrect when its concrete identity selects the renderer. Preserve one element, renderer and owner-composition identity.
-
-## Separate raw painters from remote collection attachment
-
-Keep the single-element Windows painter in `<GacUI repo>/Test/GacUISrc/Generated_FullControlTest/FullControlTestRawElement.h` and `.cpp`. The renderer-local `FullControlTestRawElementRemote.h` and `.cpp` own collection subscription and call the single-element attachment API; the common painter should not depend on the remote renderer. Put shared drawing code in the existing shared inventory after checking all consumers, remove duplicate direct entries where that inventory is imported, and keep each implementation compiled exactly once.
-
-Platform ports own their native painters and collection attachments in their platform test support. Do not copy the Windows implementations into a Wayland or Cocoa checkout through synchronization. Keep synchronized application entry hooks upstream and have each platform build select its own native drawing implementation.
 
 ## Preserve the established handler-lifetime rule for point dispatch
 
