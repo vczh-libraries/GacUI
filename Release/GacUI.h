@@ -12211,9 +12211,9 @@ Resource Manager
 				GuiGraphicsResourceManager();
 				~GuiGraphicsResourceManager();
 
-				vint								RegisterElementType(const WString& elementTypeName);
-				void								RegisterRendererFactory(vint elementType, Ptr<IGuiGraphicsRendererFactory> factory);
-				IGuiGraphicsRendererFactory*		GetRendererFactory(vint elementType);
+				vint								RegisterElementType(const WString& elementTypeName) override;
+				void								RegisterRendererFactory(vint elementType, Ptr<IGuiGraphicsRendererFactory> factory) override;
+				IGuiGraphicsRendererFactory*		GetRendererFactory(vint elementType) override;
 				void								RegisterRawInterpretorFactory(const WString& name, Ptr<IGuiGraphicsRawInterpretorFactory> factory) override;
 				IGuiGraphicsRawInterpretorFactory*	GetRawInterpretorFactory(const WString& name) override;
 			};
