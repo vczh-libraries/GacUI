@@ -128,7 +128,7 @@ Place one `<Raw/>` inside the composition that owns the drawing area. Its option
 
 `Id` is application-defined metadata; it is not a unique element key. Empty and duplicate IDs are valid, so track drawing attachments by element identity. `Data` carries application-defined state, such as the clock's `HH:mm:ss` string. Changing `Interpretor` or `Data` requests a repaint. Changing `Id` alone does not request one, and equal assignments do nothing. With the remote protocol, an ID-only change is sent on the next frame.
 
-On Windows, an interpretor groups the drawing code for a raw element. Register its factory with the graphics resource manager using `RegisterRawInterpretorFactory` before creating the UI, then set the element's `Interpretor` property to the registered name. GacUI attaches the matching drawing behavior automatically. For example, `FullControlTest` registers `FullControlTest::Clock` and selects it with `<Raw Interpretor="FullControlTest::Clock"/>`. Direct event handlers remain available without an interpretor.
+An interpretor groups the drawing code for a raw element. Register its factory with the graphics resource manager using `RegisterRawInterpretorFactory` before creating the UI, then set the element's `Interpretor` property to the registered name. GacUI attaches the matching drawing behavior automatically. Usually you need to implement rendering code per renderer/platform. But when the job could be delegated, it is totally fine for an interpretor to use another interpretor internally. In such cases internal interpretor methods need to be called manually. Direct event handlers remain available without an interpretor.
 
 ### Native rendering APIs
 
