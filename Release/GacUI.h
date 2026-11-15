@@ -1752,6 +1752,26 @@ Basic Construction
 				virtual IGuiGraphicsRenderer*			Create()=0;
 			};
 
+			/// <summary>Renderer-owned drawing behavior for one borrowed raw element.</summary>
+			class IGuiGraphicsRawInterpretor : public Interface
+			{
+			public:
+				/// <summary>Attach drawing handlers on the UI thread. Do not retain ownership of the element.</summary>
+				/// <param name="element">The raw element borrowed until Finalize.</param>
+				virtual void						Initialize(IGuiGraphicsElement* element) = 0;
+				/// <summary>Detach handlers and release drawing resources while the concrete element is still alive.</summary>
+				virtual void						Finalize() = 0;
+			};
+
+			/// <summary>Creates independent raw interpretors for a registered application name.</summary>
+			class IGuiGraphicsRawInterpretorFactory : public Interface
+			{
+			public:
+				/// <summary>Create a fresh interpretor owned by the requesting renderer.</summary>
+				/// <returns>The new interpretor.</returns>
+				virtual IGuiGraphicsRawInterpretor*	Create() = 0;
+			};
+
 			enum RenderTargetFailure
 			{
 				None,
@@ -12125,46 +12145,54 @@ Resource Manager
 				/// </summary>
 				/// <param name="elementTypeName">The element type.</param>
 				/// <returns>A number identifies this element type.</returns>
-				virtual vint							RegisterElementType(const WString& elementTypeName) = 0;
+				virtual vint								RegisterElementType(const WString& elementTypeName) = 0;
 				/// <summary>
 				/// Register a <see cref="IGuiGraphicsRendererFactory"/> and bind it to an registered element type from <see cref="RegisterElementType"/>.
 				/// This function crashes when an element type has already been binded a renderer factory.
 				/// </summary>
 				/// <param name="elementType">The element type to represent a graphics element factory.</param>
 				/// <param name="factory">The instance of the graphics renderer factory to register.</param>
-				virtual void							RegisterRendererFactory(vint elementType, Ptr<IGuiGraphicsRendererFactory> factory) = 0;
+				virtual void								RegisterRendererFactory(vint elementType, Ptr<IGuiGraphicsRendererFactory> factory) = 0;
 				/// <summary>
 				/// Get the instance of a registered <see cref="IGuiGraphicsRendererFactory"/> that is binded to a specified element type.
 				/// </summary>
 				/// <returns>Returns the renderer factory.</returns>
 				/// <param name="elementType">The registered element type from <see cref="RegisterElementType"/> to get a binded graphics renderer factory.</param>
-				virtual IGuiGraphicsRendererFactory*	GetRendererFactory(vint elementType) = 0;
+				virtual IGuiGraphicsRendererFactory*		GetRendererFactory(vint elementType) = 0;
+				/// <summary>Register a named raw interpretor factory on the UI thread before creating consuming elements. Duplicate names are rejected.</summary>
+				/// <param name="name">The interpretor name.</param>
+				/// <param name="factory">The factory owned by this manager.</param>
+				virtual void								RegisterRawInterpretorFactory(const WString& name, Ptr<IGuiGraphicsRawInterpretorFactory> factory) = 0;
+				/// <summary>Look up a named raw interpretor factory.</summary>
+				/// <param name="name">The interpretor name.</param>
+				/// <returns>A borrowed factory, or null if the name is not registered.</returns>
+				virtual IGuiGraphicsRawInterpretorFactory*	GetRawInterpretorFactory(const WString& name) = 0;
 				/// <summary>
 				/// Get the instance of a <see cref="IGuiGraphicsRenderTarget"/> that is binded to an <see cref="INativeWindow"/>.
 				/// </summary>
 				/// <param name="window">The specified window.</param>
 				/// <returns>Returns the render target.</returns>
-				virtual IGuiGraphicsRenderTarget*		GetRenderTarget(INativeWindow* window) = 0;
+				virtual IGuiGraphicsRenderTarget*			GetRenderTarget(INativeWindow* window) = 0;
 				/// <summary>
 				/// Recreate the render target for the specified window.
 				/// </summary>
 				/// <param name="window">The specified window.</param>
-				virtual void							RecreateRenderTarget(INativeWindow* window) = 0;
+				virtual void								RecreateRenderTarget(INativeWindow* window) = 0;
 				/// <summary>
 				/// Resize the render target to fit the current window size.
 				/// </summary>
 				/// <param name="window">The specified window.</param>
-				virtual void							ResizeRenderTarget(INativeWindow* window) = 0;
+				virtual void								ResizeRenderTarget(INativeWindow* window) = 0;
 				/// <summary>
 				/// Get the renderer awared rich text document layout engine provider object.
 				/// </summary>
 				/// <returns>Returns the layout provider.</returns>
-				virtual IGuiGraphicsLayoutProvider*		GetLayoutProvider() = 0;
+				virtual IGuiGraphicsLayoutProvider*			GetLayoutProvider() = 0;
 				/// <summary>
 				/// Create a raw element based on the current renderer.
 				/// </summary>
 				/// <returns>Returns the created graphics element.</returns>
-				virtual Ptr<IGuiGraphicsElement>		CreateRawElement() = 0;
+				virtual Ptr<IGuiGraphicsElement>			CreateRawElement() = 0;
 			};
 
 			/// <summary>
@@ -12173,8 +12201,9 @@ Resource Manager
 			class GuiGraphicsResourceManager : public Object, public virtual IGuiGraphicsResourceManager
 			{
 			protected:
-				collections::List<WString>								elementTypes;
-				collections::Array<Ptr<IGuiGraphicsRendererFactory>>	rendererFactories;
+				collections::List<WString>													elementTypes;
+				collections::Array<Ptr<IGuiGraphicsRendererFactory>>						rendererFactories;
+				collections::Dictionary<WString, Ptr<IGuiGraphicsRawInterpretorFactory>>	rawInterpretorFactories;
 			public:
 				/// <summary>
 				/// Create a graphics resource manager without any predefined factories
@@ -12182,9 +12211,11 @@ Resource Manager
 				GuiGraphicsResourceManager();
 				~GuiGraphicsResourceManager();
 
-				vint									RegisterElementType(const WString& elementTypeName);
-				void									RegisterRendererFactory(vint elementType, Ptr<IGuiGraphicsRendererFactory> factory);
-				IGuiGraphicsRendererFactory*			GetRendererFactory(vint elementType);
+				vint								RegisterElementType(const WString& elementTypeName);
+				void								RegisterRendererFactory(vint elementType, Ptr<IGuiGraphicsRendererFactory> factory);
+				IGuiGraphicsRendererFactory*		GetRendererFactory(vint elementType);
+				void								RegisterRawInterpretorFactory(const WString& name, Ptr<IGuiGraphicsRawInterpretorFactory> factory) override;
+				IGuiGraphicsRawInterpretorFactory*	GetRawInterpretorFactory(const WString& name) override;
 			};
 
 			/// <summary>
@@ -12494,6 +12525,7 @@ Elements
 				static constexpr const wchar_t* ElementTypeName = L"Raw";
 			protected:
 				WString					id;
+				WString					interpretor;
 				WString					data;
 
 				GuiRawElementBase();
@@ -12504,12 +12536,62 @@ Elements
 				/// <summary>Set the identifier without requesting a repaint. Remote state is synchronized on the next frame.</summary>
 				/// <param name="value">The application identifier.</param>
 				void					SetId(const WString& value);
+				/// <summary>Get the optional registered interpretor name.</summary>
+				/// <returns>The stored name, including unregistered names.</returns>
+				WString					GetInterpretor();
+				/// <summary>Select renderer-owned drawing behavior and request a repaint. Empty or unregistered names install no interpretor.</summary>
+				/// <param name="value">The interpretor name.</param>
+				void					SetInterpretor(const WString& value);
+				/// <summary>Assign the interpretor and data before one state notification and repaint request.</summary>
+				/// <param name="interpretor">The interpretor name.</param>
+				/// <param name="data">The drawing data available during interpretor initialization.</param>
+				void					SetInterpretorAndData(const WString& interpretor, const WString& data);
 				/// <summary>Get the application-defined drawing data.</summary>
 				/// <returns>The drawing data.</returns>
 				WString					GetData();
 				/// <summary>Set the drawing data and request a repaint when it changes.</summary>
 				/// <param name="value">The drawing data.</param>
 				void					SetData(const WString& value);
+			};
+
+			/// <summary>Shares interpretor selection and lifetime between native raw renderers.</summary>
+			template<typename TElement, typename TRenderer, typename TRenderTarget>
+			class GuiRawElementRendererBase : public GuiElementRendererBase<TElement, TRenderer, TRenderTarget>
+			{
+				friend class GuiElementRendererBase<TElement, TRenderer, TRenderTarget>;
+			protected:
+				WString							interpretorName;
+				Ptr<IGuiGraphicsRawInterpretor>	interpretor;
+
+				void InitializeInternal()
+				{
+					OnElementStateChanged();
+				}
+
+				void FinalizeInternal()
+				{
+					if (interpretor)
+					{
+						interpretor->Finalize();
+						interpretor = nullptr;
+					}
+				}
+			public:
+				void OnElementStateChanged() override
+				{
+					auto name = this->element->GetInterpretor();
+					if (name == interpretorName) return;
+					FinalizeInternal();
+					interpretorName = name;
+					if (name.Length() > 0)
+					{
+						if (auto factory = GetGuiGraphicsResourceManager()->GetRawInterpretorFactory(name))
+						{
+							interpretor = Ptr(factory->Create());
+							interpretor->Initialize(this->element);
+						}
+					}
+				}
 			};
 
 			/// <summary>
@@ -20580,6 +20662,8 @@ GuiHostedGraphicsResourceManager
 				vint								RegisterElementType(const WString& elementTypeName) override;
 				void								RegisterRendererFactory(vint elementType, Ptr<IGuiGraphicsRendererFactory> factory) override;
 				IGuiGraphicsRendererFactory*		GetRendererFactory(vint elementType) override;
+				void								RegisterRawInterpretorFactory(const WString& name, Ptr<IGuiGraphicsRawInterpretorFactory> factory) override;
+				IGuiGraphicsRawInterpretorFactory*	GetRawInterpretorFactory(const WString& name) override;
 				IGuiGraphicsRenderTarget*			GetRenderTarget(INativeWindow* window) override;
 				void								RecreateRenderTarget(INativeWindow* window) override;
 				void								ResizeRenderTarget(INativeWindow* window) override;
@@ -21346,6 +21430,7 @@ namespace vl::presentation::remoteprotocol
 	{
 		::vl::vint id;
 		::vl::WString rawId;
+		::vl::WString interpretor;
 		::vl::WString data;
 	};
 

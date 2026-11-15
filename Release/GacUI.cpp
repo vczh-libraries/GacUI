@@ -32098,6 +32098,30 @@ GuiRawElementBase
 				}
 			}
 
+			WString GuiRawElementBase::GetInterpretor()
+			{
+				return interpretor;
+			}
+
+			void GuiRawElementBase::SetInterpretor(const WString& value)
+			{
+				if (interpretor != value)
+				{
+					interpretor = value;
+					InvokeOnElementStateChanged();
+				}
+			}
+
+			void GuiRawElementBase::SetInterpretorAndData(const WString& _interpretor, const WString& _data)
+			{
+				if (interpretor != _interpretor || data != _data)
+				{
+					interpretor = _interpretor;
+					data = _data;
+					InvokeOnElementStateChanged();
+				}
+			}
+
 			WString GuiRawElementBase::GetData()
 			{
 				return data;
@@ -32891,6 +32915,20 @@ GuiGraphicsResourceManager
 			IGuiGraphicsRendererFactory* GuiGraphicsResourceManager::GetRendererFactory(vint elementType)
 			{
 				return rendererFactories.Count() > elementType ? rendererFactories[elementType].Obj() : nullptr;
+			}
+
+			void GuiGraphicsResourceManager::RegisterRawInterpretorFactory(const WString& name, Ptr<IGuiGraphicsRawInterpretorFactory> factory)
+			{
+#define ERROR_MESSAGE_PREFIX L"GuiGraphicsResourceManager::RegisterRawInterpretorFactory(const WString&, Ptr<IGuiGraphicsRawInterpretorFactory>)#"
+				CHECK_ERROR(!rawInterpretorFactories.Keys().Contains(name), ERROR_MESSAGE_PREFIX L"This interpretor name has already been registered.");
+				rawInterpretorFactories.Add(name, factory);
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			IGuiGraphicsRawInterpretorFactory* GuiGraphicsResourceManager::GetRawInterpretorFactory(const WString& name)
+			{
+				auto index = rawInterpretorFactories.Keys().IndexOf(name);
+				return index == -1 ? nullptr : rawInterpretorFactories.Values()[index].Obj();
 			}
 
 			IGuiGraphicsResourceManager* guiGraphicsResourceManager = nullptr;
@@ -35304,6 +35342,16 @@ GuiHostedGraphicsResourceManager
 			IGuiGraphicsRendererFactory* GuiHostedGraphicsResourceManager::GetRendererFactory(vint elementType)
 			{
 				return nativeManager->GetRendererFactory(elementType);
+			}
+
+			void GuiHostedGraphicsResourceManager::RegisterRawInterpretorFactory(const WString& name, Ptr<IGuiGraphicsRawInterpretorFactory> factory)
+			{
+				nativeManager->RegisterRawInterpretorFactory(name, factory);
+			}
+
+			IGuiGraphicsRawInterpretorFactory* GuiHostedGraphicsResourceManager::GetRawInterpretorFactory(const WString& name)
+			{
+				return nativeManager->GetRawInterpretorFactory(name);
 			}
 
 			IGuiGraphicsRenderTarget* GuiHostedGraphicsResourceManager::GetRenderTarget(INativeWindow* window)
@@ -38097,6 +38145,7 @@ GuiRawElementRenderer
 		ElementDesc_Raw arguments;
 		arguments.id = id;
 		arguments.rawId = element->GetId();
+		arguments.interpretor = element->GetInterpretor();
 		arguments.data = element->GetData();
 		updatedElements.Add(remoteprotocol::OrdinaryElementDescVariant(arguments));
 	}
@@ -44257,6 +44306,7 @@ namespace vl::presentation::remoteprotocol
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"id", value.id);
 		ConvertCustomTypeToJsonField(node, L"rawId", value.rawId);
+		ConvertCustomTypeToJsonField(node, L"interpretor", value.interpretor);
 		ConvertCustomTypeToJsonField(node, L"data", value.data);
 		return node;
 	}
@@ -45452,6 +45502,7 @@ namespace vl::presentation::remoteprotocol
 		{
 			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
 			if (field->name.value == L"rawId") ConvertJsonToCustomType(field->value, value.rawId); else
+			if (field->name.value == L"interpretor") ConvertJsonToCustomType(field->value, value.interpretor); else
 			if (field->name.value == L"data") ConvertJsonToCustomType(field->value, value.data); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
@@ -48046,12 +48097,12 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::RequestRendererUpdateElement_Raw(const remoteprotocol::ElementDesc_Raw& arguments)
 	{
 		auto element = availableElements[arguments.id].Cast<GuiRawElementBase>();
-		auto dataChanged = element->GetData() != arguments.data;
-		if (element->GetId() == arguments.rawId && !dataChanged) return;
+		auto drawingChanged = element->GetInterpretor() != arguments.interpretor || element->GetData() != arguments.data;
+		if (element->GetId() == arguments.rawId && !drawingChanged) return;
 
 		element->SetId(arguments.rawId);
-		element->SetData(arguments.data);
-		if (dataChanged)
+		element->SetInterpretorAndData(arguments.interpretor, arguments.data);
+		if (drawingChanged)
 		{
 			needRefresh = true;
 		}
@@ -70405,6 +70456,7 @@ DumpWindowClientArea
 			{
 				elementDescription = WString::Unmanaged(L"Raw");
 				ConvertCustomTypeToJsonField(compositionDump, L"elementId", raw->GetId());
+				ConvertCustomTypeToJsonField(compositionDump, L"elementInterpretor", raw->GetInterpretor());
 				ConvertCustomTypeToJsonField(compositionDump, L"elementData", raw->GetData());
 			}
 			else if (dynamic_cast<GuiFocusRectangleElement*>(rawElement))

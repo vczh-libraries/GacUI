@@ -243,6 +243,8 @@ Raw API Rendering Element
 			protected:
 				GuiDirect2DElement();
 			public:
+				~GuiDirect2DElement();
+
 				static vint					GetElementType();
 				static GuiDirect2DElement*	Create();
 
@@ -577,21 +579,17 @@ Renderers
 				void							OnElementStateChanged()override;
 			};
 
-			class GuiDirect2DElementRenderer : public GuiElementRendererBase<GuiDirect2DElement, GuiDirect2DElementRenderer, IWindowsDirect2DRenderTarget>
+			class GuiDirect2DElementRenderer : public GuiRawElementRendererBase<GuiDirect2DElement, GuiDirect2DElementRenderer, IWindowsDirect2DRenderTarget>
 			{
 				friend class GuiElementRendererBase<GuiDirect2DElement, GuiDirect2DElementRenderer, IWindowsDirect2DRenderTarget>;
 
 			protected:
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
 				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
 			public:
 				GuiDirect2DElementRenderer();
 				~GuiDirect2DElementRenderer();
 
 				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
 			};
 		}
 	}
@@ -1546,6 +1544,8 @@ Raw API Rendering Element
 			protected:
 				GuiGDIElement();
 			public:
+				~GuiGDIElement();
+
 				static vint					GetElementType();
 				static GuiGDIElement*		Create();
 
@@ -1804,21 +1804,17 @@ Renderers
 				void							OnElementStateChanged()override;
 			};
 
-			class GuiGDIElementRenderer : public GuiElementRendererBase<GuiGDIElement, GuiGDIElementRenderer, IWindowsGDIRenderTarget>
+			class GuiGDIElementRenderer : public GuiRawElementRendererBase<GuiGDIElement, GuiGDIElementRenderer, IWindowsGDIRenderTarget>
 			{
 				friend class GuiElementRendererBase<GuiGDIElement, GuiGDIElementRenderer, IWindowsGDIRenderTarget>;
 
 			protected:
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
 				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
 			public:
 				GuiGDIElementRenderer();
 				~GuiGDIElementRenderer();
 
 				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
 			};
 		}
 	}

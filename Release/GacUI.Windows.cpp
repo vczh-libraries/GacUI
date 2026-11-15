@@ -5698,14 +5698,6 @@ GuiPolygonElementRenderer
 GuiDirect2DElementRenderer
 ***********************************************************************/
 
-			void GuiDirect2DElementRenderer::InitializeInternal()
-			{
-			}
-
-			void GuiDirect2DElementRenderer::FinalizeInternal()
-			{
-			}
-
 			void GuiDirect2DElementRenderer::RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget)
 			{
 				IDWriteFactory* fdw=GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory();
@@ -5747,9 +5739,6 @@ GuiDirect2DElementRenderer
 				}
 			}
 
-			void GuiDirect2DElementRenderer::OnElementStateChanged()
-			{
-			}
 		}
 	}
 }
@@ -5771,6 +5760,12 @@ GuiDirect2DElement
 
 			GuiDirect2DElement::GuiDirect2DElement()
 			{
+			}
+
+			GuiDirect2DElement::~GuiDirect2DElement()
+			{
+				// Detach interpretor handlers before the concrete event members are destroyed.
+				if (renderer) renderer->Finalize();
 			}
 
 			vint GuiDirect2DElement::GetElementType()
@@ -9906,14 +9901,6 @@ GuiPolygonElementRenderer
 GuiGDIElementRenderer
 ***********************************************************************/
 
-			void GuiGDIElementRenderer::InitializeInternal()
-			{
-			}
-
-			void GuiGDIElementRenderer::FinalizeInternal()
-			{
-			}
-
 			void GuiGDIElementRenderer::RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget)
 			{
 			}
@@ -9941,9 +9928,6 @@ GuiGDIElementRenderer
 				}
 			}
 
-			void GuiGDIElementRenderer::OnElementStateChanged()
-			{
-			}
 		}
 	}
 }
@@ -12550,6 +12534,12 @@ GuiGDIElement
 
 			GuiGDIElement::GuiGDIElement()
 			{
+			}
+
+			GuiGDIElement::~GuiGDIElement()
+			{
+				// Detach interpretor handlers before the concrete event members are destroyed.
+				if (renderer) renderer->Finalize();
 			}
 
 			vint GuiGDIElement::GetElementType()
