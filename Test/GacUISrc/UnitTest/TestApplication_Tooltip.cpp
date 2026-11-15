@@ -56,7 +56,7 @@ TEST_FILE
 				{
 					ownerWindow = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::MainWindow"));
 					ownerWindow->SetText(L"Tooltip owner");
-					ownerWindow->SetClientSize({ {240},{160} });
+					ownerWindow->SetClientSize(Size(240, 160));
 					ownerWindow->SetLocation({ {100},{80} });
 					ownerWindow->Show();
 				});
