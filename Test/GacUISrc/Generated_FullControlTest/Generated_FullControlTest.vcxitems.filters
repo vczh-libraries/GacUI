@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{9D70EB43-E86A-4FA2-8C08-C5BDF073E2C5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="x86">
       <UniqueIdentifier>{17bb8a98-a099-49c6-b84f-ac0bac1c1195}</UniqueIdentifier>
     </Filter>
@@ -14,12 +11,6 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)FullControlTestEventHandlers.h" />
     <ClCompile Include="$(MSBuildThisFileDirectory)FullControlTestEventHandlers.cpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)FullControlTestRawElement.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClCompile Include="$(MSBuildThisFileDirectory)FullControlTestRawElement.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\MainWindow.h">
       <Filter>x86</Filter>
     </ClInclude>
@@ -56,6 +47,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\DocumentEditorBase.h">
       <Filter>x64</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)FullControlTestRawElement.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\FullControlTest.cpp">
@@ -88,6 +80,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\MainWindow.cpp">
       <Filter>x64</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)FullControlTestRawElement.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\SharedDocumentEditor.h" />
