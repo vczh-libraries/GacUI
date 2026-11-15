@@ -92,6 +92,26 @@ These checks are for implementation; this review does not execute the task.
 
 No unresolved review comments.
 
+# UPDATES
+
+## UPDATE
+
+The work is overall good but there is some refactoring need to do:
+
+- Split `RawClockInterpretor` into `RawClockD2DInterpretor` and `RawClockGDIInterpretor`. You can turn functor template arguments into virtual functions in base class `RawClockInterpretorBase`. Move the base class to the header file, therefore future `wGac` and `iGac` port could use it.
+- `RawClockInterpretorFactory` split to D2D and GDI versions.
+- Turn `RegisterFullControlTestClockInterpretor` into an **`IGuiPlugin`** implementation with `GUI_REGISTER_PLUGIN` to register the plugin, therefore this function will be automatically loaded, no need to call it in `GuiMain`.
+- Besides the cross platform `RawClickInterpretorBase`, others about clock interpretors should be guarded by `VCZH_MSVC` therefore the cpp file could just be used without breaking `wGac` and `iGac`.
+- Split clock interpretor to `FullControlTestRawClockInterpretor.(h|cpp)`, therefore `RemotingTest_Rendering_Win32` could just avoid loading it.
+
+## UPDATE
+
+When creating `RawClockIntepretorBase` , because it is not a template class anymore, keep only declaration in the header file.
+
+## UPDATE
+
+`FullControlTest` and other test apps are not allowed to be mentioned in KB pages, do some clean up after finishing your work, remember to port KB changes to `Tools` repo and commit push all local changes
+
 # TEST [CONFIRMED]
 
 The first regression extends `<GacUI repo>/Test/GacUISrc/UnitTest/TestReflectionTypeList.cpp` to require writable string properties `Id`, `Interpretor`, and `Data` without property-change events, plus the two-argument `SetInterpretorAndData` method. It compiles against the original native API and fails at the missing reflected `Interpretor` property.
@@ -104,9 +124,10 @@ Success also requires protocol generation, ordered Debug Win32/x64 metadata gene
 
 Baseline: the Debug x64 solution build succeeded with 0 warnings and 0 errors. Running the compiled reflection regression under CDB with `/C` and a file filter selecting `<GacUI repo>/Test/GacUISrc/UnitTest/TestReflectionTypeList.cpp` reached the new raw-property test and printed `Assertion failure: property`; CDB stopped on the propagated test exception. The existing Id lookup passed and the new Interpretor lookup was absent. No production source had changed.
 
-- No.1 [CONFIRMED] Select renderer-owned raw interpretors through the resource manager
+- No.1 [DENIED] Select renderer-owned raw interpretors through the resource manager
+- No.2 Split portable Clock geometry from Windows painter plugins
 
-## No.1 [CONFIRMED] Select renderer-owned raw interpretors through the resource manager
+## No.1 [DENIED] Select renderer-owned raw interpretors through the resource manager
 
 Add the independent reflected Interpretor property and atomic name/data setter. The common resource manager owns named factories and hosted managers forward registration and lookup. A shared native raw-renderer base caches the selected name, owns one fresh interpretor, and finalizes it before replacement. Concrete Direct2D/GDI destructors finalize while their event objects remain alive; the later base finalization sees no installed instance. Target changes keep the interpretor and use existing native before/after events. The interpretor borrows its element. Unknown names remain stored and do not retry on data-only changes.
 
@@ -138,7 +159,9 @@ The remote GDI continuation passed: its contact input reached Core, updated the 
 
 Final Win32 repository-wrapper result: 98/98 test files and 2001/2001 test cases passed, including both native raw backends and the Core/Workflow/reflection coverage. The final log contains no assertion failure and no appended Debug leak dump. The unpaused retry also passed the earlier automation/file-dialog cases without a source change. Its regenerated snapshots differ only in the five expected raw-element baseline files. Final post-resource Metadata_Generate x64 and Metadata_Test both exited successfully and produced no additional metadata differences. The final x64 full-wrapper run is in progress.
 
-### CONFIRMED
+### DENIED BY USER
+
+The initial feature passed the verification recorded below, but the continuation supersedes its combined Clock class and explicit GuiMain registration. Retain the core raw-element contract and refactor its test painter according to No.2. The historical test results describe the initial implementation.
 
 The original missing-property regression is fixed. The sole proposal is selected and its implementation is retained. Interpretor selects a fresh renderer-owned native painter independently of Id; the atomic name/data setter exposes the final data during initialization. Tests verify unchanged-name reuse, empty/missing-name removal, no late retry, independent instances, hosted forwarding, exactly-once finalization before concrete event destruction, target recreation and target-free final release. Manual Touching handlers continue rendering after interpretor installation/removal.
 
@@ -149,3 +172,15 @@ Protocol generation, both ordered Debug Win32/x64 metadata cycles, Metadata_Test
 All requested Windows application checks completed: CppTest and CppTest_Metaonly RawClock UIA scenarios passed on Direct2D and GDI; GacUI_Host passed the interpreted-resource scenario; CppTest_Reflection compiled with early registration. Native screenshots independently confirmed local and remote Clock/Touching painting. The live remote pair passed palette refresh, resize, page switching, received-time hand movement and GDI renderer takeover; manual Touching retained its rectangle, cleared old contacts, accepted new contacts and cleaned up. Final Core/renderer shutdown returned code 0. No session-dependent check remains unavailable. The earlier verification diagnostics remain recorded separately above.
 
 Final review found no further source changes necessary. Manual implementation and generated assets were committed separately as 1b5ef89f6 and 354682bbe. The five canonical guidance files were committed in Tools as 9704e66, synchronized only into GacUI, and verified byte-identical. The snapshot changes are committed separately. No work was performed in wGac, iGac or GacJS.
+
+## No.2 Split portable Clock geometry from Windows painter plugins
+
+Keep the raw-element/library feature from No.1. Extract a non-template RawClockInterpretorBase declaration to <GacUI repo>/Test/GacUISrc/Generated_FullControlTest/FullControlTestRawClockInterpretor.h; define its parsing and geometry methods in the matching .cpp. Virtual line/ellipse methods replace functor arguments. Separate Direct2D/GDI interpretors and factories own only their backend state, with all Windows includes, concrete classes and plugin registration guarded by VCZH_MSVC. An IGuiPlugin registers the active backend factory during controller-related loading, before GuiMain. Remove all explicit registration calls.
+
+Compile the new module through the generated-showcase shared inventory and the direct Host/UnitTest inventories, including their filters. Keep it out of RemotingTest_Rendering_Win32 as requested, leaving its manual Touching adapter. Keep the portable base available without Windows includes or plugin effects; do not edit or build sibling platform repositories.
+
+Reuse native lifetime/pixel coverage on both backends, asserting the factory is already present when GuiMain runs; build current consumers and run the repository unit-test wrapper with its existing selection. Exercise local hosted/native and interpreted RawClock scenarios, and check the renderer without the Clock module still handles manual Touching. No protocol, reflection or XML change is planned, so no metadata/resource regeneration is required. After implementation, remove concrete test-application examples and instructions from KB pages, preserve general library contracts, update canonical Tools copies and synchronize only GacUI.
+
+### CODE CHANGE
+
+Planned: extract the portable Clock base and Windows implementations, install the backend factory through GUI_REGISTER_PLUGIN, update source inventories/call sites, retain the existing drawing/lifetime assertions with automatic-registration checks, and clean canonical KB guidance.
