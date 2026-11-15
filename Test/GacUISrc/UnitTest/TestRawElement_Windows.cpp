@@ -302,7 +302,7 @@ void TestRawPainterPixels()
 void TestNativeRawElements(bool direct2D)
 {
 	auto manager = GetGuiGraphicsResourceManager();
-	demo::RegisterFullControlTestClockInterpretor();
+	TEST_ASSERT(manager->GetRawInterpretorFactory(L"FullControlTest::Clock"));
 	TestRawInterpretorLifetime();
 	TestRawPainterPixels();
 	auto native = GetCurrentController()->WindowService()->CreateNativeWindow(INativeWindow::Normal);

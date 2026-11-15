@@ -456,6 +456,9 @@
     <ClCompile Include="..\Generated_FullControlTest\FullControlTestRawElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Generated_FullControlTest\FullControlTestRawClockInterpretor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\Generated_FullControlTest\FullControlTestEventHandlers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -463,6 +466,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Generated_FullControlTest\FullControlTestRawElement.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Generated_FullControlTest\FullControlTestRawClockInterpretor.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

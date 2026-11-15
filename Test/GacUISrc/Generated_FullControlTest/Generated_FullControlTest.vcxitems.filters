@@ -48,6 +48,7 @@
       <Filter>x64</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)FullControlTestRawElement.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)FullControlTestRawClockInterpretor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\FullControlTest.cpp">
@@ -81,6 +82,7 @@
       <Filter>x64</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)FullControlTestRawElement.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)FullControlTestRawClockInterpretor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\SharedDocumentEditor.h" />

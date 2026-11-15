@@ -301,7 +301,11 @@ See `<GacUI repo>/.github/Guidelines/Running-GacUI.md` for the automation contra
 
 ### /Gdi
 
-Use the exact `/Gdi` switch once to select GDI instead of the default Direct2D renderer on Windows. It can be combined with `/AsPort`. For remote FullControlTest, run Core with `/FCT /Pipe /AsPort:8888` and the renderer with `/Pipe /Gdi /AsPort:8889`. The Windows renderer registers the `FullControlTest::Clock` factory in `GuiMain` before processing messages. The clock retains ID `FullControlTest.Clock` and selects that factory through `Interpretor`; Touching retains an empty interpretor and its manual ID-based attachment. Core has no native drawing backend, and `CppTest_Rvm` always uses hosted Direct2D, so `/Gdi` has no effect in either application.
+Use the exact `/Gdi` switch once to select GDI instead of the default Direct2D renderer on Windows. It can be combined with `/AsPort`. For remote FullControlTest, run Core with `/FCT /Pipe /AsPort:8888` and the renderer with `/Pipe /Gdi /AsPort:8889`.
+
+Local showcase and interpreted-host applications load the `FullControlTest::Clock` factory through the controller-related plugin in `<GacUI repo>/Test/GacUISrc/Generated_FullControlTest/FullControlTestRawClockInterpretor.cpp`. It selects a Direct2D or GDI factory before `GuiMain`; no explicit registration call is needed. The portable `RawClockInterpretorBase` declaration is in the matching header, with its parsing and drawing definitions out of line; Windows concrete interpretors, factories and plugin are guarded by `VCZH_MSVC`. The clock retains ID `FullControlTest.Clock` and selects its factory through `Interpretor`.
+
+`RemotingTest_Rendering_Win32` deliberately omits this Clock translation unit, so its Clock surface remains blank for the unregistered name. It retains the independent Touching source and manual ID-based adapter with an empty interpretor. Core has no native drawing backend, and `CppTest_Rvm` always uses hosted Direct2D, so `/Gdi` has no effect in either application.
 
 ### /FCT
 

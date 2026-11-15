@@ -22,7 +22,6 @@
 #if defined VCZH_MSVC
 #include <VlppOS.Windows.h>
 #include "FullControlTestRawElementRemote.h"
-#include "../Generated_FullControlTest/FullControlTestRawElement.h"
 #include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
 #endif
 #include "../SharedArguments.h"
@@ -78,9 +77,6 @@ public:
 
 void GuiMain()
 {
-#if defined VCZH_MSVC
-	demo::RegisterFullControlTestClockInterpretor();
-#endif
 	CHECK_ERROR(currentGuiContext, L"GuiMain()#The renderer GUI context is null.");
 	auto mainWindow = GetCurrentController()->WindowService()->CreateNativeWindow(INativeWindow::Normal);
 	mainWindow->SetTitle(L"Connecting ...");

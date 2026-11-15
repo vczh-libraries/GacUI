@@ -39,7 +39,6 @@ WString GetResourcePath()
 
 void GuiMain()
 {
-	demo::RegisterFullControlTestClockInterpretor();
 #ifdef VCZH_64
 #define FULLCONTROLTEST_BINARY	L"../GacUISrc/Generated_FullControlTest/Resource_x64/FullControlTest.UI.bin"
 #else

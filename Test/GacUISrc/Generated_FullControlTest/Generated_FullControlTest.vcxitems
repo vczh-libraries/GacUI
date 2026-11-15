@@ -18,7 +18,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)FullControlTestEventHandlers.h" />
     <ClCompile Include="$(MSBuildThisFileDirectory)FullControlTestEventHandlers.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FullControlTestRawElement.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)FullControlTestRawClockInterpretor.h" />
     <ClCompile Include="$(MSBuildThisFileDirectory)FullControlTestRawElement.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)FullControlTestRawClockInterpretor.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\FullControlTest.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

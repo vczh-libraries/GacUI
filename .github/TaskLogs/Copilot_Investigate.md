@@ -125,7 +125,7 @@ Success also requires protocol generation, ordered Debug Win32/x64 metadata gene
 Baseline: the Debug x64 solution build succeeded with 0 warnings and 0 errors. Running the compiled reflection regression under CDB with `/C` and a file filter selecting `<GacUI repo>/Test/GacUISrc/UnitTest/TestReflectionTypeList.cpp` reached the new raw-property test and printed `Assertion failure: property`; CDB stopped on the propagated test exception. The existing Id lookup passed and the new Interpretor lookup was absent. No production source had changed.
 
 - No.1 [DENIED] Select renderer-owned raw interpretors through the resource manager
-- No.2 Split portable Clock geometry from Windows painter plugins
+- No.2 [CONFIRMED] Split portable Clock geometry from Windows painter plugins
 
 ## No.1 [DENIED] Select renderer-owned raw interpretors through the resource manager
 
@@ -173,7 +173,7 @@ All requested Windows application checks completed: CppTest and CppTest_Metaonly
 
 Final review found no further source changes necessary. Manual implementation and generated assets were committed separately as 1b5ef89f6 and 354682bbe. The five canonical guidance files were committed in Tools as 9704e66, synchronized only into GacUI, and verified byte-identical. The snapshot changes are committed separately. No work was performed in wGac, iGac or GacJS.
 
-## No.2 Split portable Clock geometry from Windows painter plugins
+## No.2 [CONFIRMED] Split portable Clock geometry from Windows painter plugins
 
 Keep the raw-element/library feature from No.1. Extract a non-template RawClockInterpretorBase declaration to <GacUI repo>/Test/GacUISrc/Generated_FullControlTest/FullControlTestRawClockInterpretor.h; define its parsing and geometry methods in the matching .cpp. Virtual line/ellipse methods replace functor arguments. Separate Direct2D/GDI interpretors and factories own only their backend state, with all Windows includes, concrete classes and plugin registration guarded by VCZH_MSVC. An IGuiPlugin registers the active backend factory during controller-related loading, before GuiMain. Remove all explicit registration calls.
 
@@ -183,4 +183,16 @@ Reuse native lifetime/pixel coverage on both backends, asserting the factory is 
 
 ### CODE CHANGE
 
-Planned: extract the portable Clock base and Windows implementations, install the backend factory through GUI_REGISTER_PLUGIN, update source inventories/call sites, retain the existing drawing/lifetime assertions with automatic-registration checks, and clean canonical KB guidance.
+Extracted the portable Clock base declaration and out-of-line parsing/geometry definitions. Separate Windows D2D/GDI classes and factories now load through a controller-related GUI_REGISTER_PLUGIN. Removed explicit GuiMain/test registrations, added the new source/header to the shared showcase and direct Host/UnitTest inventories and filters, and left the renderer inventory without the Clock module. The existing native pixel/lifetime tests now require the factory to be present automatically at GuiMain entry. Removed named test-application examples and launch/verification details from 24 KB pages while retaining reusable library contracts. Updated canonical Tools pages, copied them into GacUI, and synchronized the new canonical instruction forbidding test-app material in KB pages.
+
+### CONFIRMED
+
+The Debug x64 solution build through the repository wrapper completed with 0 warnings and 0 errors. The full UnitTest run passed all 98 files and 2001 cases, including the automatic factory-presence assertions at GuiMain entry and both native painter pixel/lifetime cases. The final raw log has no appended Debug leak report. No implementation changes were needed after this verification.
+
+The existing RawClock automation and UIA scenario passed for CppTest, CppTest_Metaonly and GacUI_Host on both Direct2D and GDI. These six runs verified timer-driven data, useful bounds, palette refresh, page switching, resize, manual Touching payloads, normal Window.Close and endpoint release. CppTest_Reflection and the remaining shared-inventory consumers compiled in the solution build.
+
+Fresh Pipe Core/renderer pairs passed on both native backends. Core Controls and renderer Dom agreed on the Clock interpretor and time data; the time continued advancing. Native captures confirmed that the Clock surface stays blank because the renderer deliberately excludes the new module. Its independent manual Touching adapter still painted the rectangle and contact marker, translated by the injected movement, matched Core/renderer payloads and removed the contact on Up. Both Core and renderer returned exit code 0 in each run. Remote renderers do not expose a transported semantic UIA tree; the corresponding controls were verified through local UIA above.
+
+One unrelated file-dialog recording changed its scheduling frame numbers. Comparing the index and all affected frame JSON after removing frameId showed identical rendered trees and element descriptions. The seven scheduling-only snapshot artifacts were restored, leaving no snapshot changes in this refactor.
+
+The 24 cleaned KB pages match their canonical Tools copies byte for byte, and a case-insensitive audit found no remaining named test-application references. Tools commits d6e1e15 and 767350a contain the cleanup and are pushed. The GacUI copy also includes the new canonical KB instruction from Tools commit b45bda4. Final review and git diff --check passed. All owned application processes exited and temporary debugger arguments were restored. No work was performed in wGac, iGac or GacJS; non-Windows portability was reviewed through the declaration-only header, out-of-line portable definitions and VCZH_MSVC guards, without claiming a platform build.

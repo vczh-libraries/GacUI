@@ -21,7 +21,6 @@ using namespace demo;
 
 void GuiMain()
 {
-	demo::RegisterFullControlTestClockInterpretor();
 	LoadFullControlTestTypes();
 	windows::SetWindowDefaultIcon(MAINICON);
 	theme::RegisterTheme(Ptr(new darkskin::Theme));
