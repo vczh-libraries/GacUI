@@ -244,21 +244,17 @@ Renderers
 				void							OnElementStateChanged()override;
 			};
 
-			class GuiDirect2DElementRenderer : public GuiElementRendererBase<GuiDirect2DElement, GuiDirect2DElementRenderer, IWindowsDirect2DRenderTarget>
+			class GuiDirect2DElementRenderer : public GuiRawElementRendererBase<GuiDirect2DElement, GuiDirect2DElementRenderer, IWindowsDirect2DRenderTarget>
 			{
 				friend class GuiElementRendererBase<GuiDirect2DElement, GuiDirect2DElementRenderer, IWindowsDirect2DRenderTarget>;
 
 			protected:
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
 				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
 			public:
 				GuiDirect2DElementRenderer();
 				~GuiDirect2DElementRenderer();
 
 				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
 			};
 		}
 	}

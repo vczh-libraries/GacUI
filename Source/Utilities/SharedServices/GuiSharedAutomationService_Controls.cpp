@@ -361,6 +361,7 @@ DumpWindowClientArea
 			{
 				elementDescription = WString::Unmanaged(L"Raw");
 				ConvertCustomTypeToJsonField(compositionDump, L"elementId", raw->GetId());
+				ConvertCustomTypeToJsonField(compositionDump, L"elementInterpretor", raw->GetInterpretor());
 				ConvertCustomTypeToJsonField(compositionDump, L"elementData", raw->GetData());
 			}
 			else if (dynamic_cast<GuiFocusRectangleElement*>(rawElement))

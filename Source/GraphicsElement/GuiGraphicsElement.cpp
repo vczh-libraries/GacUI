@@ -33,6 +33,30 @@ GuiRawElementBase
 				}
 			}
 
+			WString GuiRawElementBase::GetInterpretor()
+			{
+				return interpretor;
+			}
+
+			void GuiRawElementBase::SetInterpretor(const WString& value)
+			{
+				if (interpretor != value)
+				{
+					interpretor = value;
+					InvokeOnElementStateChanged();
+				}
+			}
+
+			void GuiRawElementBase::SetInterpretorAndData(const WString& _interpretor, const WString& _data)
+			{
+				if (interpretor != _interpretor || data != _data)
+				{
+					interpretor = _interpretor;
+					data = _data;
+					InvokeOnElementStateChanged();
+				}
+			}
+
 			WString GuiRawElementBase::GetData()
 			{
 				return data;

@@ -1234,14 +1234,6 @@ GuiPolygonElementRenderer
 GuiDirect2DElementRenderer
 ***********************************************************************/
 
-			void GuiDirect2DElementRenderer::InitializeInternal()
-			{
-			}
-
-			void GuiDirect2DElementRenderer::FinalizeInternal()
-			{
-			}
-
 			void GuiDirect2DElementRenderer::RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget)
 			{
 				IDWriteFactory* fdw=GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory();
@@ -1283,9 +1275,6 @@ GuiDirect2DElementRenderer
 				}
 			}
 
-			void GuiDirect2DElementRenderer::OnElementStateChanged()
-			{
-			}
 		}
 	}
 }

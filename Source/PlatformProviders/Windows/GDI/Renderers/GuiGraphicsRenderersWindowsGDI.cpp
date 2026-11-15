@@ -844,14 +844,6 @@ GuiPolygonElementRenderer
 GuiGDIElementRenderer
 ***********************************************************************/
 
-			void GuiGDIElementRenderer::InitializeInternal()
-			{
-			}
-
-			void GuiGDIElementRenderer::FinalizeInternal()
-			{
-			}
-
 			void GuiGDIElementRenderer::RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget)
 			{
 			}
@@ -879,9 +871,6 @@ GuiGDIElementRenderer
 				}
 			}
 
-			void GuiGDIElementRenderer::OnElementStateChanged()
-			{
-			}
 		}
 	}
 }

@@ -48,6 +48,20 @@ GuiGraphicsResourceManager
 				return rendererFactories.Count() > elementType ? rendererFactories[elementType].Obj() : nullptr;
 			}
 
+			void GuiGraphicsResourceManager::RegisterRawInterpretorFactory(const WString& name, Ptr<IGuiGraphicsRawInterpretorFactory> factory)
+			{
+#define ERROR_MESSAGE_PREFIX L"GuiGraphicsResourceManager::RegisterRawInterpretorFactory(const WString&, Ptr<IGuiGraphicsRawInterpretorFactory>)#"
+				CHECK_ERROR(!rawInterpretorFactories.Keys().Contains(name), ERROR_MESSAGE_PREFIX L"This interpretor name has already been registered.");
+				rawInterpretorFactories.Add(name, factory);
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			IGuiGraphicsRawInterpretorFactory* GuiGraphicsResourceManager::GetRawInterpretorFactory(const WString& name)
+			{
+				auto index = rawInterpretorFactories.Keys().IndexOf(name);
+				return index == -1 ? nullptr : rawInterpretorFactories.Values()[index].Obj();
+			}
+
 			IGuiGraphicsResourceManager* guiGraphicsResourceManager = nullptr;
 
 			IGuiGraphicsResourceManager* GetGuiGraphicsResourceManager()

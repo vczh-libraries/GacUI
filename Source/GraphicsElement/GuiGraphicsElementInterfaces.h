@@ -111,6 +111,26 @@ Basic Construction
 				virtual IGuiGraphicsRenderer*			Create()=0;
 			};
 
+			/// <summary>Renderer-owned drawing behavior for one borrowed raw element.</summary>
+			class IGuiGraphicsRawInterpretor : public Interface
+			{
+			public:
+				/// <summary>Attach drawing handlers on the UI thread. Do not retain ownership of the element.</summary>
+				/// <param name="element">The raw element borrowed until Finalize.</param>
+				virtual void						Initialize(IGuiGraphicsElement* element) = 0;
+				/// <summary>Detach handlers and release drawing resources while the concrete element is still alive.</summary>
+				virtual void						Finalize() = 0;
+			};
+
+			/// <summary>Creates independent raw interpretors for a registered application name.</summary>
+			class IGuiGraphicsRawInterpretorFactory : public Interface
+			{
+			public:
+				/// <summary>Create a fresh interpretor owned by the requesting renderer.</summary>
+				/// <returns>The new interpretor.</returns>
+				virtual IGuiGraphicsRawInterpretor*	Create() = 0;
+			};
+
 			enum RenderTargetFailure
 			{
 				None,

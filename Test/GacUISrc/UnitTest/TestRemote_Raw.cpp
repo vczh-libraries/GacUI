@@ -36,7 +36,12 @@ public:
 		{
 			for (auto& update : *arguments.updatedElements.Obj())
 			{
-				if (auto raw = update.TryGet<ElementDesc_Raw>()) updates.Add(*raw);
+				if (auto raw = update.TryGet<ElementDesc_Raw>())
+				{
+					ElementDesc_Raw decoded;
+					ConvertJsonToCustomType(ConvertCustomTypeToJson(*raw), decoded);
+					updates.Add(decoded);
+				}
 			}
 		}
 		GraphicsHostRenderingProtocol::RequestRendererBeginRendering(arguments);
@@ -53,12 +58,13 @@ TEST_FILE
 		Ptr<GuiRawElementBase> raw;
 		vint settledFrames = 0;
 		vint settledUpdates = 0;
-		auto expect = [&](const WString& id, const WString& data)
+		auto expect = [&](const WString& id, const WString& data, const WString& interpretor = L"")
 		{
 			TEST_ASSERT(protocol.updates.Count() > 0);
 			auto& desc = protocol.updates[protocol.updates.Count() - 1];
 			TEST_ASSERT(desc.rawId == id);
 			TEST_ASSERT(desc.data == data);
+			TEST_ASSERT(desc.interpretor == interpretor);
 		};
 		protocol.OnNextFrame([&]()
 		{
@@ -92,14 +98,16 @@ TEST_FILE
 		{
 			expect(L"identifier only", L"Unicode: 时钟 \"quoted\"\nline");
 			raw->SetId(L"both");
-			raw->SetData(L"12:34:56");
+			raw->SetInterpretorAndData(L"first painter", L"12:34:56");
 		});
 		protocol.OnNextFrame([&]()
 		{
-			expect(L"both", L"12:34:56");
+			expect(L"both", L"12:34:56", L"first painter");
 			settledFrames = protocol.frames;
 			raw->SetId(L"both");
 			raw->SetData(L"12:34:56");
+			raw->SetInterpretor(L"first painter");
+			raw->SetInterpretorAndData(L"first painter", L"12:34:56");
 		});
 		protocol.OnNextFrame([&]()
 		{
@@ -109,12 +117,22 @@ TEST_FILE
 		});
 		protocol.OnNextFrame([&]()
 		{
-			expect(L"", L"12:34:56");
-			raw->SetData(L"");
+			expect(L"", L"12:34:56", L"first painter");
+			raw->SetInterpretor(L"unknown painter");
 		});
 		protocol.OnNextFrame([&]()
 		{
-			expect(L"", L"");
+			expect(L"", L"12:34:56", L"unknown painter");
+			raw->SetInterpretor(L"");
+		});
+		protocol.OnNextFrame([&]()
+		{
+			expect(L"", L"12:34:56");
+			raw->SetInterpretorAndData(L"replay painter", L"");
+		});
+		protocol.OnNextFrame([&]()
+		{
+			expect(L"", L"", L"replay painter");
 			auto duplicate = GetGuiGraphicsResourceManager()->CreateRawElement().Cast<GuiRawElementBase>();
 			TEST_ASSERT(duplicate && duplicate.Obj() != raw.Obj());
 			TEST_ASSERT(duplicate->GetId() == raw->GetId());
@@ -129,13 +147,14 @@ TEST_FILE
 			TEST_ASSERT(full.Count() == 1);
 			TEST_ASSERT(full[0].Get<ElementDesc_Raw>().rawId == L"same");
 			TEST_ASSERT(full[0].Get<ElementDesc_Raw>().data == L"");
+			TEST_ASSERT(full[0].Get<ElementDesc_Raw>().interpretor == L"replay painter");
 			protocol.GetEvents()->OnControllerDisconnect();
 			protocol.updates.Clear();
 			protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
 		});
 		protocol.OnNextFrame([&]()
 		{
-			expect(L"same", L"");
+			expect(L"same", L"", L"replay painter");
 			window->Hide();
 		});
 		SetGuiMainProxy([&]()
@@ -180,11 +199,11 @@ TEST_FILE
             <Button ref.Name="changeId" Text="Change Id" ev.Clicked-eval='raw.Id = "changed identifier";'/>
           </ez:Top>
           <ez:Top>
-            <Button ref.Name="changeData" Text="Change Data" ev.Clicked-eval='raw.Data = "A long Unicode value: 时钟 — this text should be ellipsized on one line in the snapshot viewer.";'/>
+            <Button ref.Name="changeData" Text="Change Data" ev.Clicked-eval='raw.SetInterpretorAndData("changed painter", "A long Unicode value: 时钟 — this text should be ellipsized on one line in the snapshot viewer.");'/>
           </ez:Top>
           <ez:Fill>
             <Bounds PreferredMinSize="x:200 y:50">
-              <Raw ref.Name="raw" Id="initial identifier" Data="initial data"/>
+              <Raw ref.Name="raw" Id="initial identifier" Interpretor="initial painter" Data="initial data"/>
             </Bounds>
           </ez:Fill>
         </ez:Layout>
@@ -195,7 +214,7 @@ TEST_FILE
 )GacUISrc";
 		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 		{
-			auto assertState = [=](const WString& id, const WString& data)
+			auto assertState = [=](const WString& id, const WString& interpretor, const WString& data)
 			{
 				auto& frames = *protocol->GetLoggedTrace().frames.Obj();
 				auto& frame = frames[frames.Count() - 1];
@@ -205,6 +224,7 @@ TEST_FILE
 					if (auto raw = desc.TryGet<ElementDesc_Raw>())
 					{
 						TEST_ASSERT(raw->rawId == id);
+						TEST_ASSERT(raw->interpretor == interpretor);
 						TEST_ASSERT(raw->data == data);
 						count++;
 					}
@@ -213,17 +233,17 @@ TEST_FILE
 			};
 			protocol->OnNextIdleFrame(L"Ready", [=]()
 			{
-				assertState(L"initial identifier", L"initial data");
+				assertState(L"initial identifier", L"initial painter", L"initial data");
 				protocol->LClick(protocol->LocationOf(FindObjectByName<GuiButton>(GetApplication()->GetMainWindow(), L"changeId")));
 			});
 			protocol->OnNextIdleFrame(L"Id changed independently", [=]()
 			{
-				assertState(L"changed identifier", L"initial data");
+				assertState(L"changed identifier", L"initial painter", L"initial data");
 				protocol->LClick(protocol->LocationOf(FindObjectByName<GuiButton>(GetApplication()->GetMainWindow(), L"changeData")));
 			});
 			protocol->OnNextIdleFrame(L"Data changed to long Unicode text", [=]()
 			{
-				assertState(L"changed identifier", L"A long Unicode value: 时钟 — this text should be ellipsized on one line in the snapshot viewer.");
+				assertState(L"changed identifier", L"changed painter", L"A long Unicode value: 时钟 — this text should be ellipsized on one line in the snapshot viewer.");
 				GetApplication()->GetMainWindow()->Close();
 			});
 		});

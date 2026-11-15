@@ -68,6 +68,8 @@ Raw API Rendering Element
 			protected:
 				GuiDirect2DElement();
 			public:
+				~GuiDirect2DElement();
+
 				static vint					GetElementType();
 				static GuiDirect2DElement*	Create();
 

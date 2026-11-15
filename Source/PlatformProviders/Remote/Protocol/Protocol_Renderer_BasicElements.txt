@@ -50,6 +50,7 @@ struct ElementDesc_Raw
 {
     var id : int;
     var rawId : string;
+    var interpretor : string;
     var data : string;
 }
 

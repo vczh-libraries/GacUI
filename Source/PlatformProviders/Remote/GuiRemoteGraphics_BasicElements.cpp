@@ -195,6 +195,7 @@ GuiRawElementRenderer
 		ElementDesc_Raw arguments;
 		arguments.id = id;
 		arguments.rawId = element->GetId();
+		arguments.interpretor = element->GetInterpretor();
 		arguments.data = element->GetData();
 		updatedElements.Add(remoteprotocol::OrdinaryElementDescVariant(arguments));
 	}

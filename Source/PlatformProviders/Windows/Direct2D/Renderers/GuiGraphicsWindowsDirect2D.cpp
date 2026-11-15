@@ -22,6 +22,12 @@ GuiDirect2DElement
 			{
 			}
 
+			GuiDirect2DElement::~GuiDirect2DElement()
+			{
+				// Detach interpretor handlers before the concrete event members are destroyed.
+				if (renderer) renderer->Finalize();
+			}
+
 			vint GuiDirect2DElement::GetElementType()
 			{
 				return GetElementTypeInternal<GuiDirect2DElement>();

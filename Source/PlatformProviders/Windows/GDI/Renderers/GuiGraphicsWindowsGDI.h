@@ -61,6 +61,8 @@ Raw API Rendering Element
 			protected:
 				GuiGDIElement();
 			public:
+				~GuiGDIElement();
+
 				static vint					GetElementType();
 				static GuiGDIElement*		Create();
 

@@ -20,6 +20,12 @@ GuiGDIElement
 			{
 			}
 
+			GuiGDIElement::~GuiGDIElement()
+			{
+				// Detach interpretor handlers before the concrete event members are destroyed.
+				if (renderer) renderer->Finalize();
+			}
+
 			vint GuiGDIElement::GetElementType()
 			{
 				return GetElementTypeInternal<GuiGDIElement>();

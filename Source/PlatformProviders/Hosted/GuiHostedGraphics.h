@@ -40,6 +40,8 @@ GuiHostedGraphicsResourceManager
 				vint								RegisterElementType(const WString& elementTypeName) override;
 				void								RegisterRendererFactory(vint elementType, Ptr<IGuiGraphicsRendererFactory> factory) override;
 				IGuiGraphicsRendererFactory*		GetRendererFactory(vint elementType) override;
+				void								RegisterRawInterpretorFactory(const WString& name, Ptr<IGuiGraphicsRawInterpretorFactory> factory) override;
+				IGuiGraphicsRawInterpretorFactory*	GetRawInterpretorFactory(const WString& name) override;
 				IGuiGraphicsRenderTarget*			GetRenderTarget(INativeWindow* window) override;
 				void								RecreateRenderTarget(INativeWindow* window) override;
 				void								ResizeRenderTarget(INativeWindow* window) override;

@@ -190,21 +190,17 @@ Renderers
 				void							OnElementStateChanged()override;
 			};
 
-			class GuiGDIElementRenderer : public GuiElementRendererBase<GuiGDIElement, GuiGDIElementRenderer, IWindowsGDIRenderTarget>
+			class GuiGDIElementRenderer : public GuiRawElementRendererBase<GuiGDIElement, GuiGDIElementRenderer, IWindowsGDIRenderTarget>
 			{
 				friend class GuiElementRendererBase<GuiGDIElement, GuiGDIElementRenderer, IWindowsGDIRenderTarget>;
 
 			protected:
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
 				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
 			public:
 				GuiGDIElementRenderer();
 				~GuiGDIElementRenderer();
 
 				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
 			};
 		}
 	}

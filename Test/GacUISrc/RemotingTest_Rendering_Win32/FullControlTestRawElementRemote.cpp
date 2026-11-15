@@ -24,9 +24,9 @@ namespace demo
 				if (attachments[element.Obj()].key == id) return;
 				attachments.Remove(element.Obj());
 			}
-			if (id == L"FullControlTest.Clock" || id == L"FullControlTest.Touching")
+			if (id == L"FullControlTest.Touching")
 			{
-				attachments.Add(element.Obj(), { id, id == L"FullControlTest.Clock" ? AttachFullControlTestRawElement(element) : AttachFullControlTestTouchingElement(element) });
+				attachments.Add(element.Obj(), { id, AttachFullControlTestTouchingElement(element) });
 			}
 		}
 	public:

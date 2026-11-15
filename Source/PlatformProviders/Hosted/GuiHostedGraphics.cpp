@@ -42,6 +42,16 @@ GuiHostedGraphicsResourceManager
 				return nativeManager->GetRendererFactory(elementType);
 			}
 
+			void GuiHostedGraphicsResourceManager::RegisterRawInterpretorFactory(const WString& name, Ptr<IGuiGraphicsRawInterpretorFactory> factory)
+			{
+				nativeManager->RegisterRawInterpretorFactory(name, factory);
+			}
+
+			IGuiGraphicsRawInterpretorFactory* GuiHostedGraphicsResourceManager::GetRawInterpretorFactory(const WString& name)
+			{
+				return nativeManager->GetRawInterpretorFactory(name);
+			}
+
 			IGuiGraphicsRenderTarget* GuiHostedGraphicsResourceManager::GetRenderTarget(INativeWindow* window)
 			{
 				return nativeManager->GetRenderTarget(hostedController->nativeWindow);

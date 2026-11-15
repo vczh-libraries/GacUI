@@ -301,7 +301,7 @@ See `<GacUI repo>/.github/Guidelines/Running-GacUI.md` for the automation contra
 
 ### /Gdi
 
-Use the exact `/Gdi` switch once to select GDI instead of the default Direct2D renderer on Windows. It can be combined with `/AsPort`. For remote FullControlTest, run Core with `/FCT /Pipe /AsPort:8888` and the renderer with `/Pipe /Gdi /AsPort:8889`. The renderer attaches the clock painter when it receives an element whose ID is `FullControlTest.Clock`. Core has no native drawing backend, and `CppTest_Rvm` always uses hosted Direct2D, so `/Gdi` has no effect in either application.
+Use the exact `/Gdi` switch once to select GDI instead of the default Direct2D renderer on Windows. It can be combined with `/AsPort`. For remote FullControlTest, run Core with `/FCT /Pipe /AsPort:8888` and the renderer with `/Pipe /Gdi /AsPort:8889`. The Windows renderer registers the `FullControlTest::Clock` factory in `GuiMain` before processing messages. The clock retains ID `FullControlTest.Clock` and selects that factory through `Interpretor`; Touching retains an empty interpretor and its manual ID-based attachment. Core has no native drawing backend, and `CppTest_Rvm` always uses hosted Direct2D, so `/Gdi` has no effect in either application.
 
 ### /FCT
 

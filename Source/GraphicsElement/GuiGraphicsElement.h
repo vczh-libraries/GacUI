@@ -54,6 +54,7 @@ Elements
 				static constexpr const wchar_t* ElementTypeName = L"Raw";
 			protected:
 				WString					id;
+				WString					interpretor;
 				WString					data;
 
 				GuiRawElementBase();
@@ -64,12 +65,62 @@ Elements
 				/// <summary>Set the identifier without requesting a repaint. Remote state is synchronized on the next frame.</summary>
 				/// <param name="value">The application identifier.</param>
 				void					SetId(const WString& value);
+				/// <summary>Get the optional registered interpretor name.</summary>
+				/// <returns>The stored name, including unregistered names.</returns>
+				WString					GetInterpretor();
+				/// <summary>Select renderer-owned drawing behavior and request a repaint. Empty or unregistered names install no interpretor.</summary>
+				/// <param name="value">The interpretor name.</param>
+				void					SetInterpretor(const WString& value);
+				/// <summary>Assign the interpretor and data before one state notification and repaint request.</summary>
+				/// <param name="interpretor">The interpretor name.</param>
+				/// <param name="data">The drawing data available during interpretor initialization.</param>
+				void					SetInterpretorAndData(const WString& interpretor, const WString& data);
 				/// <summary>Get the application-defined drawing data.</summary>
 				/// <returns>The drawing data.</returns>
 				WString					GetData();
 				/// <summary>Set the drawing data and request a repaint when it changes.</summary>
 				/// <param name="value">The drawing data.</param>
 				void					SetData(const WString& value);
+			};
+
+			/// <summary>Shares interpretor selection and lifetime between native raw renderers.</summary>
+			template<typename TElement, typename TRenderer, typename TRenderTarget>
+			class GuiRawElementRendererBase : public GuiElementRendererBase<TElement, TRenderer, TRenderTarget>
+			{
+				friend class GuiElementRendererBase<TElement, TRenderer, TRenderTarget>;
+			protected:
+				WString							interpretorName;
+				Ptr<IGuiGraphicsRawInterpretor>	interpretor;
+
+				void InitializeInternal()
+				{
+					OnElementStateChanged();
+				}
+
+				void FinalizeInternal()
+				{
+					if (interpretor)
+					{
+						interpretor->Finalize();
+						interpretor = nullptr;
+					}
+				}
+			public:
+				void OnElementStateChanged() override
+				{
+					auto name = this->element->GetInterpretor();
+					if (name == interpretorName) return;
+					FinalizeInternal();
+					interpretorName = name;
+					if (name.Length() > 0)
+					{
+						if (auto factory = GetGuiGraphicsResourceManager()->GetRawInterpretorFactory(name))
+						{
+							interpretor = Ptr(factory->Create());
+							interpretor->Initialize(this->element);
+						}
+					}
+				}
 			};
 
 			/// <summary>

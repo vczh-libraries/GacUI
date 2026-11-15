@@ -554,6 +554,7 @@ public static class GacUIShowcaseTests
         Test("Raw Clock / automation navigation, data timer and useful bounds");
         OpenRawClock();
         var clock = RawClockSnapshot();
+        Check((string)clock["elementInterpretor"] == "FullControlTest::Clock", "clock selects its registered interpretor independently of Id");
         string initial = (string)clock["elementData"];
         Check(System.Text.RegularExpressions.Regex.IsMatch(initial, "^[0-2][0-9]:[0-5][0-9]:[0-5][0-9]$"), "clock has HH:mm:ss data");
         var bounds = SnapshotBounds(clock);
@@ -567,6 +568,21 @@ public static class GacUIShowcaseTests
         OpenRawClock();
         initial = (string)RawClockSnapshot()["elementData"];
         Wait(() => (string)RawClockSnapshot()["elementData"] != initial, "clock continues after palette refresh");
+
+        Test("Raw Clock / manual Touching painter remains optional");
+        OpenTouching();
+        Check((string)TouchingSnapshot()["elementInterpretor"] == "", "Touching keeps an empty interpretor");
+        Check(TouchingData().Length == 5, "Touching exposes its rectangle payload");
+        var touchingBounds = SnapshotBounds(TouchingSnapshot());
+        PointInput("Down", 7, touchingBounds, 20, 20);
+        Wait(() => TouchingData().Length == 8 && TouchingData()[4] == 1, "manual Touching adds a contact marker");
+        string beforeMove = (string)TouchingSnapshot()["elementData"];
+        PointInput("Update", 7, touchingBounds, 50, 40);
+        Wait(() => (string)TouchingSnapshot()["elementData"] != beforeMove, "manual Touching updates its drawing payload");
+        PointInput("Up", 7, touchingBounds, 50, 40);
+        Wait(() => TouchingData().Length == 5, "manual Touching clears the contact marker");
+        Check((string)TouchingSnapshot()["elementInterpretor"] == "", "Touching payload changes preserve manual rendering");
+        OpenRawClock();
     }
 
     static void RawClock(bool runAutomation)
@@ -590,6 +606,13 @@ public static class GacUIShowcaseTests
         Page(Page(root, "Misc"), "Raw Clock");
         string initial = (string)RawClockSnapshot()["elementData"];
         Wait(() => (string)RawClockSnapshot()["elementData"] != initial, "clock continues after switching away and back");
+        OpenTouching();
+        var touchingBounds = SnapshotBounds(TouchingSnapshot());
+        transform.Resize(original.Width + 100, original.Height + 80);
+        Wait(() => SnapshotBounds(TouchingSnapshot()).Width > touchingBounds.Width, "manual Touching follows resized bounds");
+        Check((string)TouchingSnapshot()["elementInterpretor"] == "", "resized Touching still uses manual drawing");
+        transform.Resize(original.Width, original.Height);
+        OpenRawClock();
 
     }
     static Dictionary<string, object> TouchingSnapshot()

@@ -13,12 +13,12 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::RequestRendererUpdateElement_Raw(const remoteprotocol::ElementDesc_Raw& arguments)
 	{
 		auto element = availableElements[arguments.id].Cast<GuiRawElementBase>();
-		auto dataChanged = element->GetData() != arguments.data;
-		if (element->GetId() == arguments.rawId && !dataChanged) return;
+		auto drawingChanged = element->GetInterpretor() != arguments.interpretor || element->GetData() != arguments.data;
+		if (element->GetId() == arguments.rawId && !drawingChanged) return;
 
 		element->SetId(arguments.rawId);
-		element->SetData(arguments.data);
-		if (dataChanged)
+		element->SetInterpretorAndData(arguments.interpretor, arguments.data);
+		if (drawingChanged)
 		{
 			needRefresh = true;
 		}

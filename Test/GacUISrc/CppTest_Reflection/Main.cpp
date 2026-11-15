@@ -21,13 +21,13 @@ using namespace demo;
 
 void GuiMain()
 {
+	demo::RegisterFullControlTestClockInterpretor();
 	LoadFullControlTestTypes();
 	windows::SetWindowDefaultIcon(MAINICON);
 	theme::RegisterTheme(Ptr(new darkskin::Theme));
 	{
 		demo::MainWindow window;
 		demo::AttachFctEvents<demo::DocumentEditorBase, demo::FctSkinItem>(&window);
-		auto rawClockAttachment = demo::AttachFullControlTestRawElement(window.GetClockElement());
 		auto touchingAttachment = demo::AttachFullControlTestTouchingElement(window.GetTouchingElement());
 		window.ForceCalculateSizeImmediately();
 		window.MoveToScreenCenter();

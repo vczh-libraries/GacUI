@@ -8,9 +8,9 @@ Project introduction remains in [Index.md](./Index.md#gacui).
 
 Use `<Raw/>` for application-defined drawing in native, hosted and remote-protocol GUI applications. TUI does not support raw drawing.
 
-- Use `GuiRawElementBase::Id` and `Data` for a portable drawing convention and its string state; the active resource manager selects the concrete element.
+- Use `GuiRawElementBase::Id` as independent metadata, `Interpretor` for optional named Windows painter selection, and `Data` for string state. `SetInterpretorAndData` updates name/payload atomically; the active resource manager selects the concrete element and hosted managers forward factory lookup.
 - Use `GuiDirect2DElement`, `GuiGDIElement`, `GuiWaylandElement` or `GuiCocoaElement` rendering events to draw with the platform's native API.
-- Use `GuiRemoteRendererSingle::GetRawElements()` and its installation/change/uninstallation events to attach native remote drawing. GacJS exposes corresponding browser hooks for application-owned DOM/canvas content.
+- Register Windows raw interpretor factories after backend setup and before consumers. Each renderer owns a fresh interpretor that borrows its element and finalizes before concrete events die. Use `GuiRemoteRendererSingle::GetRawElements()` and its installation/change/uninstallation events for independent manual attachments such as Touching. GacJS exposes corresponding browser hooks for application-owned DOM/canvas content.
 - Use `<Release repo>/Tutorial/GacUI_Windows/RawClock` for a standalone Direct2D/GDI example, and FullControlTest's `Misc / Raw Clock` for native and remote examples.
 
 [API Explanation](./KB_GacUI_Design_ImplementingIGuiGraphicsElement.md#ownerdraw-with-raw)

@@ -39,6 +39,7 @@ WString GetResourcePath()
 
 void GuiMain()
 {
+	demo::RegisterFullControlTestClockInterpretor();
 #ifdef VCZH_64
 #define FULLCONTROLTEST_BINARY	L"../GacUISrc/Generated_FullControlTest/Resource_x64/FullControlTest.UI.bin"
 #else
@@ -86,7 +87,6 @@ void GuiMain()
 				gacui_demo::ExportDocumentHtml(viewer->GetSelectionModel(), fileName);
 			})));
 		}
-		auto rawClockAttachment = demo::AttachFullControlTestRawElement(UnboxValue<Ptr<GuiRawElementBase>>(BoxValue(window).GetProperty(L"ClockElement")));
 		auto touchingAttachment = demo::AttachFullControlTestTouchingElement(UnboxValue<Ptr<GuiRawElementBase>>(BoxValue(window).GetProperty(L"TouchingElement")));
 		window->ForceCalculateSizeImmediately();
 		window->MoveToScreenCenter();
@@ -98,7 +98,6 @@ void GuiMain()
 		windows::StopWindowsHttpAutomationService();
 		automationService.Stop();
 		GetNativeServiceSubstitution()->Unsubstitute(&automationService);
-		rawClockAttachment = nullptr;
 		touchingAttachment = nullptr;
 		delete window;
 	}

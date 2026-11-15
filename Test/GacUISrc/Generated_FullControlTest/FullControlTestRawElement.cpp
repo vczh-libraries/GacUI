@@ -10,10 +10,10 @@ namespace demo
 	using namespace vl::presentation::elements;
 	using namespace vl::presentation::compositions;
 
-	class RawClockAttachment : public Object
+	class RawClockInterpretor : public Object, public IGuiGraphicsRawInterpretor
 	{
 	protected:
-		Ptr<GuiRawElementBase> element;
+		GuiRawElementBase* element = nullptr;
 		Ptr<IGuiGraphicsEventHandler> beforeHandler, afterHandler, renderingHandler;
 		ComPtr<ID2D1SolidColorBrush> brushes[4];
 
@@ -110,38 +110,52 @@ namespace demo
 			RestoreDC(dc, saved);
 		}
 	public:
-		RawClockAttachment(Ptr<GuiRawElementBase> _element) : element(_element)
+		void Initialize(IGuiGraphicsElement* _element) override
 		{
-			if (auto d2d = element.Cast<GuiDirect2DElement>())
+			element = dynamic_cast<GuiRawElementBase*>(_element);
+			if (auto d2d = dynamic_cast<GuiDirect2DElement*>(element))
 			{
-				beforeHandler = d2d->BeforeRenderTargetChanged.AttachMethod(this, &RawClockAttachment::BeforeTarget);
-				afterHandler = d2d->AfterRenderTargetChanged.AttachMethod(this, &RawClockAttachment::AfterTarget);
-				renderingHandler = d2d->Rendering.AttachMethod(this, &RawClockAttachment::RenderD2D);
+				beforeHandler = d2d->BeforeRenderTargetChanged.AttachMethod(this, &RawClockInterpretor::BeforeTarget);
+				afterHandler = d2d->AfterRenderTargetChanged.AttachMethod(this, &RawClockInterpretor::AfterTarget);
+				renderingHandler = d2d->Rendering.AttachMethod(this, &RawClockInterpretor::RenderD2D);
 			}
-			else if (auto gdi = element.Cast<GuiGDIElement>())
+			else if (auto gdi = dynamic_cast<GuiGDIElement*>(element))
 			{
-				renderingHandler = gdi->Rendering.AttachMethod(this, &RawClockAttachment::RenderGDI);
+				renderingHandler = gdi->Rendering.AttachMethod(this, &RawClockInterpretor::RenderGDI);
 			}
 		}
 
-		~RawClockAttachment()
+		void Finalize() override
 		{
-			if (auto d2d = element.Cast<GuiDirect2DElement>())
+			if (auto d2d = dynamic_cast<GuiDirect2DElement*>(element))
 			{
 				d2d->BeforeRenderTargetChanged.Detach(beforeHandler);
 				d2d->AfterRenderTargetChanged.Detach(afterHandler);
 				d2d->Rendering.Detach(renderingHandler);
 			}
-			else if (auto gdi = element.Cast<GuiGDIElement>())
+			else if (auto gdi = dynamic_cast<GuiGDIElement*>(element))
 			{
 				gdi->Rendering.Detach(renderingHandler);
 			}
+			for (auto& brush : brushes) brush = nullptr;
+			beforeHandler = nullptr;
+			afterHandler = nullptr;
+			renderingHandler = nullptr;
 		}
 	};
 
-	Ptr<Object> AttachFullControlTestRawElement(Ptr<GuiRawElementBase> element)
+	class RawClockInterpretorFactory : public Object, public IGuiGraphicsRawInterpretorFactory
 	{
-		return Ptr(new RawClockAttachment(element));
+	public:
+		IGuiGraphicsRawInterpretor* Create() override
+		{
+			return new RawClockInterpretor;
+		}
+	};
+
+	void RegisterFullControlTestClockInterpretor()
+	{
+		GetGuiGraphicsResourceManager()->RegisterRawInterpretorFactory(L"FullControlTest::Clock", Ptr(new RawClockInterpretorFactory));
 	}
 
 	class RawTouchingAttachment : public Object
