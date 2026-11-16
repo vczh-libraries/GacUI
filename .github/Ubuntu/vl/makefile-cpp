@@ -58,7 +58,11 @@ $(CPP_TARGET): $(VCPROOT)/vl/makefile-cpp
 ifeq ($(CPP_COMPILER),EMPP)
 CPP_REQUIRED_OUTPUTS=$(addprefix $(dir $(CPP_TARGET)),app.mjs app.wasm app.debug.wasm app.html app.sh app.js index.html)
 ifneq ($(CPP_WASM_PTHREAD_POOL_SIZE),)
+# Newer SDKs load pthreads from app.mjs itself. Require a separate worker only
+# when the generated module references it; otherwise every build would relink.
+ifneq ($(shell grep -Fq 'app.worker.js' "$(dir $(CPP_TARGET))app.mjs" 2>/dev/null && printf YES),)
 CPP_REQUIRED_OUTPUTS+=$(dir $(CPP_TARGET))app.worker.js
+endif
 endif
 $(CPP_TARGET): $(VCPROOT)/vl/wasm.sh $(wildcard $(VCPROOT)/vl/wasm-unittest/*) $(wildcard vbuild)
 CPP_LINK=mkdir -p "$(dir $(CPP_TARGET))" && rm -f "$@" && $(CPP_CXX) -o "$(dir $(CPP_TARGET))app.mjs" $(filter %.o,$^) $(CPP_LINK_FLAGS) -gseparate-dwarf="$(dir $(CPP_TARGET))app.debug.wasm" -sSEPARATE_DWARF_URL=app.debug.wasm && bash "$(VCPROOT)/vl/wasm.sh" "$(CPP_TARGET)"
