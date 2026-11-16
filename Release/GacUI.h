@@ -4703,6 +4703,33 @@ Basic Construction
 					LimitToElementAndChildren,
 				};
 
+				/// <summary>
+				/// Serving GuiGraphicsComposition::EditableAttributes property.
+				/// The value should only be controlled by an actual control.
+				/// </summary>
+				struct EditableAttributeValues
+				{
+					/// <summary>
+					/// True if the composition is featured by an editable control, no matter it is currently focused or editable.
+					/// </summary>
+					bool									featured = false;
+
+					/// <summary>
+					/// True if the composition is focused, this is different from <see cref="GuiGraphicsHost::GetFocusedComposition"/>
+					///   A focusable composition will not automatically update it to true.
+					///   A false value does not mean the composition is not focused.
+					/// This is for editing hint only, it only make sense when user can type, which is determined by its AssociatedControl or RelatedControl.
+					/// </summary>
+					bool									focused = false;
+
+					/// <summary>
+					/// True if user can type to this composition.
+					/// </summary>
+					bool									editable = false;
+
+					auto operator<=>(const EditableAttributeValues&) const = default;
+				};
+
 			protected:
 
 				struct GraphicsHostRecord
@@ -4720,6 +4747,7 @@ Basic Construction
 				Ptr<elements::IGuiGraphicsElement>			ownedElement;
 				bool										visible = true;
 				bool										transparentToMouse = false;
+				EditableAttributeValues						editableAttributes;
 				MinSizeLimitation							minSizeLimitation = MinSizeLimitation::NoLimit;
 				vint										remoteId = -1;
 
@@ -4753,6 +4781,17 @@ Basic Construction
 				~GuiGraphicsComposition();
 
 				bool										IsRendering();
+
+				/// <summary>
+				/// Get the editable attributes. EditableAttributes property is nothing but a simple hint for remote protocol.
+				/// </summary>
+				/// <returns>The editable attributes.</returns>
+				EditableAttributeValues						GetEditableAttributes();
+				/// <summary>
+				/// Set the editable attributes. It triggers nothing but storing the value.
+				/// </summary>
+				/// <param name="value">The editable attributes.</param>
+				void										SetEditableAttributes(const EditableAttributeValues& value);
 
 				/// <summary>Get the parent composition.</summary>
 				/// <returns>The parent composition.</returns>
@@ -5037,6 +5076,7 @@ Helper Functions
 }
 
 #endif
+
 
 /***********************************************************************
 .\APPLICATION\GRAPHICSCOMPOSITIONS\GUIGRAPHICSBOUNDSCOMPOSITION.H
@@ -19828,6 +19868,7 @@ GuiDocumentCommonInterface
 				void										InvokeUndoRedoChanged();
 				void										InvokeModifiedChanged();
 				void										UpdateCaretPoint();
+				void										UpdateEditableAttributes();
 				void										EnsureDocumentRectVisible(Rect bounds);
 				void										Move(TextPos caret, bool shift, bool frontSide);
 				bool										ProcessKey(VKEY code, bool shift, bool ctrl);
@@ -19836,8 +19877,7 @@ GuiDocumentCommonInterface
 																compositions::GuiGraphicsComposition* _mouseArea,
 																compositions::GuiGraphicsComposition* _container,
 																compositions::GuiGraphicsComposition* eventComposition,
-																compositions::GuiGraphicsComposition* pointEventComposition,
-																compositions::GuiGraphicsComposition* focusableComposition
+																compositions::GuiGraphicsComposition* pointEventComposition
 																);
 				void										ReplaceMouseArea(compositions::GuiGraphicsComposition* _mouseArea);
 
@@ -21059,6 +21099,7 @@ namespace vl::presentation::remoteprotocol
 	struct RendererCreation;
 	struct ElementBeginRendering;
 	struct ElementRendering;
+	struct ElementEditableAttribute;
 	struct ElementBoundary;
 	struct ElementMeasuring_FontHeight;
 	struct ElementMeasuring_ElementMinSize;
@@ -21133,6 +21174,7 @@ namespace vl::presentation::remoteprotocol
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RendererCreation> { static constexpr const wchar_t* Name = L"RendererCreation"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementBeginRendering> { static constexpr const wchar_t* Name = L"ElementBeginRendering"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementRendering> { static constexpr const wchar_t* Name = L"ElementRendering"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementEditableAttribute> { static constexpr const wchar_t* Name = L"ElementEditableAttribute"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementBoundary> { static constexpr const wchar_t* Name = L"ElementBoundary"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight> { static constexpr const wchar_t* Name = L"ElementMeasuring_FontHeight"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize> { static constexpr const wchar_t* Name = L"ElementMeasuring_ElementMinSize"; };
@@ -21657,11 +21699,18 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::Rect areaClippedByParent;
 	};
 
+	struct ElementEditableAttribute
+	{
+		bool focused;
+		bool editable;
+	};
+
 	struct ElementBoundary
 	{
 		::vl::vint id;
 		::vl::Nullable<::vl::presentation::INativeWindowListener::HitTestResult> hitTestResult;
 		::vl::Nullable<::vl::presentation::INativeCursor::SystemCursorType> cursor;
+		::vl::Nullable<::vl::presentation::remoteprotocol::ElementEditableAttribute> editableAttribute;
 		::vl::presentation::Rect bounds;
 		::vl::presentation::Rect areaClippedBySelf;
 	};
@@ -21701,6 +21750,7 @@ namespace vl::presentation::remoteprotocol
 		::vl::Nullable<::vl::vint> element;
 		::vl::presentation::Rect bounds;
 		::vl::presentation::Rect validArea;
+		::vl::Nullable<::vl::presentation::remoteprotocol::ElementEditableAttribute> editableAttribute;
 	};
 
 	struct RenderingDom
@@ -21824,6 +21874,7 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RendererCreation>(const ::vl::presentation::remoteprotocol::RendererCreation & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementBeginRendering>(const ::vl::presentation::remoteprotocol::ElementBeginRendering & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementRendering>(const ::vl::presentation::remoteprotocol::ElementRendering & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementEditableAttribute>(const ::vl::presentation::remoteprotocol::ElementEditableAttribute & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementBoundary>(const ::vl::presentation::remoteprotocol::ElementBoundary & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight>(const ::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize>(const ::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize & value);
@@ -21915,6 +21966,7 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RendererCreation>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RendererCreation& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementBeginRendering>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementBeginRendering& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementRendering>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementRendering& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementEditableAttribute>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementEditableAttribute& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementBoundary>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementBoundary& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize& value);
@@ -22474,6 +22526,7 @@ GuiRemoteGraphicsRenderTarget
 
 			HitTestResult						GetHitTestResultFromGenerator(reflection::DescriptableObject* generator);
 			Nullable<SystemCursorType>			GetCursorFromGenerator(reflection::DescriptableObject* generator);
+			Nullable<remoteprotocol::ElementEditableAttribute> GetEditableAttributeFromGenerator(reflection::DescriptableObject* generator);
 
 			void								StartRenderingOnNativeWindow() override;
 			RenderTargetFailure					StopRenderingOnNativeWindow() override;
@@ -23750,8 +23803,8 @@ namespace vl::presentation::remoteprotocol
 	* root:              -1
 	* element:           (elementId << 2) + 0
 	* parent of element: (elementId << 2) + 1
-	* hittest:           (compositionId << 2) + 2
-	* parent of hittest: (compositionId << 2) + 3
+	* boundary:          (compositionId << 2) + 2 (hit test, cursor or editing owner)
+	* parent of boundary:(compositionId << 2) + 3 (synthetic clipping, no editing tag)
 	*/
 
 	class RenderingDomBuilder
@@ -23801,6 +23854,7 @@ namespace vl::presentation::remoteprotocol
 }
 
 #endif
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\REMOTERENDERER\GUIREMOTERENDERERSINGLE.H

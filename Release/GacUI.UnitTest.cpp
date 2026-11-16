@@ -17,9 +17,17 @@ namespace vl::presentation::unittest
 IGuiRemoteProtocolMessages (Rendering)
 ***********************************************************************/
 
+	Ptr<UnitTestLoggedFrame> UnitTestRemoteProtocol_Rendering::GetCompletedRenderingFrame()
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::GetCompletedRenderingFrame()#"
+		CHECK_ERROR(!lastRenderingCommandsOpening, ERROR_MESSAGE_PREFIX L"The latest frame of commands is still accepting new commands.");
+		return loggedFrames[loggedFrames.Count() - 1];
+#undef ERROR_MESSAGE_PREFIX
+	}
+
 	Ptr<UnitTestLoggedFrame> UnitTestRemoteProtocol_Rendering::GetLastRenderingFrame()
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::GetLastRenderingCommands()#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::GetLastRenderingFrame()#"
 		CHECK_ERROR(lastRenderingCommandsOpening, ERROR_MESSAGE_PREFIX L"The latest frame of commands is not accepting new commands.");
 		return loggedFrames[loggedFrames.Count() - 1];
 #undef ERROR_MESSAGE_PREFIX

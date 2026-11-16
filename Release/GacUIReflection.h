@@ -261,6 +261,7 @@ Type List (Compositions)
 			F(presentation::compositions::GuiDefaultAxis)\
 			F(presentation::compositions::GuiAxis)\
 			F(presentation::compositions::GuiGraphicsComposition::MinSizeLimitation)\
+			F(presentation::compositions::GuiGraphicsComposition::EditableAttributeValues)\
 			F(presentation::compositions::GuiStackComposition::Direction)\
 			F(presentation::compositions::GuiCellOption::ComposeType)\
 			F(presentation::compositions::GuiCellOption)\
