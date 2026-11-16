@@ -108,6 +108,7 @@ TEST_FILE
 		LoadTuiFakeDialogServiceUITypes();
 		for (auto size : { Size(80, 25), Size(120, 40) })
 		{
+			bool hyperlinkModesCorrect = true;
 			tui_provider_tests::RunGuiTest([&]()
 			{
 #ifdef VCZH_64
@@ -145,6 +146,19 @@ TEST_FILE
 					TEST_ASSERT(stack->GetStackItems().Count() == 3 && stack->GetPadding() == 0);
 					TEST_ASSERT(button(0)->GetSelected() && !button(1)->GetSelected() && !button(2)->GetSelected());
 					showcase_tests::VerifyImages(window->GetNamedObject(L"editorToolstrip"));
+					auto editor = window->GetNamedObject(L"editorToolstrip").GetRawPtr()->SafeAggregationCast<GuiInstanceRootObject>();
+					auto document = FindObjectByName<GuiDocumentViewer>(editor, L"document");
+					document->LoadTextAndClearUndoRedo(L"Link");
+					document->SetCaret(TextPos(0, 0), TextPos(0, 4));
+					for (auto commandName : { L"commandViewOnly", L"commandSelectable", L"commandEditable" })
+					{
+						auto command = FindObjectByName<GuiToolstripCommand>(editor, commandName);
+						GuiEventArgs arguments;
+						command->Executed.Execute(arguments);
+						auto editable = document->GetEditMode() == GuiDocumentEditMode::Editable;
+						hyperlinkModesCorrect &= FindObjectByName<GuiToolstripCommand>(editor, L"commandEditHyperlink")->GetEnabled() == editable;
+						hyperlinkModesCorrect &= FindObjectByName<GuiToolstripCommand>(editor, L"commandRemoveHyperlink")->GetEnabled() == editable;
+					}
 					auto counter = new showcase_tests::RefreshCounter;
 					window->GetContainerComposition()->AddChild(counter->GetBoundsComposition());
 					counter->refreshes = 0;
@@ -177,6 +191,7 @@ TEST_FILE
 				}
 				theme::UnregisterTheme(skin->Name);
 			}, size);
+			TEST_ASSERT(hyperlinkModesCorrect);
 		}
 		for (vint i = manager->GetTypeDescriptorCount() - 1; i >= 0; i--)
 		{

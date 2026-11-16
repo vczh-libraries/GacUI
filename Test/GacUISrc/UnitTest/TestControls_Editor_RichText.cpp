@@ -1407,8 +1407,8 @@ TEST_FILE
 
 					protocol->MouseMove(outside);
 					TEST_ASSERT(textBox->GetActiveHyperlinkReference() == WString::Unmanaged(L""));
-					const wchar_t* expected[] = { L"Activated " };
-					AssertEventLogAndClear(events, expected);
+					// Removing B already cleared the active reference when its former range was hovered.
+					TEST_ASSERT(events.Count() == 0);
 
 					{
 						auto afterOutside = Summarize(textBox, 0, 0, 2);

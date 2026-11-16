@@ -528,7 +528,19 @@ DocumentModel::EditHyperlink
 
 			auto paragraph = paragraphs[paragraphIndex];
 			auto package = LocateHyperlink(paragraph.Obj(), runRanges, paragraphIndex, begin, end);
-			document_editor::RemoveHyperlink(paragraph.Obj(), runRanges, package->start, package->end);
+			if (package->hyperlinks.Count() > 0)
+			{
+				begin = package->start;
+				end = package->end;
+			}
+			else
+			{
+				// Split intersecting links so their unselected parts keep their references.
+				CutEditRange(TextPos(paragraphIndex, begin), TextPos(paragraphIndex, end));
+				runRanges.Clear();
+				GetRunRange(paragraph.Obj(), runRanges);
+			}
+			document_editor::RemoveHyperlink(paragraph.Obj(), runRanges, begin, end);
 			ClearUnnecessaryRun(paragraph.Obj(), this);
 			return true;
 		}

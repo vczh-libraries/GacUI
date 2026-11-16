@@ -114,6 +114,7 @@ ClearStyleVisitor		: Remove all styles that intersect with the specified range
 
 				void Visit(DocumentHyperlinkRun* run)override
 				{
+					VisitContainer(run);
 					RemoveContainer(run);
 				}
 			};

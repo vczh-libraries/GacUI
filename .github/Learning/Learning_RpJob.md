@@ -14,6 +14,10 @@
 
 - Undo can normalize equivalent document runs by omitting default font attributes or merging adjacent text runs. Compare text, images, ranges and effective formatting after editing. Exact XML comparison remains useful for a canceled dialog that should perform no edit.
 
+- Private-file saving assigns resource identifiers to embedded images again. Compare image data, dimensions, text and effective formatting after reload; an empty or changed `source` identifier alone is not lost image content.
+
+- When switching a browser probe from synthetic touch to mouse input, move the mouse to a different coordinate before clicking. WebKit can omit a pointer-move event at unchanged coordinates; without source capabilities, the renderer uses the last pointer type to reject compatibility mouse events. Require the popup to disappear and the hosted window stack to contain no unexpected modal before continuing. A retained selection behind a modal is not a successful caret check.
+
 - A file overwrite confirmation can have the same title as its underlying picker, and a message box can share the main-window title. Identify the innermost hosted window and observe its removal from the window stack; title uniqueness is not a reliable completion condition.
 
 - Wait for a palette's new accent color and settled renderer bounds before navigating through the rebuilt controls. Confirm the selected editor's actual menu or ribbon content after changing tabs. A retained tab label can still have its old location during template replacement.
@@ -58,6 +62,7 @@
 - After selecting a combo item, verify the selected label inside the combo itself. A matching label in its still-open popup does not establish that the selection committed. In terminal dialogs, match the action inside the innermost modal frame; an underlying launch button can contain the same word.
 - Confirm that a combo popup has disappeared before targeting controls underneath it. Do not assume Escape dismisses every popup; click outside when that popup does not handle Escape, then locate the next target again.
 - Refocus a document editor after a menu or dialog before sending selection, deletion or undo keys. A retained document and an available Edit command do not prove that keyboard focus has returned to the editor.
+- When the hosted font dialog requires an installed family, its family textbox is selectable but not editable. Choose the family from the list and edit the size separately. Serialized document styles can omit the renderer's default family; reopen the dialog or resolve that default before comparing effective fonts.
 - Group DataGrid cells by their vertical centers when checking rows. Different cell templates can give text in the same row different top and bottom bounds.
 - Dismiss a DataGrid editor by selecting another real cell; clicking blank space can leave the editor active. To check directory-only file validation, disable FileMustExist: missing-file validation takes precedence over missing-directory validation.
 - TextList's Radio view still exposes each item's independent Checked value; it does not create a mutex group. The showcase's two Dummy radio buttons do share a mutex group. Verify these behaviors separately.

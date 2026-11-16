@@ -117,7 +117,8 @@
                             <ResponsiveGroup ref.Name="movieGroup" Direction="Horizontal">
                               <att.ViewSizes><_>120</_><_>334</_></att.ViewSizes>
                               <ev.CurrentLevelChanged-eval><![CDATA[{
-                                movieList.Arranger.ReloadVisibleStyles();
+                                /* A different row height needs fresh measurements, including when shrinking. */
+                                movieList.Arranger = new FixedHeightItemArranger^();
                               }]]></ev.CurrentLevelChanged-eval>
                               <BindableTextList ref.Name="movieList" Text="Movies" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false" env.ItemType="demo::EasyResponsiveMovie^">
                                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>

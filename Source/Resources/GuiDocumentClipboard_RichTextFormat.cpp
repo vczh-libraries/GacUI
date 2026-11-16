@@ -70,7 +70,7 @@ namespace vl
 
 				void Visit(DocumentTextRun* run)override
 				{
-					WString text = run->GetRepresentationText();
+					auto text = wtou16(run->GetRepresentationText());
 					if (text.Length() > 0)
 					{
 						ResolvedStyle style = styles[styles.Count() - 1];
@@ -89,7 +89,10 @@ namespace vl
 
 						for (vint i = 0; i < text.Length(); i++)
 						{
-							writer.WriteString(L"\\u" + itow(text[i]));
+							// RTF Unicode escapes contain signed 16-bit UTF-16 code units.
+							vint value = text[i];
+							if (value >= 0x8000) value -= 0x10000;
+							writer.WriteString(L"\\u" + itow(value));
 						}
 
 						writer.WriteString(L"}");

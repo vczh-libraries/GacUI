@@ -46,6 +46,71 @@ TEST_FILE
 		});
 	};
 
+	TEST_CASE(L"RTF exports signed UTF-16 units on every wchar_t platform")
+	{
+		auto model = LoadDoc(L"<Doc><Content><p>A\u4e2d\u7fff\u8000\ufffd\U0001f600Z</p></Content></Doc>");
+		AString rtf;
+		SaveDocumentToRtf(model, rtf);
+		TEST_ASSERT(INVLOC.FindFirst(atow(rtf), L"\\u65\\u20013\\u32767\\u-32768\\u-3\\u-10179\\u-8704\\u90", Locale::None).key != -1);
+	});
+
+	TEST_CASE(L"Hyperlink edits and removal span independently formatted text runs")
+	{
+		auto model = LoadDoc(L"<Doc><Content><p><b><nop>A</nop><nop>B</nop></b><i><nop>C</nop><nop>D</nop></i></p></Content></Doc>");
+		for (auto reference : { L"first", L"second" })
+		{
+			TEST_ASSERT(model->EditHyperlink(0, 0, 4, reference, L"#NormalLink", L"#ActiveLink"));
+			for (vint i = 0; i < 4; i++)
+			{
+				auto package = model->GetHyperlink(0, i, i + 1);
+				TEST_ASSERT(package->hyperlinks.Count() > 0);
+				for (auto link : package->hyperlinks)
+				{
+					TEST_ASSERT(link->reference == reference);
+				}
+			}
+		}
+		TEST_ASSERT(model->RemoveHyperlink(0, 0, 4));
+		TEST_ASSERT(INVLOC.FindFirst(SaveDoc(model), L"<a ", Locale::None).key == -1);
+		TEST_ASSERT(model->GetTextForReading(L"|") == L"ABCD");
+		TEST_ASSERT(model->SummarizeStyle(TextPos(0, 0), TextPos(0, 2))->bold.Value());
+		TEST_ASSERT(model->SummarizeStyle(TextPos(0, 2), TextPos(0, 4))->italic.Value());
+	});
+
+	TEST_CASE(L"Overlapping hyperlink replacements preserve links outside the selection")
+	{
+		auto model = LoadDoc(L"<Doc><Content><p>0123456789</p></Content></Doc>");
+		TEST_ASSERT(model->EditHyperlink(0, 2, 7, L"first", L"#NormalLink", L"#ActiveLink"));
+		TEST_ASSERT(model->EditHyperlink(0, 5, 9, L"second", L"#NormalLink", L"#ActiveLink"));
+		for (vint i = 0; i < 10; i++)
+		{
+			auto package = model->GetHyperlink(0, i, i + 1);
+			if (i < 2 || i == 9)
+			{
+				TEST_ASSERT(package->hyperlinks.Count() == 0);
+			}
+			else
+			{
+				TEST_ASSERT(package->hyperlinks.Count() == 1);
+				TEST_ASSERT(package->hyperlinks[0]->reference == (i < 5 ? L"first" : L"second"));
+			}
+		}
+		TEST_ASSERT(model->RemoveHyperlink(0, 4, 6));
+		TEST_ASSERT(model->GetHyperlink(0, 3, 4)->hyperlinks[0]->reference == L"first");
+		TEST_ASSERT(model->GetHyperlink(0, 4, 6)->hyperlinks.Count() == 0);
+		TEST_ASSERT(model->GetHyperlink(0, 6, 7)->hyperlinks[0]->reference == L"second");
+		TEST_ASSERT(model->GetTextForReading(L"|") == L"0123456789");
+	});
+
+	TEST_CASE(L"Removing a hyperlink clears nested links in existing documents")
+	{
+		auto model = LoadDoc(L"<Doc><Content><p><b><a href=\"old\"><a href=\"new\"><nop>A</nop></a><a href=\"new\"><nop>B</nop></a></a></b></p></Content></Doc>");
+		TEST_ASSERT(model->RemoveHyperlink(0, 0, 2));
+		TEST_ASSERT(INVLOC.FindFirst(SaveDoc(model), L"<a ", Locale::None).key == -1);
+		TEST_ASSERT(model->GetTextForReading(L"|") == L"AB");
+		TEST_ASSERT(model->SummarizeStyle(TextPos(0, 0), TextPos(0, 2))->bold.Value());
+	});
+
 	TEST_CASE(L"Full document copies preserve unused style definitions independently")
 	{
 		for (bool empty : { false, true })
