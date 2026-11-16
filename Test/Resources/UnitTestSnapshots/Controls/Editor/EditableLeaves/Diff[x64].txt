@@ -43,19 +43,19 @@ namespace gacuisrc_unittest
         var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var a : ::presentation::controls::GuiSinglelineTextBox* = null of (::presentation::controls::GuiSinglelineTextBox*);
+        var button : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var parent : ::presentation::controls::GuiCustomControl* = null of (::presentation::controls::GuiCustomControl*);
+        var a : ::presentation::controls::GuiSinglelineTextBox* = null of (::presentation::controls::GuiSinglelineTextBox*);
 
         @cpp:Protected
         var b : ::presentation::controls::GuiMultilineTextBox* = null of (::presentation::controls::GuiMultilineTextBox*);
 
         @cpp:Protected
-        var readOnly : ::presentation::controls::GuiDocumentLabel* = null of (::presentation::controls::GuiDocumentLabel*);
+        var parent : ::presentation::controls::GuiCustomControl* = null of (::presentation::controls::GuiCustomControl*);
 
         @cpp:Protected
-        var button : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var readOnly : ::presentation::controls::GuiDocumentLabel* = null of (::presentation::controls::GuiDocumentLabel*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)

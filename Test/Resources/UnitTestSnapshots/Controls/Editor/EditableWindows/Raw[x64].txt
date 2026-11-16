@@ -145,10 +145,10 @@ namespace gacuisrc_unittest
         var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var readOnly : ::presentation::controls::GuiDocumentLabel* = null of (::presentation::controls::GuiDocumentLabel*);
+        var button : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var button : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var readOnly : ::presentation::controls::GuiDocumentLabel* = null of (::presentation::controls::GuiDocumentLabel*);
 
         @cpp:Protected
         func <gacuisrc_unittest-SubWindow>Initialize(<this> : ::gacuisrc_unittest::SubWindow*) : (::system::Void)
