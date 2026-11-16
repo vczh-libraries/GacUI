@@ -3650,7 +3650,7 @@ Closures
 
 	void __vwsnf275_FullControlTest_demo_EasyLayoutResponsiveWindowConstructor___vwsn_demo_EasyLayoutResponsiveWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->movieList)->GetArranger())->ReloadVisibleStyles();
+		::vl::__vwsn::This(__vwsnthis_0->movieList)->SetArranger(::vl::Ptr<::vl::presentation::controls::GuiListControl::IItemArranger>(::vl::Ptr<::vl::presentation::controls::list::FixedHeightItemArranger>(new ::vl::presentation::controls::list::FixedHeightItemArranger())));
 	}
 
 	//-------------------------------------------------------------------

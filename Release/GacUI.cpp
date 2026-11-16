@@ -49516,7 +49516,7 @@ namespace vl
 
 				void Visit(DocumentTextRun* run)override
 				{
-					WString text = run->GetRepresentationText();
+					auto text = wtou16(run->GetRepresentationText());
 					if (text.Length() > 0)
 					{
 						ResolvedStyle style = styles[styles.Count() - 1];
@@ -49535,7 +49535,10 @@ namespace vl
 
 						for (vint i = 0; i < text.Length(); i++)
 						{
-							writer.WriteString(L"\\u" + itow(text[i]));
+							// RTF Unicode escapes contain signed 16-bit UTF-16 code units.
+							vint value = text[i];
+							if (value >= 0x8000) value -= 0x10000;
+							writer.WriteString(L"\\u" + itow(value));
 						}
 
 						writer.WriteString(L"}");
@@ -49681,6 +49684,7 @@ namespace vl
 		}
 	}
 }
+
 
 /***********************************************************************
 .\RESOURCES\GUIDOCUMENTEDITOR_ADDCONTAINER.CPP
@@ -51307,6 +51311,7 @@ ClearStyleVisitor		: Remove all styles that intersect with the specified range
 
 				void Visit(DocumentHyperlinkRun* run)override
 				{
+					VisitContainer(run);
 					RemoveContainer(run);
 				}
 			};
@@ -51396,6 +51401,7 @@ ClearStyleVisitor		: Remove all styles that intersect with the specified range
 		}
 	}
 }
+
 
 /***********************************************************************
 .\RESOURCES\GUIDOCUMENTEDITOR_REMOVERUN.CPP
@@ -52477,7 +52483,19 @@ DocumentModel::EditHyperlink
 
 			auto paragraph = paragraphs[paragraphIndex];
 			auto package = LocateHyperlink(paragraph.Obj(), runRanges, paragraphIndex, begin, end);
-			document_editor::RemoveHyperlink(paragraph.Obj(), runRanges, package->start, package->end);
+			if (package->hyperlinks.Count() > 0)
+			{
+				begin = package->start;
+				end = package->end;
+			}
+			else
+			{
+				// Split intersecting links so their unselected parts keep their references.
+				CutEditRange(TextPos(paragraphIndex, begin), TextPos(paragraphIndex, end));
+				runRanges.Clear();
+				GetRunRange(paragraph.Obj(), runRanges);
+			}
+			document_editor::RemoveHyperlink(paragraph.Obj(), runRanges, begin, end);
 			ClearUnnecessaryRun(paragraph.Obj(), this);
 			return true;
 		}
