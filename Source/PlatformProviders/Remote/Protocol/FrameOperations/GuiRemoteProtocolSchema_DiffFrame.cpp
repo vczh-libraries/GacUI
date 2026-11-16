@@ -295,7 +295,17 @@ namespace vl::presentation::remoteprotocol
 			diff.id = domFrom->id;
 			diff.diffType = RenderingDom_DiffType::Modified;
 
+			auto&& fromEditable = domFrom->content.editableAttribute;
+			auto&& toEditable = domTo->content.editableAttribute;
+			bool editableDifferent = bool(fromEditable) != bool(toEditable);
+			if (fromEditable && toEditable)
+			{
+				editableDifferent = fromEditable.Value().focused != toEditable.Value().focused
+					|| fromEditable.Value().editable != toEditable.Value().editable;
+			}
+
 			if (
+				editableDifferent ||
 				domFrom->content.hitTestResult != domTo->content.hitTestResult ||
 				domFrom->content.cursor != domTo->content.cursor ||
 				domFrom->content.element != domTo->content.element ||

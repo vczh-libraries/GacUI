@@ -18,8 +18,8 @@ namespace vl::presentation::remoteprotocol
 	* root:              -1
 	* element:           (elementId << 2) + 0
 	* parent of element: (elementId << 2) + 1
-	* hittest:           (compositionId << 2) + 2
-	* parent of hittest: (compositionId << 2) + 3
+	* boundary:          (compositionId << 2) + 2 (hit test, cursor or editing owner)
+	* parent of boundary:(compositionId << 2) + 3 (synthetic clipping, no editing tag)
 	*/
 
 	class RenderingDomBuilder

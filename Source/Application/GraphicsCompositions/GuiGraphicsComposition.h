@@ -109,6 +109,8 @@ Basic Construction
 					/// True if user can type to this composition.
 					/// </summary>
 					bool									editable = false;
+
+					auto operator<=>(const EditableAttributeValues&) const = default;
 				};
 
 			protected:
@@ -128,6 +130,7 @@ Basic Construction
 				Ptr<elements::IGuiGraphicsElement>			ownedElement;
 				bool										visible = true;
 				bool										transparentToMouse = false;
+				EditableAttributeValues						editableAttributes;
 				MinSizeLimitation							minSizeLimitation = MinSizeLimitation::NoLimit;
 				vint										remoteId = -1;
 

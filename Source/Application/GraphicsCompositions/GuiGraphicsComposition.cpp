@@ -162,6 +162,16 @@ GuiGraphicsComposition
 				return isRendering;
 			}
 
+			GuiGraphicsComposition::EditableAttributeValues GuiGraphicsComposition::GetEditableAttributes()
+			{
+				return editableAttributes;
+			}
+
+			void GuiGraphicsComposition::SetEditableAttributes(const EditableAttributeValues& value)
+			{
+				editableAttributes = value;
+			}
+
 			GuiGraphicsComposition* GuiGraphicsComposition::GetParent()
 			{
 				return parent;
@@ -351,7 +361,7 @@ GuiGraphicsComposition
 							}
 						}
 
-						if (children.Count() > 0 || associatedHitTestResult != INativeWindowListener::NoDecision || associatedCursor)
+						if (children.Count() > 0 || associatedHitTestResult != INativeWindowListener::NoDecision || associatedCursor || editableAttributes.featured)
 						{
 							renderTarget->PushClipper(bounds, this);
 							if (!renderTarget->IsClipperCoverWholeTarget())

@@ -271,13 +271,31 @@ GuiDocumentCommonInterface
 				return false;
 			}
 
+			void GuiDocumentCommonInterface::UpdateEditableAttributes()
+			{
+				if (!documentControl) return;
+				auto composition = documentControl->GetFocusableComposition();
+				auto oldValue = composition->GetEditableAttributes();
+				GuiGraphicsComposition::EditableAttributeValues value;
+				value.featured = true;
+				value.focused = documentControl->GetVisuallyEnabled() && documentControl->GetFocused();
+				value.editable = documentControl->GetVisuallyEnabled() && editMode == GuiDocumentEditMode::Editable;
+				if (oldValue.featured != value.featured || oldValue.focused != value.focused || oldValue.editable != value.editable)
+				{
+					composition->SetEditableAttributes(value);
+					if (auto host = composition->GetRelatedGraphicsHost())
+					{
+						host->RequestRender();
+					}
+				}
+			}
+
 			void GuiDocumentCommonInterface::InstallDocumentViewer(
 				GuiControl* _sender,
 				compositions::GuiGraphicsComposition* _mouseArea,
 				compositions::GuiGraphicsComposition* _container,
 				compositions::GuiGraphicsComposition* eventComposition,
-				compositions::GuiGraphicsComposition* pointEventComposition,
-				compositions::GuiGraphicsComposition* focusableComposition
+				compositions::GuiGraphicsComposition* pointEventComposition
 			)
 			{
 				documentControl = _sender;
@@ -298,12 +316,6 @@ GuiDocumentCommonInterface
 				pointEventComposition->GetEventReceiver()->pointSequenceStarted.AttachMethod(this, &GuiDocumentCommonInterface::OnPointSequenceStarted);
 				pointEventComposition->GetEventReceiver()->pointGesture.AttachMethod(this, &GuiDocumentCommonInterface::OnPointGesture);
 
-				focusableComposition->GetEventReceiver()->caretNotify.AttachMethod(this, &GuiDocumentCommonInterface::OnCaretNotify);
-				focusableComposition->GetEventReceiver()->gotFocus.AttachMethod(this, &GuiDocumentCommonInterface::OnGotFocus);
-				focusableComposition->GetEventReceiver()->lostFocus.AttachMethod(this, &GuiDocumentCommonInterface::OnLostFocus);
-				focusableComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiDocumentCommonInterface::OnKeyDown);
-				focusableComposition->GetEventReceiver()->charInput.AttachMethod(this, &GuiDocumentCommonInterface::OnCharInput);
-
 				undoRedoProcessor->Setup(documentElement, documentComposition);
 				ActiveHyperlinkChanged.SetAssociatedComposition(eventComposition);
 				BeforeActiveHyperlinkExecuted.SetAssociatedComposition(eventComposition);
@@ -316,6 +328,17 @@ GuiDocumentCommonInterface
 				undoRedoProcessor->UndoRedoChanged.Add(this, &GuiDocumentCommonInterface::InvokeUndoRedoChanged);
 				undoRedoProcessor->ModifiedChanged.Add(this, &GuiDocumentCommonInterface::InvokeModifiedChanged);
 				SetDocument(Ptr(new DocumentModel));
+
+				// This getter can install the template and relocate the document mouse area.
+				auto focusableComposition = _sender->GetFocusableComposition();
+				focusableComposition->GetEventReceiver()->caretNotify.AttachMethod(this, &GuiDocumentCommonInterface::OnCaretNotify);
+				focusableComposition->GetEventReceiver()->gotFocus.AttachMethod(this, &GuiDocumentCommonInterface::OnGotFocus);
+				focusableComposition->GetEventReceiver()->lostFocus.AttachMethod(this, &GuiDocumentCommonInterface::OnLostFocus);
+				focusableComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiDocumentCommonInterface::OnKeyDown);
+				focusableComposition->GetEventReceiver()->charInput.AttachMethod(this, &GuiDocumentCommonInterface::OnCharInput);
+				documentControl->FocusedChanged.AttachLambda([this](GuiGraphicsComposition*, GuiEventArgs&) { UpdateEditableAttributes(); });
+				documentControl->VisuallyEnabledChanged.AttachLambda([this](GuiGraphicsComposition*, GuiEventArgs&) { UpdateEditableAttributes(); });
+				UpdateEditableAttributes();
 			}
 
 			void GuiDocumentCommonInterface::ReplaceMouseArea(compositions::GuiGraphicsComposition* _mouseArea)
@@ -1502,6 +1525,7 @@ GuiDocumentCommonInterface
 				}
 
 				editMode = value;
+				UpdateEditableAttributes();
 				if (editMode == GuiDocumentEditMode::ViewOnly)
 				{
 					UpdateCursor(nullptr);

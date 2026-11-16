@@ -52,6 +52,17 @@ TEST_FILE
 	{
 		TEST_CASE(L"Composition editing metadata is reflected without a changed event")
 		{
+			GuiBoundsComposition composition;
+			auto initial = composition.GetEditableAttributes();
+			TEST_ASSERT(!initial.featured && !initial.focused && !initial.editable);
+			for (vint flags = 0; flags < 8; flags++)
+			{
+				GuiGraphicsComposition::EditableAttributeValues value{ bool(flags & 1),bool(flags & 2),bool(flags & 4) };
+				composition.SetEditableAttributes(value);
+				auto actual = composition.GetEditableAttributes();
+				TEST_ASSERT(actual.featured == value.featured && actual.focused == value.focused && actual.editable == value.editable);
+				TEST_ASSERT(!composition.GetParent() && !composition.GetAssociatedControl());
+			}
 			auto property = GetTypeDescriptor<GuiGraphicsComposition>()->GetPropertyByName(L"EditableAttributes", true);
 			TEST_ASSERT(property);
 			TEST_ASSERT(property->GetGetter() && property->GetSetter());

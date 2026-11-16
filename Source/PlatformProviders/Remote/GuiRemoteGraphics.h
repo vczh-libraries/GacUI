@@ -59,6 +59,7 @@ GuiRemoteGraphicsRenderTarget
 
 			HitTestResult						GetHitTestResultFromGenerator(reflection::DescriptableObject* generator);
 			Nullable<SystemCursorType>			GetCursorFromGenerator(reflection::DescriptableObject* generator);
+			Nullable<remoteprotocol::ElementEditableAttribute> GetEditableAttributeFromGenerator(reflection::DescriptableObject* generator);
 
 			void								StartRenderingOnNativeWindow() override;
 			RenderTargetFailure					StopRenderingOnNativeWindow() override;

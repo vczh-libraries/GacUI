@@ -93,6 +93,7 @@ GuiDocumentCommonInterface
 				void										InvokeUndoRedoChanged();
 				void										InvokeModifiedChanged();
 				void										UpdateCaretPoint();
+				void										UpdateEditableAttributes();
 				void										EnsureDocumentRectVisible(Rect bounds);
 				void										Move(TextPos caret, bool shift, bool frontSide);
 				bool										ProcessKey(VKEY code, bool shift, bool ctrl);
@@ -101,8 +102,7 @@ GuiDocumentCommonInterface
 																compositions::GuiGraphicsComposition* _mouseArea,
 																compositions::GuiGraphicsComposition* _container,
 																compositions::GuiGraphicsComposition* eventComposition,
-																compositions::GuiGraphicsComposition* pointEventComposition,
-																compositions::GuiGraphicsComposition* focusableComposition
+																compositions::GuiGraphicsComposition* pointEventComposition
 																);
 				void										ReplaceMouseArea(compositions::GuiGraphicsComposition* _mouseArea);
 

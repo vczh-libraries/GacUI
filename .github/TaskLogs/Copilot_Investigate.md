@@ -260,9 +260,9 @@ The Debug x64 baseline build succeeded. Running the new reflection regression th
 
 # PROPOSALS
 
-- No.1 Publish control-owned editing metadata on stable remote boundaries
+- No.1 Publish control-owned editing metadata on stable remote boundaries [CONFIRMED]
 
-## No.1 Publish control-owned editing metadata on stable remote boundaries
+## No.1 Publish control-owned editing metadata on stable remote boundaries [CONFIRMED]
 
 Store the three flags directly on the composition and register the value type/property without a changed event. The document common interface recomputes the flags after installation, mode changes and control focus/visual-enablement notifications; only this owner requests rendering when values change. Existing caret, input and focus behavior remains intact.
 
@@ -270,4 +270,30 @@ Generate the authored protocol first. Include featured leaves in the composition
 
 ### CODE CHANGE
 
+The retained `ScrollableTextBoxCursor` regression exposed an installation-order defect. CDB showed the multiline document mouse area still pointed at its bounds composition, while its real container had moved into the template. `GuiControl::GetFocusableComposition()` calls `EnsureControlTemplateExists()`: the early lookup created the template before the document existed, then installation reused the pre-template mouse-area argument. Complete document/undo/event setup and initialize its document before looking up the focusable composition and attaching the existing input handlers plus the new control notifications. This lets the normal template callback relocate the installed document and mouse area. Retest the retained cursor regression and all selected suites; repeat native typing smoke checks on the corrected build.
+
+CDB confirmed the two-window fixture's second text control had correct stored flags and a nonempty local rectangle, but no remote ID: its window was wholly outside the 300-pixel-wide hosted rendering viewport. Enlarge the fixture's main client area to contain the second window at x=400. The configured virtual screen size alone does not enlarge that viewport.
+
+The corrected fixture demonstrated that `Editable` to `Selectable` publishes a metadata-only frame. Its following `Selectable` to `ViewOnly` step left all metadata and rendering unchanged, which intentionally violates the idle-frame harness contract. Route that verification through `Editable` again, then switch directly to `ViewOnly`, so each recorded mode transition changes the metadata without artificial input or repaint.
+
+The first selected regression run stopped while compiling the new XML fixture: `GuiControl` has no reflected constructor. Use the existing `CustomControl` XML factory for the neutral parent used to exercise inherited disablement and clipping, then rerun the selected suite.
+
 Implement the property, reflection registration, document lifecycle update, rendering boundary conversion and DOM builder/diff changes in the files identified by Task 1. Add ordinary nullable-transition, JSON, command nesting and converter-reconnect tests, plus shared raw/Sync editor regressions covering stable identities, metadata-only frames, enablement, visibility/clipping/deletion, document/template changes and active/modal windows. Follow the prescribed Win32/x64 metadata sequence, related test filters, leak inspection and limited native smoke checks before confirming this proposal.
+
+The first Win32 build exposed the reflection value-type comparison requirement in `VlppReflection`: the new Core struct needs a default three-way comparison, like existing reflected value structs. Add this to `EditableAttributeValues`; keep the generated wire struct unchanged and retain explicit nullable/field comparison in `DiffDom`. The transport tests use the required root ID `-1` and verify children-only diffs preserve editing metadata separately from explicit attribute removal.
+
+Protocol generation succeeded through `Metadata_UpdateProtocol`. The prescribed Debug Win32 build, Win32 `Metadata_Generate`, Debug x64 build, x64 `Metadata_Generate` and x64 `Metadata_Test` sequence completed successfully. The x64 build retained the baseline's two code-page warnings in `<GacUI repo>/Test/GacUISrc/UnitTest/TestRemote_Caret.cpp`. Both architecture metadata dumps contain only the new struct, property and getter/setter additions.
+
+The limited smoke checks used the completed Win32 binaries while x64 was compiling. `CppTest` on automation port 8911 and `CppTest_Metaonly` on 8912 each opened `Control / Document Editor (Ribbon)` and received distinct exact Search/editor markers through injected input. A windowless MTA UIA client then focused both targets in each application and verified exact Value-pattern writes. `RemotingTest_Core /FCT /Pipe /AsPort:8913` and `RemotingTest_Rendering_Win32 /Pipe /AsPort:8914` passed the same two typing operations sent through the renderer endpoint; Core reported both exact strings, and the renderer reported eight tagged owners with exactly one focused, editable owner and no fatal error. Remote semantic UIA is not transported, as documented by the Windows provider. All four processes closed through their automation exit command with exit code zero before x64 metadata generation. Evidence consists of live document contents, composition/DOM data and UIA operations. The selected x64 unit-test run is now in progress; proposal confirmation still requires its complete result and leak/snapshot inspection.
+
+### CONFIRMED
+
+Task 1 is complete. The final Debug x64 and Win32 incremental builds passed with zero warnings and errors. The required protocol generation and Win32/x64 reflection generation/testing sequence had already passed; the final installation-order correction changes no reflection signatures or generated metadata.
+
+The completed x64 execution log reports 20/20 test files and 538/538 test cases, and ends at that summary with no appended Debug memory leaks. It includes the new reflected property and all nullable transitions, JSON/copy/diff/reconnect cases, both raw and synchronous JSON versions of the three editing scenarios, and the retained editor, cursor, caret, focus, mouse, application-window and remote-framework regressions. `GuiBasicControls.cpp` and `GuiGraphicsHost.cpp` remain untouched.
+
+Snapshot inspection compared every changed existing frame against its committed version. Of 941 changed frame JSON files, 130 differ only by the new nullable field and 811 include editing boundaries/metadata. Window dimensions, frame names, authoritative element content and rendered element geometry are unchanged except for five existing supplementary-character fixtures: Windows UTF-16 records the final caret/range offset as 5 instead of the earlier UTF-32 offset 4, and the fixed-width test measurer adds one character width in the two unwrapped text-box fixtures. Their exact Unicode text and undo/redo/export assertions pass. The new raw and Sync snapshots match byte-for-byte as parsed JSON for all 28 lifecycle frames, four leaf frames and nine window frames. Reflection dump changes are limited to the new struct, property and getter/setter.
+
+Repeated the requested native smoke checks with corrected Debug x64 binaries. Both local applications passed automation-service typing and UIA focus/Value writes in Search and the central Ribbon editor. The Core/Win32 renderer pair passed typing through the renderer; the completed DOM retained eight tagged owners and exactly one focused editable owner. A first immediate read after the remote tab click preceded its response; waiting for the actual Control-page predicate resolved that transport delay. No runtime-error dialogs or fatal states occurred. All four applications exited normally with code zero. These checks establish automation/UIA operation, not physical keyboard delivery.
+
+Review found no remaining source or whitespace issues. Keep the implementation and generated artifacts, with authored/generated/snapshot commits separated as required by Project.md. Task 2 starts only after those commits are pushed.

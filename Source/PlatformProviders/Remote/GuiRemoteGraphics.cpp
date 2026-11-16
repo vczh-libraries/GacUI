@@ -71,6 +71,24 @@ GuiRemoteGraphicsRenderTarget
 		return {};
 	}
 
+	Nullable<remoteprotocol::ElementEditableAttribute> GuiRemoteGraphicsRenderTarget::GetEditableAttributeFromGenerator(reflection::DescriptableObject* generator)
+	{
+		if (auto composition = dynamic_cast<GuiGraphicsComposition*>(generator))
+		{
+			auto value = composition->GetEditableAttributes();
+			if (value.featured)
+			{
+				auto host = composition->GetRelatedGraphicsHost();
+				auto window = host ? host->GetNativeWindow() : nullptr;
+				remoteprotocol::ElementEditableAttribute attribute;
+				attribute.focused = value.focused && window && window->IsActivated();
+				attribute.editable = value.editable;
+				return attribute;
+			}
+		}
+		return {};
+	}
+
 	void GuiRemoteGraphicsRenderTarget::StartRenderingOnNativeWindow()
 	{
 		CHECK_ERROR(hitTestResults.Count() == 0, L"vl::presentation::elements::GuiRemoteGraphicsRenderTarget::StartRenderingOnNativeWindow()#Internal error: hit test result stack is not cleared.");
@@ -254,9 +272,10 @@ GuiRemoteGraphicsRenderTarget
 			cursors.Add(cursor.Value());
 		}
 
-		if (arguments.hitTestResult || arguments.cursor)
+		arguments.editableAttribute = GetEditableAttributeFromGenerator(generator);
+		if (arguments.hitTestResult || arguments.cursor || arguments.editableAttribute)
 		{
-			// GetHitTestResultFromGenerator or GetCursorFromGenerator ensures generator must be a composition
+			// A hit test, cursor or editing attribute ensures generator is a composition.
 			auto composition = dynamic_cast<GuiGraphicsComposition*>(generator);
 			if (composition->remoteId == -1)
 			{
@@ -284,7 +303,7 @@ GuiRemoteGraphicsRenderTarget
 		clipperValidArea = validArea;
 		auto hitTestResult = GetHitTestResultFromGenerator(generator);
 		auto cursor = GetCursorFromGenerator(generator);
-		bool needEndBoundary = false;
+		bool needEndBoundary = GetEditableAttributeFromGenerator(generator);
 
 		if (hitTestResult != INativeWindowListener::NoDecision)
 		{

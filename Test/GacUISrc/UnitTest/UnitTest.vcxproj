@@ -212,6 +212,7 @@
     <ClCompile Include="TestControls_CoreApplication_GuiWindow.cpp" />
     <ClCompile Include="TestControls_EasyLayout.cpp" />
     <ClCompile Include="TestControls_Editor.cpp" />
+    <ClCompile Include="TestControls_Editor_Editable.cpp" />
     <ClCompile Include="TestControls_Editor_Key.cpp" />
     <ClCompile Include="TestControls_Editor_RichText.cpp" />
     <ClCompile Include="TestControls_Editor_InlineObject.cpp" />

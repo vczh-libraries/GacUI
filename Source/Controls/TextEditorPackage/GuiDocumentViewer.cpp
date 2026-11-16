@@ -113,7 +113,7 @@ GuiDocumentViewer
 			{
 				SetAcceptTabInput(true);
 				SetFocusableComposition(boundsComposition);
-				InstallDocumentViewer(this, containerComposition->GetParent(), containerComposition, boundsComposition, boundsComposition, focusableComposition);
+				InstallDocumentViewer(this, containerComposition->GetParent(), containerComposition, boundsComposition, boundsComposition);
 
 				SetExtendToFullWidth(config.wrapLine);
 				SetHorizontalAlwaysVisible(!config.wrapLine);
@@ -267,7 +267,7 @@ GuiDocumentLabel
 
 				if (config.autoExpand)
 				{
-					InstallDocumentViewer(this, containerComposition, containerComposition, boundsComposition, boundsComposition, focusableComposition);
+					InstallDocumentViewer(this, containerComposition, containerComposition, boundsComposition, boundsComposition);
 				}
 				else
 				{
@@ -281,7 +281,7 @@ GuiDocumentLabel
 
 					scrollingContainer->CachedBoundsChanged.AttachMethod(this, &GuiDocumentLabel::scrollingContainer_CachedBoundsChanged);
 					documentContainer->CachedBoundsChanged.AttachMethod(this, &GuiDocumentLabel::documentContainer_CachedMinSizeChanged);
-					InstallDocumentViewer(this, containerComposition, documentContainer, boundsComposition, boundsComposition, focusableComposition);
+					InstallDocumentViewer(this, containerComposition, documentContainer, boundsComposition, boundsComposition);
 				}
 			}
 

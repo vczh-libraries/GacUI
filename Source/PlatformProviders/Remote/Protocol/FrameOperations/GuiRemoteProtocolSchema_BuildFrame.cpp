@@ -139,6 +139,7 @@ namespace vl::presentation::remoteprotocol
 		dom->id = (arguments.id << 2) + 2;
 		dom->content.hitTestResult = arguments.hitTestResult;
 		dom->content.cursor = arguments.cursor;
+		dom->content.editableAttribute = arguments.editableAttribute;
 		dom->content.bounds = arguments.bounds;
 		dom->content.validArea = arguments.areaClippedBySelf;
 		domBoundaries.Add(Push(dom));
