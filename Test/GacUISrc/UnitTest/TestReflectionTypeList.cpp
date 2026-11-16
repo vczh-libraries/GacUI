@@ -50,6 +50,22 @@ TEST_FILE
 {
 	SetGuiMainProxy([]()
 	{
+		TEST_CASE(L"Composition editing metadata is reflected without a changed event")
+		{
+			auto property = GetTypeDescriptor<GuiGraphicsComposition>()->GetPropertyByName(L"EditableAttributes", true);
+			TEST_ASSERT(property);
+			TEST_ASSERT(property->GetGetter() && property->GetSetter());
+			TEST_ASSERT(!property->GetValueChangedEvent());
+			auto valueType = property->GetReturn()->GetTypeDescriptor();
+			TEST_ASSERT(valueType && valueType->GetPropertyCount() == 3);
+			for (auto name : { L"featured", L"focused", L"editable" })
+			{
+				auto field = valueType->GetPropertyByName(name, false);
+				TEST_ASSERT(field && field->IsReadable() && field->IsWritable());
+				TEST_ASSERT(field->GetReturn()->GetTypeDescriptor() == GetTypeDescriptor<bool>());
+			}
+		});
+
 		TEST_CASE(L"Controls expose writable context menu properties without change events")
 		{
 			auto controlType = GetTypeDescriptor<GuiControl>();
