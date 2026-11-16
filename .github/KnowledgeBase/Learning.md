@@ -8,17 +8,17 @@
 - Process staged tasks one by one with verification [28]
 - Extract abstractions only for real shared behavior [25]
 - Port fixes from imports to source repositories [23]
-- Verify and localize portability on every target OS [21]
+- Verify and localize portability on every target OS [22]
 - Fix behavior at the owning state instead of patching symptoms [18]
 - Crash early instead of adding error-tolerance fallbacks [16]
 - Validate expectations against implementation and existing tests [15]
 - Make `Stop()` drain asynchronous work before returning [8]
 - Do not assume async callback owners are heap allocated [5]
 - Treat environment correlation as evidence, not a cause [5]
+- Respect explicitly limited verification scope [5]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
 - Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [4]
-- Respect explicitly limited verification scope [4]
 - Use explicit positive compiler and platform guards [4]
 - Don't assume observable changes are batched [3]
 - Use RAII scope cleanup instead of manual catch cleanup [3]
@@ -72,6 +72,9 @@
 - Synchronize instruction files after active wrappers finish [1]
 - Keep semantic compiler state out of syntax ASTs [1]
 - Keep knowledge bases focused on reusable library contracts [1]
+- Validate invariants after complete update transactions [1]
+- Preserve active browser hosts during DOM reconciliation [1]
+- Tie asynchronous assertions to fresh completion events [1]
 
 # Refinements
 
@@ -447,6 +450,8 @@ Do not expand an implementation's supported platform set solely to reuse a downs
 
 For a behavior shared by native providers, first identify which policy belongs in shared code and which completion semantics belong to each provider. A passing hosted or remote test cannot prove a native queued-message boundary. Audit the equivalent providers, keep any necessary provider fixes narrowly justified, and record unavailable target-platform verification separately.
 
+Keep synthetic input, browser-engine composition and actual operating-system IME or software-keyboard verification distinct. A device viewport, injected keyboard controller or callable visibility API does not establish physical keyboard display or candidate selection. Record the specific unavailable session or build environment while completing the other authorized checks; do not substitute stale deployment artifacts for the current implementation.
+
 ## Use reentrant POSIX date-time conversions
 
 On POSIX platforms, never retain pointers returned by `localtime()` or `gmtime()` across calls or threads because both may share process-wide `tm` storage. Use caller-owned stack values populated by `localtime_r()` and `gmtime_r()` instead, with separate values for simultaneous local and UTC conversions.
@@ -586,3 +591,15 @@ Keep parsing-visible AST fields limited to syntax. Store resolved types and othe
 ## Keep knowledge bases focused on reusable library contracts
 
 Keep knowledge-base pages focused on library APIs, ownership, contracts and design. Put concrete application composition, source examples, launch commands and run-specific verification results in the owning repository's project instructions, SOPs, task records or project-specific learning files. When cleaning up an existing page, preserve its reusable contract while removing application-specific material, then reconcile the owning repository's changes into `<Tools repo>/Copilot/KnowledgeBase` before instruction synchronization.
+
+## Validate invariants after complete update transactions
+
+When ordered updates transfer ownership or uniqueness between objects, validate the complete resulting state after the whole transaction. Include unchanged objects and relevant read-only states; checking intermediate updates can reject a valid transfer, while checking only changed or actionable objects can miss a real violation. Keep invalid completed state fatal instead of choosing an arbitrary winner or silently switching implementations.
+
+## Preserve active browser hosts during DOM reconciliation
+
+Retaining an HTMLElement reference is insufficient if reconciliation detaches and reinserts that node or an ancestor: browser focus and composition can still be lost. Reconcile siblings around the active subtree and retain its attachment through clipping and root updates. Scope composition invalidation to its actual paragraph/caret anchor, preserving unrelated updates; after a conflicting change, reconcile from the latest authoritative state instead of restoring a stale DOM snapshot.
+
+## Tie asynchronous assertions to fresh completion events
+
+Arm a bounded observer before the action whose completion an assertion depends on. A cached idle notification from an earlier action does not establish that the new input has rendered. Require the fresh completion or an authoritative state predicate, and preserve exact behavior assertions and intentional timing rather than masking the race with sleeps or wider tolerances.

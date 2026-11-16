@@ -8,7 +8,7 @@
 - Remote protocol frames: actions must change UI; organize frames carefully [9]
 - Keep FullControlTest UIA checks synchronized with showcase changes [9]
 - Stress remote core/renderer transport and terminal flows [8]
-- Don’t schedule redundant idle frames [7]
+- Don’t schedule redundant idle frames [8]
 - Seed key-behavior tests via `protocol->TypeString` [7]
 - Preserve existing idle-frame titles when requested [6]
 - Verify `/IO` synchronous errors and queued success separately [5]
@@ -33,6 +33,7 @@
 - Derive native touch expectations from converted coordinates [3]
 - Verify palette refresh through retained state and actual host rendering [3]
 - Verify compiler releases through every tutorial architecture output [3]
+- Editor smoke tests: deterministic caret placement (`Ctrl+Home`) [3]
 - Account for eager child preparation in item-provider tests [2]
 - Isolate callbacks per test case (fresh log + callback) [2]
 - Prefer comments that name the exercised interface [2]
@@ -46,11 +47,11 @@
 - Verify remoting imports with both HTTP and named-pipe flows [2]
 - Verify `GacUICompiler` determinism with repeated no-change runs [2]
 - Make snapshot fixture inputs independent of the host environment [2]
-- Editor smoke tests: deterministic caret placement (`Ctrl+Home`) [2]
 - Undo/redo tests: clear baselines and respect history granularity [2]
 - Focus the control before simulating keyboard input [2]
 - Keep rich document fixtures readable and self-contained [2]
 - Separate raw painters from remote collection attachment [2]
+- Re-find GUI controls in each frame [2]
 - Browser E2E tests must handle localized dialogs and host fixtures [1]
 - Verify GacGen RPC outputs with positive and negative resources [1]
 - Unit tests must own helper-thread and stack-callback lifetimes [1]
@@ -61,7 +62,6 @@
 - Use `TEST_ERROR(expr)` (not code blocks) [1]
 - Filesystem mocks: normalize in `IFileSystemImpl::Initialize`, regex-split paths [1]
 - Don’t nest `protocol->OnNextIdleFrame(...)` [1]
-- Re-find GUI controls in each frame [1]
 - File dialog filters persist across navigation [1]
 - Dialog UI tests: close GUI message boxes via `OK` click [1]
 - Prefer `TryGet...` helpers when asserting absence [1]
@@ -109,6 +109,7 @@
 - Keep modal automation lookup bounded and action-specific [1]
 - Verify file-dialog mutations with owned native fixtures [1]
 - Register optional Clock painters through controller-related plugins [1]
+- Keep hosted-window fixtures inside the rendered client viewport [1]
 
 # Refinements
 
@@ -217,6 +218,8 @@ Don’t call `window->SetText(...)` just to force a UI update “for no reason�
 
 Similarly, avoid extra UI changes immediately after assertions (e.g. resetting caret position) just to satisfy the “UI changed” rule; instead, restructure frames or merge `window->Hide()` into the last meaningful verification frame.
 
+For editing metadata, `Selectable` and `ViewOnly` can produce identical flags and rendering. Reach each through `Editable` when testing metadata publication so every recorded transition changes the observed state. Do not add artificial typing or repainting that could conceal a missing metadata-only refresh.
+
 ## Focus the control before simulating keyboard input
 
 Remote IO command helpers only affect the currently focused control. In typing tests, explicitly focus the target control (e.g. `textBox->SetFocused()` or a click) before calling helpers like `TypeString`/`KeyPress`.
@@ -294,6 +297,8 @@ Internal-only document operations, such as `RenameStyle` undo/redo cases that on
 
 Idle-frame lambdas execute later, so don’t cache GUI control pointers outside the current frame or assume captured pointers stay valid. In each `OnNextIdleFrame(...)` body, re-find the dialog window and controls (data grid, text box, combo box, etc.) by name.
 
+Completed remote frames also contain newly allocated DOM objects. Use `UnitTestRemoteProtocol::GetCompletedRenderingFrame()->renderingDom` in the idle callback and retain logical `RenderingDom::id` values, not DOM pointers or traversal positions. Assert the exact visible owner set and metadata through raw commands and synchronous serialized diffs; hidden or fully clipped owners are absent even when their controls survive.
+
 ## File dialog filters persist across navigation
 
 In file dialog navigation tests, the selected filter (e.g. `Text Files (*.txt)`) persists across folder navigation. A folder can legitimately display an empty file list under the current filter; tests should assert that empty state (and switch back to `All Files` only when needed for the next expectation).
@@ -355,6 +360,8 @@ When reusing shared “editor smoke test” helpers across multiple `GuiDocument
 Prefer making the interaction deterministic over changing XML layout just to make a click land reliably (keep singleline layout where appropriate).
 
 Public SetCaret does not itself scroll the document. When a hit-testing regression requires a label view offset, call the existing EnsureCaretVisible operation and assert the offset before sending the press. Derive border/content coordinates from the actual template geometry; the first pixel inside a one-pixel border is already content.
+
+In live browser composition tests, establish the intended Search selection with explicit Home/Shift+End navigation and verify the exported Core selection endpoints before committing or canceling. A sent Ctrl+A does not prove that the intended range was selected. Require cancellation to preserve both authoritative text and selection, then verify a subsequent replacement in each input adapter.
 
 ## Verify `GacUICompiler` determinism with repeated no-change runs
 
@@ -746,3 +753,7 @@ Keep each shared implementation compiled exactly once through its owning invento
 In `<GacUI repo>/Test/GacUISrc/Generated_FullControlTest/FullControlTestRawClockInterpretor.cpp`, register the active backend's concrete Clock factory through an `IGuiPlugin` with `GUI_REGISTER_PLUGIN` during controller-related loading. Consumers obtain the factory before `GuiMain` without explicit registration calls. Keep the plugin in the optional Clock translation unit so project source selection controls whether it loads; preserve the independent manual Touching attachment.
 
 Verify automatic registration at `GuiMain` entry in consumers that include the module, and retain a renderer control that omits it. Keep actual native pixel evidence separate from automation assertions about the interpretor name, data and bounds.
+
+## Keep hosted-window fixtures inside the rendered client viewport
+
+A larger virtual screen does not enlarge the hosted main window client viewport. When a visible control has valid local bounds but no remote DOM owner, inspect clipping and the actual hosted viewport before changing production metadata logic. Size the main client area to contain every secondary window used by the regression, and distinguish complete clipping from a missing boundary.

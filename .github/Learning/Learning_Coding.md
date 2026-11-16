@@ -130,6 +130,7 @@
 - Pass localized line breaks as formatting parameters [1]
 - Preserve measured item extents when reloading list visuals [1]
 - Preserve TUI image labels across document serialization [1]
+- Install document state before looking up its focusable composition [1]
 
 # Refinements
 
@@ -747,3 +748,7 @@ When theme replacement recreates list-row presentation, use `GuiVirtualRepeatCom
 Keep the existing embedded-label presentation in `<GacUI repo>/Test/Resources/App/TuiControlTest/DocumentEditorBase.xml`. A file-backed insertion uses `[Image: path, width x height]`; a memory/private-loaded image uses `[Image, width x height]`. Obtain dimensions from the decoded frame and do not invent a filesystem path: `INativeImage` does not expose one.
 
 Retain each original `DocumentImageRun`, including image/frame/source/size-override/baseline data, beside its named display object. On load, recursively replace image runs with labels and replace the old label-item/image map together. For save/export, the native adapter deep-copies the complete model and Workflow restores serializable image runs only in that copy. `CopyDocument` is native-only; do not expand reflection merely to call it from the showcase. Preserve live document identity, selection, history and the complete style catalog, and verify image data independently of its textual presentation.
+
+## Install document state before looking up its focusable composition
+
+In `GuiDocumentCommonInterface::InstallDocumentViewer` in `<GacUI repo>/Source/Controls/TextEditorPackage/GuiDocumentCommonInterface.cpp`, complete document, undo and event setup and initialize the document before calling `GuiControl::GetFocusableComposition()`. That getter ensures the template exists and can invoke installation callbacks. An early lookup can create the template before the document is installed, leaving the mouse area bound to the old bounds composition after the real container moves. Attach input and control-state handlers after the initialized document can participate in normal template relocation, and retain the existing cursor regression when changing this order.
