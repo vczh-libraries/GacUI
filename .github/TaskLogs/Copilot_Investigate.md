@@ -259,3 +259,15 @@ Success requires exact metadata in completed frames, unchanged Core editing/focu
 The Debug x64 baseline build succeeded. Running the new reflection regression through `copilotExecute.ps1 -Mode UnitTest -Executable UnitTest -Configuration Debug -Platform x64` failed at `TEST_ASSERT(property)`: `EditableAttributes` is absent from the composition descriptor. The completed raw execution log ends at this expected assertion. The shared remote editor scenario is being constructed and is not yet included in the project; it requires generated wire types and the implementation before compilation.
 
 # PROPOSALS
+
+- No.1 Publish control-owned editing metadata on stable remote boundaries
+
+## No.1 Publish control-owned editing metadata on stable remote boundaries
+
+Store the three flags directly on the composition and register the value type/property without a changed event. The document common interface recomputes the flags after installation, mode changes and control focus/visual-enablement notifications; only this owner requests rendering when values change. Existing caret, input and focus behavior remains intact.
+
+Generate the authored protocol first. Include featured leaves in the composition clipper path, emit balanced per-owner boundaries, and qualify only transmitted focus with actual native-window activation. Copy the nullable wire value into DOM content and compare presence and both fields explicitly in diffs. Existing whole-content copying and reconnect resets remain responsible for reconstruction.
+
+### CODE CHANGE
+
+Implement the property, reflection registration, document lifecycle update, rendering boundary conversion and DOM builder/diff changes in the files identified by Task 1. Add ordinary nullable-transition, JSON, command nesting and converter-reconnect tests, plus shared raw/Sync editor regressions covering stable identities, metadata-only frames, enablement, visibility/clipping/deletion, document/template changes and active/modal windows. Follow the prescribed Win32/x64 metadata sequence, related test filters, leak inspection and limited native smoke checks before confirming this proposal.
