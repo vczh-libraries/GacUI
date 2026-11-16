@@ -117,21 +117,14 @@
 ========================================
 18
 ========================================
-{"id": 62, "diffType": "Deleted", "content": null, "children": null}
-{"id": 84, "diffType": "Modified", "content": null, "children": [92]}
 ========================================
 19
 ========================================
 ========================================
 20
 ========================================
-{"id": 62, "diffType": "Created", "content": {"hitTestResult": null, "cursor": "Hand", "element": null, "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 307}, "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 307}, "editableAttribute": null}, "children": [92]}
-{"id": 84, "diffType": "Modified", "content": null, "children": [62]}
+{"id": 62, "diffType": "Deleted", "content": null, "children": null}
+{"id": 84, "diffType": "Modified", "content": null, "children": [92]}
 ========================================
 21
 ========================================
-========================================
-22
-========================================
-{"id": 62, "diffType": "Deleted", "content": null, "children": null}
-{"id": 84, "diffType": "Modified", "content": null, "children": [92]}

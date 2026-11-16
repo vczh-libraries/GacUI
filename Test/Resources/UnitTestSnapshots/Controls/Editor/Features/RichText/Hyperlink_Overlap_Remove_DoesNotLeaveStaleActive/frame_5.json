@@ -337,7 +337,7 @@
               },
               {
                 "caretBegin": 2,
-                "caretEnd": 7,
+                "caretEnd": 5,
                 "props": [
                   "DocumentTextRunProperty",
                   {
@@ -348,7 +348,7 @@
                 ]
               },
               {
-                "caretBegin": 7,
+                "caretBegin": 5,
                 "caretEnd": 9,
                 "props": [
                   "DocumentTextRunProperty",
