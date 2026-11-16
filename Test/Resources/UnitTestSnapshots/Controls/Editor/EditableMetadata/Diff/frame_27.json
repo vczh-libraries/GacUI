@@ -1,0 +1,947 @@
+﻿{
+  "frameId": 72,
+  "frameName": "Deleted B owner is absent",
+  "windowSize": {
+    "bounds": {
+      "x1": {"value": 232},
+      "y1": {"value": 204},
+      "x2": {"value": 798},
+      "y2": {"value": 564}
+    },
+    "clientBounds": {
+      "x1": {"value": 232},
+      "y1": {"value": 204},
+      "x2": {"value": 798},
+      "y2": {"value": 564}
+    },
+    "sizeState": "Restored",
+    "customFramePadding": {
+      "left": {"value": 8},
+      "top": {"value": 8},
+      "right": {"value": 8},
+      "bottom": {"value": 8}
+    }
+  },
+  "elements": [
+    [
+      74,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 74,
+          "backgroundColor": "#2D2D30",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      75,
+      [
+        "ElementDesc_SolidBorder",
+        {
+          "id": 75,
+          "borderColor": "#017ACC",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      76,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 76,
+          "backgroundColor": "#3F3F46",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      77,
+      [
+        "ElementDesc_SolidBorder",
+        {
+          "id": 77,
+          "borderColor": "#54545C",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      79,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 79,
+          "textColor": "#F1F1F1",
+          "horizontalAlignment": "Center",
+          "verticalAlignment": "Center",
+          "wrapLine": false,
+          "wrapLineHeightCalculation": false,
+          "ellipse": false,
+          "multiline": false,
+          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+          "text": "",
+          "measuringRequest": "TotalSize"
+        }
+      ]
+    ],
+    [
+      80,
+      [
+        "ElementDesc_Polygon",
+        {
+          "id": 80,
+          "size": {"x": 24, "y": 16},
+          "borderColor": "#F1F1F1",
+          "backgroundColor": "#F1F1F1",
+          "points": [
+            {"x": 8, "y": 12},
+            {"x": 15, "y": 12},
+            {"x": 15, "y": 13},
+            {"x": 8, "y": 13}
+          ]
+        }
+      ]
+    ],
+    [
+      81,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 81,
+          "backgroundColor": "#3F3F46",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      82,
+      [
+        "ElementDesc_SolidBorder",
+        {
+          "id": 82,
+          "borderColor": "#54545C",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      84,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 84,
+          "textColor": "#F1F1F1",
+          "horizontalAlignment": "Center",
+          "verticalAlignment": "Center",
+          "wrapLine": false,
+          "wrapLineHeightCalculation": false,
+          "ellipse": false,
+          "multiline": false,
+          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+          "text": "",
+          "measuringRequest": "TotalSize"
+        }
+      ]
+    ],
+    [
+      85,
+      [
+        "ElementDesc_Polygon",
+        {
+          "id": 85,
+          "size": {"x": 24, "y": 16},
+          "borderColor": "#F1F1F1",
+          "backgroundColor": "#F1F1F1",
+          "points": [
+            {"x": 6, "y": 2},
+            {"x": 17, "y": 2},
+            {"x": 17, "y": 13},
+            {"x": 6, "y": 13},
+            {"x": 6, "y": 2},
+            {"x": 6, "y": 2},
+            {"x": 6, "y": 13},
+            {"x": 17, "y": 13},
+            {"x": 17, "y": 4},
+            {"x": 6, "y": 4}
+          ]
+        }
+      ]
+    ],
+    [
+      86,
+      [
+        "ElementDesc_Polygon",
+        {
+          "id": 86,
+          "size": {"x": 24, "y": 16},
+          "borderColor": "#F1F1F1",
+          "backgroundColor": "#F1F1F1",
+          "points": [
+            {"x": 9, "y": 6},
+            {"x": 14, "y": 6},
+            {"x": 14, "y": 13},
+            {"x": 6, "y": 13},
+            {"x": 6, "y": 6},
+            {"x": 9, "y": 6},
+            {"x": 9, "y": 7},
+            {"x": 6, "y": 7},
+            {"x": 6, "y": 13},
+            {"x": 14, "y": 13},
+            {"x": 14, "y": 7},
+            {"x": 9, "y": 7},
+            {"x": 9, "y": 2},
+            {"x": 17, "y": 2},
+            {"x": 17, "y": 9},
+            {"x": 14, "y": 9},
+            {"x": 14, "y": 9},
+            {"x": 17, "y": 9},
+            {"x": 17, "y": 3},
+            {"x": 9, "y": 3}
+          ]
+        }
+      ]
+    ],
+    [
+      87,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 87,
+          "backgroundColor": "#3F3F46",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      88,
+      [
+        "ElementDesc_SolidBorder",
+        {
+          "id": 88,
+          "borderColor": "#54545C",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      90,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 90,
+          "textColor": "#F1F1F1",
+          "horizontalAlignment": "Center",
+          "verticalAlignment": "Center",
+          "wrapLine": false,
+          "wrapLineHeightCalculation": false,
+          "ellipse": false,
+          "multiline": false,
+          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+          "text": "",
+          "measuringRequest": "TotalSize"
+        }
+      ]
+    ],
+    [
+      91,
+      [
+        "ElementDesc_Polygon",
+        {
+          "id": 91,
+          "size": {"x": 24, "y": 16},
+          "borderColor": "#F1F1F1",
+          "backgroundColor": "#F1F1F1",
+          "points": [
+            {"x": 7, "y": 2},
+            {"x": 11, "y": 6},
+            {"x": 12, "y": 6},
+            {"x": 16, "y": 2},
+            {"x": 17, "y": 3},
+            {"x": 13, "y": 7},
+            {"x": 13, "y": 8},
+            {"x": 17, "y": 12},
+            {"x": 16, "y": 13},
+            {"x": 12, "y": 9},
+            {"x": 11, "y": 9},
+            {"x": 7, "y": 13},
+            {"x": 6, "y": 12},
+            {"x": 10, "y": 8},
+            {"x": 10, "y": 7},
+            {"x": 6, "y": 3}
+          ]
+        }
+      ]
+    ],
+    [
+      92,
+      [
+        "ElementDesc_ImageFrame",
+        {"id": 92, "imageId": null, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
+      ]
+    ],
+    [
+      93,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 93,
+          "textColor": "#999999",
+          "horizontalAlignment": "Left",
+          "verticalAlignment": "Top",
+          "wrapLine": false,
+          "wrapLineHeightCalculation": false,
+          "ellipse": true,
+          "multiline": false,
+          "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+          "text": "Editing metadata",
+          "measuringRequest": null
+        }
+      ]
+    ],
+    [
+      95,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 95,
+          "backgroundColor": "#252526",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      96,
+      [
+        "ElementDesc_SolidBorder",
+        {
+          "id": 96,
+          "borderColor": "#1C97EA",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      110,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 110,
+          "backgroundColor": "#252526",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      111,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 111,
+          "backgroundColor": "#3F3F46",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      112,
+      [
+        "ElementDesc_SolidBorder",
+        {
+          "id": 112,
+          "borderColor": "#54545C",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      114,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 114,
+          "textColor": "#F1F1F1",
+          "horizontalAlignment": "Center",
+          "verticalAlignment": "Center",
+          "wrapLine": false,
+          "wrapLineHeightCalculation": false,
+          "ellipse": false,
+          "multiline": false,
+          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+          "text": "Non-text focus",
+          "measuringRequest": "TotalSize"
+        }
+      ]
+    ],
+    [
+      115,
+      [
+        "ElementDesc_DocumentParagraphFull",
+        {
+          "paragraph": {
+            "id": 115,
+            "text": "Alpha",
+            "wrapLine": false,
+            "maxWidth": 36,
+            "alignment": "Left",
+            "runsDiff": [
+              {
+                "caretBegin": 0,
+                "caretEnd": 5,
+                "props": [
+                  "DocumentTextRunProperty",
+                  {
+                    "textColor": "#FFFFFF",
+                    "backgroundColor": "#00000000",
+                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
+                  }
+                ]
+              }
+            ],
+            "createdInlineObjects": null,
+            "removedInlineObjects": null
+          },
+          "caret": {"id": 115, "caret": 5, "caretColor": "#FFFFFF", "frontSide": true}
+        }
+      ]
+    ],
+    [
+      123,
+      [
+        "ElementDesc_DocumentParagraphFull",
+        {
+          "paragraph": {
+            "id": 123,
+            "text": "Read only",
+            "wrapLine": true,
+            "maxWidth": 526,
+            "alignment": "Left",
+            "runsDiff": [
+              {
+                "caretBegin": 0,
+                "caretEnd": 9,
+                "props": [
+                  "DocumentTextRunProperty",
+                  {
+                    "textColor": "#FFFFFF",
+                    "backgroundColor": "#00000000",
+                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
+                  }
+                ]
+              }
+            ],
+            "createdInlineObjects": null,
+            "removedInlineObjects": null
+          },
+          "caret": null
+        }
+      ]
+    ]
+  ],
+  "root": {
+    "id": -1,
+    "content": {
+      "hitTestResult": null,
+      "cursor": null,
+      "element": null,
+      "bounds": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
+      "validArea": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
+      "editableAttribute": null
+    },
+    "children": [
+      {
+        "id": 296,
+        "content": {
+          "hitTestResult": null,
+          "cursor": null,
+          "element": 74,
+          "bounds": {"x1": 0, "y1": 0, "x2": 566, "y2": 360},
+          "validArea": {"x1": 0, "y1": 0, "x2": 566, "y2": 360},
+          "editableAttribute": null
+        },
+        "children": [
+          {
+            "id": 300,
+            "content": {
+              "hitTestResult": null,
+              "cursor": null,
+              "element": 75,
+              "bounds": {"x1": 0, "y1": 0, "x2": 566, "y2": 360},
+              "validArea": {"x1": 0, "y1": 0, "x2": 566, "y2": 360},
+              "editableAttribute": null
+            },
+            "children": [
+              {
+                "id": 78,
+                "content": {
+                  "hitTestResult": "BorderLeftTop",
+                  "cursor": null,
+                  "element": null,
+                  "bounds": {"x1": 0, "y1": 0, "x2": 8, "y2": 8},
+                  "validArea": {"x1": 0, "y1": 0, "x2": 8, "y2": 8},
+                  "editableAttribute": null
+                },
+                "children": null
+              },
+              {
+                "id": 82,
+                "content": {
+                  "hitTestResult": "BorderRightTop",
+                  "cursor": null,
+                  "element": null,
+                  "bounds": {"x1": 558, "y1": 0, "x2": 566, "y2": 8},
+                  "validArea": {"x1": 558, "y1": 0, "x2": 566, "y2": 8},
+                  "editableAttribute": null
+                },
+                "children": null
+              },
+              {
+                "id": 86,
+                "content": {
+                  "hitTestResult": "BorderLeftBottom",
+                  "cursor": null,
+                  "element": null,
+                  "bounds": {"x1": 0, "y1": 352, "x2": 8, "y2": 360},
+                  "validArea": {"x1": 0, "y1": 352, "x2": 8, "y2": 360},
+                  "editableAttribute": null
+                },
+                "children": null
+              },
+              {
+                "id": 90,
+                "content": {
+                  "hitTestResult": "BorderRightBottom",
+                  "cursor": null,
+                  "element": null,
+                  "bounds": {"x1": 558, "y1": 352, "x2": 566, "y2": 360},
+                  "validArea": {"x1": 558, "y1": 352, "x2": 566, "y2": 360},
+                  "editableAttribute": null
+                },
+                "children": null
+              },
+              {
+                "id": 94,
+                "content": {
+                  "hitTestResult": "BorderLeft",
+                  "cursor": null,
+                  "element": null,
+                  "bounds": {"x1": 0, "y1": 8, "x2": 8, "y2": 352},
+                  "validArea": {"x1": 0, "y1": 8, "x2": 8, "y2": 352},
+                  "editableAttribute": null
+                },
+                "children": null
+              },
+              {
+                "id": 98,
+                "content": {
+                  "hitTestResult": "BorderRight",
+                  "cursor": null,
+                  "element": null,
+                  "bounds": {"x1": 558, "y1": 8, "x2": 566, "y2": 352},
+                  "validArea": {"x1": 558, "y1": 8, "x2": 566, "y2": 352},
+                  "editableAttribute": null
+                },
+                "children": null
+              },
+              {
+                "id": 102,
+                "content": {
+                  "hitTestResult": "BorderTop",
+                  "cursor": null,
+                  "element": null,
+                  "bounds": {"x1": 8, "y1": 0, "x2": 558, "y2": 8},
+                  "validArea": {"x1": 8, "y1": 0, "x2": 558, "y2": 8},
+                  "editableAttribute": null
+                },
+                "children": null
+              },
+              {
+                "id": 106,
+                "content": {
+                  "hitTestResult": "BorderBottom",
+                  "cursor": null,
+                  "element": null,
+                  "bounds": {"x1": 8, "y1": 352, "x2": 558, "y2": 360},
+                  "validArea": {"x1": 8, "y1": 352, "x2": 558, "y2": 360},
+                  "editableAttribute": null
+                },
+                "children": null
+              },
+              {
+                "id": 110,
+                "content": {
+                  "hitTestResult": "ButtonMinimum",
+                  "cursor": null,
+                  "element": null,
+                  "bounds": {"x1": 456, "y1": 8, "x2": 490, "y2": 36},
+                  "validArea": {"x1": 456, "y1": 8, "x2": 490, "y2": 36},
+                  "editableAttribute": null
+                },
+                "children": [
+                  {
+                    "id": 304,
+                    "content": {
+                      "hitTestResult": null,
+                      "cursor": null,
+                      "element": 76,
+                      "bounds": {"x1": 457, "y1": 9, "x2": 489, "y2": 35},
+                      "validArea": {"x1": 457, "y1": 9, "x2": 489, "y2": 35},
+                      "editableAttribute": null
+                    },
+                    "children": [
+                      {
+                        "id": 308,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": null,
+                          "element": 77,
+                          "bounds": {"x1": 457, "y1": 9, "x2": 489, "y2": 35},
+                          "validArea": {"x1": 457, "y1": 9, "x2": 489, "y2": 35},
+                          "editableAttribute": null
+                        },
+                        "children": [
+                          {
+                            "id": 316,
+                            "content": {
+                              "hitTestResult": null,
+                              "cursor": null,
+                              "element": 79,
+                              "bounds": {"x1": 461, "y1": 11, "x2": 485, "y2": 33},
+                              "validArea": {"x1": 461, "y1": 11, "x2": 485, "y2": 33},
+                              "editableAttribute": null
+                            },
+                            "children": [
+                              {
+                                "id": 320,
+                                "content": {
+                                  "hitTestResult": null,
+                                  "cursor": null,
+                                  "element": 80,
+                                  "bounds": {"x1": 461, "y1": 11, "x2": 485, "y2": 33},
+                                  "validArea": {"x1": 461, "y1": 11, "x2": 485, "y2": 33},
+                                  "editableAttribute": null
+                                },
+                                "children": null
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": 114,
+                "content": {
+                  "hitTestResult": "ButtonMaximum",
+                  "cursor": null,
+                  "element": null,
+                  "bounds": {"x1": 490, "y1": 8, "x2": 524, "y2": 36},
+                  "validArea": {"x1": 490, "y1": 8, "x2": 524, "y2": 36},
+                  "editableAttribute": null
+                },
+                "children": [
+                  {
+                    "id": 324,
+                    "content": {
+                      "hitTestResult": null,
+                      "cursor": null,
+                      "element": 81,
+                      "bounds": {"x1": 491, "y1": 9, "x2": 523, "y2": 35},
+                      "validArea": {"x1": 491, "y1": 9, "x2": 523, "y2": 35},
+                      "editableAttribute": null
+                    },
+                    "children": [
+                      {
+                        "id": 328,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": null,
+                          "element": 82,
+                          "bounds": {"x1": 491, "y1": 9, "x2": 523, "y2": 35},
+                          "validArea": {"x1": 491, "y1": 9, "x2": 523, "y2": 35},
+                          "editableAttribute": null
+                        },
+                        "children": [
+                          {
+                            "id": 336,
+                            "content": {
+                              "hitTestResult": null,
+                              "cursor": null,
+                              "element": 84,
+                              "bounds": {"x1": 495, "y1": 11, "x2": 519, "y2": 33},
+                              "validArea": {"x1": 495, "y1": 11, "x2": 519, "y2": 33},
+                              "editableAttribute": null
+                            },
+                            "children": [
+                              {
+                                "id": 340,
+                                "content": {
+                                  "hitTestResult": null,
+                                  "cursor": null,
+                                  "element": 85,
+                                  "bounds": {"x1": 495, "y1": 11, "x2": 519, "y2": 33},
+                                  "validArea": {"x1": 495, "y1": 11, "x2": 519, "y2": 33},
+                                  "editableAttribute": null
+                                },
+                                "children": null
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": 118,
+                "content": {
+                  "hitTestResult": "ButtonClose",
+                  "cursor": null,
+                  "element": null,
+                  "bounds": {"x1": 524, "y1": 8, "x2": 558, "y2": 36},
+                  "validArea": {"x1": 524, "y1": 8, "x2": 558, "y2": 36},
+                  "editableAttribute": null
+                },
+                "children": [
+                  {
+                    "id": 348,
+                    "content": {
+                      "hitTestResult": null,
+                      "cursor": null,
+                      "element": 87,
+                      "bounds": {"x1": 525, "y1": 9, "x2": 557, "y2": 35},
+                      "validArea": {"x1": 525, "y1": 9, "x2": 557, "y2": 35},
+                      "editableAttribute": null
+                    },
+                    "children": [
+                      {
+                        "id": 352,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": null,
+                          "element": 88,
+                          "bounds": {"x1": 525, "y1": 9, "x2": 557, "y2": 35},
+                          "validArea": {"x1": 525, "y1": 9, "x2": 557, "y2": 35},
+                          "editableAttribute": null
+                        },
+                        "children": [
+                          {
+                            "id": 360,
+                            "content": {
+                              "hitTestResult": null,
+                              "cursor": null,
+                              "element": 90,
+                              "bounds": {"x1": 529, "y1": 11, "x2": 553, "y2": 33},
+                              "validArea": {"x1": 529, "y1": 11, "x2": 553, "y2": 33},
+                              "editableAttribute": null
+                            },
+                            "children": [
+                              {
+                                "id": 364,
+                                "content": {
+                                  "hitTestResult": null,
+                                  "cursor": null,
+                                  "element": 91,
+                                  "bounds": {"x1": 529, "y1": 11, "x2": 553, "y2": 33},
+                                  "validArea": {"x1": 529, "y1": 11, "x2": 553, "y2": 33},
+                                  "editableAttribute": null
+                                },
+                                "children": null
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": 122,
+                "content": {
+                  "hitTestResult": "Title",
+                  "cursor": null,
+                  "element": null,
+                  "bounds": {"x1": 8, "y1": 8, "x2": 456, "y2": 36},
+                  "validArea": {"x1": 8, "y1": 8, "x2": 456, "y2": 36},
+                  "editableAttribute": null
+                },
+                "children": [
+                  {
+                    "id": 372,
+                    "content": {
+                      "hitTestResult": null,
+                      "cursor": null,
+                      "element": 93,
+                      "bounds": {"x1": 13, "y1": 13, "x2": 451, "y2": 31},
+                      "validArea": {"x1": 13, "y1": 13, "x2": 451, "y2": 31},
+                      "editableAttribute": null
+                    },
+                    "children": null
+                  }
+                ]
+              },
+              {
+                "id": 126,
+                "content": {
+                  "hitTestResult": "Client",
+                  "cursor": null,
+                  "element": null,
+                  "bounds": {"x1": 8, "y1": 36, "x2": 558, "y2": 352},
+                  "validArea": {"x1": 8, "y1": 36, "x2": 558, "y2": 352},
+                  "editableAttribute": null
+                },
+                "children": [
+                  {
+                    "id": 58,
+                    "content": {
+                      "hitTestResult": null,
+                      "cursor": null,
+                      "element": null,
+                      "bounds": {"x1": 18, "y1": 46, "x2": 548, "y2": 68},
+                      "validArea": {"x1": 18, "y1": 46, "x2": 548, "y2": 68},
+                      "editableAttribute": {"focused": true, "editable": true}
+                    },
+                    "children": [
+                      {
+                        "id": 380,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": null,
+                          "element": 95,
+                          "bounds": {"x1": 18, "y1": 46, "x2": 548, "y2": 68},
+                          "validArea": {"x1": 18, "y1": 46, "x2": 548, "y2": 68},
+                          "editableAttribute": null
+                        },
+                        "children": [
+                          {
+                            "id": 384,
+                            "content": {
+                              "hitTestResult": null,
+                              "cursor": null,
+                              "element": 96,
+                              "bounds": {"x1": 18, "y1": 46, "x2": 548, "y2": 68},
+                              "validArea": {"x1": 18, "y1": 46, "x2": 548, "y2": 68},
+                              "editableAttribute": null
+                            },
+                            "children": [
+                              {
+                                "id": 74,
+                                "content": {
+                                  "hitTestResult": null,
+                                  "cursor": "IBeam",
+                                  "element": null,
+                                  "bounds": {"x1": 19, "y1": 47, "x2": 547, "y2": 67},
+                                  "validArea": {"x1": 19, "y1": 47, "x2": 547, "y2": 67},
+                                  "editableAttribute": null
+                                },
+                                "children": [
+                                  {
+                                    "id": 460,
+                                    "content": {
+                                      "hitTestResult": null,
+                                      "cursor": null,
+                                      "element": 115,
+                                      "bounds": {"x1": 21, "y1": 49, "x2": 57, "y2": 65},
+                                      "validArea": {"x1": 21, "y1": 49, "x2": 57, "y2": 65},
+                                      "editableAttribute": null
+                                    },
+                                    "children": null
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "id": 70,
+                    "content": {
+                      "hitTestResult": null,
+                      "cursor": null,
+                      "element": null,
+                      "bounds": {"x1": 18, "y1": 261, "x2": 548, "y2": 281},
+                      "validArea": {"x1": 18, "y1": 261, "x2": 548, "y2": 281},
+                      "editableAttribute": {"focused": false, "editable": false}
+                    },
+                    "children": [
+                      {
+                        "id": 440,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": null,
+                          "element": 110,
+                          "bounds": {"x1": 18, "y1": 261, "x2": 548, "y2": 281},
+                          "validArea": {"x1": 18, "y1": 261, "x2": 548, "y2": 281},
+                          "editableAttribute": null
+                        },
+                        "children": [
+                          {
+                            "id": 492,
+                            "content": {
+                              "hitTestResult": null,
+                              "cursor": null,
+                              "element": 123,
+                              "bounds": {"x1": 20, "y1": 263, "x2": 546, "y2": 279},
+                              "validArea": {"x1": 20, "y1": 263, "x2": 546, "y2": 279},
+                              "editableAttribute": null
+                            },
+                            "children": null
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "id": 444,
+                    "content": {
+                      "hitTestResult": null,
+                      "cursor": null,
+                      "element": 111,
+                      "bounds": {"x1": 18, "y1": 316, "x2": 126, "y2": 336},
+                      "validArea": {"x1": 18, "y1": 316, "x2": 126, "y2": 336},
+                      "editableAttribute": null
+                    },
+                    "children": [
+                      {
+                        "id": 448,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": null,
+                          "element": 112,
+                          "bounds": {"x1": 18, "y1": 316, "x2": 126, "y2": 336},
+                          "validArea": {"x1": 18, "y1": 316, "x2": 126, "y2": 336},
+                          "editableAttribute": null
+                        },
+                        "children": [
+                          {
+                            "id": 456,
+                            "content": {
+                              "hitTestResult": null,
+                              "cursor": null,
+                              "element": 114,
+                              "bounds": {"x1": 22, "y1": 318, "x2": 122, "y2": 334},
+                              "validArea": {"x1": 22, "y1": 318, "x2": 122, "y2": 334},
+                              "editableAttribute": null
+                            },
+                            "children": null
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
