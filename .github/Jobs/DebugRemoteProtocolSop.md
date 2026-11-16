@@ -254,6 +254,28 @@ Use a fresh application state.
    require both markers to remain unchanged without retyping them.
 9. Require the application to remain connected and responsive throughout the
    typing and tab changes.
+10. When verifying GacJS, activate an actual operating-system IME in the browser.
+    In both Search and the central editor, place a collapsed caret within known
+    text, compose a candidate sequence, choose a candidate and commit it. Require
+    exact insertion at that caret with no missing, duplicated or reordered
+    characters. Repeat with existing text selected and require exact replacement
+    of that range; include forward/reversed and multi-paragraph selections where
+    supported by the editor. Browser capture selection must not clear Core's
+    selection first.
+11. In each editor, select a known range, start and cancel an IME composition,
+    and require unchanged text and selection. Commit a subsequent composition to
+    demonstrate that the preserved range is replaced exactly. Switch to `List`
+    and back, and require both committed results to persist without retyping.
+12. Record the browser/version, actual IME and candidate-selection/cancellation
+    results. Attempt the available interactive session even when automated tests
+    pass. If no usable native session/device is available, record that coverage
+    as unavailable and retain the other checks. Direct Unicode insertion,
+    Chromium CDP composition and synthetic composition events are distinct
+    automated coverage; none alone satisfies the actual IME step or proves a
+    physical software keyboard appeared. Keep the matching live GacJS tests in
+    `<GacJS repo>/Gaclib/website/entry/test/Testing_Protocol_BrowserEditing.js`
+    synchronized with these insertion, replacement, cancellation and persistence
+    operations.
 
 #### 3.1 Ensure Document Editor Features on "Document Editor (Ribbon)" test page
 

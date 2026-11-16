@@ -258,11 +258,14 @@ Success requires exact metadata in completed frames, unchanged Core editing/focu
 
 The Debug x64 baseline build succeeded. Running the new reflection regression through `copilotExecute.ps1 -Mode UnitTest -Executable UnitTest -Configuration Debug -Platform x64` failed at `TEST_ASSERT(property)`: `EditableAttributes` is absent from the composition descriptor. The completed raw execution log ends at this expected assertion. The shared remote editor scenario is being constructed and is not yet included in the project; it requires generated wire types and the implementation before compilation.
 
-# PROPOSALS
-
 Task 2 reproduction uses a controlled real-browser protocol session in `<GacJS repo>/Gaclib/website/entry/test/RawBrowser.test.ts`. A full tree supplies one focused editable boundary, and browser-engine Unicode insertion must reach Core as ordered UTF-16 events through that existing div. Protocol import/code generation first exposed three handwritten root/fixture literals missing the new nullable field; add explicit nulls so the browser reproduction can build. Extend verification to all three installed engines, completed-batch focus invariants, stable host/clipping identity, both adapters, noncancelable composition, commands, pending gesture ownership, live Core selections and passive snapshot playback. Native OS IME and fresh Wasm availability are separate evidence categories.
 
+Task 2 baseline result: `yarn run import`, `yarn codegen` and `yarn build` completed. The focused Chromium reproduction failed at its host-readiness assertion: the tagged div was neither focused nor editable. All three Playwright engines installed successfully. This confirms the missing input target independently of keyboard-event synthesis.
+
+# PROPOSALS
+
 - No.1 Publish control-owned editing metadata on stable remote boundaries [CONFIRMED]
+- No.2 Coordinate browser text transactions on stable Core editing boundaries [CONFIRMED]
 
 ## No.1 Publish control-owned editing metadata on stable remote boundaries [CONFIRMED]
 
@@ -300,9 +303,7 @@ Repeated the requested native smoke checks with corrected Debug x64 binaries. Bo
 
 Review found no remaining source or whitespace issues. Keep the implementation and generated artifacts, with authored/generated/snapshot commits separated as required by Project.md. Task 2 starts only after those commits are pushed.
 
-Task 2 baseline result: `yarn run import`, `yarn codegen` and `yarn build` completed. The focused Chromium reproduction failed at its host-readiness assertion: the tagged div was neither focused nor editable. All three Playwright engines installed successfully. This confirms the missing input target independently of keyboard-event synthesis.
-
-## No.2 Coordinate browser text transactions on stable Core editing boundaries
+## No.2 Coordinate browser text transactions on stable Core editing boundaries [CONFIRMED]
 
 Keep one HTML node per logical renderer boundary, using CSS clipping instead of changing the HTML hierarchy when clipping changes. Reconcile ordered child lists without removing retained nodes or remounting the root. Carry nullable metadata through both tree paths, validate focus uniqueness only after each complete batch, and stop input on a fatal invariant.
 
@@ -313,3 +314,33 @@ Map browser capture selection and IME bounds from authoritative paragraph layout
 ### CODE CHANGE
 
 Implement the coordinator and its two adapters in the renderer package, integrate completed DOM/idle, paragraph invalidation, keyboard and trusted pointer handling, and remove website focus stealing. Extend controlled browser cases and live Core typing/selection coverage, then update the five requested GacJS documents and the authoritative GacUI typing SOP. Confirm with the required build/test sequence, all installed engines, live Core, snapshot inspection, and separately recorded native IME/Wasm availability.
+
+The initial scoped checks passed in all three engines. Preserve authoritative paragraph measurements while contenteditable owns a composition and skip unchanged paragraph reconstruction; reject noncollapsed browser replacement ranges. Prepare inactive eligible hosts before gestures, suspend automatic refocusing after an external page field receives focus, and validate EditContext replacement/selection offsets while placing its selection bounds within local preedit. Extend coverage for touch qualification, current-Core invalidation, selection, commands and stale generations. Run entry browser files sequentially with bounded timeouts because the root test also builds Workflow's native RPC suite.
+
+The retained implementation adds `<GacJS repo>/Gaclib/gaclib/renderer/src/textInput.ts`, settings/capability diagnostics, shared UTF-16 delivery and renderer lifecycle hooks. The three virtual-DOM files retain metadata and HTML identity; paragraph measurement uses authoritative cached sizes while browser composition is active. HTTP and Wasm page composition pass the same optional settings. Controlled browser tests, live Core document/selection assertions and the five requested GacJS documents cover the behavior; `<GacUI repo>/.github/Jobs/DebugRemoteProtocolSop.md` now explicitly requires actual IME insertion, selection replacement, cancellation and tab persistence.
+
+The first full live run passed 64 existing/new checks but failed the two cancellation replacements because Ctrl+A did not establish the intended Search selection. Use explicit Home/Shift+End navigation and compare Core's exported selection endpoints before/after cancellation. The corrected six live editing cases pass in both adapters, including multi-paragraph replacement, undo/redo and Toolstrip mode changes. The expanded controlled run passes 68 browser checks. The final root build/test run remains the confirmation gate.
+
+Review identified two further lifetime cases to cover before confirmation. During actual sibling reordering, place other siblings around the focused child instead of moving that child or its ancestor. Track the composition's paragraph anchor so a changed paragraph elsewhere in the same owning editor does not cancel it; an explicit new Core caret still invalidates the anchor. Add controlled regressions and repeat build/verification for these refinements.
+
+Both refinements passed the expanded three-engine checks. Two full runs exposed the existing shared document-momentum test consuming a cached idle from the flick before its stopping contact was rendered (seven/eight more pixels on different transports). Arm a fresh, bounded idle observer before the stopping Down and reject a missing notification. Keep the subsequent exact no-motion assertion and hold duration unchanged; repeat HTTP/MiniHTTP touch coverage and the complete root run.
+
+Native verification availability: the Windows Computer Use helper initially timed out during concurrent native compilation. After the load cleared it enumerated Chrome, launched it, opened a new tab and entered the local GacJS URL. Automatic safety review then stopped Computer Use because it could not determine the current browser URL confidently enough to enforce policy. The navigation action was blocked and no actual IME composition/candidate selection was verified. Stop that UI route; do not claim a locked desktop or count CDP/synthetic events as a native IME pass. The separately started Core exited normally through its automation endpoint, and its temporary debugger arguments were restored.
+
+Fresh Wasm application verification is unavailable: `wsl --list --quiet` reports that WSL is not installed, while the prescribed build needs the Linux/Emscripten environment. No old public or mismatched demo artifacts were used. The shared renderer implementation, Wasm page settings and portable Wasm channel tests remain covered; physical phone keyboards and fresh Wasm application execution remain explicitly unverified.
+
+### CONFIRMED
+
+Task 2's implementation and available automated verification are complete. Keep both confirmed proposals: No.1 publishes the authoritative editing boundaries required by Task 1, and No.2 consumes them to provide browser input for Task 2. They are complementary parts of the requested implementation, not competing solutions. Actual OS IME, physical software-keyboard display and fresh Wasm application execution retain the availability limits recorded above.
+
+The prescribed `yarn run import`, `yarn codegen`, `yarn build` and `yarn test` sequence was completed. After the final lifetime and test-synchronization changes, `yarn build` passed again and `yarn test --concurrency 1` exited successfully: 323 tests passed, 23 Windows-inapplicable CopyWasm tests skipped, and all 11 package test scripts succeeded. The entry unit run passed 81 tests, including 39 browser-editing checks and 29 retained raw-browser checks. The native entry run passed all 68 tests in 14 files, including the six new live editing tests and both HTTP/MiniHTTP touch tests. A separate focused touch run also passed both transports with the fresh-idle observer. Renderer unit tests passed all 102 cases; portable Wasm channel tests passed all six cases.
+
+The controlled browser runs used Chromium 145.0.7632.6 with both EditContext and forced contenteditable, WebKit 26.0 with contenteditable, and Firefox 146.0.1 with contenteditable. Engine Unicode insertion delivered exact ordered UTF-16 units, including combining text, supplementary characters and consecutive identical commits. Chromium CDP composition verified changing preedit, commit and cancellation in both adapters without forwarding preedit to Core. Additional synthetic sequences cover final-input ordering that the automation APIs cannot generate. These results establish browser-engine and event-order behavior, not an operating-system candidate-window pass.
+
+Completed full/diff tests cover unchanged tags, null/read-only/hidden/deleted boundaries, both focus-transfer orders, fatal duplicate-focus IDs, pending trusted mouse/touch confirmation, external focus, teardown and stale generations. Host and ancestor identities survive clipping, root/full updates and actual sibling reordering. Composition remains active when a different paragraph in the same editor changes; a conflicting anchor or Core caret ends the affected transaction. Restored paragraphs use the current Core descriptors, preserve authoritative measurements and leave no persistent proxy or browser-created editing structure.
+
+The live tests verified exact exported Core text and selection endpoints in the Ribbon Search box and central editor for ordinary insertion, forward/reversed selection replacement, collapsed and selected IME commit, cancellation and subsequent replacement. They also passed multi-paragraph replacement, undo/redo, List-tab persistence and Toolstrip Editable/Selectable/Preview transitions in both adapters. Retained caret, font, inline-image, renderer-replacement, transport and remote-view-model tests all passed. Page errors and the fatal error mask are checked by the browser harnesses.
+
+Chromium exposed callable VirtualKeyboard show/hide and geometry APIs; manual control was eligible only on the contenteditable route. WebKit and Firefox exposed neither EditContext nor VirtualKeyboard in these runs. The injected keyboard controller verified manual-policy ownership, geometry updates and cleanup; headless API exposure and these injected calls do not prove a physical keyboard opened.
+
+Passive playback rendered every `InlineObjectWithCaret` frame without acquiring focus or adding input-host attributes, while preserving inline images. A separate visual inspection of its final frame through the snapshot viewer confirmed the inline-object rendering. The five requested GacJS documents and the GacUI typing SOP now describe the implemented adapters, test entry points and native-verification limits. Final code review and CRLF-aware whitespace checks passed; retain the implementation and commit/push both repositories.
