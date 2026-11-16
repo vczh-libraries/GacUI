@@ -39233,7 +39233,7 @@ GuiRemoteGraphicsParagraph
 
 			if (bounds.x1 <= point.x && point.x < bounds.x2 && bounds.y1 <= point.y && point.y < bounds.y2)
 			{
-				return caret;
+				return GetNearestCaretFromTextPos(caret, true);
 			}
 
 			vint horizontalDistance = 0;
@@ -39252,7 +39252,9 @@ GuiRemoteGraphicsParagraph
 			}
 		}
 
-		return bestCaret;
+		// Bounds exist for every text offset, including offsets inside an inline
+		// object or a glyph cluster. Only the renderer knows its valid boundaries.
+		return GetNearestCaretFromTextPos(bestCaret, true);
 	}
 
 	Nullable<IGuiGraphicsParagraph::InlineObjectProperties> GuiRemoteGraphicsParagraph::GetInlineObjectFromPoint(Point point, vint& start, vint& length)
