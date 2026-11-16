@@ -5,6 +5,7 @@ struct RenderingDomContent
     var element: int?;
     var bounds: Rect;
     var validArea: Rect;
+    var editableAttribute: ElementEditableAttribute?;
 }
 
 class RenderingDom

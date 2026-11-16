@@ -50,11 +50,18 @@ struct ElementRendering
     var areaClippedByParent : Rect;
 }
 
+struct ElementEditableAttribute
+{
+    var focused: bool;
+    var editable: bool;
+}
+
 struct ElementBoundary
 {
     var id : int;
     var hitTestResult : WindowHitTestResult?;
     var cursor: WindowSystemCursorType?;
+	var editableAttribute : ElementEditableAttribute?;
     var bounds : Rect;
     var areaClippedBySelf : Rect;
 }

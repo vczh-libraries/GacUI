@@ -86,6 +86,31 @@ Basic Construction
 					LimitToElementAndChildren,
 				};
 
+				/// <summary>
+				/// Serving GuiGraphicsComposition::EditableAttributes property.
+				/// The value should only be controlled by an actual control.
+				/// </summary>
+				struct EditableAttributeValues
+				{
+					/// <summary>
+					/// True if the composition is featured by an editable control, no matter it is currently focused or editable.
+					/// </summary>
+					bool									featured = false;
+
+					/// <summary>
+					/// True if the composition is focused, this is different from <see cref="GuiGraphicsHost::GetFocusedComposition"/>
+					///   A focusable composition will not automatically update it to true.
+					///   A false value does not mean the composition is not focused.
+					/// This is for editing hint only, it only make sense when user can type, which is determined by its AssociatedControl or RelatedControl.
+					/// </summary>
+					bool									focused = false;
+
+					/// <summary>
+					/// True if user can type to this composition.
+					/// </summary>
+					bool									editable = false;
+				};
+
 			protected:
 
 				struct GraphicsHostRecord
@@ -136,6 +161,17 @@ Basic Construction
 				~GuiGraphicsComposition();
 
 				bool										IsRendering();
+
+				/// <summary>
+				/// Get the editable attributes. EditableAttributes property is nothing but a simple hint for remote protocol.
+				/// </summary>
+				/// <returns>The editable attributes.</returns>
+				EditableAttributeValues						GetEditableAttributes();
+				/// <summary>
+				/// Set the editable attributes. It triggers nothing but storing the value.
+				/// </summary>
+				/// <param name="value">The editable attributes.</param>
+				void										SetEditableAttributes(const EditableAttributeValues& value);
 
 				/// <summary>Get the parent composition.</summary>
 				/// <returns>The parent composition.</returns>

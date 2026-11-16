@@ -119,13 +119,14 @@ UnitTestRemoteProtocol
 			loggedTrace.frames = Ptr(new collections::List<remoteprotocol::UnitTest_RenderingFrame>);
 		}
 
-	protected:
-
 /***********************************************************************
 IGuiRemoteProtocolMessages (Rendering)
 ***********************************************************************/
 
+	public:
 		Ptr<UnitTestLoggedFrame>			GetLastRenderingFrame();
+
+	protected:
 		Ptr<UnitTestLoggedFrame>			TryGetLastRenderingFrameAndReset();
 		void								Impl_RendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments);
 		void								Impl_RendererEndRendering(vint id);
