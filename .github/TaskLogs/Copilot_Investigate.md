@@ -301,3 +301,15 @@ Repeated the requested native smoke checks with corrected Debug x64 binaries. Bo
 Review found no remaining source or whitespace issues. Keep the implementation and generated artifacts, with authored/generated/snapshot commits separated as required by Project.md. Task 2 starts only after those commits are pushed.
 
 Task 2 baseline result: `yarn run import`, `yarn codegen` and `yarn build` completed. The focused Chromium reproduction failed at its host-readiness assertion: the tagged div was neither focused nor editable. All three Playwright engines installed successfully. This confirms the missing input target independently of keyboard-event synthesis.
+
+## No.2 Coordinate browser text transactions on stable Core editing boundaries
+
+Keep one HTML node per logical renderer boundary, using CSS clipping instead of changing the HTML hierarchy when clipping changes. Reconcile ordered child lists without removing retained nodes or remounting the root. Carry nullable metadata through both tree paths, validate focus uniqueness only after each complete batch, and stop input on a fatal invariant.
+
+A renderer-owned coordinator prepares eligible hosts and selects EditContext or contenteditable by capabilities. Each attached session has a generation, local composition transaction and pending Core-confirmation queue. Trusted pointer acquisition precedes network delivery; completed render/idle confirms or rejects the candidate. Core owns text and selection. Commit only ordered UTF-16 units or explicit commands; never replay a transaction on another adapter. End sessions before focus/metadata/content invalidation and suppress IME-owned keys while balancing forwarded keys.
+
+Map browser capture selection and IME bounds from authoritative paragraph layouts. Contenteditable may temporarily mutate paragraph nodes during noncancelable composition; reconcile those nodes from current Core descriptors after the transaction. Avoid rebuilding an unchanged paragraph and measure authoritative state. EditContext keeps preedit in its local buffer and presents it with a pseudo-element on the existing host. Optional VirtualKeyboard control stays independent, automatic by default, with explicit ownership and capability diagnostics. Preserve passive snapshot playback.
+
+### CODE CHANGE
+
+Implement the coordinator and its two adapters in the renderer package, integrate completed DOM/idle, paragraph invalidation, keyboard and trusted pointer handling, and remove website focus stealing. Extend controlled browser cases and live Core typing/selection coverage, then update the five requested GacJS documents and the authoritative GacUI typing SOP. Confirm with the required build/test sequence, all installed engines, live Core, snapshot inspection, and separately recorded native IME/Wasm availability.
