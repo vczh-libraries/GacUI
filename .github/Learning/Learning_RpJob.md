@@ -2,6 +2,14 @@
 
 ## Shared
 
+- The default GacJS website advertises only its CSS default font unless `fontFamilies` is configured. Inspect the current picker before requiring a native-installed family such as DejaVu Sans Mono. Check the available family and changed size; record unavailable family enumeration separately. Serialized document XML can omit a face equal to the default, so compare effective attributes rather than requiring an explicit default-face tag.
+
+- After a browser menu command, use ordinary keystrokes for printable ASCII when DOM focus is on the renderer container. `keyboard.insertText` requires an active editable browser element and can otherwise insert nothing even though Core retains the selected range. When refocusing in Preview, choose unlinked text; clicking a retained hyperlink opens a modal that intercepts subsequent mode shortcuts.
+
+- A document context menu exposes separators as `MenuSplitter`, while ribbon toolbars use `ToolstripSplitter`. Scroll a gallery through its actual `ScrollView` viewport before clicking an offscreen style; the label can remain in Controls outside the visible clip.
+
+- Natural image dimensions can be omitted from document XML when no explicit size override exists. Verify the decoded dimensions and embedded bytes through an actual private roundtrip and exported image attributes. Decode HTML entities such as `&nbsp;` before comparing exported text split across formatting spans.
+
 - Inline objects occupy multiple document text positions. Derive the whole-document endpoint from Core caret navigation, not from DOM plaintext length. Include a click beside or inside a large inline image, then type and undo; a caret inside the object's placeholder can look normal while producing an invalid edit.
 
 - Undo can normalize equivalent document runs by omitting default font attributes or merging adjacent text runs. Compare text, images, ranges and effective formatting after editing. Exact XML comparison remains useful for a canceled dialog that should perform no edit.

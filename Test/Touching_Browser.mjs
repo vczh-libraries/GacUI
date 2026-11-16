@@ -356,17 +356,28 @@ try {
         await touch('touchStart',[b],false); await new Promise(resolve=>setTimeout(resolve,550)); await touch('touchEnd',[]);
         await until(async()=>{const m=(await document()).element.match(/Selection(\([^)]*\))-(\([^)]*\))/);return m!==null&&m[1]!==m[2];},'Touch creates a nonempty text range');
         const selection=(await document()).element.match(/Selection\([^)]*\)-\([^)]*\)/)[0];
-        for(const duration of [0,550]) {
+        for(const duration of [550,0]) {
             const counts=await counters();
             await touch('touchStart',[b],false);
             if(duration) await new Promise(resolve=>setTimeout(resolve,duration));
             await touch('touchEnd',[]);
-            await until(async()=>(await document()).element.includes(selection),'Press on a selected endpoint preserves the exact range');
+            if(duration) {
+                await until(async()=>(await document()).element.includes(selection),'Long press on a selected endpoint preserves the exact range');
+            } else {
+                await until(async()=>{
+                    const m=(await document()).element.match(/Selection(\([^)]*\))-(\([^)]*\))/);
+                    return m!==null&&m[1]===m[2];
+                },'Short press on a selected endpoint collapses the range');
+            }
             await until(async()=>{
                 const current=await counters();
                 return duration ? current[0]===counts[0]&&current[1]===counts[1]+1&&current[2]===counts[2]+1 : current[0]===counts[0]+1&&current[1]===counts[1]&&current[2]===counts[2];
             },'Exclusive press offer and exactly one long-press right fallback');
         }
+        // Restore the range after the short press before checking scroll retention.
+        await touch('touchStart',[a],false); await touch('touchEnd',[]);
+        await touch('touchStart',[b],false); await new Promise(resolve=>setTimeout(resolve,550)); await touch('touchEnd',[]);
+        await until(async()=>(await document()).element.includes(selection),'Restore the exact range before document scrolling');
         const beforeY=(await document()).bounds.y1;
         await touch('touchStart',[{...b,y:b.y+40}],false); await touch('touchMove',[b]); await touch('touchEnd',[]);
         await until(async()=>(await document()).bounds.y1<beforeY,'Accepted document drag scrolls content');

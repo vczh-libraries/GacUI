@@ -258,6 +258,7 @@
 ../../GacUISrc/UnitTest/TestControls_CoreApplication_GuiWindow.cpp
 ../../GacUISrc/UnitTest/TestControls_EasyLayout.cpp
 ../../GacUISrc/UnitTest/TestControls_Editor.cpp
+../../GacUISrc/UnitTest/TestControls_Editor_Editable.cpp
 ../../GacUISrc/UnitTest/TestControls_Editor_Key.cpp
 ../../GacUISrc/UnitTest/TestControls_Editor_RichText.cpp
 ../../GacUISrc/UnitTest/TestControls_Editor_InlineObject.cpp
