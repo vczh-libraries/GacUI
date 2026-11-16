@@ -1,7 +1,7 @@
 // Shared editor checks for automation-service point input and Chromium touch acquisition.
 import assert from 'node:assert/strict';
 import path from 'node:path';
-import { writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
 const pause = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
@@ -22,6 +22,7 @@ export async function verifyEditors(input) {
         while (!await predicate()) {
             if (Date.now() >= deadline) {
                 const snapshot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), 'Output', 'Injection', 'editor-point-timeout.json');
+                await mkdir(path.dirname(snapshot), { recursive: true });
                 await writeFile(snapshot, JSON.stringify({ lastTap, controls: await input.controls() }, null, 2));
                 assert.fail(description);
             }
@@ -121,6 +122,10 @@ export async function verifyEditors(input) {
         const d = await document();
         const start = { x: d.bounds.x1 + 8, y: d.bounds.y1 + 8 };
         await input.mouse(start);
+        if (await documentText() === '') {
+            await input.type('Initial selection text.');
+            await until(async () => await documentText() === 'Initial selection text.', `${variant}: empty document has selection text`);
+        }
         await input.key('CTRL+HOME');
         await until(async () => await selection() === 'Selection(0,0)-(0,0)', `${variant}: Home reaches the first caret`);
         await input.key('CTRL+SHIFT+END');

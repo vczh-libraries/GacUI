@@ -2,13 +2,23 @@
 
 ## Shared
 
+- Inline objects occupy multiple document text positions. Derive the whole-document endpoint from Core caret navigation, not from DOM plaintext length. Include a click beside or inside a large inline image, then type and undo; a caret inside the object's placeholder can look normal while producing an invalid edit.
+
+- Undo can normalize equivalent document runs by omitting default font attributes or merging adjacent text runs. Compare text, images, ranges and effective formatting after editing. Exact XML comparison remains useful for a canceled dialog that should perform no edit.
+
+- A file overwrite confirmation can have the same title as its underlying picker, and a message box can share the main-window title. Identify the innermost hosted window and observe its removal from the window stack; title uniqueness is not a reliable completion condition.
+
+- Wait for a palette's new accent color and settled renderer bounds before navigating through the rebuilt controls. Confirm the selected editor's actual menu or ribbon content after changing tabs. A retained tab label can still have its old location during template replacement.
+
+- Fresh document-editor pages can contain only an empty paragraph. Seed known text before requiring a nonempty keyboard selection in a point-input harness. Create the diagnostic output directory before writing a failure snapshot so a missing directory cannot hide the original assertion.
+
 - When releasing a browser drag outside the renderer, first observe Core's capture request. Input sent before remote capture acknowledgment tests transport latency rather than the captured-release path. Check resize and title dragging separately, then move back without a pressed button and require unchanged bounds.
 
 - A close request can dismiss an active hosted modal while leaving its main application running. Before a fresh-counter test, confirm that the previous Core has actually exited; reconnecting a new renderer to that surviving Core preserves its old data.
 
 - During remote font measurement or palette replacement, require the target's Core bounds and current renderer DOM bounds to agree and settle before sending coordinates. A label can already exist with one-pixel placeholder bounds while the renderer still shows the preceding geometry; reject those bounds before comparing consecutive reads.
 
-- When checking that fresh contact stops momentum, distinguish Core movement from an older browser frame arriving late. Consume the preceding flick's pending idle and wait for the stopping contact's render before capturing the stationary position; a fixed delay can compare two different rendered frames of an already-stopped Core.
+- When checking that fresh contact stops momentum, distinguish Core movement from an older browser frame arriving late. A stationary Down stops momentum without necessarily invalidating the document, so requiring a fresh idle can time out on correct behavior. Send a mouse move to a previously unhovered button after Down and observe its actual hover-color change before sampling the stationary position. An uncorrelated idle or a fixed delay can compare two different rendered frames of an already-stopped Core. Keep the checks for movement after release and unchanged position during the stopping hold.
 
 - Recheck the actual client viewport after a palette refresh before testing momentum. A taller refreshed window can expose the whole document, leaving no scroll range for a flick. Restore the intended client size and verify both content overflow and the current gesture interior before judging post-release movement.
 
