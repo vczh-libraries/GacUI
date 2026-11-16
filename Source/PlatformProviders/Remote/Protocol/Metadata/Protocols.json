@@ -3790,6 +3790,26 @@
     }, {
         "$ast": "StructDecl",
         "attributes": [],
+        "name": "ElementEditableAttribute",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "focused",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "editable",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
         "name": "ElementBoundary",
         "members": [{
             "$ast": "StructMember",
@@ -3816,6 +3836,16 @@
                 "element": {
                     "$ast": "ReferenceType",
                     "name": "WindowSystemCursorType"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "editableAttribute",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "ElementEditableAttribute"
                 }
             }
         }, {
@@ -4061,6 +4091,16 @@
             "type": {
                 "$ast": "ReferenceType",
                 "name": "Rect"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "editableAttribute",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "ElementEditableAttribute"
+                }
             }
         }],
         "type": "Struct"

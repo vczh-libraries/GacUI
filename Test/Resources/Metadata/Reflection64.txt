@@ -4828,6 +4828,7 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     property CachedMinClientSize : presentation::Size { get:GetCachedMinClientSize event:CachedMinSizeChanged }
     property CachedMinSize : presentation::Size { get:GetCachedMinSize event:CachedMinSizeChanged }
     property Children : system::ReadonlyList<presentation::compositions::GuiGraphicsComposition*>^ { get:GetChildren }
+    property EditableAttributes : presentation::compositions::GuiGraphicsComposition::EditableAttributeValues { get:GetEditableAttributes set:SetEditableAttributes }
     property EventuallyVisible : system::Boolean { get:GetEventuallyVisible }
     property GlobalBounds : presentation::Rect { get:GetGlobalBounds }
     property InternalMargin : presentation::Margin { get:GetInternalMargin set:SetInternalMargin }
@@ -4854,6 +4855,7 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     @InvokeTemplate:$This->Children($Arguments)
     @ClosureTemplate:::vl::Func<$Func>($This, &$Type::Children)
     function GetChildren() : system::ReadonlyList<presentation::compositions::GuiGraphicsComposition*>^;
+    function GetEditableAttributes() : presentation::compositions::GuiGraphicsComposition::EditableAttributeValues;
     function GetEventuallyVisible() : system::Boolean;
     function GetGlobalBounds() : presentation::Rect;
     function GetInternalMargin() : presentation::Margin;
@@ -4876,6 +4878,7 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     function SafeDelete() : system::Void;
     function SetAssociatedCursor(value : presentation::INativeCursor*) : system::Void;
     function SetAssociatedHitTestResult(value : presentation::INativeWindowListener::HitTestResult) : system::Void;
+    function SetEditableAttributes(value : presentation::compositions::GuiGraphicsComposition::EditableAttributeValues) : system::Void;
     function SetInternalMargin(value : presentation::Margin) : system::Void;
     function SetMinSizeLimitation(value : presentation::compositions::GuiGraphicsComposition::MinSizeLimitation) : system::Void;
     function SetOwnedElement(value : presentation::elements::IGuiGraphicsElement^) : system::Void;
@@ -4883,6 +4886,13 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     function SetTransparentToMouse(value : system::Boolean) : system::Void;
     function SetVisible(value : system::Boolean) : system::Void;
 
+}
+
+@ValueType
+struct presentation::compositions::GuiGraphicsComposition::EditableAttributeValues {
+    property editable : system::Boolean;
+    property featured : system::Boolean;
+    property focused : system::Boolean;
 }
 
 @ValueType

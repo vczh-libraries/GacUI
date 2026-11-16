@@ -56,6 +56,7 @@ namespace vl::presentation::remoteprotocol
 	struct RendererCreation;
 	struct ElementBeginRendering;
 	struct ElementRendering;
+	struct ElementEditableAttribute;
 	struct ElementBoundary;
 	struct ElementMeasuring_FontHeight;
 	struct ElementMeasuring_ElementMinSize;
@@ -130,6 +131,7 @@ namespace vl::presentation::remoteprotocol
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RendererCreation> { static constexpr const wchar_t* Name = L"RendererCreation"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementBeginRendering> { static constexpr const wchar_t* Name = L"ElementBeginRendering"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementRendering> { static constexpr const wchar_t* Name = L"ElementRendering"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementEditableAttribute> { static constexpr const wchar_t* Name = L"ElementEditableAttribute"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementBoundary> { static constexpr const wchar_t* Name = L"ElementBoundary"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight> { static constexpr const wchar_t* Name = L"ElementMeasuring_FontHeight"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize> { static constexpr const wchar_t* Name = L"ElementMeasuring_ElementMinSize"; };
@@ -654,11 +656,18 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::Rect areaClippedByParent;
 	};
 
+	struct ElementEditableAttribute
+	{
+		bool focused;
+		bool editable;
+	};
+
 	struct ElementBoundary
 	{
 		::vl::vint id;
 		::vl::Nullable<::vl::presentation::INativeWindowListener::HitTestResult> hitTestResult;
 		::vl::Nullable<::vl::presentation::INativeCursor::SystemCursorType> cursor;
+		::vl::Nullable<::vl::presentation::remoteprotocol::ElementEditableAttribute> editableAttribute;
 		::vl::presentation::Rect bounds;
 		::vl::presentation::Rect areaClippedBySelf;
 	};
@@ -698,6 +707,7 @@ namespace vl::presentation::remoteprotocol
 		::vl::Nullable<::vl::vint> element;
 		::vl::presentation::Rect bounds;
 		::vl::presentation::Rect validArea;
+		::vl::Nullable<::vl::presentation::remoteprotocol::ElementEditableAttribute> editableAttribute;
 	};
 
 	struct RenderingDom
@@ -821,6 +831,7 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RendererCreation>(const ::vl::presentation::remoteprotocol::RendererCreation & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementBeginRendering>(const ::vl::presentation::remoteprotocol::ElementBeginRendering & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementRendering>(const ::vl::presentation::remoteprotocol::ElementRendering & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementEditableAttribute>(const ::vl::presentation::remoteprotocol::ElementEditableAttribute & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementBoundary>(const ::vl::presentation::remoteprotocol::ElementBoundary & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight>(const ::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize>(const ::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize & value);
@@ -912,6 +923,7 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RendererCreation>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RendererCreation& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementBeginRendering>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementBeginRendering& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementRendering>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementRendering& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementEditableAttribute>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementEditableAttribute& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementBoundary>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementBoundary& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize& value);

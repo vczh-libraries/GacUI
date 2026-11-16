@@ -975,12 +975,21 @@ namespace vl::presentation::remoteprotocol
 		return node;
 	}
 
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementEditableAttribute>(const ::vl::presentation::remoteprotocol::ElementEditableAttribute & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"focused", value.focused);
+		ConvertCustomTypeToJsonField(node, L"editable", value.editable);
+		return node;
+	}
+
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementBoundary>(const ::vl::presentation::remoteprotocol::ElementBoundary & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"id", value.id);
 		ConvertCustomTypeToJsonField(node, L"hitTestResult", value.hitTestResult);
 		ConvertCustomTypeToJsonField(node, L"cursor", value.cursor);
+		ConvertCustomTypeToJsonField(node, L"editableAttribute", value.editableAttribute);
 		ConvertCustomTypeToJsonField(node, L"bounds", value.bounds);
 		ConvertCustomTypeToJsonField(node, L"areaClippedBySelf", value.areaClippedBySelf);
 		return node;
@@ -1030,6 +1039,7 @@ namespace vl::presentation::remoteprotocol
 		ConvertCustomTypeToJsonField(node, L"element", value.element);
 		ConvertCustomTypeToJsonField(node, L"bounds", value.bounds);
 		ConvertCustomTypeToJsonField(node, L"validArea", value.validArea);
+		ConvertCustomTypeToJsonField(node, L"editableAttribute", value.editableAttribute);
 		return node;
 	}
 
@@ -2353,6 +2363,20 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementEditableAttribute>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementEditableAttribute& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementEditableAttribute>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::ElementEditableAttribute&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"focused") ConvertJsonToCustomType(field->value, value.focused); else
+			if (field->name.value == L"editable") ConvertJsonToCustomType(field->value, value.editable); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementBoundary>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementBoundary& value)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementBoundary>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::ElementBoundary&)#"
@@ -2363,6 +2387,7 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
 			if (field->name.value == L"hitTestResult") ConvertJsonToCustomType(field->value, value.hitTestResult); else
 			if (field->name.value == L"cursor") ConvertJsonToCustomType(field->value, value.cursor); else
+			if (field->name.value == L"editableAttribute") ConvertJsonToCustomType(field->value, value.editableAttribute); else
 			if (field->name.value == L"bounds") ConvertJsonToCustomType(field->value, value.bounds); else
 			if (field->name.value == L"areaClippedBySelf") ConvertJsonToCustomType(field->value, value.areaClippedBySelf); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
@@ -2442,6 +2467,7 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"element") ConvertJsonToCustomType(field->value, value.element); else
 			if (field->name.value == L"bounds") ConvertJsonToCustomType(field->value, value.bounds); else
 			if (field->name.value == L"validArea") ConvertJsonToCustomType(field->value, value.validArea); else
+			if (field->name.value == L"editableAttribute") ConvertJsonToCustomType(field->value, value.editableAttribute); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
