@@ -260,6 +260,8 @@ The Debug x64 baseline build succeeded. Running the new reflection regression th
 
 # PROPOSALS
 
+Task 2 reproduction uses a controlled real-browser protocol session in `<GacJS repo>/Gaclib/website/entry/test/RawBrowser.test.ts`. A full tree supplies one focused editable boundary, and browser-engine Unicode insertion must reach Core as ordered UTF-16 events through that existing div. Protocol import/code generation first exposed three handwritten root/fixture literals missing the new nullable field; add explicit nulls so the browser reproduction can build. Extend verification to all three installed engines, completed-batch focus invariants, stable host/clipping identity, both adapters, noncancelable composition, commands, pending gesture ownership, live Core selections and passive snapshot playback. Native OS IME and fresh Wasm availability are separate evidence categories.
+
 - No.1 Publish control-owned editing metadata on stable remote boundaries [CONFIRMED]
 
 ## No.1 Publish control-owned editing metadata on stable remote boundaries [CONFIRMED]
@@ -297,3 +299,5 @@ Snapshot inspection compared every changed existing frame against its committed 
 Repeated the requested native smoke checks with corrected Debug x64 binaries. Both local applications passed automation-service typing and UIA focus/Value writes in Search and the central Ribbon editor. The Core/Win32 renderer pair passed typing through the renderer; the completed DOM retained eight tagged owners and exactly one focused editable owner. A first immediate read after the remote tab click preceded its response; waiting for the actual Control-page predicate resolved that transport delay. No runtime-error dialogs or fatal states occurred. All four applications exited normally with code zero. These checks establish automation/UIA operation, not physical keyboard delivery.
 
 Review found no remaining source or whitespace issues. Keep the implementation and generated artifacts, with authored/generated/snapshot commits separated as required by Project.md. Task 2 starts only after those commits are pushed.
+
+Task 2 baseline result: `yarn run import`, `yarn codegen` and `yarn build` completed. The focused Chromium reproduction failed at its host-readiness assertion: the tagged div was neither focused nor editable. All three Playwright engines installed successfully. This confirms the missing input target independently of keyboard-event synthesis.
