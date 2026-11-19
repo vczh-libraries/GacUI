@@ -33,6 +33,7 @@
   <Instance name="ComboBoxTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::ComboBoxTemplate" ref.Styles="res://DarkSkin/Style">
       <DateComboBoxTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
         <att.DatePickerTemplate>darkskin::DatePickerTemplate</att.DatePickerTemplate>
         <SolidBackground ref.Style="comboBackground"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
@@ -74,6 +75,7 @@
   <Instance name="ListViewColumnHeaderTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::ListViewColumnHeaderTemplate" ref.Styles="res://DarkSkin/Style">
       <ListViewColumnHeaderTemplate ref.Name="self" ContainerComposition-ref="container" SubMenuHost-ref="buttonArrow" MinSizeLimitation="LimitToElementAndChildren">
+        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
         <SolidBackground ref.Style="columnHeaderBackground"/>
         <Bounds AlignmentToParent="left:-1 top:0 right:0 bottom:0" PreferredMinSize="x:1 y:0">
           <SolidBorder ref.Style="listColumnBorder"/>

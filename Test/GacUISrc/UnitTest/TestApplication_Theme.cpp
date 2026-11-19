@@ -465,16 +465,22 @@ TEST_FILE
 				auto alternate = Ptr(new theme::ThemeTemplates);
 				alternate->Name = L"SubMenuRefresh";
 				alternate->Menu = menuTemplate(defaultColor);
+				alternate->MenuBarButton = [](const Value&)
+				{
+					auto ct = new darkskin::MenuBarButtonTemplate;
+					ct->SetSubMenuTemplate({});
+					return ct;
+				};
 				alternate->MenuItemButton = [=](const Value&)
 				{
 					auto ct = new darkskin::MenuItemButtonTemplate;
 					ct->SetSubMenuTemplate(inherited);
 					return ct;
 				};
-				alternate->ComboBox = [=](const Value&)
+				alternate->ComboBox = [](const Value&)
 				{
 					auto ct = new darkskin::ComboBoxTemplate;
-					ct->SetSubMenuTemplate(inherited);
+					ct->SetSubMenuTemplate({});
 					return ct;
 				};
 				{
@@ -518,25 +524,31 @@ TEST_FILE
 					{
 						return menu->GetControlTemplateObject()->GetOwnedElement().Cast<GuiSolidBackgroundElement>()->GetColor();
 					};
-					auto checkFrames = [&](Color ordinary, Color owner)
+					auto checkFrames = [&](Color ordinary, Color nested)
 					{
 						TEST_ASSERT(file->GetSubMenu() == fileMenu && background(fileMenu) == ordinary);
-						TEST_ASSERT(saveAs->GetSubMenu() == nestedMenu && background(nestedMenu) == owner);
-						TEST_ASSERT(combo->GetSubMenu() == comboMenu && background(comboMenu) == owner);
+						TEST_ASSERT(saveAs->GetSubMenu() == nestedMenu && background(nestedMenu) == nested);
+						TEST_ASSERT(combo->GetSubMenu() == comboMenu && background(comboMenu) == ordinary);
 						TEST_ASSERT(custom->GetSubMenu()->GetControlTemplateObject() == customTemplate);
 						TEST_ASSERT(restyledMenu->GetControlTemplateObject() == restyledTemplate);
 						TEST_ASSERT(background(custom->GetSubMenu()) == explicitColor && background(restyledMenu) == explicitColor);
 					};
-					auto darkColor = darkskin::Theme::GetColorPackage().MenuBackground;
+					auto checkDarkSkin = [&]()
+					{
+						TEST_ASSERT(fileMenu->GetControlTemplate() && nestedMenu->GetControlTemplate() && comboMenu->GetControlTemplate());
+						auto darkColor = darkskin::Theme::GetColorPackage().MenuBackground;
+						checkFrames(darkColor, darkColor);
+					};
 					protocol->OnNextIdleFrame(L"Ready under DarkSkin", [&]()
 					{
-						checkFrames(darkColor, darkColor);
+						checkDarkSkin();
 						theme::RegisterTheme(alternate);
 						GetApplication()->RefreshThemes();
+						TEST_ASSERT(!fileMenu->GetControlTemplate() && nestedMenu->GetControlTemplate() && !comboMenu->GetControlTemplate());
 						checkFrames(defaultColor, inheritedColor);
 						combo->SetSubMenuOpening(true);
 					});
-					protocol->OnNextIdleFrame(L"Combo list with inherited frame", [&]()
+					protocol->OnNextIdleFrame(L"Combo list with default frame", [&]()
 					{
 						TEST_ASSERT(comboMenu->GetOpening());
 						combo->SetSubMenuOpening(false);
@@ -554,8 +566,7 @@ TEST_FILE
 						file->SetSubMenuOpening(false);
 						theme::UnregisterTheme(alternate->Name);
 						GetApplication()->RefreshThemes();
-						checkFrames(darkColor, darkColor);
-						TEST_ASSERT(!fileMenu->GetControlTemplate() && !nestedMenu->GetControlTemplate() && !comboMenu->GetControlTemplate());
+						checkDarkSkin();
 						combo->SetSubMenuOpening(true);
 					});
 					protocol->OnNextIdleFrame(L"Combo list with restored DarkSkin frame", [&]()

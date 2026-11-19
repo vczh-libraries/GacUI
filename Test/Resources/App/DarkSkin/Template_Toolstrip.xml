@@ -65,6 +65,7 @@
   <Instance name="ToolstripButtonTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::ToolstripButtonTemplate" ref.Styles="res://DarkSkin/Style">
       <ToolstripButtonTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="toolstripBorder"/>
         </Bounds>
@@ -81,6 +82,7 @@
   <Instance name="ToolstripDropdownButtonResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::ToolstripDropdownButtonTemplate" ref.Styles="res://DarkSkin/Style">
       <ToolstripButtonTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="toolstripBorder"/>
         </Bounds>
@@ -151,6 +153,7 @@
   <Instance name="ToolstripSplitButtonTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::ToolstripSplitButtonTemplate" ref.Styles="res://DarkSkin/Style">
       <ToolstripButtonTemplate ref.Name="self" ContainerComposition-ref="container" SubMenuHost-ref="buttonArrow" MinSizeLimitation="LimitToElementAndChildren">
+        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="toolstripBorder"/>
         </Bounds>
@@ -175,6 +178,7 @@
   <Instance name="MenuBarButtonTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::MenuBarButtonTemplate" ref.Styles="res://DarkSkin/Style">
       <ToolstripButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
         <SolidBackground ref.Style="menuBarItemBackground"/>
         <Bounds AlignmentToParent="left:10 top:3 right:10 bottom:3">
           <SolidLabel ref.Style="controlText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -186,6 +190,7 @@
   <Instance name="MenuItemButtonTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::MenuItemButtonTemplate" ref.Styles="res://DarkSkin/Style">
       <ToolstripButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
         <SolidBackground ref.Style="menuItemBackground"/>
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <att.Rows>
