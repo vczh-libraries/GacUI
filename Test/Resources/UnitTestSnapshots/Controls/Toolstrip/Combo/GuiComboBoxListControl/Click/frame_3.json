@@ -301,34 +301,12 @@
       ]
     ],
     [
-      21,
-      [
-        "ElementDesc_SolidBackground",
-        {
-          "id": 21,
-          "backgroundColor": "#1B1B1C",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
-    [
-      22,
-      [
-        "ElementDesc_SolidBorder",
-        {
-          "id": 22,
-          "borderColor": "#333337",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
-    [
       23,
       [
         "ElementDesc_SolidBackground",
         {
           "id": 23,
-          "backgroundColor": "#252526",
+          "backgroundColor": "#1B1B1C",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
@@ -339,7 +317,7 @@
         "ElementDesc_SolidBorder",
         {
           "id": 24,
-          "borderColor": "#1C97EA",
+          "borderColor": "#333337",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
@@ -350,7 +328,7 @@
         "ElementDesc_SolidBackground",
         {
           "id": 25,
-          "backgroundColor": "#3D3D42",
+          "backgroundColor": "#252526",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
@@ -361,7 +339,7 @@
         "ElementDesc_SolidBorder",
         {
           "id": 26,
-          "borderColor": "#434346",
+          "borderColor": "#1C97EA",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
@@ -369,9 +347,31 @@
     [
       27,
       [
-        "ElementDesc_Polygon",
+        "ElementDesc_SolidBackground",
         {
           "id": 27,
+          "backgroundColor": "#3D3D42",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      28,
+      [
+        "ElementDesc_SolidBorder",
+        {
+          "id": 28,
+          "borderColor": "#434346",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      29,
+      [
+        "ElementDesc_Polygon",
+        {
+          "id": 29,
           "size": {"x": 5, "y": 9},
           "borderColor": "#555558",
           "backgroundColor": "#555558",
@@ -384,11 +384,11 @@
       ]
     ],
     [
-      28,
+      30,
       [
         "ElementDesc_Polygon",
         {
-          "id": 28,
+          "id": 30,
           "size": {"x": 5, "y": 9},
           "borderColor": "#555558",
           "backgroundColor": "#555558",
@@ -401,34 +401,12 @@
       ]
     ],
     [
-      29,
-      [
-        "ElementDesc_SolidBackground",
-        {
-          "id": 29,
-          "backgroundColor": "#00000000",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
-    [
-      30,
-      [
-        "ElementDesc_SolidBackground",
-        {
-          "id": 30,
-          "backgroundColor": "#3D3D42",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
-    [
       31,
       [
-        "ElementDesc_SolidBorder",
+        "ElementDesc_SolidBackground",
         {
           "id": 31,
-          "borderColor": "#434346",
+          "backgroundColor": "#00000000",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
@@ -436,9 +414,31 @@
     [
       32,
       [
-        "ElementDesc_Polygon",
+        "ElementDesc_SolidBackground",
         {
           "id": 32,
+          "backgroundColor": "#3D3D42",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      33,
+      [
+        "ElementDesc_SolidBorder",
+        {
+          "id": 33,
+          "borderColor": "#434346",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      34,
+      [
+        "ElementDesc_Polygon",
+        {
+          "id": 34,
           "size": {"x": 9, "y": 5},
           "borderColor": "#555558",
           "backgroundColor": "#555558",
@@ -451,11 +451,11 @@
       ]
     ],
     [
-      33,
+      35,
       [
         "ElementDesc_Polygon",
         {
-          "id": 33,
+          "id": 35,
           "size": {"x": 9, "y": 5},
           "borderColor": "#555558",
           "backgroundColor": "#555558",
@@ -468,34 +468,12 @@
       ]
     ],
     [
-      34,
-      [
-        "ElementDesc_SolidBackground",
-        {
-          "id": 34,
-          "backgroundColor": "#00000000",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
-    [
-      35,
-      [
-        "ElementDesc_SolidBackground",
-        {
-          "id": 35,
-          "backgroundColor": "#333337",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
-    [
       36,
       [
-        "ElementDesc_SolidBorder",
+        "ElementDesc_SolidBackground",
         {
           "id": 36,
-          "borderColor": "#1C97EA",
+          "backgroundColor": "#00000000",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
@@ -503,9 +481,31 @@
     [
       37,
       [
-        "ElementDesc_SolidLabel",
+        "ElementDesc_SolidBackground",
         {
           "id": 37,
+          "backgroundColor": "#333337",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      38,
+      [
+        "ElementDesc_SolidBorder",
+        {
+          "id": 38,
+          "borderColor": "#1C97EA",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      39,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 39,
           "textColor": "#F1F1F1",
           "horizontalAlignment": "Left",
           "verticalAlignment": "Center",
@@ -520,22 +520,22 @@
       ]
     ],
     [
-      38,
+      40,
       [
         "ElementDesc_SolidBackground",
         {
-          "id": 38,
+          "id": 40,
           "backgroundColor": "#00000000",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      39,
+      41,
       [
         "ElementDesc_Polygon",
         {
-          "id": 39,
+          "id": 41,
           "size": {"x": 5, "y": 3},
           "borderColor": "#999999",
           "backgroundColor": "#434346",
@@ -548,42 +548,12 @@
       ]
     ],
     [
-      46,
-      [
-        "ElementDesc_SolidBackground",
-        {
-          "id": 46,
-          "backgroundColor": "#00000000",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
-    [
-      47,
-      [
-        "ElementDesc_SolidLabel",
-        {
-          "id": 47,
-          "textColor": "#F1F1F1",
-          "horizontalAlignment": "Left",
-          "verticalAlignment": "Center",
-          "wrapLine": false,
-          "wrapLineHeightCalculation": false,
-          "ellipse": false,
-          "multiline": false,
-          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "Item 1",
-          "measuringRequest": "TotalSize"
-        }
-      ]
-    ],
-    [
       48,
       [
         "ElementDesc_SolidBackground",
         {
           "id": 48,
-          "backgroundColor": "#3399FF",
+          "backgroundColor": "#00000000",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
@@ -602,28 +572,28 @@
           "ellipse": false,
           "multiline": false,
           "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "Item 2",
+          "text": "Item 1",
           "measuringRequest": "TotalSize"
         }
       ]
     ],
     [
-      54,
+      50,
       [
         "ElementDesc_SolidBackground",
         {
-          "id": 54,
-          "backgroundColor": "#00000000",
+          "id": 50,
+          "backgroundColor": "#3399FF",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      55,
+      51,
       [
         "ElementDesc_SolidLabel",
         {
-          "id": 55,
+          "id": 51,
           "textColor": "#F1F1F1",
           "horizontalAlignment": "Left",
           "verticalAlignment": "Center",
@@ -632,7 +602,7 @@
           "ellipse": false,
           "multiline": false,
           "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "Item 3",
+          "text": "Item 2",
           "measuringRequest": "TotalSize"
         }
       ]
@@ -662,7 +632,7 @@
           "ellipse": false,
           "multiline": false,
           "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "Item 4",
+          "text": "Item 3",
           "measuringRequest": "TotalSize"
         }
       ]
@@ -684,6 +654,36 @@
         "ElementDesc_SolidLabel",
         {
           "id": 59,
+          "textColor": "#F1F1F1",
+          "horizontalAlignment": "Left",
+          "verticalAlignment": "Center",
+          "wrapLine": false,
+          "wrapLineHeightCalculation": false,
+          "ellipse": false,
+          "multiline": false,
+          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+          "text": "Item 4",
+          "measuringRequest": "TotalSize"
+        }
+      ]
+    ],
+    [
+      60,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 60,
+          "backgroundColor": "#00000000",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      61,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 61,
           "textColor": "#F1F1F1",
           "horizontalAlignment": "Left",
           "verticalAlignment": "Center",
@@ -1056,33 +1056,33 @@
                 },
                 "children": [
                   {
-                    "id": 140,
+                    "id": 148,
                     "content": {
                       "hitTestResult": null,
                       "cursor": null,
-                      "element": 35,
+                      "element": 37,
                       "bounds": {"x1": 18, "y1": 46, "x2": 178, "y2": 68},
                       "validArea": {"x1": 18, "y1": 46, "x2": 178, "y2": 68},
                       "editableAttribute": null
                     },
                     "children": [
                       {
-                        "id": 144,
+                        "id": 152,
                         "content": {
                           "hitTestResult": null,
                           "cursor": null,
-                          "element": 36,
+                          "element": 38,
                           "bounds": {"x1": 18, "y1": 46, "x2": 178, "y2": 68},
                           "validArea": {"x1": 18, "y1": 46, "x2": 178, "y2": 68},
                           "editableAttribute": null
                         },
                         "children": [
                           {
-                            "id": 148,
+                            "id": 156,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 37,
+                              "element": 39,
                               "bounds": {"x1": 21, "y1": 49, "x2": 165, "y2": 65},
                               "validArea": {"x1": 21, "y1": 49, "x2": 165, "y2": 65},
                               "editableAttribute": null
@@ -1090,22 +1090,22 @@
                             "children": null
                           },
                           {
-                            "id": 152,
+                            "id": 160,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 38,
+                              "element": 40,
                               "bounds": {"x1": 168, "y1": 47, "x2": 177, "y2": 67},
                               "validArea": {"x1": 168, "y1": 47, "x2": 177, "y2": 67},
                               "editableAttribute": null
                             },
                             "children": [
                               {
-                                "id": 156,
+                                "id": 164,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 39,
+                                  "element": 41,
                                   "bounds": {"x1": 170, "y1": 55, "x2": 175, "y2": 58},
                                   "validArea": {"x1": 170, "y1": 55, "x2": 175, "y2": 58},
                                   "editableAttribute": null
