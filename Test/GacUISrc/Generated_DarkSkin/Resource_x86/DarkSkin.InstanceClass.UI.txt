@@ -3762,6 +3762,14 @@ namespace darkskin
                 });
             }
             {
+                (self.SubMenuTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiMenuTemplate*)
+                {
+                    {
+                        return new (::darkskin::ToolstripMenuTemplate*)();
+                    }
+                });
+            }
+            {
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             (<precompile>0 = new (::presentation::elements::GuiSolidBackgroundElement^)());
@@ -5744,6 +5752,14 @@ namespace darkskin
         func <darkskin-ListViewColumnHeaderTemplate>Initialize(<this> : ::darkskin::ListViewColumnHeaderTemplate*) : (::system::Void)
         {
             (self = <this>);
+            {
+                (self.SubMenuTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiMenuTemplate*)
+                {
+                    {
+                        return new (::darkskin::ToolstripMenuTemplate*)();
+                    }
+                });
+            }
             {
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
@@ -13193,6 +13209,14 @@ namespace darkskin
         {
             (self = <this>);
             {
+                (self.SubMenuTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiMenuTemplate*)
+                {
+                    {
+                        return new (::darkskin::ToolstripMenuTemplate*)();
+                    }
+                });
+            }
+            {
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             (<precompile>0 = new (::presentation::compositions::GuiBoundsComposition*)());
@@ -14066,6 +14090,14 @@ namespace darkskin
         func <darkskin-RibbonLargeDropdownButtonTemplate>Initialize(<this> : ::darkskin::RibbonLargeDropdownButtonTemplate*) : (::system::Void)
         {
             (self = <this>);
+            {
+                (self.SubMenuTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiMenuTemplate*)
+                {
+                    {
+                        return new (::darkskin::ToolstripMenuTemplate*)();
+                    }
+                });
+            }
             {
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
@@ -15197,6 +15229,14 @@ namespace darkskin
         {
             (self = <this>);
             {
+                (self.SubMenuTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiMenuTemplate*)
+                {
+                    {
+                        return new (::darkskin::ToolstripMenuTemplate*)();
+                    }
+                });
+            }
+            {
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             (<precompile>0 = new (::presentation::compositions::GuiBoundsComposition*)());
@@ -16078,6 +16118,14 @@ namespace darkskin
         {
             (self = <this>);
             {
+                (self.SubMenuTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiMenuTemplate*)
+                {
+                    {
+                        return new (::darkskin::ToolstripMenuTemplate*)();
+                    }
+                });
+            }
+            {
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             (<precompile>0 = new (::presentation::compositions::GuiBoundsComposition*)());
@@ -16937,6 +16985,14 @@ namespace darkskin
         func <darkskin-RibbonSmallDropdownButtonTemplate>Initialize(<this> : ::darkskin::RibbonSmallDropdownButtonTemplate*) : (::system::Void)
         {
             (self = <this>);
+            {
+                (self.SubMenuTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiMenuTemplate*)
+                {
+                    {
+                        return new (::darkskin::ToolstripMenuTemplate*)();
+                    }
+                });
+            }
             {
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
@@ -18697,6 +18753,14 @@ namespace darkskin
         func <darkskin-RibbonSmallSplitButtonTemplate>Initialize(<this> : ::darkskin::RibbonSmallSplitButtonTemplate*) : (::system::Void)
         {
             (self = <this>);
+            {
+                (self.SubMenuTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiMenuTemplate*)
+                {
+                    {
+                        return new (::darkskin::ToolstripMenuTemplate*)();
+                    }
+                });
+            }
             {
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
@@ -26072,6 +26136,14 @@ namespace darkskin
         {
             (self = <this>);
             {
+                (self.SubMenuTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiMenuTemplate*)
+                {
+                    {
+                        return new (::darkskin::ToolstripMenuTemplate*)();
+                    }
+                });
+            }
+            {
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             (<precompile>0 = new (::presentation::elements::GuiSolidBackgroundElement^)());
@@ -26545,6 +26617,14 @@ namespace darkskin
         func <darkskin-MenuItemButtonTemplate>Initialize(<this> : ::darkskin::MenuItemButtonTemplate*) : (::system::Void)
         {
             (self = <this>);
+            {
+                (self.SubMenuTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiMenuTemplate*)
+                {
+                    {
+                        return new (::darkskin::ToolstripMenuTemplate*)();
+                    }
+                });
+            }
             {
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
@@ -28417,6 +28497,14 @@ namespace darkskin
         {
             (self = <this>);
             {
+                (self.SubMenuTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiMenuTemplate*)
+                {
+                    {
+                        return new (::darkskin::ToolstripMenuTemplate*)();
+                    }
+                });
+            }
+            {
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             (<precompile>0 = new (::presentation::compositions::GuiBoundsComposition*)());
@@ -28997,6 +29085,14 @@ namespace darkskin
         func <darkskin-ToolstripDropdownButtonTemplate>Initialize(<this> : ::darkskin::ToolstripDropdownButtonTemplate*) : (::system::Void)
         {
             (self = <this>);
+            {
+                (self.SubMenuTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiMenuTemplate*)
+                {
+                    {
+                        return new (::darkskin::ToolstripMenuTemplate*)();
+                    }
+                });
+            }
             {
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
@@ -30097,6 +30193,14 @@ namespace darkskin
         func <darkskin-ToolstripSplitButtonTemplate>Initialize(<this> : ::darkskin::ToolstripSplitButtonTemplate*) : (::system::Void)
         {
             (self = <this>);
+            {
+                (self.SubMenuTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiMenuTemplate*)
+                {
+                    {
+                        return new (::darkskin::ToolstripMenuTemplate*)();
+                    }
+                });
+            }
             {
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
