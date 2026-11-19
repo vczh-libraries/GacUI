@@ -2,7 +2,6 @@
   <Instance name="RibbonSmallButtonTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonSmallButtonTemplate" ref.Styles="res://DarkSkin/Style">
       <ToolstripButtonTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="toolstripBorder"/>
         </Bounds>
@@ -32,7 +31,6 @@
   <Instance name="RibbonSmallDropdownButtonResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonSmallDropdownButtonTemplate" ref.Styles="res://DarkSkin/Style">
       <ToolstripButtonTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="toolstripBorder"/>
         </Bounds>
@@ -86,7 +84,6 @@
   <Instance name="RibbonSmallSplitButtonTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonSmallSplitButtonTemplate" ref.Styles="res://DarkSkin/Style">
       <ToolstripButtonTemplate ref.Name="self" ContainerComposition-ref="container" SubMenuHost-ref="buttonArrow" MinSizeLimitation="LimitToElementAndChildren">
-        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="toolstripBorder"/>
         </Bounds>
@@ -124,7 +121,6 @@
   <Instance name="RibbonLargeButtonTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonLargeButtonTemplate" ref.Styles="res://DarkSkin/Style">
       <ToolstripButtonTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="toolstripBorder"/>
         </Bounds>
@@ -159,7 +155,6 @@
   <Instance name="RibbonLargeDropdownButtonResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonLargeDropdownButtonTemplate" ref.Styles="res://DarkSkin/Style">
       <ToolstripButtonTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="toolstripBorder"/>
         </Bounds>
@@ -250,7 +245,6 @@
   <Instance name="RibbonLargeSplitButtonTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonLargeSplitButtonTemplate" ref.Styles="res://DarkSkin/Style">
       <ToolstripButtonTemplate ref.Name="self" ContainerComposition-ref="container" SubMenuHost-ref="buttonArrow" MinSizeLimitation="LimitToElementAndChildren">
-        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="toolstripBorder"/>
         </Bounds>

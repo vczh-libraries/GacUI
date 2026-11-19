@@ -21457,6 +21457,17 @@ GuiMenuButton
 				ct->SetShortcutText(shortcutText);
 				ct->SetSubMenuExisting(subMenu != nullptr);
 
+				if (subMenuTemplateState == SubMenuTemplateState::Inherited)
+				{
+					subMenuTemplateState = SubMenuTemplateState::Applying;
+					subMenu->SetControlTemplate(ct->GetSubMenuTemplate());
+					if (subMenuTemplateState == SubMenuTemplateState::Applying)
+					{
+						// Assigning an empty factory to an already theme-selected menu raises no change event.
+						subMenuTemplateState = SubMenuTemplateState::Inherited;
+					}
+				}
+
 				hostClickedHandler = host->BeforeClicked.AttachMethod(this, &GuiMenuButton::OnBeforeClicked);
 				hostMouseEnterHandler = host->GetBoundsComposition()->GetEventReceiver()->mouseEnter.AttachMethod(this, &GuiMenuButton::OnMouseEnter);
 			}
@@ -21554,6 +21565,7 @@ GuiMenuButton
 
 			void GuiMenuButton::DetachSubMenu()
 			{
+				subMenuTemplateState = SubMenuTemplateState::Independent;
 				if (subMenu)
 				{
 					subMenu->WindowOpened.Detach(subMenuWindowOpenedHandler);
@@ -21657,13 +21669,28 @@ GuiMenuButton
 				return subMenu;
 			}
 
+			void GuiMenuButton::SetCreatedSubMenu(GuiMenu* menu, TemplateProperty<templates::GuiMenuTemplate> subMenuTemplate)
+			{
+				menu->SetControlTemplate(subMenuTemplate ? subMenuTemplate : TypedControlTemplateObject(true)->GetSubMenuTemplate());
+				if (!subMenuTemplate)
+				{
+					subMenuTemplateState = SubMenuTemplateState::Inherited;
+					menu->ControlTemplateChanged.AttachLambda([this](GuiGraphicsComposition*, GuiEventArgs&)
+					{
+						// A direct assignment to the popup takes precedence over future owner templates.
+						subMenuTemplateState = subMenuTemplateState == SubMenuTemplateState::Applying
+							? SubMenuTemplateState::Inherited
+							: SubMenuTemplateState::Independent;
+					});
+				}
+				SetSubMenu(menu, true);
+			}
+
 			GuiMenu* GuiMenuButton::CreateSubMenu(TemplateProperty<templates::GuiMenuTemplate> subMenuTemplate)
 			{
 				if (!subMenu)
 				{
-					GuiMenu* newSubMenu = new GuiMenu(theme::ThemeName::Menu, this);
-					newSubMenu->SetControlTemplate(subMenuTemplate ? subMenuTemplate : TypedControlTemplateObject(true)->GetSubMenuTemplate());
-					SetSubMenu(newSubMenu, true);
+					SetCreatedSubMenu(new GuiMenu(theme::ThemeName::Menu, this), subMenuTemplate);
 				}
 				return subMenu;
 			}
@@ -24767,16 +24794,7 @@ GuiToolstripButton
 			{
 				if (!subMenu)
 				{
-					auto newSubMenu = new GuiToolstripMenu(theme::ThemeName::Menu, this);
-					if (subMenuTemplate)
-					{
-						newSubMenu->SetControlTemplate(subMenuTemplate);
-					}
-					else
-					{
-						newSubMenu->SetControlTemplate(TypedControlTemplateObject(true)->GetSubMenuTemplate());
-					}
-					SetSubMenu(newSubMenu, true);
+					SetCreatedSubMenu(new GuiToolstripMenu(theme::ThemeName::Menu, this), subMenuTemplate);
 				}
 			}
 
