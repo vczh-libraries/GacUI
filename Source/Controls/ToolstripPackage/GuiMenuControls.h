@@ -170,6 +170,13 @@ MenuButton
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ToolstripButtonTemplate, GuiSelectableButton)
 
 				using IEventHandler = compositions::IGuiGraphicsEventHandler;
+				enum class SubMenuTemplateState
+				{
+					Independent,
+					Inherited,
+					Applying,
+				};
+
 			protected:
 				Ptr<GuiDisposedFlag>					subMenuDisposeFlag;
 				Ptr<IEventHandler>						subMenuWindowOpenedHandler;
@@ -181,11 +188,13 @@ MenuButton
 				WString									shortcutText;
 				GuiMenu*								subMenu;
 				bool									ownedSubMenu;
+				SubMenuTemplateState					subMenuTemplateState = SubMenuTemplateState::Independent;
 				Size									preferredMenuClientSize;
 				IGuiMenuService*						ownerMenuService;
 				bool									cascadeAction;
 
 				bool									OpenSubMenuInternal();
+				void									SetCreatedSubMenu(GuiMenu* menu, TemplateProperty<templates::GuiMenuTemplate> subMenuTemplate);
 				void									OnParentLineChanged()override;
 				compositions::IGuiAltActionHost*		GetActivatingAltHost()override;
 

@@ -389,16 +389,7 @@ GuiToolstripButton
 			{
 				if (!subMenu)
 				{
-					auto newSubMenu = new GuiToolstripMenu(theme::ThemeName::Menu, this);
-					if (subMenuTemplate)
-					{
-						newSubMenu->SetControlTemplate(subMenuTemplate);
-					}
-					else
-					{
-						newSubMenu->SetControlTemplate(TypedControlTemplateObject(true)->GetSubMenuTemplate());
-					}
-					SetSubMenu(newSubMenu, true);
+					SetCreatedSubMenu(new GuiToolstripMenu(theme::ThemeName::Menu, this), subMenuTemplate);
 				}
 			}
 

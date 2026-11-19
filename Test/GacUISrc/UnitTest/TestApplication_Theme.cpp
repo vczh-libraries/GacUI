@@ -442,6 +442,135 @@ TEST_FILE
 			GacUIUnitTest_Start(L"Application/RefreshThemes/OverridesAndWindows");
 		});
 
+		TEST_CASE(L"RefreshThemes updates existing submenu frames and preserves caller templates")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				ConnectThemeTestProtocol(protocol);
+				auto skin = Ptr(new darkskin::Theme);
+				theme::RegisterTheme(skin);
+				const Color defaultColor(25, 50, 75);
+				const Color inheritedColor(75, 50, 25);
+				const Color explicitColor(100, 125, 150);
+				auto menuTemplate = [](Color color) -> TemplateProperty<templates::GuiMenuTemplate>
+				{
+					return [=](const Value&)
+					{
+						auto ct = new darkskin::ToolstripMenuTemplate;
+						ct->GetOwnedElement().Cast<GuiSolidBackgroundElement>()->SetColor(color);
+						return ct;
+					};
+				};
+				auto inherited = menuTemplate(inheritedColor);
+				auto alternate = Ptr(new theme::ThemeTemplates);
+				alternate->Name = L"SubMenuRefresh";
+				alternate->Menu = menuTemplate(defaultColor);
+				alternate->MenuItemButton = [=](const Value&)
+				{
+					auto ct = new darkskin::MenuItemButtonTemplate;
+					ct->SetSubMenuTemplate(inherited);
+					return ct;
+				};
+				alternate->ComboBox = [=](const Value&)
+				{
+					auto ct = new darkskin::ComboBoxTemplate;
+					ct->SetSubMenuTemplate(inherited);
+					return ct;
+				};
+				{
+					GuiWindow main(theme::ThemeName::Window);
+					main.SetText(L"Submenu templates");
+					main.SetClientSize(Size(400, 240));
+					auto file = new GuiToolstripButton(theme::ThemeName::MenuBarButton);
+					file->SetText(L"File");
+					file->GetBoundsComposition()->SetExpectedBounds(Rect(10, 10, 90, 40));
+					main.GetContainerComposition()->AddChild(file->GetBoundsComposition());
+					auto fileMenu = file->EnsureToolstripSubMenu();
+					auto saveAs = new GuiToolstripButton(theme::ThemeName::MenuItemButton);
+					saveAs->SetText(L"Save as");
+					fileMenu->GetToolstripItems().Add(saveAs);
+					auto nestedMenu = saveAs->EnsureToolstripSubMenu();
+					auto format = new GuiToolstripButton(theme::ThemeName::MenuItemButton);
+					format->SetText(L"Plain text");
+					nestedMenu->GetToolstripItems().Add(format);
+					auto list = new GuiTextList(theme::ThemeName::TextList);
+					list->GetItems().Add(Ptr(new TextItem(L"Detail", false)));
+					list->GetItems().Add(Ptr(new TextItem(L"List", false)));
+					auto combo = new GuiComboBoxListControl(theme::ThemeName::ComboBox, list);
+					combo->SetSelectedIndex(0);
+					combo->GetBoundsComposition()->SetExpectedBounds(Rect(10, 60, 180, 90));
+					main.GetContainerComposition()->AddChild(combo->GetBoundsComposition());
+					auto comboMenu = combo->GetSubMenu();
+
+					auto custom = new GuiToolstripButton(theme::ThemeName::MenuItemButton);
+					custom->SetText(L"Custom");
+					fileMenu->GetToolstripItems().Add(custom);
+					custom->CreateToolstripSubMenu(menuTemplate(explicitColor));
+					auto customTemplate = custom->GetSubMenu()->GetControlTemplateObject();
+					auto restyled = new GuiMenuButton(theme::ThemeName::MenuItemButton);
+					restyled->SetText(L"Restyled");
+					fileMenu->GetToolstripItems().Add(restyled);
+					auto restyledMenu = restyled->CreateSubMenu();
+					restyledMenu->SetControlTemplate(menuTemplate(explicitColor));
+					auto restyledTemplate = restyledMenu->GetControlTemplateObject();
+
+					auto background = [](GuiMenu* menu)
+					{
+						return menu->GetControlTemplateObject()->GetOwnedElement().Cast<GuiSolidBackgroundElement>()->GetColor();
+					};
+					auto checkFrames = [&](Color ordinary, Color owner)
+					{
+						TEST_ASSERT(file->GetSubMenu() == fileMenu && background(fileMenu) == ordinary);
+						TEST_ASSERT(saveAs->GetSubMenu() == nestedMenu && background(nestedMenu) == owner);
+						TEST_ASSERT(combo->GetSubMenu() == comboMenu && background(comboMenu) == owner);
+						TEST_ASSERT(custom->GetSubMenu()->GetControlTemplateObject() == customTemplate);
+						TEST_ASSERT(restyledMenu->GetControlTemplateObject() == restyledTemplate);
+						TEST_ASSERT(background(custom->GetSubMenu()) == explicitColor && background(restyledMenu) == explicitColor);
+					};
+					auto darkColor = darkskin::Theme::GetColorPackage().MenuBackground;
+					protocol->OnNextIdleFrame(L"Ready under DarkSkin", [&]()
+					{
+						checkFrames(darkColor, darkColor);
+						theme::RegisterTheme(alternate);
+						GetApplication()->RefreshThemes();
+						checkFrames(defaultColor, inheritedColor);
+						combo->SetSubMenuOpening(true);
+					});
+					protocol->OnNextIdleFrame(L"Combo list with inherited frame", [&]()
+					{
+						TEST_ASSERT(comboMenu->GetOpening());
+						combo->SetSubMenuOpening(false);
+						file->SetSubMenuOpening(true);
+					});
+					protocol->OnNextIdleFrame(L"File menu with default frame", [&]()
+					{
+						TEST_ASSERT(fileMenu->GetOpening());
+						saveAs->SetSubMenuOpening(true);
+					});
+					protocol->OnNextIdleFrame(L"Nested menu with inherited frame", [&]()
+					{
+						TEST_ASSERT(nestedMenu->GetOpening());
+						saveAs->SetSubMenuOpening(false);
+						file->SetSubMenuOpening(false);
+						theme::UnregisterTheme(alternate->Name);
+						GetApplication()->RefreshThemes();
+						checkFrames(darkColor, darkColor);
+						TEST_ASSERT(!fileMenu->GetControlTemplate() && !nestedMenu->GetControlTemplate() && !comboMenu->GetControlTemplate());
+						combo->SetSubMenuOpening(true);
+					});
+					protocol->OnNextIdleFrame(L"Combo list with restored DarkSkin frame", [&]()
+					{
+						TEST_ASSERT(comboMenu->GetOpening());
+						combo->SetSubMenuOpening(false);
+						main.Hide();
+					});
+					GetApplication()->Run(&main);
+				}
+				theme::UnregisterTheme(skin->Name);
+			});
+			GacUIUnitTest_Start(L"Application/RefreshThemes/SubMenuTemplates");
+		});
+
 		TEST_CASE(L"RefreshThemes preserves editing, focus and logical scroll state after layout")
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
