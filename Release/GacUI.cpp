@@ -281,11 +281,7 @@ GuiApplication
 
 			GuiApplication::~GuiApplication()
 			{
-				if(sharedTooltipControl)
-				{
-					delete sharedTooltipControl;
-					sharedTooltipControl=0;
-				}
+				ResetSharedTooltip();
 				GetCurrentController()->CallbackService()->UninstallListener(this);
 			}
 
@@ -435,6 +431,9 @@ GuiApplication
 
 			void GuiApplication::RefreshThemes()
 			{
+				// The shared window can have an explicit tooltip template from its previous owner.
+				ResetSharedTooltip();
+
 				collections::List<Pair<GuiWindow*, Ptr<GuiDisposedFlag>>> snapshot;
 				for (auto window : windows)
 				{
@@ -470,13 +469,30 @@ GuiApplication
 				return index == -1 ? nullptr : windowMap.Values()[index];
 			}
 
+			void GuiApplication::ResetSharedTooltip()
+			{
+				auto tooltip = sharedTooltipControl;
+				sharedTooltipControl = nullptr;
+				sharedTooltipOwnerWindow = nullptr;
+				sharedTooltipOwner = nullptr;
+				sharedTooltipHovering = false;
+				sharedTooltipClosing = false;
+				if (tooltip)
+				{
+					if (tooltip->GetOpening()) tooltip->Hide();
+					delete tooltip;
+				}
+			}
+
 			void GuiApplication::ShowTooltip(GuiControl* owner, GuiControl* tooltip, vint preferredContentWidth, Point location)
 			{
 				GuiWindow* ownerWindow = dynamic_cast<GuiWindow*>(owner->GetRelatedControlHost());
-				if (sharedTooltipOwnerWindow != ownerWindow)
+				if (sharedTooltipControl && sharedTooltipOwnerWindow != ownerWindow)
 				{
-					delete sharedTooltipControl;
-					sharedTooltipControl = 0;
+					auto ownerDisposed = owner->GetDisposedFlag();
+					auto tooltipDisposed = tooltip->GetDisposedFlag();
+					ResetSharedTooltip();
+					if (sharedTooltipControl || ownerDisposed->IsDisposed() || tooltipDisposed->IsDisposed()) return;
 				}
 
 				if(!sharedTooltipControl)
@@ -816,6 +832,11 @@ GuiControl
 			{
 				if (!controlTemplate) RebuildControlTemplate();
 				List<Pair<GuiControl*, Ptr<GuiDisposedFlag>>> snapshot;
+				// Hidden tooltip content is owned by this control but is outside its child tree.
+				if (tooltipControl && !tooltipControl->GetParent())
+				{
+					snapshot.Add({ tooltipControl, tooltipControl->GetDisposedFlag() });
+				}
 				for (auto child : children)
 				{
 					snapshot.Add({ child, child->GetDisposedFlag() });
@@ -2231,6 +2252,16 @@ GuiControlHost
 				return nullptr;
 			}
 
+			static Ptr<INativeDelay> DelayCloseTooltip(GuiControl* owner, GuiTooltip* tooltip, vint milliseconds)
+			{
+				auto ownerDisposed = owner->GetDisposedFlag();
+				auto tooltipDisposed = tooltip->GetDisposedFlag();
+				return GetApplication()->DelayExecuteInMainThread([=]()
+				{
+					if (!ownerDisposed->IsDisposed() && !tooltipDisposed->IsDisposed()) owner->CloseTooltip();
+				}, milliseconds);
+			}
+
 			void GuiControlHost::MoveIntoTooltipControl(GuiControl* tooltipControl, Point location)
 			{
 				if (tooltipLocation != location)
@@ -2243,12 +2274,9 @@ GuiControlHost
 							if (tooltipCloseDelay)
 							{
 								tooltipCloseDelay->Cancel();
-								tooltipCloseDelay = 0;
+								tooltipCloseDelay = nullptr;
 							}
-							GetApplication()->DelayExecuteInMainThread([=]()
-							{
-								currentOwner->CloseTooltip();
-							}, TooltipDelayCloseTime);
+							DelayCloseTooltip(currentOwner, GetApplication()->sharedTooltipControl, TooltipDelayCloseTime);
 						}
 					}
 					if (!tooltipControl)
@@ -2267,18 +2295,19 @@ GuiControlHost
 					{
 						tooltipOpenDelay = GetApplication()->DelayExecuteInMainThread([this]()
 						{
+							tooltipOpenDelay = nullptr;
 							GuiControl* owner = GetTooltipOwner(tooltipLocation);
 							if (owner)
 							{
 								Point offset = owner->GetBoundsComposition()->GetGlobalBounds().LeftTop();
 								Point p(tooltipLocation.x - offset.x, tooltipLocation.y - offset.y + 24);
+								auto hostDisposed = GetDisposedFlag();
+								auto ownerDisposed = owner->GetDisposedFlag();
 								owner->DisplayTooltip(p);
-								tooltipOpenDelay = 0;
-
-								tooltipCloseDelay = GetApplication()->DelayExecuteInMainThread([this, owner]()
+								if (!hostDisposed->IsDisposed() && !ownerDisposed->IsDisposed() && GetApplication()->GetTooltipOwner() == owner)
 								{
-									owner->CloseTooltip();
-								}, TooltipDelayLifeTime);
+									tooltipCloseDelay = DelayCloseTooltip(owner, GetApplication()->sharedTooltipControl, TooltipDelayLifeTime);
+								}
 							}
 						}, TooltipDelayOpenTime);
 					}
@@ -2426,6 +2455,8 @@ GuiControlHost
 
 			GuiControlHost::~GuiControlHost()
 			{
+				if (tooltipOpenDelay) tooltipOpenDelay->Cancel();
+				if (tooltipCloseDelay) tooltipCloseDelay->Cancel();
 				FinalizeInstanceRecursively(this);
 				OnBeforeReleaseGraphicsHost();
 				delete host;
@@ -3658,6 +3689,7 @@ GuiPopup
 
 			GuiTooltip::~GuiTooltip()
 			{
+				SetTemporaryContentControl(nullptr);
 				GetCurrentController()->CallbackService()->UninstallListener(this);
 			}
 
