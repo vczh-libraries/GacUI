@@ -71,16 +71,12 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <ez:Layout Padding="0">
-              <ez:Column>
-                <ez:Row CellOption="composeType:Percentage percentage:1"/>
-                <ez:Row><Label Text="Locale only works in FakeDialogService (default in Hosted Mode)"/></ez:Row>
-                <ez:Row CellOption="composeType:Percentage percentage:1"/>
-              </ez:Column>
-            </ez:Layout>
+            <Label ref.Name="caption" Text="Locale only works in FakeDialogService (default in Hosted Mode)">
+              <att.BoundsComposition-set AlignmentToParent-bind="{left:0 top:(Math::Max(0, localeCell.CachedMinSize.y - caption.BoundsComposition.CachedMinSize.y) / 2) right:0 bottom:-1}"/>
+            </Label>
           </Cell>
 
-          <Cell Site="row:0 column:1">
+          <Cell ref.Name="localeCell" Site="row:0 column:1">
             <demo:LocaleSelector>
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </demo:LocaleSelector>
