@@ -27511,52 +27511,40 @@ namespace demo
         var <precompile>1 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>2 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
+        var <precompile>2 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>3 : ::presentation::compositions::eazy_layout::GuiEasyColumnLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^);
+        var <precompile>3 : ::demo::LocaleSelector* = null of (::demo::LocaleSelector*);
 
         @cpp:Protected
-        var <precompile>4 : ::presentation::compositions::eazy_layout::GuiEasyRowLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRowLayout^);
+        var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>5 : ::presentation::compositions::eazy_layout::GuiEasyRowLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRowLayout^);
+        var <precompile>5 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>6 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+        var <precompile>6 : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
 
         @cpp:Protected
-        var <precompile>7 : ::presentation::compositions::eazy_layout::GuiEasyRowLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRowLayout^);
+        var <precompile>7 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>8 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>8 : ::demo::LocalizedMessageDialogTabPage* = null of (::demo::LocalizedMessageDialogTabPage*);
 
         @cpp:Protected
-        var <precompile>9 : ::demo::LocaleSelector* = null of (::demo::LocaleSelector*);
+        var <precompile>9 : ::demo::LocalizedColorDialogTabPage* = null of (::demo::LocalizedColorDialogTabPage*);
 
         @cpp:Protected
-        var <precompile>10 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>10 : ::demo::LocalizedFontDialogTabPage* = null of (::demo::LocalizedFontDialogTabPage*);
 
         @cpp:Protected
-        var <precompile>11 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>11 : ::demo::LocalizedFileDialogTabPage* = null of (::demo::LocalizedFileDialogTabPage*);
 
         @cpp:Protected
-        var <precompile>12 : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
+        var caption : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
-        var <precompile>13 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var <precompile>14 : ::demo::LocalizedMessageDialogTabPage* = null of (::demo::LocalizedMessageDialogTabPage*);
-
-        @cpp:Protected
-        var <precompile>15 : ::demo::LocalizedColorDialogTabPage* = null of (::demo::LocalizedColorDialogTabPage*);
-
-        @cpp:Protected
-        var <precompile>16 : ::demo::LocalizedFontDialogTabPage* = null of (::demo::LocalizedFontDialogTabPage*);
-
-        @cpp:Protected
-        var <precompile>17 : ::demo::LocalizedFileDialogTabPage* = null of (::demo::LocalizedFileDialogTabPage*);
+        var localeCell : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
         func <demo-LocalizedDialogsTabPage>Initialize(<this> : ::demo::LocalizedDialogsTabPage*) : (::system::Void)
@@ -27587,111 +27575,179 @@ namespace demo
             {
                 <precompile>1.SetSite(0, 0, 1, 1);
             }
-            (<precompile>2 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
             {
-                (<precompile>2.Padding = 0 of (::system::Int32));
+                (caption = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                <this>.SetNamedObject("caption", caption);
             }
-            (<precompile>3 = new (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^)());
-            (<precompile>4 = new (::presentation::compositions::eazy_layout::GuiEasyRowLayout^)());
+            (<precompile>2 = caption.BoundsComposition);
             {
-                (<precompile>4.CellOption = {composeType : Percentage; percentage : 1;} of (::presentation::compositions::GuiCellOption));
-            }
-            (<precompile>5 = new (::presentation::compositions::eazy_layout::GuiEasyRowLayout^)());
-            {
-                (<precompile>6 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                (caption.Text = "Locale only works in FakeDialogService (default in Hosted Mode)");
             }
             {
-                (<precompile>6.Text = "Locale only works in FakeDialogService (default in Hosted Mode)");
-            }
-            {
-                (<precompile>5.Composition = <precompile>6.BoundsComposition);
-            }
-            (<precompile>7 = new (::presentation::compositions::eazy_layout::GuiEasyRowLayout^)());
-            {
-                (<precompile>7.CellOption = {composeType : Percentage; percentage : 1;} of (::presentation::compositions::GuiCellOption));
-            }
-            {
-                <precompile>3.Layouts.Add(<precompile>4);
-                <precompile>3.Layouts.Add(<precompile>5);
-                <precompile>3.Layouts.Add(<precompile>7);
-            }
-            {
-                <precompile>2.Layouts.Add(<precompile>3);
-            }
-            {
-                <precompile>1.AddChild(<precompile>2);
+                <precompile>1.AddChild(caption.BoundsComposition);
             }
             {
                 <precompile>0.AddChild(<precompile>1);
             }
-            (<precompile>8 = new (::presentation::compositions::GuiCellComposition*)());
+            (localeCell = new (::presentation::compositions::GuiCellComposition*)());
+            <this>.SetNamedObject("localeCell", localeCell);
             {
-                <precompile>8.SetSite(0, 1, 1, 1);
+                localeCell.SetSite(0, 1, 1, 1);
             }
-            (<precompile>9 = new (::demo::LocaleSelector*)());
-            (<precompile>10 = <precompile>9.BoundsComposition);
+            (<precompile>3 = new (::demo::LocaleSelector*)());
+            (<precompile>4 = <precompile>3.BoundsComposition);
             {
-                (<precompile>10.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                <precompile>8.AddChild(<precompile>9.BoundsComposition);
+                (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>0.AddChild(<precompile>8);
-            }
-            (<precompile>11 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>11.SetSite(1, 0, 1, 3);
+                localeCell.AddChild(<precompile>3.BoundsComposition);
             }
             {
-                (<precompile>12 = new (::presentation::controls::GuiTab*)(::presentation::theme::ThemeName::Tab));
+                <precompile>0.AddChild(localeCell);
             }
-            (<precompile>14 = new (::demo::LocalizedMessageDialogTabPage*)());
+            (<precompile>5 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                (<precompile>14.Alt = "M");
-            }
-            {
-                var <collection> = <precompile>12.Pages;
-                <collection>.Add(<precompile>14);
-            }
-            (<precompile>15 = new (::demo::LocalizedColorDialogTabPage*)());
-            {
-                (<precompile>15.Alt = "C");
+                <precompile>5.SetSite(1, 0, 1, 3);
             }
             {
-                var <collection> = <precompile>12.Pages;
-                <collection>.Add(<precompile>15);
+                (<precompile>6 = new (::presentation::controls::GuiTab*)(::presentation::theme::ThemeName::Tab));
             }
-            (<precompile>16 = new (::demo::LocalizedFontDialogTabPage*)());
+            (<precompile>8 = new (::demo::LocalizedMessageDialogTabPage*)());
             {
-                (<precompile>16.Alt = "F");
-            }
-            {
-                var <collection> = <precompile>12.Pages;
-                <collection>.Add(<precompile>16);
-            }
-            (<precompile>17 = new (::demo::LocalizedFileDialogTabPage*)());
-            {
-                (<precompile>17.Alt = "F");
+                (<precompile>8.Alt = "M");
             }
             {
-                var <collection> = <precompile>12.Pages;
-                <collection>.Add(<precompile>17);
+                var <collection> = <precompile>6.Pages;
+                <collection>.Add(<precompile>8);
             }
-            (<precompile>13 = <precompile>12.BoundsComposition);
+            (<precompile>9 = new (::demo::LocalizedColorDialogTabPage*)());
             {
-                (<precompile>13.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                <precompile>11.AddChild(<precompile>12.BoundsComposition);
+                (<precompile>9.Alt = "C");
             }
             {
-                <precompile>0.AddChild(<precompile>11);
+                var <collection> = <precompile>6.Pages;
+                <collection>.Add(<precompile>9);
+            }
+            (<precompile>10 = new (::demo::LocalizedFontDialogTabPage*)());
+            {
+                (<precompile>10.Alt = "F");
+            }
+            {
+                var <collection> = <precompile>6.Pages;
+                <collection>.Add(<precompile>10);
+            }
+            (<precompile>11 = new (::demo::LocalizedFileDialogTabPage*)());
+            {
+                (<precompile>11.Alt = "F");
+            }
+            {
+                var <collection> = <precompile>6.Pages;
+                <collection>.Add(<precompile>11);
+            }
+            (<precompile>7 = <precompile>6.BoundsComposition);
+            {
+                (<precompile>7.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                <precompile>5.AddChild(<precompile>6.BoundsComposition);
+            }
+            {
+                <precompile>0.AddChild(<precompile>5);
             }
             {
                 self.ContainerComposition.AddChild(<precompile>0);
             }
-            <precompile>2.BuildLayout();
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+                    var <bind-cache>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = {left : 0; top : (Math::Max(0, (<bind-cache>0.CachedMinSize.y - <bind-cache>1.CachedMinSize.y)) / 2); right : 0; bottom : (-1);} of (::presentation::Margin);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (localeCell ?? null of (::presentation::compositions::GuiCellComposition*)));
+                            (<bind-cache>1 = (caption.BoundsComposition ?? null of (::presentation::compositions::GuiBoundsComposition*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.CachedMinSizeChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.CachedMinSizeChanged, <bind-callback>1_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.CachedMinSizeChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            if (<bind-handler>1_0 is not null)
+                            {
+                                detach(<bind-cache>1.CachedMinSizeChanged, <bind-handler>1_0);
+                                (<bind-handler>1_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::presentation::compositions::GuiCellComposition*));
+                            (<bind-cache>1 = null of (::presentation::compositions::GuiBoundsComposition*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>2.AlignmentToParent;
+                    var <new> = (cast (::presentation::Margin) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>2.AlignmentToParent = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
         }
 
         new ()
@@ -29406,40 +29462,40 @@ namespace demo
         var <precompile>1 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>2 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
+        var <precompile>2 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>3 : ::presentation::compositions::eazy_layout::GuiEasyColumnLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^);
+        var <precompile>3 : ::demo::LocaleSelector* = null of (::demo::LocaleSelector*);
 
         @cpp:Protected
-        var <precompile>4 : ::presentation::compositions::eazy_layout::GuiEasyRowLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRowLayout^);
+        var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>5 : ::presentation::compositions::eazy_layout::GuiEasyRowLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRowLayout^);
+        var <precompile>5 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>6 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+        var <precompile>6 : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
 
         @cpp:Protected
-        var <precompile>7 : ::presentation::compositions::eazy_layout::GuiEasyRowLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRowLayout^);
+        var <precompile>7 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>8 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>8 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
 
         @cpp:Protected
-        var <precompile>9 : ::demo::LocaleSelector* = null of (::demo::LocaleSelector*);
+        var <precompile>9 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
 
         @cpp:Protected
-        var <precompile>10 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>10 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
 
         @cpp:Protected
-        var <precompile>11 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>11 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
 
         @cpp:Protected
-        var <precompile>12 : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
+        var <precompile>12 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
 
         @cpp:Protected
-        var <precompile>13 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>13 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
 
         @cpp:Protected
         var <precompile>14 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
@@ -29460,22 +29516,10 @@ namespace demo
         var <precompile>19 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
 
         @cpp:Protected
-        var <precompile>20 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
+        var caption : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
-        var <precompile>21 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
-
-        @cpp:Protected
-        var <precompile>22 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
-
-        @cpp:Protected
-        var <precompile>23 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
-
-        @cpp:Protected
-        var <precompile>24 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
-
-        @cpp:Protected
-        var <precompile>25 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
+        var localeCell : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
         func <demo-LocalizedStringsTabPage>Initialize(<this> : ::demo::LocalizedStringsTabPage*) : (::system::Void)
@@ -29503,137 +29547,115 @@ namespace demo
             {
                 <precompile>1.SetSite(0, 0, 1, 1);
             }
-            (<precompile>2 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
             {
-                (<precompile>2.Padding = 0 of (::system::Int32));
+                (caption = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                <this>.SetNamedObject("caption", caption);
             }
-            (<precompile>3 = new (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^)());
-            (<precompile>4 = new (::presentation::compositions::eazy_layout::GuiEasyRowLayout^)());
+            (<precompile>2 = caption.BoundsComposition);
             {
-                (<precompile>4.CellOption = {composeType : Percentage; percentage : 1;} of (::presentation::compositions::GuiCellOption));
-            }
-            (<precompile>5 = new (::presentation::compositions::eazy_layout::GuiEasyRowLayout^)());
-            {
-                (<precompile>6 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
-            }
-            {
-                (<precompile>5.Composition = <precompile>6.BoundsComposition);
-            }
-            (<precompile>7 = new (::presentation::compositions::eazy_layout::GuiEasyRowLayout^)());
-            {
-                (<precompile>7.CellOption = {composeType : Percentage; percentage : 1;} of (::presentation::compositions::GuiCellOption));
-            }
-            {
-                <precompile>3.Layouts.Add(<precompile>4);
-                <precompile>3.Layouts.Add(<precompile>5);
-                <precompile>3.Layouts.Add(<precompile>7);
-            }
-            {
-                <precompile>2.Layouts.Add(<precompile>3);
-            }
-            {
-                <precompile>1.AddChild(<precompile>2);
+                <precompile>1.AddChild(caption.BoundsComposition);
             }
             {
                 <precompile>0.AddChild(<precompile>1);
             }
-            (<precompile>8 = new (::presentation::compositions::GuiCellComposition*)());
+            (localeCell = new (::presentation::compositions::GuiCellComposition*)());
+            <this>.SetNamedObject("localeCell", localeCell);
             {
-                <precompile>8.SetSite(0, 1, 1, 1);
+                localeCell.SetSite(0, 1, 1, 1);
             }
-            (<precompile>9 = new (::demo::LocaleSelector*)());
-            (<precompile>10 = <precompile>9.BoundsComposition);
+            (<precompile>3 = new (::demo::LocaleSelector*)());
+            (<precompile>4 = <precompile>3.BoundsComposition);
             {
-                (<precompile>10.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                <precompile>8.AddChild(<precompile>9.BoundsComposition);
+                (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>0.AddChild(<precompile>8);
-            }
-            (<precompile>11 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>11.SetSite(1, 0, 1, 3);
+                localeCell.AddChild(<precompile>3.BoundsComposition);
             }
             {
-                (<precompile>12 = new (::presentation::controls::GuiTextList*)(::presentation::theme::ThemeName::TextList));
+                <precompile>0.AddChild(localeCell);
+            }
+            (<precompile>5 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>5.SetSite(1, 0, 1, 3);
+            }
+            {
+                (<precompile>6 = new (::presentation::controls::GuiTextList*)(::presentation::theme::ThemeName::TextList));
+            }
+            (<precompile>8 = new (::presentation::controls::list::TextItem^)());
+            {
+                var <collection> = <precompile>6.Items;
+                <collection>.Add(<precompile>8);
+            }
+            (<precompile>9 = new (::presentation::controls::list::TextItem^)());
+            {
+                var <collection> = <precompile>6.Items;
+                <collection>.Add(<precompile>9);
+            }
+            (<precompile>10 = new (::presentation::controls::list::TextItem^)());
+            {
+                var <collection> = <precompile>6.Items;
+                <collection>.Add(<precompile>10);
+            }
+            (<precompile>11 = new (::presentation::controls::list::TextItem^)());
+            {
+                var <collection> = <precompile>6.Items;
+                <collection>.Add(<precompile>11);
+            }
+            (<precompile>12 = new (::presentation::controls::list::TextItem^)());
+            {
+                var <collection> = <precompile>6.Items;
+                <collection>.Add(<precompile>12);
+            }
+            (<precompile>13 = new (::presentation::controls::list::TextItem^)());
+            {
+                var <collection> = <precompile>6.Items;
+                <collection>.Add(<precompile>13);
             }
             (<precompile>14 = new (::presentation::controls::list::TextItem^)());
             {
-                var <collection> = <precompile>12.Items;
+                var <collection> = <precompile>6.Items;
                 <collection>.Add(<precompile>14);
             }
             (<precompile>15 = new (::presentation::controls::list::TextItem^)());
             {
-                var <collection> = <precompile>12.Items;
+                var <collection> = <precompile>6.Items;
                 <collection>.Add(<precompile>15);
             }
             (<precompile>16 = new (::presentation::controls::list::TextItem^)());
             {
-                var <collection> = <precompile>12.Items;
+                var <collection> = <precompile>6.Items;
                 <collection>.Add(<precompile>16);
             }
             (<precompile>17 = new (::presentation::controls::list::TextItem^)());
             {
-                var <collection> = <precompile>12.Items;
+                var <collection> = <precompile>6.Items;
                 <collection>.Add(<precompile>17);
             }
             (<precompile>18 = new (::presentation::controls::list::TextItem^)());
             {
-                var <collection> = <precompile>12.Items;
+                var <collection> = <precompile>6.Items;
                 <collection>.Add(<precompile>18);
             }
             (<precompile>19 = new (::presentation::controls::list::TextItem^)());
             {
-                var <collection> = <precompile>12.Items;
+                var <collection> = <precompile>6.Items;
                 <collection>.Add(<precompile>19);
             }
-            (<precompile>20 = new (::presentation::controls::list::TextItem^)());
             {
-                var <collection> = <precompile>12.Items;
-                <collection>.Add(<precompile>20);
-            }
-            (<precompile>21 = new (::presentation::controls::list::TextItem^)());
-            {
-                var <collection> = <precompile>12.Items;
-                <collection>.Add(<precompile>21);
-            }
-            (<precompile>22 = new (::presentation::controls::list::TextItem^)());
-            {
-                var <collection> = <precompile>12.Items;
-                <collection>.Add(<precompile>22);
-            }
-            (<precompile>23 = new (::presentation::controls::list::TextItem^)());
-            {
-                var <collection> = <precompile>12.Items;
-                <collection>.Add(<precompile>23);
-            }
-            (<precompile>24 = new (::presentation::controls::list::TextItem^)());
-            {
-                var <collection> = <precompile>12.Items;
-                <collection>.Add(<precompile>24);
-            }
-            (<precompile>25 = new (::presentation::controls::list::TextItem^)());
-            {
-                var <collection> = <precompile>12.Items;
-                <collection>.Add(<precompile>25);
+                (<precompile>6.HorizontalAlwaysVisible = false);
             }
             {
-                (<precompile>12.HorizontalAlwaysVisible = false);
+                (<precompile>6.VerticalAlwaysVisible = false);
+            }
+            (<precompile>7 = <precompile>6.BoundsComposition);
+            {
+                (<precompile>7.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>12.VerticalAlwaysVisible = false);
-            }
-            (<precompile>13 = <precompile>12.BoundsComposition);
-            {
-                (<precompile>13.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                <precompile>5.AddChild(<precompile>6.BoundsComposition);
             }
             {
-                <precompile>11.AddChild(<precompile>12.BoundsComposition);
-            }
-            {
-                <precompile>0.AddChild(<precompile>11);
+                <precompile>0.AddChild(<precompile>5);
             }
             {
                 self.ContainerComposition.AddChild(<precompile>0);
@@ -29701,13 +29723,104 @@ namespace demo
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>6.Text;
+                    var <old> = caption.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>6.Text = <new>);
+                    (caption.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+                    var <bind-cache>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = {left : 0; top : (Math::Max(0, (<bind-cache>0.CachedMinSize.y - <bind-cache>1.CachedMinSize.y)) / 2); right : 0; bottom : (-1);} of (::presentation::Margin);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (localeCell ?? null of (::presentation::compositions::GuiCellComposition*)));
+                            (<bind-cache>1 = (caption.BoundsComposition ?? null of (::presentation::compositions::GuiBoundsComposition*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.CachedMinSizeChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.CachedMinSizeChanged, <bind-callback>1_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.CachedMinSizeChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            if (<bind-handler>1_0 is not null)
+                            {
+                                detach(<bind-cache>1.CachedMinSizeChanged, <bind-handler>1_0);
+                                (<bind-handler>1_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::presentation::compositions::GuiCellComposition*));
+                            (<bind-cache>1 = null of (::presentation::compositions::GuiBoundsComposition*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>2.AlignmentToParent;
+                    var <new> = (cast (::presentation::Margin) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>2.AlignmentToParent = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -29725,6 +29838,444 @@ namespace demo
                     func <bind-activator>() : (::system::Void)
                     {
                         var <bind-activator-result> = <bind-cache>0.Strings.ShortDate(self.dateTime);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (<this> ?? null of (::demo::LocalizedStringsTabPage*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::LocalizedStringsTabPage*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>8.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>8.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::LocalizedStringsTabPage* = null of (::demo::LocalizedStringsTabPage*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Strings.LongDate(self.dateTime);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (<this> ?? null of (::demo::LocalizedStringsTabPage*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::LocalizedStringsTabPage*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>9.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>9.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::LocalizedStringsTabPage* = null of (::demo::LocalizedStringsTabPage*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Strings.YearMonthDate(self.dateTime);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (<this> ?? null of (::demo::LocalizedStringsTabPage*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::LocalizedStringsTabPage*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>10.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>10.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::LocalizedStringsTabPage* = null of (::demo::LocalizedStringsTabPage*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Strings.ShortTime(self.dateTime);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (<this> ?? null of (::demo::LocalizedStringsTabPage*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::LocalizedStringsTabPage*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>11.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>11.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::LocalizedStringsTabPage* = null of (::demo::LocalizedStringsTabPage*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Strings.LongTime(self.dateTime);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (<this> ?? null of (::demo::LocalizedStringsTabPage*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::LocalizedStringsTabPage*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>12.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>12.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::LocalizedStringsTabPage* = null of (::demo::LocalizedStringsTabPage*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Strings.DateFormat(self.dateTime);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (<this> ?? null of (::demo::LocalizedStringsTabPage*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::LocalizedStringsTabPage*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>13.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>13.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::LocalizedStringsTabPage* = null of (::demo::LocalizedStringsTabPage*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Strings.TimeFormat(self.dateTime);
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -29797,7 +30348,7 @@ namespace demo
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = <bind-cache>0.Strings.LongDate(self.dateTime);
+                        var <bind-activator-result> = <bind-cache>0.Strings.Number(self.number);
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -29870,7 +30421,7 @@ namespace demo
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = <bind-cache>0.Strings.YearMonthDate(self.dateTime);
+                        var <bind-activator-result> = <bind-cache>0.Strings.Currency(self.currency);
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -29943,7 +30494,7 @@ namespace demo
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = <bind-cache>0.Strings.ShortTime(self.dateTime);
+                        var <bind-activator-result> = <bind-cache>0.Strings.Sentence("John Smith");
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -30016,7 +30567,7 @@ namespace demo
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = <bind-cache>0.Strings.LongTime(self.dateTime);
+                        var <bind-activator-result> = <bind-cache>0.Strings.Sentence("John Smith");
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -30089,444 +30640,6 @@ namespace demo
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = <bind-cache>0.Strings.DateFormat(self.dateTime);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0() : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (<this> ?? null of (::demo::LocalizedStringsTabPage*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::demo::LocalizedStringsTabPage*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>19.Text;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>19.Text = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::demo::LocalizedStringsTabPage* = null of (::demo::LocalizedStringsTabPage*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Strings.TimeFormat(self.dateTime);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0() : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (<this> ?? null of (::demo::LocalizedStringsTabPage*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::demo::LocalizedStringsTabPage*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>20.Text;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>20.Text = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::demo::LocalizedStringsTabPage* = null of (::demo::LocalizedStringsTabPage*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Strings.Number(self.number);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0() : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (<this> ?? null of (::demo::LocalizedStringsTabPage*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::demo::LocalizedStringsTabPage*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>21.Text;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>21.Text = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::demo::LocalizedStringsTabPage* = null of (::demo::LocalizedStringsTabPage*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Strings.Currency(self.currency);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0() : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (<this> ?? null of (::demo::LocalizedStringsTabPage*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::demo::LocalizedStringsTabPage*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>22.Text;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>22.Text = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::demo::LocalizedStringsTabPage* = null of (::demo::LocalizedStringsTabPage*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Strings.Sentence("John Smith");
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0() : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (<this> ?? null of (::demo::LocalizedStringsTabPage*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::demo::LocalizedStringsTabPage*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>23.Text;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>23.Text = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::demo::LocalizedStringsTabPage* = null of (::demo::LocalizedStringsTabPage*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Strings.Sentence("John Smith");
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0() : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (<this> ?? null of (::demo::LocalizedStringsTabPage*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::demo::LocalizedStringsTabPage*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>24.Text;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>24.Text = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::demo::LocalizedStringsTabPage* = null of (::demo::LocalizedStringsTabPage*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
                         var <bind-activator-result> = (<bind-cache>0.Strings.Sentence("John Smith") ?? "") of (::system::String);
                         ValueChanged(<bind-activator-result>);
                     }
@@ -30577,13 +30690,13 @@ namespace demo
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>25.Text;
+                    var <old> = <precompile>19.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>25.Text = <new>);
+                    (<precompile>19.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -30733,7 +30846,6 @@ namespace demo
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
-            <precompile>2.BuildLayout();
         }
 
         new ()
