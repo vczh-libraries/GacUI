@@ -2420,10 +2420,64 @@ public static class GacUIShowcaseTests
         }
         Console.WriteLine("SOP outputs: " + folder);
     }
+    static readonly string[] GalleryStyleNames = { "Header 1", "Header 2", "Header 3", "Strong", "Quote", "Emphasis", "Intense Emphasis", "Deleted" };
+
+    static string RenderedLabelColor(object tree, string caption)
+    {
+        foreach (var node in SnapshotNodes(SnapshotControl(tree, "Label", caption)))
+        {
+            object text;
+            if (node.TryGetValue("elementText", out text) && (string)text == caption)
+                return ((string)node["element"]).Split(':', ',')[1];
+        }
+        throw new Exception("Missing label foreground: " + caption);
+    }
+    static void GalleryLabels(IntPtr hwnd)
+    {
+        Test("Document Editor (Ribbon) / themed gallery labels");
+        var originalBounds = root.Current.BoundingRectangle;
+        Pattern<TransformPattern>(root, TransformPattern.Pattern).Resize(1400, 900);
+        foreach (string palette in new[] { "Default", "Aurora" })
+        {
+            PersistencePalette(hwnd, palette);
+            Page(Page(root, "Misc"), "Raw Clock");
+            string labelColor = RenderedLabelColor(ControlsSnapshot(), "Clock data: HH:mm:ss, updated once per second");
+            Action<object, string> checkItem = (tree, name) => {
+                var item = SnapshotControl(tree, "ListItemBackground", name);
+                string preview = labelColor;
+                if (name == "Header 1" || name == "Header 2") preview = "#FF8000FF";
+                if (name == "Intense Emphasis") preview = "#8080FFFF";
+                Check(RenderedLabelColor(item, name) == labelColor, name + " caption uses the theme foreground");
+                Check(RenderedLabelColor(item, "AaBbCc") == preview, name + " preview uses its effective style color");
+            };
+            var page = Page(Page(root, "Control"), "Document Editor (Ribbon)");
+            var list = Find(page, ControlType.List).Find(candidate => Items(candidate).Count == GalleryStyleNames.Length);
+            Check(list != null, "inline style gallery");
+            var items = Items(list);
+            Pattern<SelectionItemPattern>(items[2], SelectionItemPattern.Pattern).Select();
+            Pattern<ScrollItemPattern>(items[0], ScrollItemPattern.Pattern).ScrollIntoView();
+            Check(Pattern<SelectionItemPattern>(items[2], SelectionItemPattern.Pattern).Current.IsSelected, "Header 3 is selected");
+            var inline = SnapshotControl(ControlsSnapshot(), "RibbonGalleryItemList", "Header 1");
+            checkItem(inline, "Header 1");
+            checkItem(inline, "Header 3");
+
+            var gallery = TreeWalker.RawViewWalker.GetParent(list);
+            object expansion;
+            while (!gallery.TryGetCurrentPattern(ExpandCollapsePattern.Pattern, out expansion)) gallery = TreeWalker.RawViewWalker.GetParent(gallery);
+            ((ExpandCollapsePattern)expansion).Expand();
+            Dictionary<string, object> popup = null;
+            Wait(() => { popup = StylePopupSnapshot(); return popup != null; }, "style popup opens");
+            foreach (string name in GalleryStyleNames) checkItem(popup["composition"], name);
+            ((ExpandCollapsePattern)expansion).Collapse();
+            Wait(() => StylePopupSnapshot() == null, "style popup closes");
+        }
+        PersistencePalette(hwnd, "Default");
+        Pattern<TransformPattern>(root, TransformPattern.Pattern).Resize(originalBounds.Width, originalBounds.Height);
+    }
     static void DocumentStyles(IntPtr hwnd, string folder, double? defaultFontSize = null)
     {
         Test("Document styles / fixture load, all built-ins, unused definitions and palette replacement");
-        var names = new[] { "Header 1", "Header 2", "Header 3", "Strong", "Quote", "Emphasis", "Intense Emphasis", "Deleted" };
+        var names = GalleryStyleNames;
         var factors = new[] { 2.0, 1.6, 1.3, 1.0, 1.0, 1.0, 1.0, 1.0 };
         Action<string, string> checkCatalog = (xml, context) => {
             foreach (string name in names) Check(xml.Contains("<Style name=\"" + name + "\""), context + " contains " + name);
@@ -4957,7 +5011,7 @@ public static class GacUIShowcaseTests
             // resize and palette checks use current properties and snapshots;
             // retaining subtree subscriptions makes their rebuilds cache every
             // intermediate template and can starve layout on Debug builds.
-            if (scenario == "All" || scenario == "Layout" || scenario == "ShowcaseSkins" || scenario == "ResponsivePalette") Automation.RemoveAllEventHandlers();
+            if (scenario == "All" || scenario == "Layout" || scenario == "ShowcaseSkins" || scenario == "ResponsivePalette" || scenario == "GalleryLabels") Automation.RemoveAllEventHandlers();
             if (scenario == "All" || scenario == "RawClock") RawClock(scenario == "All");
             if (scenario == "All" || scenario == "Touching") Touching(scenario == "All");
             if (scenario == "All" || scenario == "Layout" || scenario == "Responsive") ResponsiveLayout();
@@ -4966,6 +5020,7 @@ public static class GacUIShowcaseTests
             if (scenario == "All" || scenario == "Layout" || scenario == "ShowcaseSkins") { EasyLayout(); EasyLayoutTables(); }
             if (scenario == "ShowcaseSkins") SkinRefreshListState();
             if (scenario == "All" || scenario == "LocalizedLabels") LocalizedLabels();
+            if (scenario == "All" || scenario == "GalleryLabels") GalleryLabels(hwnd);
             if (scenario == "All" || scenario == "Walk") WalkTabs(root, 0);
             if (scenario == "All" || scenario == "Window") {
             Test("Window / Transform.Move uses physical screen coordinates");

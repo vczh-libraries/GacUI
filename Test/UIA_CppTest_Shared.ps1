@@ -6,7 +6,7 @@ param(
     [ValidateRange(0,15)][int]$EditorSopStartStep = 0,
     [switch]$EditorSopResumeAtImages,
     [string]$BusyClick = '',
-    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Layout','ShowcaseSkins','LocalizedLabels','Responsive','ResponsiveWindow','ResponsivePalette','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime','RawClock','Touching','Persistence','DocumentExchange','DocumentStyles','DocumentContextMenu','DocumentEditorSop','DocumentEditorCommands','PointRegression','TouchingList','FileDialogMutations')][string]$Scenario = 'All',
+    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Layout','ShowcaseSkins','LocalizedLabels','Responsive','ResponsiveWindow','ResponsivePalette','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime','RawClock','Touching','Persistence','DocumentExchange','DocumentStyles','GalleryLabels','DocumentContextMenu','DocumentEditorSop','DocumentEditorCommands','PointRegression','TouchingList','FileDialogMutations')][string]$Scenario = 'All',
     [switch]$HostedFixture,
     [switch]$GdiFixture,
     [switch]$Gdi,

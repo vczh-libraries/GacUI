@@ -4,6 +4,9 @@
       <![CDATA[
         module ribbonscript;
         using presentation::*;
+        using presentation::elements::*;
+        using presentation::templates::*;
+        using presentation::theme::*;
 
         namespace demo
         {
@@ -32,6 +35,19 @@
             var Name : string = "";
             var Items : observe StyleItem^[] = {};
           }
+
+          func CreateGalleryLabelTemplate(value : object) : GuiControlTemplate*
+          {
+            var factory = ITheme::GetCurrentTheme().CreateStyle(ThemeName::Label);
+            var labelTemplate = factory(value);
+            var textElement = labelTemplate.OwnedElement as GuiSolidLabelElement^;
+            if (textElement is not null)
+            {
+              textElement.Ellipse = true;
+              textElement.SetAlignments(Alignment::Center, Alignment::Center);
+            }
+            return labelTemplate;
+          }
         }
       ]]>
     </Workflow>
@@ -44,7 +60,7 @@
         <![CDATA[
           {
             var styles = ViewModel.Style.styles;
-            if (styles.color is not null) { styleLabel.Color = cast Color styles.color; }
+            if (styles.color is not null) { styleLabel.TextColor = cast Color styles.color; }
 
             var font = containerControl.DisplayFont;
             var fontFamily = font.fontFamily;
@@ -99,22 +115,22 @@
             </att.Columns>
 
             <Cell Site="row:0 column:0">
-              <SolidLabel ref.Name="styleLabel" Text="AaBbCc" Ellipse="true" Color="#FFFFFF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+              <Label ref.Name="styleLabel" Text="AaBbCc" ControlTemplate-eval="demo::CreateGalleryLabelTemplate">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              </Label>
             </Cell>
 
             <Cell Site="row:1 column:0">
-              <SolidLabel Text-bind="ViewModel.Name" Font-eval="containerControl.DisplayFont" Ellipse="true" HorizontalAlignment="Center">
-                <att.Color-bind>
-                  <![CDATA[cast Color (self.Selected ? "#FFFFFF" : "#808080")]]>
-                </att.Color-bind>
-              </SolidLabel>
+              <Label Text-bind="ViewModel.Name" ControlTemplate-eval="demo::CreateGalleryLabelTemplate">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              </Label>
             </Cell>
           </Table>
 
           <att.TooltipControl>
             <CustomControl>
               <Bounds AlignmentToParent="left:5 top:5 right:5 bottom:5" MinSizeLimitation="LimitToElementAndChildren">
-                <SolidLabel Text-bind="ViewModel.Name" Color="#FFFFFF" Font-eval="containerControl.DisplayFont"/>
+                <Label Text-bind="ViewModel.Name" Font-eval="containerControl.DisplayFont"/>
               </Bounds>
             </CustomControl>
           </att.TooltipControl>
