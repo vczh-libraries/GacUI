@@ -1,0 +1,263 @@
+﻿{
+  "frameId": 27,
+  "frameName": null,
+  "windowSize": {
+    "bounds": {
+      "x1": {"value": 272},
+      "y1": {"value": 224},
+      "x2": {"value": 752},
+      "y2": {"value": 544}
+    },
+    "clientBounds": {
+      "x1": {"value": 272},
+      "y1": {"value": 224},
+      "x2": {"value": 752},
+      "y2": {"value": 544}
+    },
+    "sizeState": "Restored",
+    "customFramePadding": {
+      "left": {"value": 8},
+      "top": {"value": 8},
+      "right": {"value": 8},
+      "bottom": {"value": 8}
+    }
+  },
+  "elements": [
+    [
+      35,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 35,
+          "backgroundColor": "#2D2D30",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      36,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 36,
+          "backgroundColor": "#54545C",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      37,
+      [
+        "ElementDesc_SolidBorder",
+        {
+          "id": 37,
+          "borderColor": "#6A6A75",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      39,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 39,
+          "textColor": "#F1F1F1",
+          "horizontalAlignment": "Center",
+          "verticalAlignment": "Center",
+          "wrapLine": false,
+          "wrapLineHeightCalculation": false,
+          "ellipse": false,
+          "multiline": false,
+          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+          "text": "TooltipA",
+          "measuringRequest": "TotalSize"
+        }
+      ]
+    ],
+    [
+      40,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 40,
+          "backgroundColor": "#3F3F46",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      41,
+      [
+        "ElementDesc_SolidBorder",
+        {
+          "id": 41,
+          "borderColor": "#54545C",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      43,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 43,
+          "textColor": "#F1F1F1",
+          "horizontalAlignment": "Center",
+          "verticalAlignment": "Center",
+          "wrapLine": false,
+          "wrapLineHeightCalculation": false,
+          "ellipse": false,
+          "multiline": false,
+          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+          "text": "TooltipB",
+          "measuringRequest": "TotalSize"
+        }
+      ]
+    ],
+    [
+      44,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 44,
+          "backgroundColor": "#DCE6F0",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      45,
+      [
+        "ElementDesc_SolidBorder",
+        {
+          "id": 45,
+          "borderColor": "#017ACC",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      46,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 46,
+          "textColor": "#0A141E",
+          "horizontalAlignment": "Left",
+          "verticalAlignment": "Top",
+          "wrapLine": false,
+          "wrapLineHeightCalculation": false,
+          "ellipse": false,
+          "multiline": false,
+          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+          "text": "This is Tooltip A",
+          "measuringRequest": "TotalSize"
+        }
+      ]
+    ]
+  ],
+  "root": {
+    "id": -1,
+    "content": {
+      "hitTestResult": null,
+      "cursor": null,
+      "element": null,
+      "bounds": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
+      "validArea": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
+      "editableAttribute": null
+    },
+    "children": [
+      {
+        "id": 140,
+        "content": {
+          "hitTestResult": null,
+          "cursor": null,
+          "element": 35,
+          "bounds": {"x1": 0, "y1": 0, "x2": 480, "y2": 320},
+          "validArea": {"x1": 0, "y1": 0, "x2": 480, "y2": 320},
+          "editableAttribute": null
+        },
+        "children": [
+          {
+            "id": 144,
+            "content": {
+              "hitTestResult": null,
+              "cursor": null,
+              "element": 36,
+              "bounds": {"x1": 5, "y1": 5, "x2": 70, "y2": 25},
+              "validArea": {"x1": 5, "y1": 5, "x2": 70, "y2": 25},
+              "editableAttribute": null
+            },
+            "children": [
+              {
+                "id": 148,
+                "content": {
+                  "hitTestResult": null,
+                  "cursor": null,
+                  "element": 37,
+                  "bounds": {"x1": 5, "y1": 5, "x2": 70, "y2": 25},
+                  "validArea": {"x1": 5, "y1": 5, "x2": 70, "y2": 25},
+                  "editableAttribute": null
+                },
+                "children": [
+                  {
+                    "id": 156,
+                    "content": {
+                      "hitTestResult": null,
+                      "cursor": null,
+                      "element": 39,
+                      "bounds": {"x1": 9, "y1": 7, "x2": 66, "y2": 23},
+                      "validArea": {"x1": 9, "y1": 7, "x2": 66, "y2": 23},
+                      "editableAttribute": null
+                    },
+                    "children": null
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": 160,
+            "content": {
+              "hitTestResult": null,
+              "cursor": null,
+              "element": 40,
+              "bounds": {"x1": 5, "y1": 30, "x2": 70, "y2": 50},
+              "validArea": {"x1": 5, "y1": 30, "x2": 70, "y2": 50},
+              "editableAttribute": null
+            },
+            "children": [
+              {
+                "id": 164,
+                "content": {
+                  "hitTestResult": null,
+                  "cursor": null,
+                  "element": 41,
+                  "bounds": {"x1": 5, "y1": 30, "x2": 70, "y2": 50},
+                  "validArea": {"x1": 5, "y1": 30, "x2": 70, "y2": 50},
+                  "editableAttribute": null
+                },
+                "children": [
+                  {
+                    "id": 172,
+                    "content": {
+                      "hitTestResult": null,
+                      "cursor": null,
+                      "element": 43,
+                      "bounds": {"x1": 9, "y1": 32, "x2": 66, "y2": 48},
+                      "validArea": {"x1": 9, "y1": 32, "x2": 66, "y2": 48},
+                      "editableAttribute": null
+                    },
+                    "children": null
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

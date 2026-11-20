@@ -742,33 +742,52 @@
       ]
     ],
     [
-      59,
+      61,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 61,
+          "textColor": "#F1F1F1",
+          "horizontalAlignment": "Left",
+          "verticalAlignment": "Top",
+          "wrapLine": false,
+          "wrapLineHeightCalculation": false,
+          "ellipse": false,
+          "multiline": false,
+          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+          "text": "This is Tooltip A",
+          "measuringRequest": "TotalSize"
+        }
+      ]
+    ],
+    [
+      64,
       [
         "ElementDesc_SolidBackground",
         {
-          "id": 59,
+          "id": 64,
           "backgroundColor": "#2D2D30",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      60,
+      65,
       [
         "ElementDesc_SolidBorder",
         {
-          "id": 60,
+          "id": 65,
           "borderColor": "#017ACC",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      61,
+      66,
       [
         "ElementDesc_SolidLabel",
         {
-          "id": 61,
+          "id": 66,
           "textColor": "#F1F1F1",
           "horizontalAlignment": "Left",
           "verticalAlignment": "Top",
@@ -1476,33 +1495,33 @@
                         ]
                       },
                       {
-                        "id": 236,
+                        "id": 256,
                         "content": {
                           "hitTestResult": null,
                           "cursor": null,
-                          "element": 59,
+                          "element": 64,
                           "bounds": {"x1": 113, "y1": 121, "x2": 237, "y2": 139},
                           "validArea": {"x1": 113, "y1": 121, "x2": 237, "y2": 139},
                           "editableAttribute": null
                         },
                         "children": [
                           {
-                            "id": 240,
+                            "id": 260,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 60,
+                              "element": 65,
                               "bounds": {"x1": 113, "y1": 121, "x2": 237, "y2": 139},
                               "validArea": {"x1": 113, "y1": 121, "x2": 237, "y2": 139},
                               "editableAttribute": null
                             },
                             "children": [
                               {
-                                "id": 244,
+                                "id": 264,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 61,
+                                  "element": 66,
                                   "bounds": {"x1": 114, "y1": 122, "x2": 236, "y2": 138},
                                   "validArea": {"x1": 114, "y1": 122, "x2": 236, "y2": 138},
                                   "editableAttribute": null

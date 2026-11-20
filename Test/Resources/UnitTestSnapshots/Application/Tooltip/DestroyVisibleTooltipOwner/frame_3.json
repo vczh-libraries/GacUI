@@ -1,6 +1,6 @@
 ﻿{
   "frameId": 18,
-  "frameName": "Surviving owner reuses tooltip",
+  "frameName": "Surviving owner shows its tooltip",
   "windowSize": {
     "bounds": {
       "x1": {"value": 272},
@@ -23,28 +23,6 @@
     }
   },
   "elements": [
-    [
-      31,
-      [
-        "ElementDesc_SolidBackground",
-        {
-          "id": 31,
-          "backgroundColor": "#2D2D30",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
-    [
-      32,
-      [
-        "ElementDesc_SolidBorder",
-        {
-          "id": 32,
-          "borderColor": "#017ACC",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
     [
       34,
       [
@@ -364,11 +342,33 @@
       ]
     ],
     [
-      58,
+      60,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 60,
+          "backgroundColor": "#2D2D30",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      61,
+      [
+        "ElementDesc_SolidBorder",
+        {
+          "id": 61,
+          "borderColor": "#017ACC",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      62,
       [
         "ElementDesc_SolidLabel",
         {
-          "id": 58,
+          "id": 62,
           "textColor": "#F1F1F1",
           "horizontalAlignment": "Left",
           "verticalAlignment": "Top",
@@ -781,33 +781,33 @@
                 ]
               },
               {
-                "id": 124,
+                "id": 240,
                 "content": {
                   "hitTestResult": null,
                   "cursor": null,
-                  "element": 31,
+                  "element": 60,
                   "bounds": {"x1": 13, "y1": 46, "x2": 137, "y2": 64},
                   "validArea": {"x1": 13, "y1": 46, "x2": 137, "y2": 64},
                   "editableAttribute": null
                 },
                 "children": [
                   {
-                    "id": 128,
+                    "id": 244,
                     "content": {
                       "hitTestResult": null,
                       "cursor": null,
-                      "element": 32,
+                      "element": 61,
                       "bounds": {"x1": 13, "y1": 46, "x2": 137, "y2": 64},
                       "validArea": {"x1": 13, "y1": 46, "x2": 137, "y2": 64},
                       "editableAttribute": null
                     },
                     "children": [
                       {
-                        "id": 232,
+                        "id": 248,
                         "content": {
                           "hitTestResult": null,
                           "cursor": null,
-                          "element": 58,
+                          "element": 62,
                           "bounds": {"x1": 14, "y1": 47, "x2": 136, "y2": 63},
                           "validArea": {"x1": 14, "y1": 47, "x2": 136, "y2": 63},
                           "editableAttribute": null

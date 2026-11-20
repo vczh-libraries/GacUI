@@ -1,0 +1,222 @@
+﻿{
+  "frameId": 10,
+  "frameName": null,
+  "windowSize": {
+    "bounds": {
+      "x1": {"value": 272},
+      "y1": {"value": 224},
+      "x2": {"value": 752},
+      "y2": {"value": 544}
+    },
+    "clientBounds": {
+      "x1": {"value": 272},
+      "y1": {"value": 224},
+      "x2": {"value": 752},
+      "y2": {"value": 544}
+    },
+    "sizeState": "Restored",
+    "customFramePadding": {
+      "left": {"value": 8},
+      "top": {"value": 8},
+      "right": {"value": 8},
+      "bottom": {"value": 8}
+    }
+  },
+  "elements": [
+    [
+      21,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 21,
+          "backgroundColor": "#54545C",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      22,
+      [
+        "ElementDesc_SolidBorder",
+        {
+          "id": 22,
+          "borderColor": "#6A6A75",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      24,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 24,
+          "textColor": "#F1F1F1",
+          "horizontalAlignment": "Center",
+          "verticalAlignment": "Center",
+          "wrapLine": false,
+          "wrapLineHeightCalculation": false,
+          "ellipse": false,
+          "multiline": false,
+          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+          "text": "TooltipA",
+          "measuringRequest": "TotalSize"
+        }
+      ]
+    ],
+    [
+      25,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 25,
+          "backgroundColor": "#3F3F46",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      26,
+      [
+        "ElementDesc_SolidBorder",
+        {
+          "id": 26,
+          "borderColor": "#54545C",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      28,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 28,
+          "textColor": "#F1F1F1",
+          "horizontalAlignment": "Center",
+          "verticalAlignment": "Center",
+          "wrapLine": false,
+          "wrapLineHeightCalculation": false,
+          "ellipse": false,
+          "multiline": false,
+          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+          "text": "TooltipB",
+          "measuringRequest": "TotalSize"
+        }
+      ]
+    ],
+    [
+      29,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 29,
+          "backgroundColor": "#2D2D30",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ]
+  ],
+  "root": {
+    "id": -1,
+    "content": {
+      "hitTestResult": null,
+      "cursor": null,
+      "element": null,
+      "bounds": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
+      "validArea": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
+      "editableAttribute": null
+    },
+    "children": [
+      {
+        "id": 116,
+        "content": {
+          "hitTestResult": null,
+          "cursor": null,
+          "element": 29,
+          "bounds": {"x1": 0, "y1": 0, "x2": 480, "y2": 320},
+          "validArea": {"x1": 0, "y1": 0, "x2": 480, "y2": 320},
+          "editableAttribute": null
+        },
+        "children": [
+          {
+            "id": 84,
+            "content": {
+              "hitTestResult": null,
+              "cursor": null,
+              "element": 21,
+              "bounds": {"x1": 5, "y1": 5, "x2": 70, "y2": 25},
+              "validArea": {"x1": 5, "y1": 5, "x2": 70, "y2": 25},
+              "editableAttribute": null
+            },
+            "children": [
+              {
+                "id": 88,
+                "content": {
+                  "hitTestResult": null,
+                  "cursor": null,
+                  "element": 22,
+                  "bounds": {"x1": 5, "y1": 5, "x2": 70, "y2": 25},
+                  "validArea": {"x1": 5, "y1": 5, "x2": 70, "y2": 25},
+                  "editableAttribute": null
+                },
+                "children": [
+                  {
+                    "id": 96,
+                    "content": {
+                      "hitTestResult": null,
+                      "cursor": null,
+                      "element": 24,
+                      "bounds": {"x1": 9, "y1": 7, "x2": 66, "y2": 23},
+                      "validArea": {"x1": 9, "y1": 7, "x2": 66, "y2": 23},
+                      "editableAttribute": null
+                    },
+                    "children": null
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": 100,
+            "content": {
+              "hitTestResult": null,
+              "cursor": null,
+              "element": 25,
+              "bounds": {"x1": 5, "y1": 30, "x2": 70, "y2": 50},
+              "validArea": {"x1": 5, "y1": 30, "x2": 70, "y2": 50},
+              "editableAttribute": null
+            },
+            "children": [
+              {
+                "id": 104,
+                "content": {
+                  "hitTestResult": null,
+                  "cursor": null,
+                  "element": 26,
+                  "bounds": {"x1": 5, "y1": 30, "x2": 70, "y2": 50},
+                  "validArea": {"x1": 5, "y1": 30, "x2": 70, "y2": 50},
+                  "editableAttribute": null
+                },
+                "children": [
+                  {
+                    "id": 112,
+                    "content": {
+                      "hitTestResult": null,
+                      "cursor": null,
+                      "element": 28,
+                      "bounds": {"x1": 9, "y1": 32, "x2": 66, "y2": 48},
+                      "validArea": {"x1": 9, "y1": 32, "x2": 66, "y2": 48},
+                      "editableAttribute": null
+                    },
+                    "children": null
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

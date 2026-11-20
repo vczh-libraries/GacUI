@@ -24,28 +24,6 @@
   },
   "elements": [
     [
-      31,
-      [
-        "ElementDesc_SolidBackground",
-        {
-          "id": 31,
-          "backgroundColor": "#2D2D30",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
-    [
-      32,
-      [
-        "ElementDesc_SolidBorder",
-        {
-          "id": 32,
-          "borderColor": "#017ACC",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
-    [
       34,
       [
         "ElementDesc_SolidBackground",

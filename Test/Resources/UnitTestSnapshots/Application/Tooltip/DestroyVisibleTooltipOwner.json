@@ -55,7 +55,9 @@
     [55, "SolidBorder"],
     [56, "FocusRectangle"],
     [57, "SolidLabel"],
-    [58, "SolidLabel"]
+    [60, "SolidBackground"],
+    [61, "SolidBorder"],
+    [62, "SolidLabel"]
   ],
   "imageCreations": [],
   "imageMetadatas": [],
@@ -143,7 +145,7 @@
     },
     {
       "frameId": 18,
-      "frameName": "Surviving owner reuses tooltip",
+      "frameName": "Surviving owner shows its tooltip",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

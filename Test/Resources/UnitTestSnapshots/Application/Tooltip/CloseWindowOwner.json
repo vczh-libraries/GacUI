@@ -56,9 +56,10 @@
     [54, "SolidBorder"],
     [55, "FocusRectangle"],
     [56, "SolidLabel"],
-    [59, "SolidBackground"],
-    [60, "SolidBorder"],
-    [61, "SolidLabel"]
+    [61, "SolidLabel"],
+    [64, "SolidBackground"],
+    [65, "SolidBorder"],
+    [66, "SolidLabel"]
   ],
   "imageCreations": [],
   "imageMetadatas": [],
