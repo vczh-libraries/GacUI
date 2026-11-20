@@ -732,6 +732,9 @@ namespace demo
 ================================(4/9)================================
 module ribbonscript;
 using presentation::*;
+using presentation::elements::*;
+using presentation::templates::*;
+using presentation::theme::*;
 
 namespace demo
 {
@@ -765,6 +768,19 @@ namespace demo
         new ()
         {
         }
+    }
+
+    func CreateGalleryLabelTemplate(value : object) : (GuiControlTemplate*)
+    {
+        var factory = ITheme::GetCurrentTheme().CreateStyle(ThemeName::Label);
+        var labelTemplate = factory(value);
+        var textElement = (labelTemplate.OwnedElement as (GuiSolidLabelElement^));
+        if (textElement is not null)
+        {
+            (textElement.Ellipse = true);
+            textElement.SetAlignments(Alignment::Center, Alignment::Center);
+        }
+        return labelTemplate;
     }
 }
 

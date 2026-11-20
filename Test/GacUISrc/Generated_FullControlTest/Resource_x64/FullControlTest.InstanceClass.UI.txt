@@ -20494,28 +20494,34 @@ namespace demo
         var <precompile>1 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>2 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>2 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>3 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+        var <precompile>3 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>4 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
-        var <precompile>5 : ::presentation::controls::GuiCustomControl* = null of (::presentation::controls::GuiCustomControl*);
+        var <precompile>5 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>6 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>7 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+        var <precompile>7 : ::presentation::controls::GuiCustomControl* = null of (::presentation::controls::GuiCustomControl*);
+
+        @cpp:Protected
+        var <precompile>8 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>9 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
         var containerControl : ::presentation::controls::GuiCustomControl* = null of (::presentation::controls::GuiCustomControl*);
 
         @cpp:Protected
-        var styleLabel : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+        var styleLabel : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
         func <demo-StyleItemTemplate>Initialize(<this> : ::demo::StyleItemTemplate*) : (::system::Void)
@@ -20533,31 +20539,30 @@ namespace demo
                 <this>.SetNamedObject("containerControl", containerControl);
             }
             {
-                (<precompile>5 = new (::presentation::controls::GuiCustomControl*)(::presentation::theme::ThemeName::CustomControl));
+                (<precompile>7 = new (::presentation::controls::GuiCustomControl*)(::presentation::theme::ThemeName::CustomControl));
             }
-            (<precompile>6 = new (::presentation::compositions::GuiBoundsComposition*)());
+            (<precompile>8 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>6.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>6.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            (<precompile>7 = new (::presentation::elements::GuiSolidLabelElement^)());
-            {
-                (<precompile>7.Color = (cast (::presentation::Color) "#FFFFFF"));
+                (<precompile>8.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
-                (<precompile>6.OwnedElement = <precompile>7);
+                (<precompile>8.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                <precompile>5.ContainerComposition.AddChild(<precompile>6);
+                (<precompile>9 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
             }
             {
-                (containerControl.TooltipControl = <precompile>5);
+                <precompile>8.AddChild(<precompile>9.BoundsComposition);
             }
-            (<precompile>4 = containerControl.BoundsComposition);
             {
-                (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                <precompile>7.ContainerComposition.AddChild(<precompile>8);
+            }
+            {
+                (containerControl.TooltipControl = <precompile>7);
+            }
+            (<precompile>6 = containerControl.BoundsComposition);
+            {
+                (<precompile>6.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
@@ -20579,45 +20584,39 @@ namespace demo
             {
                 <precompile>1.SetSite(0, 0, 1, 1);
             }
-            (styleLabel = new (::presentation::elements::GuiSolidLabelElement^)());
-            <this>.SetNamedObject("styleLabel", styleLabel);
             {
-                (styleLabel.VerticalAlignment = Center of (::presentation::Alignment));
+                (styleLabel = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                <this>.SetNamedObject("styleLabel", styleLabel);
             }
+            (<precompile>2 = styleLabel.BoundsComposition);
             {
-                (styleLabel.HorizontalAlignment = Center of (::presentation::Alignment));
-            }
-            {
-                (styleLabel.Ellipse = true);
-            }
-            {
-                (styleLabel.Color = (cast (::presentation::Color) "#FFFFFF"));
+                (<precompile>2.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (styleLabel.Text = "AaBbCc");
             }
             {
-                (<precompile>1.OwnedElement = styleLabel);
+                <precompile>1.AddChild(styleLabel.BoundsComposition);
             }
             {
                 <precompile>0.AddChild(<precompile>1);
             }
-            (<precompile>2 = new (::presentation::compositions::GuiCellComposition*)());
+            (<precompile>3 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>2.SetSite(1, 0, 1, 1);
-            }
-            (<precompile>3 = new (::presentation::elements::GuiSolidLabelElement^)());
-            {
-                (<precompile>3.HorizontalAlignment = Center of (::presentation::Alignment));
+                <precompile>3.SetSite(1, 0, 1, 1);
             }
             {
-                (<precompile>3.Ellipse = true);
+                (<precompile>4 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+            }
+            (<precompile>5 = <precompile>4.BoundsComposition);
+            {
+                (<precompile>5.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>2.OwnedElement = <precompile>3);
+                <precompile>3.AddChild(<precompile>4.BoundsComposition);
             }
             {
-                <precompile>0.AddChild(<precompile>2);
+                <precompile>0.AddChild(<precompile>3);
             }
             {
                 containerControl.ContainerComposition.AddChild(<precompile>0);
@@ -20626,135 +20625,10 @@ namespace demo
                 self.AddChild(containerControl.BoundsComposition);
             }
             {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = ViewModel.Name of (::system::String);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>3.Text;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>3.Text = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
+                (styleLabel.ControlTemplate = demo::CreateGalleryLabelTemplate);
             }
             {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::demo::StyleItemTemplate* = null of (::demo::StyleItemTemplate*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = (cast (Color) <bind-cache>0.Selected ? "#FFFFFF" : "#808080") of (::presentation::Color);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (self ?? null of (::demo::StyleItemTemplate*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.SelectedChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.SelectedChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::demo::StyleItemTemplate*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>3.Color;
-                    var <new> = (cast (::presentation::Color) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>3.Color = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                (<precompile>3.Font = containerControl.DisplayFont);
+                (<precompile>4.ControlTemplate = demo::CreateGalleryLabelTemplate);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -20801,18 +20675,73 @@ namespace demo
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>7.Text;
+                    var <old> = <precompile>4.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>7.Text = <new>);
+                    (<precompile>4.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
             {
-                (<precompile>7.Font = containerControl.DisplayFont);
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = ViewModel.Name of (::system::String);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>9.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>9.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                (<precompile>9.Font = containerControl.DisplayFont);
             }
         }
 
@@ -20874,7 +20803,7 @@ namespace demo
             var styles = ViewModel.Style.styles;
             if (styles.color is not null)
             {
-                (styleLabel.Color = (cast (Color) styles.color));
+                (styleLabel.TextColor = (cast (Color) styles.color));
             }
             var font = containerControl.DisplayFont;
             var fontFamily = font.fontFamily;
@@ -42900,6 +42829,9 @@ namespace demo
 ================================(138/143)================================
 module ribbonscript;
 using presentation::*;
+using presentation::elements::*;
+using presentation::templates::*;
+using presentation::theme::*;
 
 namespace demo
 {
@@ -42933,6 +42865,19 @@ namespace demo
         new ()
         {
         }
+    }
+
+    func CreateGalleryLabelTemplate(value : object) : (GuiControlTemplate*)
+    {
+        var factory = ITheme::GetCurrentTheme().CreateStyle(ThemeName::Label);
+        var labelTemplate = factory(value);
+        var textElement = (labelTemplate.OwnedElement as (GuiSolidLabelElement^));
+        if (textElement is not null)
+        {
+            (textElement.Ellipse = true);
+            textElement.SetAlignments(Alignment::Center, Alignment::Center);
+        }
+        return labelTemplate;
     }
 }
 
