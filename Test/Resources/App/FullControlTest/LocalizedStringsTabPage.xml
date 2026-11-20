@@ -56,7 +56,13 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <SolidLabel Font-bind="self.DisplayFont" Color="#FFFFFF" Text-str="Label()" VerticalAlignment="Center"/>
+            <ez:Layout Padding="0">
+              <ez:Column>
+                <ez:Row CellOption="composeType:Percentage percentage:1"/>
+                <ez:Row><Label Text-str="Label()"/></ez:Row>
+                <ez:Row CellOption="composeType:Percentage percentage:1"/>
+              </ez:Column>
+            </ez:Layout>
           </Cell>
 
           <Cell Site="row:0 column:1">

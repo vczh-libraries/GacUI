@@ -3047,6 +3047,40 @@ public static class GacUIShowcaseTests
         Check(checkedCount == 1, "skin items share one selection group");
     }
 
+    static void CheckLocalizedLabel(AutomationElement page, string caption, bool besideLocaleSelector)
+    {
+        var label = Named(page, caption, ControlType.Text);
+        var bounds = label.Current.BoundingRectangle;
+        Check(!label.Current.IsOffscreen && bounds.Width > 0 && bounds.Height > 0, caption + " has visible bounds");
+        if (besideLocaleSelector)
+        {
+            var selector = Find(page, ControlType.ComboBox)[0].Current.BoundingRectangle;
+            Check(Math.Abs(bounds.Top + bounds.Height / 2 - selector.Top - selector.Height / 2) <= 1.5, caption + " is centered beside the locale selector");
+        }
+        var control = SnapshotControl(ControlsSnapshot(), "Label", caption);
+        foreach (var node in SnapshotNodes(control))
+        {
+            object text;
+            if (!node.TryGetValue("elementText", out text) || (string)text != caption) continue;
+            Check(((string)node["element"]).StartsWith("Label:#F1F1F1FF,"), caption + " uses the default DarkSkin foreground");
+            return;
+        }
+        throw new Exception("Missing rendered label: " + caption);
+    }
+
+    static void LocalizedLabels()
+    {
+        Test("Misc / Localization and Dialogs / themed labels");
+        var misc = Page(root, "Misc");
+        bool english = FindNamed(misc, "Localization", ControlType.TabItem) != null;
+        var localization = Page(misc, english ? "Localization" : "\u672c\u5730\u5316");
+        CheckLocalizedLabel(localization, english ? "Selected Locale:" : "\u8bed\u8a00\u8bbe\u7f6e\uff1a", true);
+        var dialogs = Page(misc, "Dialogs");
+        var font = Page(dialogs, "FontDialog");
+        CheckLocalizedLabel(dialogs, "Locale only works in FakeDialogService (default in Hosted Mode)", true);
+        CheckLocalizedLabel(font, "Sample Text", false);
+    }
+
     static void SkinRefreshListState()
     {
         Test("skin refresh / hidden list selection and scrolling");
@@ -4931,6 +4965,7 @@ public static class GacUIShowcaseTests
             if (scenario == "ResponsivePalette") ResponsivePalette();
             if (scenario == "All" || scenario == "Layout" || scenario == "ShowcaseSkins") { EasyLayout(); EasyLayoutTables(); }
             if (scenario == "ShowcaseSkins") SkinRefreshListState();
+            if (scenario == "All" || scenario == "LocalizedLabels") LocalizedLabels();
             if (scenario == "All" || scenario == "Walk") WalkTabs(root, 0);
             if (scenario == "All" || scenario == "Window") {
             Test("Window / Transform.Move uses physical screen coordinates");
