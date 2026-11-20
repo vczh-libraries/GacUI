@@ -57,6 +57,11 @@ GuiControl
 			{
 				if (!controlTemplate) RebuildControlTemplate();
 				List<Pair<GuiControl*, Ptr<GuiDisposedFlag>>> snapshot;
+				// Hidden tooltip content is owned by this control but is outside its child tree.
+				if (tooltipControl && !tooltipControl->GetParent())
+				{
+					snapshot.Add({ tooltipControl, tooltipControl->GetDisposedFlag() });
+				}
 				for (auto child : children)
 				{
 					snapshot.Add({ child, child->GetDisposedFlag() });
