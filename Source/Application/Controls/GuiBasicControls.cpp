@@ -13,6 +13,8 @@ namespace vl
 			using namespace collections;
 			using namespace reflection::description;
 
+			theme_refresh::IGuiThemeRefreshObserver* theme_refresh::themeRefreshObserver = nullptr;
+
 /***********************************************************************
 GuiDisposedFlag
 ***********************************************************************/
@@ -56,6 +58,7 @@ GuiControl
 			void GuiControl::RefreshThemes()
 			{
 				if (!controlTemplate) RebuildControlTemplate();
+				if (theme_refresh::themeRefreshObserver) theme_refresh::themeRefreshObserver->ControlThemeRebuilt(this);
 				List<Pair<GuiControl*, Ptr<GuiDisposedFlag>>> snapshot;
 				// Hidden tooltip content is owned by this control but is outside its child tree.
 				if (tooltipControl && !tooltipControl->GetParent())

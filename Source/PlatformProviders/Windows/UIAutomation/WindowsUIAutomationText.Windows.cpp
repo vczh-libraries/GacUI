@@ -236,7 +236,7 @@ namespace vl::presentation::windows
 		{
 			return node->dispatcher->Run([&]() -> HRESULT
 			{
-				if (!node->IsLive() || embedded && !embedded->IsLive() || !node->Supports(UIA_TextPatternId) || UiaDocument(node->control)->GetDocument() != document) return UIA_E_ELEMENTNOTAVAILABLE;
+				if (!node->Available() || embedded && !embedded->Available() || !node->Supports(UIA_TextPatternId) || UiaDocument(node->control)->GetDocument() != document) return UIA_E_ELEMENTNOTAVAILABLE;
 				WindowsUIAutomationTextSnapshot snapshot(UiaDocument(node->control));
 				Normalize(snapshot);
 				return action(snapshot);
@@ -705,7 +705,7 @@ namespace vl::presentation::windows
 		return Read([&]() -> HRESULT
 		{
 			auto provider = dynamic_cast<WindowsUIAutomationProvider*>(child);
-			if (!provider || !provider->node->IsLive()) return E_INVALIDARG;
+			if (!provider || !provider->node->Available()) return E_INVALIDARG;
 			auto document = UiaDocument(node->control);
 			WindowsUIAutomationTextSnapshot snapshot(document);
 			if (provider->node->kind == Kind::DocumentObject && provider->node->control == node->control)

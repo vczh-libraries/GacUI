@@ -6,11 +6,12 @@ param(
     [ValidateRange(0,15)][int]$EditorSopStartStep = 0,
     [switch]$EditorSopResumeAtImages,
     [string]$BusyClick = '',
-    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Layout','ShowcaseSkins','LocalizedLabels','Responsive','ResponsiveWindow','ResponsivePalette','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime','RawClock','RawClockHttp','RawClockPassive','RawClockListener','Touching','Persistence','DocumentExchange','DocumentStyles','GalleryLabels','DocumentContextMenu','DocumentEditorSop','DocumentEditorCommands','PointRegression','TouchingList','FileDialogMutations')][string]$Scenario = 'All',
+    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Layout','ShowcaseSkins','LocalizedLabels','Responsive','ResponsiveWindow','ResponsivePalette','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime','RawClock','RawClockHttp','ThemeProperty','RawClockPassive','RawClockListener','Touching','Persistence','DocumentExchange','DocumentStyles','GalleryLabels','DocumentContextMenu','DocumentEditorSop','DocumentEditorCommands','PointRegression','TouchingList','FileDialogMutations')][string]$Scenario = 'All',
     [switch]$HostedFixture,
     [switch]$GdiFixture,
     [switch]$Gdi,
     [string]$ExchangeDocument = '',
+    [ValidateRange(0,5)][int]$ClockSwitch = 0,
     [switch]$SkipBuild
 )
 $ErrorActionPreference = 'Stop'
@@ -25,6 +26,7 @@ if ($ClientProcessId) {
     }
     Add-Type -AssemblyName UIAutomationClient, UIAutomationTypes, WindowsBase, System.Web.Extensions
     Add-Type -Path (Join-Path $PSScriptRoot 'UIA_CppTest_Shared.cs') -ReferencedAssemblies UIAutomationClient, UIAutomationTypes, WindowsBase, System.Web.Extensions, System.Xml, System.Net.Http
+    [GacUIShowcaseTests]::ClockSwitch = $ClockSwitch
     [GacUIShowcaseTests]::BusyCommand = $BusyClick
     [GacUIShowcaseTests]::ExchangeDocument = $ExchangeDocument
     [GacUIShowcaseTests]::PersistenceOutput = Join-Path $PSScriptRoot 'Output/Injection'
@@ -43,12 +45,39 @@ using System.Runtime.InteropServices;
 public static class ShowcaseWindows {
     delegate bool Callback(IntPtr window, IntPtr parameter);
     [DllImport("user32.dll")] static extern bool EnumWindows(Callback callback, IntPtr parameter);
+    [DllImport("user32.dll")] static extern bool EnumChildWindows(IntPtr parent, Callback callback, IntPtr parameter);
+    [DllImport("user32.dll")] static extern int GetDlgCtrlID(IntPtr child);
+    [DllImport("user32.dll", CharSet=CharSet.Unicode)] static extern IntPtr SendMessageTimeout(IntPtr window, uint message, IntPtr wParam, StringBuilder text, uint flags, uint timeout, out IntPtr result);
+    [DllImport("user32.dll")] static extern bool PostMessage(IntPtr window, uint message, IntPtr wParam, IntPtr lParam);
     [DllImport("user32.dll")] static extern uint GetWindowThreadProcessId(IntPtr window, out uint process);
     [DllImport("user32.dll", CharSet=CharSet.Unicode)] static extern int GetWindowText(IntPtr window, StringBuilder text, int length);
     public static bool Crashed(int target) {
         bool crashed = false;
         EnumWindows((window, parameter) => { uint process; GetWindowThreadProcessId(window, out process); if (process == target) { var title = new StringBuilder(512); GetWindowText(window, title, title.Capacity); if (title.ToString() == "Microsoft Visual C++ Runtime Library") crashed = true; } return true; }, IntPtr.Zero);
         return crashed;
+    }
+    public static string DismissRuntimeError(int target) {
+        var report = new StringBuilder();
+        EnumWindows((window, parameter) => {
+            uint owner; GetWindowThreadProcessId(window, out owner);
+            var title = new StringBuilder(256);
+            if (owner != target || GetWindowText(window, title, title.Capacity) == 0 || title.ToString() != "Microsoft Visual C++ Runtime Library") return true;
+            IntPtr abort = IntPtr.Zero, ok = IntPtr.Zero;
+            EnumChildWindows(window, (child, unused) => {
+                var text = new StringBuilder(4096); IntPtr result;
+                SendMessageTimeout(child, 13, new IntPtr(text.Capacity), text, 2, 1000, out result);
+                if (text.Length > 0) report.AppendLine(text.ToString());
+                if (GetDlgCtrlID(child) == 3) abort = child;
+                if (GetDlgCtrlID(child) == 1) ok = child;
+                return true;
+            }, IntPtr.Zero);
+            if (abort != IntPtr.Zero || ok != IntPtr.Zero)
+                PostMessage(abort != IntPtr.Zero ? abort : ok, 0x00F5, IntPtr.Zero, IntPtr.Zero);
+            else
+                PostMessage(window, 0x0010, IntPtr.Zero, IntPtr.Zero);
+            return false;
+        }, IntPtr.Zero);
+        return report.ToString();
     }
 }
 '@
@@ -73,6 +102,7 @@ $owned = $null
 $client = $null
 $listener = $null
 $listenerReady = $null
+$listenerStart = $null
 try {
     if ($original) {
         $originalText = [Text.Encoding]::UTF8.GetString($original).TrimStart([char]0xFEFF)
@@ -122,7 +152,7 @@ try {
     } while ([DateTime]::UtcNow -lt $deadline)
     if (!$state.MainWindow) { throw 'Automation endpoint did not become ready.' }
     # A separate windowless MTA process provides a hard deadline even if a provider blocks.
-    $clientArguments = @('-NoProfile','-Mta','-File',"`"$PSCommandPath`"",'-Application',$Application,'-AsPort',$AsPort,'-ClientProcessId',$owned.Id,'-Scenario',$Scenario,'-EditorSopStartStep',$EditorSopStartStep)
+    $clientArguments = @('-NoProfile','-Mta','-File',"`"$PSCommandPath`"",'-Application',$Application,'-AsPort',$AsPort,'-ClientProcessId',$owned.Id,'-Scenario',$Scenario,'-EditorSopStartStep',$EditorSopStartStep,'-ClockSwitch',$ClockSwitch)
     if ($EditorSopResumeAtImages) { $clientArguments += '-EditorSopResumeAtImages' }
     if ($ExchangeDocument) { $clientArguments += @('-ExchangeDocument', "`"$ExchangeDocument`"") }
     if ($Scenario -eq 'Review2') {
@@ -136,18 +166,12 @@ try {
     }
     if ($HostedFixture) { $clientArguments += '-HostedFixture' }
     if ($Scenario -eq 'RawClockPassive') {
+        $listenerStart = [Threading.EventWaitHandle]::new($false, 'ManualReset', "GacUI.Clock.Start.$($owned.Id)")
         $listenerReady = [Threading.EventWaitHandle]::new($false, 'ManualReset', "GacUI.Clock.Ready.$($owned.Id)")
         $listenerArguments = $clientArguments | ForEach-Object { if ($_ -eq 'RawClockPassive') { 'RawClockListener' } else { $_ } }
         $listenerLog = Join-Path $env:TEMP "$Application-clock-listener"
         $listener = Start-Process powershell.exe -WindowStyle Hidden -ArgumentList $listenerArguments -RedirectStandardOutput "$listenerLog.stdout.txt" -RedirectStandardError "$listenerLog.stderr.txt" -PassThru
         $listenerHandle = $listener.Handle
-        $readyDeadline = [DateTime]::UtcNow.AddSeconds(60)
-        while (!$listenerReady.WaitOne(200)) {
-            Assert-Target
-            if ($listener.HasExited) { throw "Passive listener exited during registration. $(Get-Content "$listenerLog.stderr.txt" -Raw)" }
-            if ([DateTime]::UtcNow -ge $readyDeadline) { throw 'Passive listener registration timed out.' }
-        }
-        Write-Host "TEST $Application / passive subtree handlers registered"
     }
     $client = Start-Process powershell.exe -WindowStyle Hidden -ArgumentList $clientArguments -RedirectStandardOutput (Join-Path $env:TEMP "$Application-uia.stdout.txt") -RedirectStandardError (Join-Path $env:TEMP "$Application-uia.stderr.txt") -PassThru
     $clientHandle = $client.Handle
@@ -159,13 +183,27 @@ try {
         $lines | Select-Object -Skip $lastCount | Write-Host
         $lastCount = $lines.Count
         if ($client.WaitForExit(500)) { break }
+        if ($listener -and $listener.HasExited -and $listener.ExitCode -ne 0) { throw "Passive listener failed. $(Get-Content "$listenerLog.stderr.txt" -Raw)" }
         # Window.Close can finish before the client's final exit check returns.
         # Keep both exit codes authoritative instead of rejecting that ordering.
         if ($owned.HasExited) {
             if (!$client.WaitForExit(30000)) { throw "Target exited with code $($owned.ExitCode) before the UIA client completed." }
             break
         }
-        if ([ShowcaseWindows]::Crashed($owned.Id)) { throw "Target PID $($owned.Id) has a blocking native runtime error dialog." }
+        if ([ShowcaseWindows]::Crashed($owned.Id)) {
+            if ($Scenario -in @('RawClockHttp','ThemeProperty','RawClockPassive')) {
+                Write-Host ([ShowcaseWindows]::DismissRuntimeError($owned.Id))
+                if (!$owned.WaitForExit(5000)) {
+                    Write-Host "Stopping the owned target after dismissing its runtime error dialog."
+                    $owned.Kill()
+                    $owned.WaitForExit()
+                }
+                Write-Host "Target exit after runtime error: $($owned.ExitCode)"
+                $null = $client.WaitForExit(5000)
+                Get-Content (Join-Path $env:TEMP "$Application-uia.stdout.txt") | Select-Object -Skip $lastCount | Write-Host
+            }
+            throw "Target PID $($owned.Id) has a blocking native runtime error dialog."
+        }
     } while ([DateTime]::UtcNow -lt $deadline)
     if (!$client.HasExited) { $client.Kill(); throw 'MTA UIA test deadline exceeded.' }
     Get-Content (Join-Path $env:TEMP "$Application-uia.stdout.txt") | Select-Object -Skip $lastCount | Write-Host
@@ -185,6 +223,7 @@ try {
 finally {
     if ($listener -and !$listener.HasExited) { $listener.Kill() }
     if ($listenerReady) { $listenerReady.Dispose() }
+    if ($listenerStart) { $listenerStart.Dispose() }
     if ($client -and !$client.HasExited) { $client.Kill() }
     if ($owned -and !$owned.HasExited) { $owned.Kill() }
     if ($launcher -and !$launcher.HasExited) { $launcher.Kill() }

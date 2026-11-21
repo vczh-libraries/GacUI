@@ -1,12 +1,13 @@
 param(
     [ValidateRange(1,65535)][int]$AsPort = 8888,
-    [ValidateSet('All','Layout','ShowcaseSkins','LocalizedLabels','Responsive','ResponsiveWindow','RawClock','RawClockHttp','RawClockPassive','Touching','Persistence','DocumentExchange','DocumentStyles','GalleryLabels','DocumentContextMenu','DocumentEditorSop','DocumentEditorCommands','PointRegression','TouchingList','FileDialogMutations')][string]$Scenario = 'All',
+    [ValidateSet('All','Layout','ShowcaseSkins','LocalizedLabels','Responsive','ResponsiveWindow','RawClock','RawClockHttp','ThemeProperty','RawClockPassive','Touching','Persistence','DocumentExchange','DocumentStyles','GalleryLabels','DocumentContextMenu','DocumentEditorSop','DocumentEditorCommands','PointRegression','TouchingList','FileDialogMutations')][string]$Scenario = 'All',
     [switch]$Gdi,
     [ValidateRange(0,15)][int]$EditorSopStartStep = 0,
     [switch]$EditorSopResumeAtImages,
     [string]$ExchangeDocument = '',
+    [ValidateRange(0,5)][int]$ClockSwitch = 0,
     [switch]$SkipBuild
 )
 $ErrorActionPreference = 'Stop'
-& (Join-Path $PSScriptRoot 'UIA_CppTest_Shared.ps1') -Application CppTest -AsPort $AsPort -Scenario $Scenario -EditorSopStartStep $EditorSopStartStep -EditorSopResumeAtImages:$EditorSopResumeAtImages -Gdi:$Gdi -SkipBuild:$SkipBuild -ExchangeDocument $ExchangeDocument
+& (Join-Path $PSScriptRoot 'UIA_CppTest_Shared.ps1') -Application CppTest -AsPort $AsPort -Scenario $Scenario -EditorSopStartStep $EditorSopStartStep -EditorSopResumeAtImages:$EditorSopResumeAtImages -Gdi:$Gdi -SkipBuild:$SkipBuild -ClockSwitch $ClockSwitch -ExchangeDocument $ExchangeDocument
 exit $LASTEXITCODE

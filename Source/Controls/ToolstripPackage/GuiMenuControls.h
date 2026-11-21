@@ -111,6 +111,7 @@ Menu
 				void									UpdateClientSizeAfterRendering(Size preferredSize, Size clientSize)override;
 			protected:
 				GuiControl*								owner;
+				Ptr<GuiDisposedFlag>					ownerDisposed;
 
 				void									OnDeactivatedAltHost()override;
 				void									OnWindowOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -122,6 +123,8 @@ Menu
 				GuiMenu(theme::ThemeName themeName, GuiControl* _owner);
 				~GuiMenu();
 
+				/// <summary>Get the control that owns the menu template, including while the menu is closed.</summary>
+				virtual GuiControl*						GetOwnerControl();
 				/// <summary>Update the reference to the parent <see cref="IGuiMenuService"/>. This function is not required to call outside the menu or menu item control.</summary>
 				void									UpdateMenuService();
 				IDescriptable*							QueryService(const WString& identifier)override;

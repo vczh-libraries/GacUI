@@ -1,6 +1,32 @@
+#if defined _MSC_VER
+#include "TestApplication_Theme_Windows.h"
+#endif
 #include "TestControls.h"
 
 using namespace gacui_unittest_template;
+
+#if defined VCZH_MSVC
+class HostedThemeAutomationProbe : public windows::WindowsUIAutomationContext
+{
+public:
+	collections::List<vint> invalidations;
+
+	HostedThemeAutomationProbe() : WindowsUIAutomationContext(true) {}
+
+	void RaiseChildrenInvalidated(Ptr<windows::WindowsUIAutomationNode> node) override
+	{
+		invalidations.Add(node->id);
+	}
+};
+
+template<typename T>
+ComPtr<T> HostedThemeInterface(const ComPtr<IRawElementProviderSimple>& provider)
+{
+	T* result = nullptr;
+	TEST_ASSERT(provider->QueryInterface(IID_PPV_ARGS(&result)) == S_OK);
+	return ComPtr(result);
+}
+#endif
 
 TEST_FILE
 {
@@ -30,6 +56,182 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Windows")
 	{
+#if defined VCZH_MSVC
+		TEST_CASE(L"UI Automation isolates a hosted submenu theme refresh from its siblings")
+		{
+			theme_observation_tests::Run<HostedThemeAutomationProbe>(true, [](Ptr<HostedThemeAutomationProbe> probe)
+			{
+				auto skin = Ptr(new darkskin::Theme);
+				theme::RegisterTheme(skin);
+				{
+					GuiWindow main(theme::ThemeName::Window);
+					main.SetClientSize(Size(640, 400));
+					auto opener = new GuiMenuButton(theme::ThemeName::MenuBarButton);
+					opener->SetText(L"Menu");
+					opener->SetPreferredMenuClientSize(Size(160, 100));
+					opener->GetBoundsComposition()->SetExpectedBounds(Rect(10, 10, 90, 45));
+					main.AddChild(opener);
+					auto sibling = new GuiButton(theme::ThemeName::Button);
+					sibling->SetText(L"Sibling");
+					sibling->GetBoundsComposition()->SetExpectedBounds(Rect(400, 150, 540, 200));
+					main.AddChild(sibling);
+					auto menu = opener->CreateSubMenu();
+					auto item = new GuiMenuButton(theme::ThemeName::MenuItemButton);
+					item->SetText(L"Menu child");
+					item->SetPreferredMenuClientSize(Size(130, 80));
+					item->GetBoundsComposition()->SetExpectedBounds(Rect(5, 5, 145, 55));
+					menu->AddChild(item);
+					auto nested = item->CreateSubMenu();
+					auto command = new GuiButton(theme::ThemeName::Button);
+					command->SetText(L"Nested command");
+					command->GetBoundsComposition()->SetExpectedBounds(Rect(3, 3, 120, 45));
+					nested->AddChild(command);
+					auto hiddenOpener = new GuiMenuButton(theme::ThemeName::MenuItemButton);
+					hiddenOpener->GetBoundsComposition()->SetExpectedBounds(Rect(5, 60, 145, 90));
+					menu->AddChild(hiddenOpener);
+					auto hiddenMenu = hiddenOpener->CreateSubMenu();
+					auto hiddenCommand = new GuiButton(theme::ThemeName::Button);
+					hiddenMenu->AddChild(hiddenCommand);
+					GetApplication()->InvokeInMainThread(&main, [&]()
+					{
+						main.ForceCalculateSizeImmediately();
+						opener->SetSubMenuOpening(true);
+						TEST_ASSERT(menu->GetOpening());
+						menu->ForceCalculateSizeImmediately();
+						item->SetSubMenuOpening(true);
+						TEST_ASSERT(nested->GetOpening());
+						nested->ForceCalculateSizeImmediately();
+						probe->BindWindows();
+						auto rootProvider = probe->Control(&main)->Provider();
+						auto root = HostedThemeInterface<IRawElementProviderFragmentRoot>(rootProvider);
+						auto mainFragment = HostedThemeInterface<IRawElementProviderFragment>(rootProvider);
+						auto advise = HostedThemeInterface<IRawElementProviderAdviseEvents>(rootProvider);
+						TEST_ASSERT(advise->AdviseEventAdded(UIA_StructureChangedEventId, nullptr) == S_OK);
+						auto menuNode = probe->Control(menu);
+						auto menuFragment = HostedThemeInterface<IRawElementProviderFragment>(menuNode->Provider());
+						auto siblingFragment = HostedThemeInterface<IRawElementProviderFragment>(probe->Control(sibling)->Provider());
+						auto itemFragment = HostedThemeInterface<IRawElementProviderFragment>(probe->Control(item)->Provider());
+						auto ownerFragment = HostedThemeInterface<IRawElementProviderFragment>(probe->Control(opener)->Provider());
+						auto nestedFragment = HostedThemeInterface<IRawElementProviderFragment>(probe->Control(nested)->Provider());
+						auto commandProvider = probe->Control(command)->Provider();
+						auto commandFragment = HostedThemeInterface<IRawElementProviderFragment>(commandProvider);
+						auto invoke = HostedThemeInterface<IInvokeProvider>(commandProvider);
+						vint invoked = 0;
+						command->Clicked.AttachLambda([&](GuiGraphicsComposition*, GuiEventArgs&) { invoked++; });
+						auto navigate = [](IRawElementProviderFragment* provider, NavigateDirection direction)
+						{
+							IRawElementProviderFragment* result = nullptr;
+							TEST_ASSERT(provider->Navigate(direction, &result) == S_OK);
+							return ComPtr(result);
+						};
+						auto hit = [&](const UiaRect& bounds)
+						{
+							TEST_ASSERT(bounds.width > 0 && bounds.height > 0);
+							IRawElementProviderFragment* result = nullptr;
+							TEST_ASSERT(root->ElementProviderFromPoint(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2, &result) == S_OK);
+							return ComPtr(result);
+						};
+						auto drain = [&]()
+						{
+							bool drained = false;
+							probe->dispatcher->Queue([&]() { drained = true; });
+							MSG message;
+							while (PeekMessage(&message, nullptr, WM_APP, 0xBFFF, PM_REMOVE)) DispatchMessage(&message);
+							TEST_ASSERT(drained);
+						};
+						UiaRect itemBounds{}, siblingBounds{}, commandBounds{};
+						TEST_ASSERT(itemFragment->get_BoundingRectangle(&itemBounds) == S_OK);
+						TEST_ASSERT(siblingFragment->get_BoundingRectangle(&siblingBounds) == S_OK);
+						TEST_ASSERT(commandFragment->get_BoundingRectangle(&commandBounds) == S_OK);
+						TEST_ASSERT(hit(itemBounds) == itemFragment);
+						TEST_ASSERT(hit(siblingBounds) == siblingFragment);
+						TEST_ASSERT(hit(commandBounds) == commandFragment);
+						TEST_ASSERT(navigate(menuFragment.Obj(), NavigateDirection_Parent) == ownerFragment);
+						drain();
+						probe->invalidations.Clear();
+						auto hiddenNode = probe->Control(hiddenMenu);
+						auto hiddenCommandNode = probe->Control(hiddenCommand);
+						vint hiddenEdits = 0;
+						auto hiddenUpdates = hiddenMenu->ChildCompositionUpdated.AttachLambda([&](auto, auto&)
+						{
+							TEST_ASSERT(!hiddenMenu->GetOpening());
+							TEST_ASSERT(hiddenNode->attachment->ClosedWindow() == menu);
+							hiddenEdits++;
+						});
+						auto before = menu->BeforeRebuildingTheme.AttachLambda([&](GuiGraphicsComposition*, GuiEventArgs&)
+						{
+							TEST_ASSERT(!navigate(menuFragment.Obj(), NavigateDirection_FirstChild));
+							TEST_ASSERT(navigate(siblingFragment.Obj(), NavigateDirection_Parent) == mainFragment);
+							TEST_ASSERT(hit(itemBounds) == menuFragment);
+							TEST_ASSERT(hit(siblingBounds) == siblingFragment);
+							TEST_ASSERT(!hit(commandBounds));
+							UiaRect bounds{};
+							TEST_ASSERT(nestedFragment->get_BoundingRectangle(&bounds) == UIA_E_ELEMENTNOTAVAILABLE);
+							TEST_ASSERT(commandFragment->get_BoundingRectangle(&bounds) == UIA_E_ELEMENTNOTAVAILABLE);
+							TEST_ASSERT(invoke->Invoke() == UIA_E_ELEMENTNOTAVAILABLE);
+							for (auto child = navigate(mainFragment.Obj(), NavigateDirection_FirstChild); child; child = navigate(child.Obj(), NavigateDirection_NextSibling))
+								TEST_ASSERT(child != nestedFragment);
+						});
+						TEST_ASSERT(invoke->Invoke() == S_OK);
+						menu->RefreshThemes();
+						menu->BeforeRebuildingTheme.Detach(before);
+						hiddenMenu->ChildCompositionUpdated.Detach(hiddenUpdates);
+						drain();
+						TEST_ASSERT(hiddenEdits > 0 && !hiddenNode->attachment->Closed());
+						TEST_ASSERT(probe->Control(hiddenCommand) == hiddenCommandNode);
+						TEST_ASSERT(invoked == 0);
+						TEST_ASSERT(commandFragment->get_BoundingRectangle(&commandBounds) == S_OK);
+						for (auto id : probe->invalidations) TEST_ASSERT(id == menuNode->id);
+						TEST_ASSERT(probe->invalidations.Count() == 2);
+						probe->invalidations.Clear();
+						TEST_ASSERT(!hiddenNode->ExistingProvider());
+						hiddenMenu->RefreshThemes();
+						TEST_ASSERT(probe->invalidations.Count() == 0 && !hiddenNode->ExistingProvider());
+						TEST_ASSERT(navigate(menuFragment.Obj(), NavigateDirection_FirstChild));
+						opener->SetSubMenuOpening(false);
+						opener->SetSubMenuOpening(true);
+						TEST_ASSERT(menu->GetOpening());
+						TEST_ASSERT(navigate(menuFragment.Obj(), NavigateDirection_Parent) == ownerFragment);
+						TEST_ASSERT(advise->AdviseEventRemoved(UIA_StructureChangedEventId, nullptr) == S_OK);
+						menuFragment = nullptr;
+						itemFragment = nullptr;
+						nestedFragment = nullptr;
+						drain();
+						item->SetSubMenuOpening(true);
+						TEST_ASSERT(nested->GetOpening());
+						probe->Collect();
+						menuNode = probe->Control(menu);
+						TEST_ASSERT(!menuNode->ExistingProvider());
+						TEST_ASSERT(invoke->Invoke() == S_OK);
+						menu->RefreshThemes();
+						drain();
+						TEST_ASSERT(invoked == 0);
+						TEST_ASSERT(invoke->Invoke() == S_OK);
+						drain();
+						TEST_ASSERT(invoked == 1);
+						TEST_ASSERT(advise->AdviseEventAdded(UIA_StructureChangedEventId, nullptr) == S_OK);
+						menuFragment = HostedThemeInterface<IRawElementProviderFragment>(menuNode->Provider());
+						itemFragment = HostedThemeInterface<IRawElementProviderFragment>(probe->Control(item)->Provider());
+						opener->SetSubMenuOpening(false);
+						drain();
+						probe->invalidations.Clear();
+						probe->Notify(menuNode, true);
+						opener->DestroySubMenu();
+						drain();
+						TEST_ASSERT(!probe->invalidations.Contains(menuNode->id));
+						TEST_ASSERT(menuFragment->get_BoundingRectangle(&itemBounds) == UIA_E_ELEMENTNOTAVAILABLE);
+						TEST_ASSERT(itemFragment->get_BoundingRectangle(&itemBounds) == UIA_E_ELEMENTNOTAVAILABLE);
+						TEST_ASSERT(hit(siblingBounds) == siblingFragment);
+						TEST_ASSERT(advise->AdviseEventRemoved(UIA_StructureChangedEventId, nullptr) == S_OK);
+						main.Hide();
+					});
+					GetApplication()->Run(&main);
+				}
+				theme::UnregisterTheme(skin->Name);
+			});
+		});
+#endif
+
 		for (auto closeOwner : { false,true })
 		TEST_CASE(closeOwner ? L"Close popup owner" : L"Hide popup owner")
 		{

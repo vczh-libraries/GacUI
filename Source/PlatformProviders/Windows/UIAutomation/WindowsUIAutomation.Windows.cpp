@@ -18,6 +18,7 @@ namespace vl::presentation::windows
 		if (!metadata && create)
 		{
 			metadata = Ptr(new WindowsUIAutomationMetadata);
+			metadata->control = control;
 			control->SetInternalProperty(key, metadata);
 		}
 		return metadata;
@@ -25,7 +26,7 @@ namespace vl::presentation::windows
 
 	void UiaMetadataChanged(GuiControl* control)
 	{
-		if (auto lifetime = control->GetInternalProperty(L"GacUI.Windows.UIAutomation").Cast<WindowsUIAutomationLifetime>(); lifetime && lifetime->node->IsLive())
+		if (auto lifetime = control->GetInternalProperty(L"GacUI.Windows.UIAutomation").Cast<WindowsUIAutomationLifetime>(); lifetime && lifetime->node->IsLive() && !lifetime->node->attachment->Closed())
 		{
 			auto context = lifetime->node->context;
 			for (auto node : context->nodes)
@@ -41,11 +42,71 @@ namespace vl::presentation::windows
 		UiaMetadataChanged(control);
 	}
 
+	void UiaDetachLabel(WindowsUIAutomationMetadata* metadata)
+	{
+		if (!metadata->label || metadata->labelDisposed->IsDisposed()) return;
+		auto label = metadata->label;
+		if (auto source = UiaMetadata(label))
+		{
+			source->labeledControls.Remove(metadata->control);
+			if (!source->labeledControls.Count() && source->labelTextChanged)
+			{
+				label->TextChanged.Detach(source->labelTextChanged);
+				source->labelTextChanged = nullptr;
+				source->labelText = WString();
+			}
+		}
+	}
+
+	WindowsUIAutomationMetadata::~WindowsUIAutomationMetadata()
+	{
+		UiaDetachLabel(this);
+	}
+
+	void UiaLabelTextChanged(GuiControl* label, WindowsUIAutomationMetadata* source)
+	{
+		auto oldText = source->labelText;
+		source->labelText = label->GetText();
+		if (source->labelText == oldText) return;
+		auto lifetime = label->GetInternalProperty(L"GacUI.Windows.UIAutomation").Cast<WindowsUIAutomationLifetime>();
+		if (!lifetime || !lifetime->node->IsLive() || lifetime->node->attachment->Closed()) return;
+		auto context = lifetime->node->context;
+		if (!context->subscriptions.properties.Keys().Contains(0) && !context->subscriptions.properties.Keys().Contains(UIA_NamePropertyId)) return;
+		for (auto [control, disposed] : source->labeledControls)
+		{
+			if (disposed->IsDisposed() || UiaMetadata(control)->name || !control->GetRelatedControlHost()) continue;
+			auto node = context->Control(control);
+			if (!node->IsLive() || node->attachment->Closed()) continue;
+			if (!node->properties.Keys().Contains(UIA_NamePropertyId))
+			{
+				auto before = Ptr(new WindowsUIAutomationValue);
+				before->value.vt = VT_BSTR;
+				UiaString(oldText, &before->value.bstrVal);
+				node->properties.Add(UIA_NamePropertyId, before);
+			}
+			context->Notify(node);
+		}
+	}
+
 	void SetWindowsUIAutomationLabel(GuiControl* control, GuiControl* label)
 	{
 		auto metadata = UiaMetadata(control, true);
+		UiaDetachLabel(metadata.Obj());
 		metadata->label = label;
 		metadata->labelDisposed = label ? label->GetDisposedFlag() : nullptr;
+		if (label)
+		{
+			auto source = UiaMetadata(label, true);
+			if (!source->labeledControls.Count())
+			{
+				source->labelText = label->GetText();
+				source->labelTextChanged = label->TextChanged.AttachLambda([label, source = source.Obj()](compositions::GuiGraphicsComposition*, compositions::GuiEventArgs&)
+				{
+					UiaLabelTextChanged(label, source);
+				});
+			}
+			source->labeledControls.Set(control, control->GetDisposedFlag());
+		}
 		UiaMetadataChanged(control);
 	}
 
@@ -242,8 +303,21 @@ namespace vl::presentation::windows
 		if (!context->stopped) std::terminate();
 	}
 
+	void WindowsUIAutomationContext::WindowThemeBoundary(GuiWindow* window, bool rebuilding)
+	{
+		// The window owns its marker even when no provider has been requested.
+		window->SetInternalProperty(WString::Unmanaged(WindowsUIAutomationWindowState::RebuildingProperty), rebuilding ? window->GetDisposedFlag() : nullptr);
+		if (auto lifetime = window->GetInternalProperty(L"GacUI.Windows.UIAutomation").Cast<WindowsUIAutomationLifetime>(); lifetime && lifetime->node->context == this)
+		{
+			auto node = lifetime->node;
+			if (rebuilding) BeginRebuild(node);
+			else EndRebuild(node);
+		}
+	}
+
 	void WindowsUIAutomationListener::Start(Ptr<WindowsUIAutomationListener> self)
 	{
+		controls::theme_refresh::themeRefreshObserver = context.Obj();
 		messageHandler = self;
 		GetWindowsNativeController()->CallbackService()->InstallListener(this);
 		if (context->hosted) GetCurrentController()->CallbackService()->InstallListener(this);
@@ -254,6 +328,7 @@ namespace vl::presentation::windows
 
 	void WindowsUIAutomationListener::Stop()
 	{
+		controls::theme_refresh::themeRefreshObserver = nullptr;
 		GetWindowsNativeController()->CallbackService()->UninstallListener(this);
 		if (context->hosted) GetCurrentController()->CallbackService()->UninstallListener(this);
 		for (auto native : context->windows.Keys())
@@ -279,7 +354,14 @@ namespace vl::presentation::windows
 			form->InstallMessageHandler(messageHandler);
 		}
 		context->windows.Add(native, hwnd);
-		if (context->Subscribed()) context->dispatcher->Queue([state = context]() { if (!state->stopped && state->Subscribed()) state->BindWindows(); });
+		if (context->Subscribed())
+		{
+			// The GuiWindow is registered after native creation. Remember newly
+			// created template windows until BindWindows can see their controls.
+			if (From(context->roots.Values()).Any([](auto root) { return root->attachment->Closed(); }))
+				context->windowsCreatedDuringRebuild.Add(native);
+			context->dispatcher->Queue([state = context]() { if (!state->stopped && state->Subscribed()) state->BindWindows(); });
+		}
 	}
 
 	void WindowsUIAutomationListener::NativeWindowDestroying(INativeWindow* native)
@@ -288,8 +370,20 @@ namespace vl::presentation::windows
 		if (index != -1)
 		{
 			auto root = context->roots.Values()[index];
-			context->RetireSubtree(root->control->GetBoundsComposition());
+			context->DiscardWindowBounds(root->attachment->window);
+			bool subscribed = context->Subscribed();
+			auto previous = std::move(context->nodes);
+			for (auto node : previous)
+			{
+				if (node->attachment == root->attachment)
+				{
+					node->Retire();
+					node->context = nullptr;
+				}
+				else context->nodes.Add(node);
+			}
 			context->roots.Remove(native);
+			if (subscribed && !context->Subscribed()) context->Collect();
 		}
 		if (auto form = dynamic_cast<IWindowsForm*>(native))
 		{
@@ -297,7 +391,7 @@ namespace vl::presentation::windows
 			UiaReturnRawElementProvider(form->GetWindowHandle(), 0, 0, nullptr);
 		}
 		context->windows.Remove(native);
-		context->Collect();
+		context->windowsCreatedDuringRebuild.Remove(native);
 	}
 
 	void WindowsUIAutomationListener::BeforeHandle(HWND, UINT, WPARAM, LPARAM, bool&)

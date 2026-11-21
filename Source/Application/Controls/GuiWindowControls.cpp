@@ -951,6 +951,8 @@ GuiWindow
 				SetAltControl(this, true);
 				ChildCompositionUpdated.SetAssociatedComposition(boundsComposition);
 				BoundsChanged.SetAssociatedComposition(boundsComposition);
+				BeforeRebuildingTheme.SetAssociatedComposition(boundsComposition);
+				AfterRebuildingTheme.SetAssociatedComposition(boundsComposition);
 
 				INativeWindow* window = GetCurrentController()->WindowService()->CreateNativeWindow(windowMode);
 				SetNativeWindow(window);
@@ -990,6 +992,30 @@ GuiWindow
 				{
 					return GuiControlHost::QueryService(identifier);
 				}
+			}
+
+			void GuiWindow::RefreshThemes()
+			{
+				CHECK_ERROR(!refreshingTheme, L"GuiWindow::RefreshThemes() cannot be called recursively.");
+				auto disposed = GetDisposedFlag();
+				refreshingTheme = true;
+				auto observer = Ptr(theme_refresh::themeRefreshObserver);
+				if (observer)
+				{
+					observer->WindowThemeBoundary(this, true);
+					if (disposed->IsDisposed()) return;
+				}
+				BeforeRebuildingTheme.Execute(GuiEventArgs(boundsComposition));
+				if (disposed->IsDisposed()) return;
+				GuiControl::RefreshThemes();
+				if (disposed->IsDisposed()) return;
+				if (observer)
+				{
+					observer->WindowThemeBoundary(this, false);
+					if (disposed->IsDisposed()) return;
+				}
+				AfterRebuildingTheme.Execute(GuiEventArgs(boundsComposition));
+				if (!disposed->IsDisposed()) refreshingTheme = false;
 			}
 
 			void GuiWindow::MoveToScreenCenter()

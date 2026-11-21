@@ -550,11 +550,12 @@ public static class GacUIShowcaseTests
         }, "Raw Clock page opens through automation", 120000);
     }
     static System.Net.Http.HttpClient clockHttp;
+    public static int ClockSwitch;
     static int clockRequest, clockTimeouts, clockLateResponses, clockSwitch;
     static string clockPalette = "setup";
 
     // Selection changes immediately. The filled radio bullet and the rebuilt
-    // tab accent together distinguish the finished tree from the queued click.
+    // palette accent together distinguish the finished tree from the queued click.
     static bool ClockPaletteApplied(object tree, string palette)
     {
         string accent = palette == "Aurora" ? "#168A7AFF" : "#007ACCFF";
@@ -582,13 +583,33 @@ public static class GacUIShowcaseTests
             Console.WriteLine("CLOCK fixture={0} frequency={1} bounds={2}", ownedProcess, Stopwatch.Frequency, SnapshotBounds((Dictionary<string, object>)ControlsSnapshot()["MainWindow"]));
             ClickRenderedCaption("Window Manager");
             Wait(() => ClockPaletteApplied(ControlsSnapshot(), "Default"), "Default selected and rendered");
+            // After a baseline crash the next single trial may start from Aurora.
+            // Prepare its previous palette before the passive client asks for a provider.
+            if (ClockSwitch != 0 && ClockSwitch % 2 == 0)
+            {
+                ClickRenderedCaption("Aurora");
+                Wait(() => ClockPaletteApplied(ControlsSnapshot(), "Aurora"), "prepared Aurora for the return switch", 120000);
+            }
             OpenRawClock();
-            for (clockSwitch = 1; clockSwitch <= 5; clockSwitch++)
+            if (listening)
+            {
+                using (var start = EventWaitHandle.OpenExisting("GacUI.Clock.Start." + ownedProcess))
+                using (var ready = EventWaitHandle.OpenExisting("GacUI.Clock.Ready." + ownedProcess))
+                {
+                    start.Set();
+                    Check(ready.WaitOne(60000), "passive subtree registrations completed");
+                }
+                Console.WriteLine("CLOCK passive subtree handlers registered");
+            }
+            int first = ClockSwitch == 0 ? 1 : ClockSwitch;
+            int last = ClockSwitch == 0 ? 5 : ClockSwitch;
+            for (clockSwitch = first; clockSwitch <= last; clockSwitch++)
             {
                 clockPalette = clockSwitch % 2 == 1 ? "Aurora" : "Default";
                 ClickRenderedCaption("Window Manager");
                 ClickRenderedCaption(clockPalette);
                 int immediate = clockRequest + 1;
+                Console.WriteLine("CLICK {0} {1} immediate={2}", clockSwitch, clockPalette, immediate);
                 Wait(() => ClockPaletteApplied(ControlsSnapshot(), clockPalette), "rebuilt Window Manager selected " + clockPalette, 120000);
                 Console.WriteLine("SWITCH {0} {1} immediate={2} rebuilt={3}", clockSwitch, clockPalette, immediate, clockRequest);
                 OpenRawClock();
@@ -598,6 +619,7 @@ public static class GacUIShowcaseTests
             Console.WriteLine("CLOCK requests={0} timeouts={1} late={2}", clockRequest, clockTimeouts, clockLateResponses);
             Check(clockTimeouts == 0 && clockLateResponses == 0, "every Controls GET completes within 15 seconds");
         }
+        clockHttp = null;
         if (listening)
         {
             using (var stop = EventWaitHandle.OpenExisting("GacUI.Clock.Stop." + ownedProcess))
@@ -609,6 +631,42 @@ public static class GacUIShowcaseTests
             }
         }
         Check(PostMessage(hwnd, 0x0010, IntPtr.Zero, IntPtr.Zero), "close the owned window after the HTTP comparison");
+    }
+
+    static void RebuiltPropertyDelivery(IntPtr hwnd)
+    {
+        const string name = "Momentum Scrolling";
+        using (var delivered = new ManualResetEvent(false))
+        {
+            // Request source metadata on the delivered event. The client never
+            // enumerates the application's elements or asks for a target pattern.
+            var cache = new CacheRequest { TreeScope = TreeScope.Element };
+            cache.Add(AutomationElement.NameProperty);
+            cache.Add(AutomationElement.ControlTypeProperty);
+            AutomationPropertyChangedEventHandler changed = (sender, e) =>
+            {
+                var source = ((AutomationElement)sender).Cached;
+                if (source.Name == name && source.ControlType == ControlType.CheckBox &&
+                    e.Property == TogglePattern.ToggleStateProperty && Convert.ToInt32(e.NewValue) == (int)ToggleState.On) delivered.Set();
+            };
+            using (cache.Activate())
+                Automation.AddAutomationPropertyChangedEventHandler(root, TreeScope.Subtree, changed, TogglePattern.ToggleStateProperty);
+            try
+            {
+                ClickRenderedCaption("Window Manager");
+                ClickRenderedCaption("Aurora");
+                Wait(() => ClockPaletteApplied(ControlsSnapshot(), "Aurora"), "rebuilt Aurora palette", 120000);
+                ClickRenderedCaption("Misc");
+                ClickRenderedCaption("TouchingList");
+                RenderedCaptionBounds(name);
+                Check(!delivered.WaitOne(0), "no On change before clicking the initially unchecked box");
+                ClickRenderedCaption(name);
+                Check(delivered.WaitOne(10000), "unvisited Momentum Scrolling checkbox delivered ToggleState.On");
+                Console.WriteLine("PASS property-only subtree listener received Momentum Scrolling / CheckBox / ToggleState.On");
+            }
+            finally { Automation.RemoveAutomationPropertyChangedEventHandler(root, changed); }
+        }
+        Check(PostMessage(hwnd, 0x0010, IntPtr.Zero, IntPtr.Zero), "close the owned property fixture");
     }
 
     static void RawClockAutomation()
@@ -3382,6 +3440,7 @@ public static class GacUIShowcaseTests
             {
                 int request = ++clockRequest;
                 long start = Stopwatch.GetTimestamp();
+                if (attempt > 0) Console.WriteLine("RETRY {0} {1} {2} {3}", request, clockSwitch, clockPalette, start);
                 try
                 {
                     byte[] bytes = clockHttp.GetByteArrayAsync(url).GetAwaiter().GetResult();
@@ -5041,12 +5100,15 @@ public static class GacUIShowcaseTests
             RawClockReplay(hwnd, scenario == "RawClockPassive");
             return;
         }
-        Wait(() => { root = AutomationElement.FromHandle(hwnd); return root.Current.ProcessId == processId && root.Current.FrameworkId == "GacUI"; }, "owned GacUI provider ready");
         if (scenario == "RawClockListener")
         {
+            using (var start = EventWaitHandle.OpenExisting("GacUI.Clock.Start." + processId))
             using (var ready = EventWaitHandle.OpenExisting("GacUI.Clock.Ready." + processId))
             using (var stop = new EventWaitHandle(false, EventResetMode.ManualReset, "GacUI.Clock.Stop." + processId))
             {
+                start.WaitOne();
+                root = AutomationElement.FromHandle(hwnd);
+                Check(root.Current.FrameworkId == "GacUI" && root.Current.ProcessId == processId, "passive client attached to owned GacUI root");
                 SubscribeToSubtreeChanges();
                 ready.Set();
                 stop.WaitOne();
@@ -5054,6 +5116,12 @@ public static class GacUIShowcaseTests
                 Console.WriteLine("PASS passive structure={0} property={1} text={2} selection={3}", structureEvents, propertyEvents, textEvents, selectionEvents);
                 ready.Set();
             }
+            return;
+        }
+        Wait(() => { root = AutomationElement.FromHandle(hwnd); return root.Current.ProcessId == processId && root.Current.FrameworkId == "GacUI"; }, "owned GacUI provider ready");
+        if (scenario == "ThemeProperty")
+        {
+            RebuiltPropertyDelivery(hwnd);
             return;
         }
         if (scenario == "RawClock") RawClockAutomation();

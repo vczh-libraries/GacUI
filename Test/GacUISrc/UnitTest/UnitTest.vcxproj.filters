@@ -335,6 +335,9 @@
     <ClCompile Include="TestApplication_Theme.cpp">
       <Filter>Source Files\Controls\Application</Filter>
     </ClCompile>
+    <ClCompile Include="TestApplication_Theme_Windows.cpp">
+      <Filter>Source Files\Controls\Application</Filter>
+    </ClCompile>
     <ClCompile Include="TestApplication_Windows.cpp">
       <Filter>Source Files\Controls\Application</Filter>
     </ClCompile>
@@ -414,6 +417,9 @@
     </ClInclude>
     <ClInclude Include="TestRemote_Shared_RenderingProtocol.h">
       <Filter>Source Files\Remote\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="TestApplication_Theme_Windows.h">
+      <Filter>Source Files\Controls\Application</Filter>
     </ClInclude>
     <ClInclude Include="TestControls.h">
       <Filter>Source Files\Controls</Filter>

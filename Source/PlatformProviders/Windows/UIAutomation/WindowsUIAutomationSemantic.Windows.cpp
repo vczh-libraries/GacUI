@@ -42,8 +42,46 @@ namespace vl::presentation::windows
 		}
 		return group;
 	}
+	GuiWindow* UiaParentWindow(GuiWindow* window)
+	{
+		auto app = GetApplication();
+		if (!app || window == app->GetMainWindow()) return nullptr;
+		auto menu = dynamic_cast<GuiMenu*>(window);
+		if (window->GetOpening())
+		{
+			// An open popup keeps its parent even while the opener is detached.
+			if ((menu || dynamic_cast<GuiTooltip*>(window)) && window->GetNativeWindow())
+				if (auto native = window->GetNativeWindow()->GetParent())
+					if (auto parent = app->GetWindowFromNative(native)) return parent;
+			if (GetHostedApplication()) return app->GetMainWindow();
+		}
+		// The opener also installs the inherited template of its closed menu.
+		// It has no native parent yet and is absent from fragment navigation.
+		if (menu)
+			if (auto owner = menu->GetOwnerControl())
+				if (auto parent = dynamic_cast<GuiWindow*>(owner->GetRelatedControlHost()); parent != window) return parent;
+		return nullptr;
+	}
+
+	GuiWindow* UiaRebuildingWindow(GuiWindow* window)
+	{
+		GuiWindow* rebuilding = nullptr;
+		auto remaining = GetApplication() ? GetApplication()->GetWindows().Count() + 1 : 1;
+		for (; window && remaining-- > 0; window = UiaParentWindow(window))
+			if (window->GetInternalProperty(WString::Unmanaged(WindowsUIAutomationWindowState::RebuildingProperty))) rebuilding = window;
+		return rebuilding;
+	}
+
 	void UiaCollectControls(GuiControl* control, List<GuiControl*>& result)
 	{
+		if (auto window = dynamic_cast<GuiWindow*>(control))
+		{
+			if (auto closed = UiaRebuildingWindow(window))
+			{
+				if (closed == window) result.Add(control);
+				return;
+			}
+		}
 		result.Add(control);
 		for (vint i = 0; i < control->GetChildrenCount(); i++) UiaCollectControls(control->GetChild(i), result);
 	}
@@ -135,9 +173,40 @@ namespace vl::presentation::windows
 			: GridPos(node->row / size.x, node->row % size.x);
 	}
 
+	bool WindowsUIAutomationWindowState::Closed() const
+	{
+		return ClosedWindow() != nullptr;
+	}
+
+	GuiWindow* WindowsUIAutomationWindowState::ClosedWindow() const
+	{
+		if (disposed->IsDisposed()) return nullptr;
+		if (suspendedBy && !suspendedBy->disposed->IsDisposed() && suspendedBy->rebuilding) return suspendedBy->window;
+		return UiaRebuildingWindow(window);
+	}
+
+	bool WindowsUIAutomationNode::Available()
+	{
+		if (context && attachment)
+		{
+			if (auto closed = attachment->ClosedWindow(); closed && closed != control)
+			{
+				context->Control(closed)->attachment->observedEmpty = true;
+				return false;
+			}
+		}
+		return IsLive();
+	}
+
 	bool WindowsUIAutomationNode::IsLive()
 	{
 		if (retired || !context || context->stopped || disposed->IsDisposed()) return false;
+		if (!attachment || attachment->disposed->IsDisposed()) return false;
+		auto window = Window();
+		// A logical control may be detached from its old template before it is
+		// inserted into the new template in the same window.
+		if (attachment->Closed()) return !window || window == attachment->window;
+		if (window != attachment->window || !GetApplication() || !GetApplication()->GetWindows().Contains(window)) return false;
 		for (auto parent = control->GetParent(); parent; parent = parent->GetParent())
 			if (auto text = dynamic_cast<GuiSinglelineTextBox*>(parent); text && text->GetPasswordChar()) return false;
 		if (owner && !owner->IsLive()) return false;
@@ -146,8 +215,6 @@ namespace vl::presentation::windows
 			vint begin, end;
 			if (!UiaDocumentObjectRange(this, begin, end)) return false;
 		}
-		auto window = Window();
-		if (!window || !GetApplication() || !GetApplication()->GetWindows().Contains(window)) return false;
 		if (kind == Kind::Cell || kind == Kind::Header || kind == Kind::HeaderItem)
 		{
 			if (!UiaListView(control)) return false;
@@ -245,6 +312,13 @@ namespace vl::presentation::windows
 
 	UiaRect WindowsUIAutomationNode::Bounds()
 	{
+		if (attachment && control == attachment->window && attachment->Closed())
+		{
+			if (!attachment->window->GetOpening()) return {};
+			auto origin = ScreenOrigin();
+			auto size = attachment->window->GetNativeWindow()->GetClientSize();
+			return { (double)origin.x.value, (double)origin.y.value, (double)size.x.value, (double)size.y.value };
+		}
 		if (kind == Kind::RadioGroup)
 		{
 			UiaRect result = {};
@@ -545,6 +619,11 @@ namespace vl::presentation::windows
 	List<Ptr<WindowsUIAutomationNode>> WindowsUIAutomationNode::Children()
 	{
 		List<Ptr<WindowsUIAutomationNode>> result;
+		if (auto closed = attachment ? attachment->ClosedWindow() : nullptr)
+		{
+			context->Control(closed)->attachment->observedEmpty = true;
+			return result;
+		}
 		auto self = context->nodes[context->nodes.IndexOf(this)];
 		if (kind == Kind::RadioGroup)
 		{
@@ -624,7 +703,13 @@ namespace vl::presentation::windows
 			}
 			if (IsRoot() && context->hosted)
 			{
-				for (auto window : GetApplication()->GetWindows()) if (window != control && window->GetOpening() && !UiaPopupOwner(context->Control(window).Obj())) result.Add(context->Control(window));
+				for (auto window : GetApplication()->GetWindows())
+				{
+					if (window == control || !window->GetOpening()) continue;
+					auto child = context->Control(window);
+					if (auto closed = child->attachment->ClosedWindow(); closed && closed != window) continue;
+					if (!UiaPopupOwner(child.Obj())) result.Add(child);
+				}
 			}
 			if (auto menu = dynamic_cast<GuiMenuButton*>(control); menu && menu->GetSubMenuOpening()) result.Add(context->Control(menu->GetSubMenu()));
 			if (auto gallery = dynamic_cast<GuiBindableRibbonGalleryList*>(control); gallery && gallery->GetSubMenu()->GetOpening()) result.Add(context->Control(gallery->GetSubMenu()));

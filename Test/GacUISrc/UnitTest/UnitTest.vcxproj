@@ -188,6 +188,7 @@
     <ClCompile Include="TestApplication_Dialog_Message.cpp" />
     <ClCompile Include="TestApplication_Tab.cpp" />
     <ClCompile Include="TestApplication_Theme.cpp" />
+    <ClCompile Include="TestApplication_Theme_Windows.cpp" />
     <ClCompile Include="TestApplication_Tooltip.cpp" />
     <ClCompile Include="TestApplication_Windows.cpp" />
     <ClCompile Include="TestCompositions_AllNested.cpp" />
@@ -310,6 +311,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestCompositions.h" />
+    <ClInclude Include="TestApplication_Theme_Windows.h" />
     <ClInclude Include="TestControls.h" />
     <ClInclude Include="TestPointInput.h" />
     <ClInclude Include="TestControls_List.h" />

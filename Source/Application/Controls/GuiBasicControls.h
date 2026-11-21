@@ -25,6 +25,19 @@ namespace vl
 		namespace controls
 		{
 			class GuiPopup;
+			class GuiWindow;
+
+			namespace theme_refresh
+			{
+				class IGuiThemeRefreshObserver : public virtual IDescriptable
+				{
+				public:
+					virtual void WindowThemeBoundary(GuiWindow* window, bool rebuilding) = 0;
+					virtual void ControlThemeRebuilt(GuiControl* control) = 0;
+				};
+
+				extern IGuiThemeRefreshObserver* themeRefreshObserver;
+			}
 
 			template<typename T, typename=void>
 			struct QueryServiceHelper;
@@ -98,7 +111,7 @@ Basic Construction
 			public:
 				Ptr<GuiDisposedFlag>					GetDisposedFlag();
 				/// <summary>Synchronously rebuild unassigned control templates in this control and its descendants. Explicit templates are preserved. Call on the UI thread.</summary>
-				void									RefreshThemes();
+				virtual void							RefreshThemes();
 
 			protected:
 				compositions::GuiBoundsComposition*		boundsComposition = nullptr;

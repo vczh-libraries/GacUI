@@ -32,7 +32,7 @@ namespace vl::presentation::windows
 				if (auto context = target->context; context && !context->stopped)
 				{
 					context->RemoveSubscriptions(removed);
-					context->Collect();
+					if (!context->Subscribed() || target->retired) context->Collect();
 				}
 			});
 			delete this;
@@ -73,6 +73,7 @@ namespace vl::presentation::windows
 				if (!subscriptions->events.Keys().Contains(eventId)) return E_INVALIDARG;
 				for (auto property : properties) if (!subscriptions->properties.Keys().Contains(property)) return E_INVALIDARG;
 			}
+			bool firstSubscription = !node->context->Subscribed();
 			auto change = adding ? 1 : -1;
 			UiaChangeSubscription(subscriptions->events, eventId, change);
 			UiaChangeSubscription(node->context->subscriptions.events, eventId, change);
@@ -81,7 +82,7 @@ namespace vl::presentation::windows
 				UiaChangeSubscription(subscriptions->properties, property, change);
 				UiaChangeSubscription(node->context->subscriptions.properties, property, change);
 			}
-			node->context->RefreshObservation();
+			node->context->RefreshObservation(firstSubscription);
 			return S_OK;
 		});
 	}
@@ -107,7 +108,8 @@ namespace vl::presentation::windows
 	{
 		return node->dispatcher->Run([&]() -> HRESULT
 		{
-			if (!node->IsLive()) return UIA_E_ELEMENTNOTAVAILABLE;
+			if (!node->Available()) return UIA_E_ELEMENTNOTAVAILABLE;
+			node->context->Observe(node);
 			if (pattern && !node->Supports(pattern)) return UIA_E_NOTSUPPORTED;
 			if (enabled && (!node->control->GetVisuallyEnabled() || !node->Window()->GetNativeWindow()->IsEnabled())) return UIA_E_ELEMENTNOTENABLED;
 			return action();
@@ -117,8 +119,9 @@ namespace vl::presentation::windows
 	{
 		return Read([&]() -> HRESULT
 		{
-			node->dispatcher->Queue([target = node, action, pattern]()
+			node->dispatcher->Queue([target = node, generation = node->attachment->generation, action, pattern]()
 			{
+				if (target->attachment->generation != generation || target->attachment->Closed()) return;
 				if (target->IsLive() && target->Supports(pattern) && target->control->GetVisuallyEnabled() && target->Window()->GetNativeWindow()->IsEnabled()) action();
 			});
 			return S_OK;
@@ -165,7 +168,7 @@ namespace vl::presentation::windows
 			if (kind == Kind::Control) if (auto metadata = UiaMetadata(control); metadata && metadata->label && !metadata->labelDisposed->IsDisposed())
 			{
 				auto label = context->Control(metadata->label);
-				if (label->IsLive()) { result->vt = VT_UNKNOWN; label->Provider()->QueryInterface(IID_PPV_ARGS(&result->punkVal)); }
+				if (label->Available()) { result->vt = VT_UNKNOWN; label->Provider()->QueryInterface(IID_PPV_ARGS(&result->punkVal)); }
 			}
 			break;
 		case UIA_HelpTextPropertyId: if (kind == Kind::Control) string(UiaLocalizedText(control, L"HelpText", UiaTooltipText(control->GetTooltipControl()))); break;
@@ -363,7 +366,7 @@ namespace vl::presentation::windows
 				}
 			}
 			else return E_INVALIDARG;
-			return target && target->IsLive() ? target->Provider()->QueryInterface(IID_PPV_ARGS(result)) : S_OK;
+			return target && target->Available() ? target->Provider()->QueryInterface(IID_PPV_ARGS(result)) : S_OK;
 		});
 	}
 	HRESULT WindowsUIAutomationProvider::GetRuntimeId(SAFEARRAY** result)
@@ -415,6 +418,7 @@ namespace vl::presentation::windows
 	}
 	Ptr<WindowsUIAutomationNode> UiaHitTest(Ptr<WindowsUIAutomationNode> node, double x, double y)
 	{
+		if (!node->Available()) return nullptr;
 		auto bounds = node->Bounds();
 		bool contains = x >= bounds.left && y >= bounds.top && x < bounds.left + bounds.width && y < bounds.top + bounds.height;
 		// A tab's logical page owns its body despite the header's disjoint bounds.
@@ -436,6 +440,12 @@ namespace vl::presentation::windows
 		return Read([&]() -> HRESULT
 		{
 			auto root = node;
+			if (node->attachment->Closed())
+			{
+				node->attachment->observedEmpty = true;
+				auto hit = UiaHitTest(node, x, y);
+				return hit ? hit->Provider()->QueryInterface(IID_PPV_ARGS(result)) : S_OK;
+			}
 			if (node->context->hosted)
 			{
 				auto origin = GetHostedApplication()->GetNativeWindowHost()->GetClientBoundsInScreen().LeftTop();
@@ -449,6 +459,12 @@ namespace vl::presentation::windows
 	}
 	Ptr<WindowsUIAutomationNode> UiaFindFocus(Ptr<WindowsUIAutomationNode> node)
 	{
+		if (!node->Available()) return nullptr;
+		if (node->attachment->Closed())
+		{
+			node->attachment->observedEmpty = true;
+			return nullptr;
+		}
 		for (auto child : node->Children()) if (auto focused = UiaFindFocus(child)) return focused;
 		if (node->IsFocused()) return node;
 		return nullptr;

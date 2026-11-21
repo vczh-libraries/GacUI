@@ -1,4 +1,5 @@
 #include "GuiGraphicsComposition.h"
+#include "../GraphicsHost/GuiGraphicsHost.h"
 
 namespace vl
 {
@@ -75,6 +76,10 @@ GuiGraphicsComposition
 
 				if (cachedBounds != value)
 				{
+					if (auto host = GetRelatedGraphicsHost(); host && host->compositionBoundsObserver)
+					{
+						host->compositionBoundsObserver(this);
+					}
 					cachedBounds = value;
 					CachedBoundsChanged.Execute(GuiEventArgs(this));
 					InvokeOnCompositionStateChanged();

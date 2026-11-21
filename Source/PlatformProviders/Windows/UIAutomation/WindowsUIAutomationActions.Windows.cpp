@@ -138,7 +138,7 @@ namespace vl::presentation::windows
 		{
 			auto parent = node->owner ? node->owner : node->Parent();
 			if (node->owner) if (auto combo = UiaCombo(node.Obj())) parent = node->context->Control(combo);
-			if (parent) { parent->Provider()->QueryInterface(IID_PPV_ARGS(result)); }
+			if (parent && parent->Available()) parent->Provider()->QueryInterface(IID_PPV_ARGS(result));
 			return S_OK;
 		}, UIA_SelectionItemPatternId);
 	}

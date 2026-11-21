@@ -70,6 +70,7 @@ Host
 			/// </summary>
 			class GuiGraphicsHost : public Object, private INativeWindowListener, private INativeControllerListener, public Description<GuiGraphicsHost>
 			{
+				friend class GuiGraphicsComposition;
 				typedef collections::List<GuiGraphicsComposition*>							CompositionList;
 				typedef GuiGraphicsComposition::GraphicsHostRecord							HostRecord;
 				typedef collections::Pair<DescriptableObject*, vint>						ProcKey;
@@ -80,6 +81,7 @@ Host
 
 			protected:
 				HostRecord								hostRecord;
+				Func<void(GuiGraphicsComposition*)>		compositionBoundsObserver;
 				bool									supressPaint = false;
 				bool									needRender = true;
 				bool									renderingTriggeredInLastFrame = false;
@@ -162,6 +164,9 @@ Host
 			public:
 				GuiGraphicsHost(controls::GuiControlHost* _controlHost, GuiGraphicsComposition* boundsComposition);
 				~GuiGraphicsHost();
+
+				/// <summary>Observe a composition just before its cached bounds change during layout.</summary>
+				void									SetCompositionBoundsObserver(const Func<void(GuiGraphicsComposition*)>& observer) { compositionBoundsObserver = observer; }
 
 				/// <summary>Get the associated window.</summary>
 				/// <returns>The associated window.</returns>

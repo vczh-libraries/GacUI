@@ -1,4 +1,5 @@
 #include "TestControls.h"
+#include "TestRemote_GraphicsHost_Shared.h"
 #include "../../../Source/Skins/DarkSkin/Config/DarkSkinConfig.h"
 
 using namespace gacui_unittest_template;
@@ -52,6 +53,63 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Theme")
 	{
+		TEST_CATEGORY(L"Window refresh events bracket template edits and reject reentry")
+		{
+			GraphicsHostProtocol protocol;
+			collections::List<WString> eventLogs;
+			GuiWindow* main = nullptr;
+			protocol.OnNextFrame([&]()
+			{
+				GuiPopup popup(theme::ThemeName::Window);
+				auto verify = [](GuiWindow* window, const Func<void()>& refresh)
+				{
+					auto child = new GuiControl(theme::ThemeName::CustomControl);
+					window->AddChild(child);
+					auto windowBounds = window->GetBoundsComposition();
+					auto childBounds = child->GetBoundsComposition();
+					GuiControl* base = window;
+					vint before = 0;
+					vint after = 0;
+					bool windowEdited = false;
+					bool childEdited = false;
+					auto entry = window->BeforeRebuildingTheme.AttachLambda([&](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+					{
+						TEST_ASSERT(sender == windowBounds && arguments.compositionSource == windowBounds);
+						TEST_ASSERT(before == after);
+						before++;
+						TEST_ERROR(base->RefreshThemes());
+					});
+					auto edit = window->ChildCompositionUpdated.AttachLambda([&](GuiGraphicsComposition*, GuiCompositionUpdateEventArgs& arguments)
+					{
+						TEST_ASSERT(before == after + 1);
+						if (arguments.parent == windowBounds) windowEdited = true;
+						if (arguments.parent == childBounds) childEdited = true;
+					});
+					auto completion = window->AfterRebuildingTheme.AttachLambda([&](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+					{
+						TEST_ASSERT(sender == windowBounds && arguments.compositionSource == windowBounds);
+						TEST_ASSERT(before == after + 1 && windowEdited && childEdited);
+						after++;
+						TEST_ERROR(base->RefreshThemes());
+					});
+					for (vint i = 1; i <= 2; i++)
+					{
+						windowEdited = childEdited = false;
+						refresh();
+						TEST_ASSERT(before == i && after == i);
+					}
+					window->BeforeRebuildingTheme.Detach(entry);
+					window->ChildCompositionUpdated.Detach(edit);
+					window->AfterRebuildingTheme.Detach(completion);
+				};
+				verify(main, []() { GetApplication()->RefreshThemes(); });
+				verify(&popup, [&popup]() { popup.RefreshThemes(); });
+				main->Hide();
+			});
+			SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, main));
+			StartRemoteControllerTest(protocol);
+		});
+
 		TEST_CASE(L"DarkSkin exposes complete palettes with shared neutrals")
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)

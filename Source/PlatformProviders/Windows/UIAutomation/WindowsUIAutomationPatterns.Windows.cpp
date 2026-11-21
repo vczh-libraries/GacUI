@@ -12,6 +12,7 @@ namespace vl::presentation::windows
 
 	void UiaSelectedChildren(Ptr<WindowsUIAutomationNode> node, List<Ptr<WindowsUIAutomationNode>>& selected)
 	{
+		if (!node->Available()) return;
 		if (node->kind == Kind::Control)
 		{
 			if (auto grid = dynamic_cast<GuiVirtualDataGrid*>(node->control); UiaDataGrid(node->control))
@@ -36,6 +37,7 @@ namespace vl::presentation::windows
 		}
 		for (auto child : node->Children())
 		{
+			if (!child->Available()) continue;
 			if (child->Supports(UIA_SelectionItemPatternId) && child->IsSelected()) selected.Add(child);
 			if (child->kind == Kind::TreeNode || child->kind == Kind::Item && UiaDataGrid(child->control)) UiaSelectedChildren(child, selected);
 		}

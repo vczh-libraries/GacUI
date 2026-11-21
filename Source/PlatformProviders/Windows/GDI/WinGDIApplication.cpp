@@ -203,7 +203,7 @@ using namespace vl::presentation;
 using namespace vl::presentation::windows;
 using namespace vl::presentation::elements_windows_gdi;
 
-int SetupWindowsGDIRendererInternal(bool hosted, bool raw)
+int SetupWindowsGDIRendererInternal(bool hosted, bool raw, const Func<Ptr<WindowsUIAutomationListener>()>& createAutomationListener)
 {
 	InitDpiAwareness(false);
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
@@ -232,7 +232,7 @@ int SetupWindowsGDIRendererInternal(bool hosted, bool raw)
 		GdiWindowsNativeControllerListener nativeListener;
 		nativeController->CallbackService()->InstallListener(&nativeListener);
 		gdiListener = &nativeListener;
-		auto uiaListener = Ptr(new WindowsUIAutomationListener(hosted));
+		auto uiaListener = createAutomationListener ? createAutomationListener() : Ptr(new WindowsUIAutomationListener(hosted));
 		uiaListener->Start(uiaListener);
 		// main
 		RendererMainGDI(hostedController, raw);

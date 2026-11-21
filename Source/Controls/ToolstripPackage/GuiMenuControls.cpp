@@ -157,6 +157,7 @@ GuiMenu
 			GuiMenu::GuiMenu(theme::ThemeName themeName, GuiControl* _owner)
 				:GuiPopup(themeName, INativeWindow::Menu)
 				, owner(_owner)
+				, ownerDisposed(_owner ? _owner->GetDisposedFlag() : nullptr)
 			{
 				UpdateMenuService();
 				WindowOpened.AttachMethod(this, &GuiMenu::OnWindowOpened);
@@ -167,12 +168,14 @@ GuiMenu
 			{
 			}
 
+			GuiControl* GuiMenu::GetOwnerControl()
+			{
+				return ownerDisposed && !ownerDisposed->IsDisposed() ? owner : nullptr;
+			}
+
 			void GuiMenu::UpdateMenuService()
 			{
-				if(owner)
-				{
-					parentMenuService=owner->QueryTypedService<IGuiMenuService>();
-				}
+				parentMenuService = ownerDisposed && !ownerDisposed->IsDisposed() ? owner->QueryTypedService<IGuiMenuService>() : nullptr;
 			}
 
 			IDescriptable* GuiMenu::QueryService(const WString& identifier)

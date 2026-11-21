@@ -239,6 +239,8 @@ GuiRibbonGroupMenu
 			class GuiRibbonGroupMenu : public GuiMenu, public Description<GuiRibbonGroupMenu>
 			{
 			private:
+				GuiRibbonGroup*							group;
+
 				IGuiMenuService::Direction GetPreferredDirection()override
 				{
 					return IGuiMenuService::Horizontal;
@@ -250,9 +252,15 @@ GuiRibbonGroupMenu
 				}
 
 			public:
-				GuiRibbonGroupMenu(theme::ThemeName themeName, GuiControl* _owner)
-					:GuiMenu(themeName, _owner)
+				GuiRibbonGroupMenu(theme::ThemeName themeName, GuiControl* button, GuiRibbonGroup* _group)
+					:GuiMenu(themeName, button)
+					, group(_group)
 				{
+				}
+
+				GuiControl* GetOwnerControl()override
+				{
+					return group;
 				}
 			};
 
@@ -382,7 +390,9 @@ GuiRibbonGroup
 					responsiveFixedButton->SetAlignmentToParent(Margin(0, 0, 0, 0));
 					responsiveFixedButton->AddChild(dropdownButton->GetBoundsComposition());
 
-					dropdownMenu = new GuiRibbonGroupMenu(theme::ThemeName::RibbonGroupMenu, dropdownButton);
+					// The group owns and rethemes this menu even when its responsive
+					// view detaches the dropdown button from the control tree.
+					dropdownMenu = new GuiRibbonGroupMenu(theme::ThemeName::RibbonGroupMenu, dropdownButton, this);
 				}
 
 				responsiveView = new GuiResponsiveViewComposition();

@@ -17,6 +17,7 @@ namespace vl
 	{
 		namespace windows
 		{
+			class WindowsUIAutomationListener;
 			extern WinDC*									GetNativeWindowDC(INativeWindow* window);
 			extern HDC										GetNativeWindowHDC(INativeWindow* window);
 		}
@@ -24,5 +25,6 @@ namespace vl
 }
 
 extern int WinMainGDI(HINSTANCE hInstance, void(*RendererMain)());
+extern int SetupWindowsGDIRendererInternal(bool hosted, bool raw, const vl::Func<vl::Ptr<vl::presentation::windows::WindowsUIAutomationListener>()>& createAutomationListener = {});
 
 #endif
