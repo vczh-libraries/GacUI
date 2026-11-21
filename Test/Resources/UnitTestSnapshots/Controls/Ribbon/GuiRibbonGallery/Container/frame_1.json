@@ -1008,8 +1008,8 @@
                                       "hitTestResult": null,
                                       "cursor": null,
                                       "element": 35,
-                                      "bounds": {"x1": 18, "y1": 77, "x2": 189, "y2": 146},
-                                      "validArea": {"x1": 18, "y1": 77, "x2": 189, "y2": 146},
+                                      "bounds": {"x1": 19, "y1": 78, "x2": 188, "y2": 145},
+                                      "validArea": {"x1": 19, "y1": 78, "x2": 188, "y2": 145},
                                       "editableAttribute": null
                                     },
                                     "children": [
@@ -1019,8 +1019,8 @@
                                           "hitTestResult": null,
                                           "cursor": null,
                                           "element": 36,
-                                          "bounds": {"x1": 18, "y1": 77, "x2": 189, "y2": 146},
-                                          "validArea": {"x1": 18, "y1": 77, "x2": 189, "y2": 146},
+                                          "bounds": {"x1": 19, "y1": 78, "x2": 188, "y2": 145},
+                                          "validArea": {"x1": 19, "y1": 78, "x2": 188, "y2": 145},
                                           "editableAttribute": null
                                         },
                                         "children": [
@@ -1030,8 +1030,8 @@
                                               "hitTestResult": null,
                                               "cursor": null,
                                               "element": 37,
-                                              "bounds": {"x1": 19, "y1": 78, "x2": 188, "y2": 145},
-                                              "validArea": {"x1": 19, "y1": 78, "x2": 188, "y2": 145},
+                                              "bounds": {"x1": 20, "y1": 79, "x2": 187, "y2": 144},
+                                              "validArea": {"x1": 20, "y1": 79, "x2": 187, "y2": 144},
                                               "editableAttribute": null
                                             },
                                             "children": [
@@ -1041,8 +1041,8 @@
                                                   "hitTestResult": null,
                                                   "cursor": null,
                                                   "element": 38,
-                                                  "bounds": {"x1": 22, "y1": 79, "x2": 185, "y2": 144},
-                                                  "validArea": {"x1": 22, "y1": 79, "x2": 185, "y2": 144},
+                                                  "bounds": {"x1": 23, "y1": 80, "x2": 184, "y2": 143},
+                                                  "validArea": {"x1": 23, "y1": 80, "x2": 184, "y2": 143},
                                                   "editableAttribute": null
                                                 },
                                                 "children": null
