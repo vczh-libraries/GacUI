@@ -549,6 +549,68 @@ public static class GacUIShowcaseTests
             return false;
         }, "Raw Clock page opens through automation", 120000);
     }
+    static System.Net.Http.HttpClient clockHttp;
+    static int clockRequest, clockTimeouts, clockLateResponses, clockSwitch;
+    static string clockPalette = "setup";
+
+    // Selection changes immediately. The filled radio bullet and the rebuilt
+    // tab accent together distinguish the finished tree from the queued click.
+    static bool ClockPaletteApplied(object tree, string palette)
+    {
+        string accent = palette == "Aurora" ? "#168A7AFF" : "#007ACCFF";
+        if (!SnapshotHas(tree, "element", "Background:" + accent + ",Rectangle")) return false;
+        foreach (var node in SnapshotNodes(tree))
+        {
+            object role;
+            if (!node.TryGetValue("control", out role) || (string)role != "RadioButton" || !SnapshotHas(node, "elementText", palette)) continue;
+            int fills = 0;
+            foreach (var child in SnapshotNodes(node))
+            {
+                object element;
+                if (child.TryGetValue("element", out element) && ((string)element).StartsWith("Background:") && ((string)element).EndsWith(",Ellipse")) fills++;
+            }
+            return fills == 2;
+        }
+        return false;
+    }
+
+    static void RawClockReplay(IntPtr hwnd, bool listening)
+    {
+        using (clockHttp = new System.Net.Http.HttpClient(new System.Net.Http.HttpClientHandler { UseProxy = false }))
+        {
+            clockHttp.Timeout = TimeSpan.FromSeconds(15);
+            Console.WriteLine("CLOCK fixture={0} frequency={1} bounds={2}", ownedProcess, Stopwatch.Frequency, SnapshotBounds((Dictionary<string, object>)ControlsSnapshot()["MainWindow"]));
+            ClickRenderedCaption("Window Manager");
+            Wait(() => ClockPaletteApplied(ControlsSnapshot(), "Default"), "Default selected and rendered");
+            OpenRawClock();
+            for (clockSwitch = 1; clockSwitch <= 5; clockSwitch++)
+            {
+                clockPalette = clockSwitch % 2 == 1 ? "Aurora" : "Default";
+                ClickRenderedCaption("Window Manager");
+                ClickRenderedCaption(clockPalette);
+                int immediate = clockRequest + 1;
+                Wait(() => ClockPaletteApplied(ControlsSnapshot(), clockPalette), "rebuilt Window Manager selected " + clockPalette, 120000);
+                Console.WriteLine("SWITCH {0} {1} immediate={2} rebuilt={3}", clockSwitch, clockPalette, immediate, clockRequest);
+                OpenRawClock();
+                string initial = (string)RawClockSnapshot()["elementData"];
+                Wait(() => (string)RawClockSnapshot()["elementData"] != initial, "reopened clock ticks under " + clockPalette);
+            }
+            Console.WriteLine("CLOCK requests={0} timeouts={1} late={2}", clockRequest, clockTimeouts, clockLateResponses);
+            Check(clockTimeouts == 0 && clockLateResponses == 0, "every Controls GET completes within 15 seconds");
+        }
+        if (listening)
+        {
+            using (var stop = EventWaitHandle.OpenExisting("GacUI.Clock.Stop." + ownedProcess))
+            using (var ready = EventWaitHandle.OpenExisting("GacUI.Clock.Ready." + ownedProcess))
+            {
+                ready.Reset();
+                stop.Set();
+                Check(ready.WaitOne(30000), "passive listener finished recording");
+            }
+        }
+        Check(PostMessage(hwnd, 0x0010, IntPtr.Zero, IntPtr.Zero), "close the owned window after the HTTP comparison");
+    }
+
     static void RawClockAutomation()
     {
         Test("Raw Clock / automation navigation, data timer and useful bounds");
@@ -3310,11 +3372,42 @@ public static class GacUIShowcaseTests
 
     static Dictionary<string, object> ControlsSnapshot()
     {
+        var url = inputEndpoint.Substring(0, inputEndpoint.Length - 3) + "/Controls";
+        var json = new JavaScriptSerializer { MaxJsonLength = 16 * 1024 * 1024, RecursionLimit = 512 };
+        if (clockHttp != null)
+        {
+            // The task completes after the last byte. Exclude JSON parsing from
+            // the timing and retain each failed attempt before retrying.
+            for (int attempt = 0; ; attempt++)
+            {
+                int request = ++clockRequest;
+                long start = Stopwatch.GetTimestamp();
+                try
+                {
+                    byte[] bytes = clockHttp.GetByteArrayAsync(url).GetAwaiter().GetResult();
+                    long end = Stopwatch.GetTimestamp();
+                    bool late = end - start >= 15 * Stopwatch.Frequency;
+                    if (late) clockLateResponses++;
+                    Console.WriteLine("GET {0} {1} {2} {3} {4} {5} {6}", request, clockSwitch, clockPalette, start, end, bytes.Length, late ? "LATE" : "OK");
+                    return (Dictionary<string, object>)json.DeserializeObject(Encoding.UTF8.GetString(bytes));
+                }
+                catch (OperationCanceledException)
+                {
+                    Console.WriteLine("GET {0} {1} {2} {3} {4} 0 TIMEOUT", request, clockSwitch, clockPalette, start, Stopwatch.GetTimestamp());
+                    clockTimeouts++;
+                    if (attempt >= 2) throw;
+                }
+                catch (System.Net.Http.HttpRequestException error)
+                {
+                    Console.WriteLine("GET {0} {1} {2} {3} {4} 0 ERROR {5}", request, clockSwitch, clockPalette, start, Stopwatch.GetTimestamp(), error.Message);
+                    throw;
+                }
+            }
+        }
         using (var client = new System.Net.WebClient())
         {
             client.Encoding = Encoding.UTF8;
-            var json = new JavaScriptSerializer { MaxJsonLength = 16 * 1024 * 1024, RecursionLimit = 512 };
-            return (Dictionary<string, object>)json.DeserializeObject(client.DownloadString(inputEndpoint.Substring(0, inputEndpoint.Length - 3) + "/Controls"));
+            return (Dictionary<string, object>)json.DeserializeObject(client.DownloadString(url));
         }
     }
 
@@ -4927,6 +5020,14 @@ public static class GacUIShowcaseTests
         }
     }
 
+    static void SubscribeToSubtreeChanges()
+    {
+        Automation.AddStructureChangedEventHandler(root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref structureEvents));
+        Automation.AddAutomationPropertyChangedEventHandler(root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref propertyEvents), AutomationElement.NameProperty, SelectionItemPattern.IsSelectedProperty, TogglePattern.ToggleStateProperty);
+        Automation.AddAutomationEventHandler(TextPattern.TextChangedEvent, root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref textEvents));
+        Automation.AddAutomationEventHandler(TextPattern.TextSelectionChangedEvent, root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref selectionEvents));
+    }
+
     public static void Run(int processId, bool hosted, string scenario, int port, string application)
     {
         Check(Thread.CurrentThread.GetApartmentState() == ApartmentState.MTA, "client must be MTA");
@@ -4935,7 +5036,26 @@ public static class GacUIShowcaseTests
         inputEndpoint = "http://localhost:" + port + "/Automation/" + application + "/IO";
         ownedProcess = processId; isHosted = hosted;
         isWorkflowBinary = application == "GacUI_Host";
+        if (scenario == "RawClockHttp" || scenario == "RawClockPassive")
+        {
+            RawClockReplay(hwnd, scenario == "RawClockPassive");
+            return;
+        }
         Wait(() => { root = AutomationElement.FromHandle(hwnd); return root.Current.ProcessId == processId && root.Current.FrameworkId == "GacUI"; }, "owned GacUI provider ready");
+        if (scenario == "RawClockListener")
+        {
+            using (var ready = EventWaitHandle.OpenExisting("GacUI.Clock.Ready." + processId))
+            using (var stop = new EventWaitHandle(false, EventResetMode.ManualReset, "GacUI.Clock.Stop." + processId))
+            {
+                SubscribeToSubtreeChanges();
+                ready.Set();
+                stop.WaitOne();
+                Automation.RemoveAllEventHandlers();
+                Console.WriteLine("PASS passive structure={0} property={1} text={2} selection={3}", structureEvents, propertyEvents, textEvents, selectionEvents);
+                ready.Set();
+            }
+            return;
+        }
         if (scenario == "RawClock") RawClockAutomation();
         if (scenario == "Touching") TouchingAutomation();
         if (scenario == "PointRegression")
@@ -4990,10 +5110,7 @@ public static class GacUIShowcaseTests
         }
         if (scenario != "RawClock" && scenario != "Touching" && scenario != "Persistence" && scenario != "DocumentExchange" && scenario != "DocumentStyles" && scenario != "DocumentContextMenu" && scenario != "DocumentEditorSop" && scenario != "DocumentEditorCommands" && scenario != "PointRegression" && scenario != "TouchingList" && scenario != "FileDialogMutations")
         {
-            Automation.AddStructureChangedEventHandler(root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref structureEvents));
-            Automation.AddAutomationPropertyChangedEventHandler(root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref propertyEvents), AutomationElement.NameProperty, SelectionItemPattern.IsSelectedProperty, TogglePattern.ToggleStateProperty);
-            Automation.AddAutomationEventHandler(TextPattern.TextChangedEvent, root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref textEvents));
-            Automation.AddAutomationEventHandler(TextPattern.TextSelectionChangedEvent, root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref selectionEvents));
+            SubscribeToSubtreeChanges();
         }
         try
         {

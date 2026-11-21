@@ -1,6 +1,6 @@
 param(
     [ValidateRange(1,65535)][int]$AsPort = 8890,
-    [ValidateSet('All','Layout','ShowcaseSkins','LocalizedLabels','Responsive','ResponsiveWindow','RawClock','Touching','Persistence','DocumentExchange','DocumentStyles','GalleryLabels','DocumentContextMenu')][string]$Scenario = 'All',
+    [ValidateSet('All','Layout','ShowcaseSkins','LocalizedLabels','Responsive','ResponsiveWindow','RawClock','RawClockHttp','RawClockPassive','Touching','Persistence','DocumentExchange','DocumentStyles','GalleryLabels','DocumentContextMenu')][string]$Scenario = 'All',
     [switch]$Gdi,
     [string]$ExchangeDocument = '',
     [switch]$SkipBuild

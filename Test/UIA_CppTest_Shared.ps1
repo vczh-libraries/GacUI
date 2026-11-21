@@ -6,7 +6,7 @@ param(
     [ValidateRange(0,15)][int]$EditorSopStartStep = 0,
     [switch]$EditorSopResumeAtImages,
     [string]$BusyClick = '',
-    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Layout','ShowcaseSkins','LocalizedLabels','Responsive','ResponsiveWindow','ResponsivePalette','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime','RawClock','Touching','Persistence','DocumentExchange','DocumentStyles','GalleryLabels','DocumentContextMenu','DocumentEditorSop','DocumentEditorCommands','PointRegression','TouchingList','FileDialogMutations')][string]$Scenario = 'All',
+    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Layout','ShowcaseSkins','LocalizedLabels','Responsive','ResponsiveWindow','ResponsivePalette','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime','RawClock','RawClockHttp','RawClockPassive','RawClockListener','Touching','Persistence','DocumentExchange','DocumentStyles','GalleryLabels','DocumentContextMenu','DocumentEditorSop','DocumentEditorCommands','PointRegression','TouchingList','FileDialogMutations')][string]$Scenario = 'All',
     [switch]$HostedFixture,
     [switch]$GdiFixture,
     [switch]$Gdi,
@@ -24,7 +24,7 @@ if ($ClientProcessId) {
         exit 0
     }
     Add-Type -AssemblyName UIAutomationClient, UIAutomationTypes, WindowsBase, System.Web.Extensions
-    Add-Type -Path (Join-Path $PSScriptRoot 'UIA_CppTest_Shared.cs') -ReferencedAssemblies UIAutomationClient, UIAutomationTypes, WindowsBase, System.Web.Extensions, System.Xml
+    Add-Type -Path (Join-Path $PSScriptRoot 'UIA_CppTest_Shared.cs') -ReferencedAssemblies UIAutomationClient, UIAutomationTypes, WindowsBase, System.Web.Extensions, System.Xml, System.Net.Http
     [GacUIShowcaseTests]::BusyCommand = $BusyClick
     [GacUIShowcaseTests]::ExchangeDocument = $ExchangeDocument
     [GacUIShowcaseTests]::PersistenceOutput = Join-Path $PSScriptRoot 'Output/Injection'
@@ -71,6 +71,8 @@ $original = if (Test-Path -LiteralPath $userFile) { [IO.File]::ReadAllBytes($use
 $launcher = $null
 $owned = $null
 $client = $null
+$listener = $null
+$listenerReady = $null
 try {
     if ($original) {
         $originalText = [Text.Encoding]::UTF8.GetString($original).TrimStart([char]0xFEFF)
@@ -133,6 +135,20 @@ try {
         $clientArguments += @('-BusyClick', ('!LeftClick:{0},{1}' -f [int](($bounds.x1+$bounds.x2)/2), [int](($bounds.y1+$bounds.y2)/2)))
     }
     if ($HostedFixture) { $clientArguments += '-HostedFixture' }
+    if ($Scenario -eq 'RawClockPassive') {
+        $listenerReady = [Threading.EventWaitHandle]::new($false, 'ManualReset', "GacUI.Clock.Ready.$($owned.Id)")
+        $listenerArguments = $clientArguments | ForEach-Object { if ($_ -eq 'RawClockPassive') { 'RawClockListener' } else { $_ } }
+        $listenerLog = Join-Path $env:TEMP "$Application-clock-listener"
+        $listener = Start-Process powershell.exe -WindowStyle Hidden -ArgumentList $listenerArguments -RedirectStandardOutput "$listenerLog.stdout.txt" -RedirectStandardError "$listenerLog.stderr.txt" -PassThru
+        $listenerHandle = $listener.Handle
+        $readyDeadline = [DateTime]::UtcNow.AddSeconds(60)
+        while (!$listenerReady.WaitOne(200)) {
+            Assert-Target
+            if ($listener.HasExited) { throw "Passive listener exited during registration. $(Get-Content "$listenerLog.stderr.txt" -Raw)" }
+            if ([DateTime]::UtcNow -ge $readyDeadline) { throw 'Passive listener registration timed out.' }
+        }
+        Write-Host "TEST $Application / passive subtree handlers registered"
+    }
     $client = Start-Process powershell.exe -WindowStyle Hidden -ArgumentList $clientArguments -RedirectStandardOutput (Join-Path $env:TEMP "$Application-uia.stdout.txt") -RedirectStandardError (Join-Path $env:TEMP "$Application-uia.stderr.txt") -PassThru
     $clientHandle = $client.Handle
     $lastCount = 0
@@ -156,6 +172,10 @@ try {
     if ($client.ExitCode -ne 0) { throw "UIA client exit: $($client.ExitCode). $(Get-Content (Join-Path $env:TEMP "$Application-uia.stderr.txt") -Raw)" }
     if (!$launcher.WaitForExit(30000)) { throw 'Normal UIA Window.Close did not stop the launched application.' }
     if ($launcher.ExitCode -ne 0) { throw "Application exit: $($launcher.ExitCode)" }
+    if ($listener) {
+        if (!$listener.WaitForExit(30000) -or $listener.ExitCode -ne 0) { throw "Passive listener failed. $(Get-Content "$listenerLog.stderr.txt" -Raw)" }
+        Get-Content "$listenerLog.stdout.txt" | Write-Host
+    }
     if (Get-Process -Id $owned.Id -ErrorAction SilentlyContinue) { throw 'Owned process survived shutdown.' }
     $stillListening = $false
     try { $null = Invoke-RestMethod "$endpoint/Controls" -TimeoutSec 2; $stillListening = $true } catch { }
@@ -163,6 +183,8 @@ try {
     Write-Host "PASS $Application / normal shutdown and endpoint release"
 }
 finally {
+    if ($listener -and !$listener.HasExited) { $listener.Kill() }
+    if ($listenerReady) { $listenerReady.Dispose() }
     if ($client -and !$client.HasExited) { $client.Kill() }
     if ($owned -and !$owned.HasExited) { $owned.Kill() }
     if ($launcher -and !$launcher.HasExited) { $launcher.Kill() }
