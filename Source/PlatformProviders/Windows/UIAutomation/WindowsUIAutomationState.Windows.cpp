@@ -10,35 +10,6 @@ namespace vl::presentation::windows
 	using namespace compositions;
 	using Kind = WindowsUIAutomationNodeKind;
 
-	struct WindowsUIAutomationBoundsState : Object
-	{
-		bool disposed = false;
-	};
-
-	struct WindowsUIAutomationBoundsLifetime : Object
-	{
-		Ptr<WindowsUIAutomationBoundsState> disposed;
-		WindowsUIAutomationBoundsLifetime(Ptr<WindowsUIAutomationBoundsState> value) : disposed(value) {}
-		~WindowsUIAutomationBoundsLifetime() { disposed->disposed = true; }
-	};
-
-	struct WindowsUIAutomationBounds : Object
-	{
-		GuiGraphicsComposition* composition;
-		Ptr<WindowsUIAutomationWindowState> attachment;
-		Ptr<WindowsUIAutomationBoundsState> disposed = Ptr(new WindowsUIAutomationBoundsState);
-		Ptr<IGuiGraphicsEventHandler> handler;
-		void Detach()
-		{
-			if (!disposed->disposed)
-			{
-				composition->CachedBoundsChanged.Detach(handler);
-				composition->SetInternalProperty(L"GacUI.Windows.UIAutomation.Bounds", nullptr);
-			}
-			handler = nullptr;
-		}
-	};
-
 	EVENTID UiaWindowEvent(GuiControl* control, bool opening)
 	{
 		if (dynamic_cast<GuiTooltip*>(control)) return opening ? UIA_ToolTipOpenedEventId : UIA_ToolTipClosedEventId;
@@ -65,8 +36,6 @@ namespace vl::presentation::windows
 		roots.Clear();
 		windows.Clear();
 		windowsCreatedDuringRebuild.Clear();
-		for (auto hook : boundsHooks) hook->Detach();
-		boundsHooks.Clear();
 		subscriptions.events.Clear();
 		subscriptions.properties.Clear();
 		openMenus.Clear();
@@ -88,7 +57,6 @@ namespace vl::presentation::windows
 			if (Subscribed())
 			{
 				Observe(root);
-				ObserveWindowBounds(root);
 				if (!root->attachment->Closed() && !root->attachment->lazyDiscovery) Scan(window->GetBoundsComposition());
 				if (window->GetOpening()) WindowEvent(root, true);
 			}
@@ -115,70 +83,6 @@ namespace vl::presentation::windows
 		UiaRaiseAutomationPropertyChangedEvent(node->Provider().Obj(), property, oldValue, newValue);
 	}
 
-	void WindowsUIAutomationContext::ObserveWindowBounds(Ptr<WindowsUIAutomationNode> root)
-	{
-		auto state = root->attachment;
-		if (state->disposed->IsDisposed()) return;
-		bool observe = Subscribed() && state->lazyDiscovery;
-		bool geometry = observe && (subscriptions.properties.Keys().Contains(0) || subscriptions.properties.Keys().Contains(UIA_BoundingRectanglePropertyId) || subscriptions.properties.Keys().Contains(UIA_IsOffscreenPropertyId));
-		if (geometry != state->observingBounds)
-		{
-			state->observingBounds = geometry;
-			auto host = state->window->GetGraphicsHost();
-			if (geometry)
-			{
-				host->SetCompositionBoundsObserver([root](GuiGraphicsComposition* composition)
-				{
-					auto context = root->context;
-					if (!context || root->attachment->Closed()) return;
-					if (!root->attachment->boundsPending)
-					{
-						root->attachment->boundsPending = true;
-						// Realized model elements may derive their bounds from layout
-						// inside a control instead of their owner's bounds composition.
-						for (vint i = 0; i < context->nodes.Count(); i++)
-						{
-							auto item = context->nodes[i];
-							if (item->attachment == root->attachment && item->kind != Kind::Control) context->CaptureBounds(item);
-						}
-					}
-					context->CaptureBounds(composition);
-					context->Notify(root);
-				});
-			}
-			else host->SetCompositionBoundsObserver({});
-		}
-	}
-
-	void WindowsUIAutomationContext::CaptureBounds(Ptr<WindowsUIAutomationNode> node)
-	{
-		if (!node->IsLive()) return;
-		for (PROPERTYID property : { UIA_BoundingRectanglePropertyId, UIA_IsOffscreenPropertyId })
-		{
-			if (!subscriptions.properties.Keys().Contains(0) && !subscriptions.properties.Keys().Contains(property)) continue;
-			if (node->properties.Keys().Contains(property)) continue;
-			auto value = Ptr(new WindowsUIAutomationValue);
-			node->Property(property, &value->value);
-			node->properties.Set(property, value);
-		}
-	}
-
-	void WindowsUIAutomationContext::CaptureBounds(GuiGraphicsComposition* composition)
-	{
-		if (auto control = composition->GetAssociatedControl()) CaptureBounds(Control(control));
-		for (auto child : composition->Children()) CaptureBounds(child);
-	}
-
-	void WindowsUIAutomationContext::DiscardWindowBounds(GuiWindow* window)
-	{
-		auto oldHooks = std::move(boundsHooks);
-		for (auto hook : oldHooks)
-		{
-			if (hook->attachment && (hook->attachment->window == window || hook->attachment->suspendedBy && hook->attachment->suspendedBy->window == window)) hook->Detach();
-			else boundsHooks.Add(hook);
-		}
-	}
-
 	void WindowsUIAutomationContext::ControlThemeRebuilt(GuiControl* control)
 	{
 		if (!Subscribed()) return;
@@ -201,11 +105,8 @@ namespace vl::presentation::windows
 			if (attachment->ClosedWindow() != state->window) continue;
 			if (attachment != state) attachment->suspendedBy = state;
 			attachment->lazyDiscovery = true;
-			attachment->boundsPending = false;
 			attachment->generation++;
-			ObserveWindowBounds(candidate);
 		}
-		DiscardWindowBounds(state->window);
 		for (auto node : nodes)
 		{
 			if (!node->attachment || (node->attachment != state && node->attachment->suspendedBy != state)) continue;
@@ -260,7 +161,6 @@ namespace vl::presentation::windows
 		}
 		for (auto node : nodes)
 			if (node->attachment && node->attachment->suspendedBy == state) node->attachment->suspendedBy = nullptr;
-		ObserveWindowBounds(root);
 		auto observed = state->observedEmpty;
 		state->observedEmpty = false;
 		if (observed && Subscribed(UIA_StructureChangedEventId)) RaiseChildrenInvalidated(root);
@@ -273,9 +173,6 @@ namespace vl::presentation::windows
 		{
 			for (auto [id, index] : indexed(value->events.Keys())) UiaChangeSubscription(subscriptions.events, id, -value->events.Values()[index]);
 			for (auto [id, index] : indexed(value->properties.Keys())) UiaChangeSubscription(subscriptions.properties, id, -value->properties.Values()[index]);
-			if (value->events.Count())
-				for (auto root : roots.Values())
-					if (!root->retired && root->attachment->lazyDiscovery) ObserveWindowBounds(root);
 		}
 		value->events.Clear();
 		value->properties.Clear();
@@ -284,21 +181,6 @@ namespace vl::presentation::windows
 	void WindowsUIAutomationContext::Scan(GuiGraphicsComposition* composition)
 	{
 		if (!Subscribed()) return;
-		auto key = WString::Unmanaged(L"GacUI.Windows.UIAutomation.Bounds");
-		if (auto window = composition->GetRelatedControlHost(); window && !composition->GetInternalProperty(key))
-		{
-			auto hook = Ptr(new WindowsUIAutomationBounds);
-			auto anchor = Control(window);
-			hook->composition = composition;
-			hook->attachment = anchor->attachment;
-			composition->SetInternalProperty(key, Ptr(new WindowsUIAutomationBoundsLifetime(hook->disposed)));
-			hook->handler = composition->CachedBoundsChanged.AttachLambda([anchor](GuiGraphicsComposition* sender, GuiEventArgs&)
-			{
-				if (anchor->context)
-					if (auto window = sender->GetRelatedControlHost()) anchor->context->Notify(anchor->context->Control(window));
-			});
-			boundsHooks.Add(hook);
-		}
 		if (auto control = composition->GetAssociatedControl()) Observe(Control(control));
 		for (auto child : composition->Children()) Scan(child);
 	}
@@ -313,7 +195,6 @@ namespace vl::presentation::windows
 			{
 				auto root = Control(window);
 				Observe(root);
-				ObserveWindowBounds(root);
 				if (!root->attachment->Closed() && (firstSubscription || !root->attachment->lazyDiscovery) && !windowsCreatedDuringRebuild.Contains(window->GetNativeWindow()))
 					Scan(window->GetBoundsComposition());
 			}
@@ -333,18 +214,8 @@ namespace vl::presentation::windows
 		if (stopped) return;
 		if (!Subscribed())
 		{
-			for (auto hook : boundsHooks) hook->Detach();
-			boundsHooks.Clear();
-			for (auto node : nodes)
-				if (node->attachment && node->attachment->window == node->control && node->attachment->observingBounds)
-					ObserveWindowBounds(node);
 			openMenus.Clear();
 			menuModeOwner = nullptr;
-		}
-		else
-		{
-			for (vint i = boundsHooks.Count() - 1; i >= 0; i--)
-				if (boundsHooks[i]->disposed->disposed) boundsHooks.RemoveAt(i);
 		}
 		SortedList<GuiControl*> required;
 		if (!Subscribed()) for (auto node : nodes)
@@ -378,14 +249,6 @@ namespace vl::presentation::windows
 	{
 		// Removal is delivered while the detached subtree is still valid. Never
 		// retain the event's raw child pointer for the deferred notification.
-		for (vint i = boundsHooks.Count() - 1; i >= 0; i--)
-		{
-			if (boundsHooks[i]->composition == composition)
-			{
-				boundsHooks[i]->Detach();
-				boundsHooks.RemoveAt(i);
-			}
-		}
 		if (auto control = composition->GetAssociatedControl())
 		{
 			for (auto node : nodes) if (node->control == control) node->Retire();
@@ -522,6 +385,10 @@ namespace vl::presentation::windows
 		if (auto window = dynamic_cast<GuiWindow*>(control))
 		{
 			if (node->attachment->ClosedWindow() == window) BeginRebuild(node);
+			lifetime->Attach(window, window->GetGraphicsHost()->CompositionCachedBoundsChanged, [node](GuiGraphicsComposition*, GuiEventArgs&)
+			{
+				if (node->context) node->context->Notify(node);
+			});
 			lifetime->Attach(window, window->BoundsChanged, [node](GuiGraphicsComposition*, GuiEventArgs&)
 			{
 				if (!node->IsLive() || node->attachment->Closed()) return;
@@ -718,7 +585,6 @@ namespace vl::presentation::windows
 		dispatcher->Queue([node, generation = node->attachment->generation]()
 		{
 			if (generation != node->attachment->generation || node->attachment->Closed()) return;
-			if (node->control == node->attachment->window) node->attachment->boundsPending = false;
 			node->notificationPending = false;
 			auto structure = node->structurePending;
 			node->structurePending = false;
@@ -887,11 +753,6 @@ namespace vl::presentation::windows
 		pendingEvents.Clear();
 		if (kind == Kind::Control && !disposed->IsDisposed())
 		{
-			if (attachment && attachment->window == control && attachment->observingBounds)
-			{
-				attachment->observingBounds = false;
-				attachment->window->GetGraphicsHost()->SetCompositionBoundsObserver({});
-			}
 			auto lifetime = control->GetInternalProperty(L"GacUI.Windows.UIAutomation").Cast<WindowsUIAutomationLifetime>();
 			if (lifetime && lifetime->node.Obj() == this)
 			{

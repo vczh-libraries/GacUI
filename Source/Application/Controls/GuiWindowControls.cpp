@@ -997,25 +997,14 @@ GuiWindow
 			void GuiWindow::RefreshThemes()
 			{
 				CHECK_ERROR(!refreshingTheme, L"GuiWindow::RefreshThemes() cannot be called recursively.");
-				auto disposed = GetDisposedFlag();
 				refreshingTheme = true;
 				auto observer = Ptr(theme_refresh::themeRefreshObserver);
-				if (observer)
-				{
-					observer->WindowThemeBoundary(this, true);
-					if (disposed->IsDisposed()) return;
-				}
+				if (observer) observer->WindowThemeBoundary(this, true);
 				BeforeRebuildingTheme.Execute(GuiEventArgs(boundsComposition));
-				if (disposed->IsDisposed()) return;
 				GuiControl::RefreshThemes();
-				if (disposed->IsDisposed()) return;
-				if (observer)
-				{
-					observer->WindowThemeBoundary(this, false);
-					if (disposed->IsDisposed()) return;
-				}
+				if (observer) observer->WindowThemeBoundary(this, false);
 				AfterRebuildingTheme.Execute(GuiEventArgs(boundsComposition));
-				if (!disposed->IsDisposed()) refreshingTheme = false;
+				refreshingTheme = false;
 			}
 
 			void GuiWindow::MoveToScreenCenter()

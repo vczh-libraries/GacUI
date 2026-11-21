@@ -74,15 +74,26 @@ This task is about removing many constructions just added in a previous work. By
 
 # UPDATES
 
+## UPDATE
+
+let's do this following change
+
+`GuiWindow::RefreshThemes` does not need to do `GetDisposedFlag`. I don't think a window will be disposed during a `RefreshThemes` call to itself. A window might dispose other owned windows but definitely not during their `RefreshThemes`.&#x20;
+
+In `GuiGraphicsHost` turn `compositionBoundsObserver` and `SetCompositionBoundsObserver` into a public `GuiNotifyEvent CompositionCachedBoundsChanged`. It fires after a composition's `CachedBoundsChanged`, its sender will be the trigger so `ExecuteWithNewSender` is preferred. A public `GuiGraphicsHost::RaiseCompositionCachedBoundsChanged(sender)` will be used as a helper function. Make sure UIA no longer use `CachedBoundsChanged`.
+
 # TEST [CONFIRMED]
 
 Count the pre-change calls in the source, and exercise recursive refresh from both public theme handlers. The outer call must produce one ordered pair and accept a later refresh. Verify the native window and hosted submenu lifetime and event cases, both ThemeProperty clients, both five-switch RawClockHttp and RawClockPassive comparisons with the existing 15-second deadline, and the configured Windows unit suite.
 
 The baseline has 39 calls across 13 implementation files. The Debug x64 solution built with zero warnings and errors. Its portable refresh-order case stopped at the recursive call in Before with "Expect an error but nothing occurred: base->RefreshThemes()".
 
+For the host event, check that the local handler and two host listeners receive the changed composition and see the committed rectangle in that order. An unchanged layout must deliver zero additional events. For UIA, move a label's parent while keeping the label's local rectangle fixed. A client subscribed to the window must receive one bounding rectangle change before the first refresh and one after the refresh when the rebuilt parent moves.
+
 # PROPOSALS
 
 - No.1 Remove the pre-change API and attach ordinary UIA events during theme refresh [CONFIRMED]
+- No.2 Publish composition bounds changes on the graphics host and simplify window refresh [CONFIRMED]
 
 ## No.1 Remove the pre-change API and attach ordinary UIA events during theme refresh
 
@@ -116,3 +127,19 @@ The two-client Lifetime fixture passed 140 assertions in the native host and 139
 The Debug Win32 build also completed with zero warnings and errors. Its unfiltered run passed all 2,022 cases in 100 files and produced an empty CRT leak report. The file-dialog and ribbon snapshots matched in all 88 rendered frame trees and 283 intermediate command frames after resolving element identities. The three ribbon allocation counts also matched the prior investigation's unmodified executable.
 
 A repository-wide search of C++ sources, headers and C# found zero references to the removed API, accessor or flags. Both theme events still have their original reflection registrations in `<GacUI repo>/Source/Reflection/TypeDescriptors/GuiReflectionControls.cpp`. The closed-menu ownership lookup and ribbon group menu override remain in use.
+
+## No.2 Publish composition bounds changes on the graphics host and simplify window refresh
+
+Treat the current window as live throughout its synchronous theme refresh. Keep the disposal checks on pending entries in the application and child traversal. Publish each changed composition's committed bounds on its current graphics host after the local event. Subscribe Windows UIA at the window and use the provider's existing property snapshots and queued comparisons for all observed layout changes.
+
+### CODE CHANGE
+
+`GuiWindow::RefreshThemes` now clears its recursion guard after the public After event returns. `GuiGraphicsComposition::Layout_SetCachedBounds` commits the new value, dispatches its local event and then raises `GuiGraphicsHost::CompositionCachedBoundsChanged` on its current host. `RaiseCompositionCachedBoundsChanged` supplies the changed composition as the sender and source.
+
+Windows UIA attaches the event through its existing window handler lifetime and queues the window's normal property comparison. The per-composition handlers, lifetime markers and pre-change bounds capture were removed. Composition insertion still discovers controls, and window movement still updates screen positions.
+
+### CONFIRMED
+
+The Debug x64 solution built with zero warnings and errors. All 557 configured cases, including the graphics-host startup file added to this run, passed across 23 files. The test log ended with the passing summary and no memory leaks. The host case verified local-before-host ordering, sender and argument sources, committed bounds, both host listeners and silence on an unchanged layout. The Windows fixture observed exactly one UIA change on each parent move while the label's cached rectangle stayed fixed, and also observed the label's direct move. The existing recursive-refresh, owned-window disposal and hosted submenu cases passed.
+
+The hosted and native ThemeProperty clients both received the first checkbox change after a theme refresh. Across five palette switches per Raw Clock scenario, all 1,072 requests completed within 15 seconds. Hosted runs made 111 requests with HTTP alone and 409 with a passive UIA subscriber. Native runs made 113 and 439 respectively. All six showcase runs shut down normally. The 13 regenerated x64 Workflow listings contained only reordered declarations and assignments, and all rendered snapshot files matched.

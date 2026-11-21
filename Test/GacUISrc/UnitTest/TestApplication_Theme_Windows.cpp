@@ -20,6 +20,7 @@ namespace
 		List<GuiControl*> nameChanges;
 		List<GuiControl*> textChanges;
 		GuiControl* movedControl = nullptr;
+		vint boundsChanges = 0;
 		double oldLeft = 0, newLeft = 0;
 		WString oldName, newName;
 
@@ -47,6 +48,7 @@ namespace
 			}
 			if (property == UIA_BoundingRectanglePropertyId && node->control == movedControl)
 			{
+				boundsChanges++;
 				LONG left = 0;
 				TEST_ASSERT(before.vt == (VT_ARRAY | VT_R8) && after.vt == (VT_ARRAY | VT_R8));
 				TEST_ASSERT(SafeArrayGetElement(before.parray, &left, &oldLeft) == S_OK);
@@ -75,6 +77,7 @@ namespace
 		testTheme->Name = L"UIA theme observation";
 		GuiDocumentLabel* templateDocument = nullptr;
 		GuiLabel* templateLabel = nullptr;
+		GuiBoundsComposition* labelParent = nullptr;
 		GuiLabel* nestedLabel = nullptr;
 		bool labelDocument = false;
 		auto original = theme::GetCurrentTheme()->CreateStyle(theme::ThemeName::GroupBox);
@@ -87,7 +90,10 @@ namespace
 			templateLabel = new GuiLabel(theme::ThemeName::Label);
 			templateLabel->SetText(L"Original label");
 			templateLabel->GetBoundsComposition()->SetExpectedBounds({ 15,30,115,60 });
-			result->AddChild(templateLabel->GetBoundsComposition());
+			labelParent = new GuiBoundsComposition;
+			labelParent->SetExpectedBounds({ 0,0,180,80 });
+			labelParent->AddChild(templateLabel->GetBoundsComposition());
+			result->AddChild(labelParent);
 			if (labelDocument) SetWindowsUIAutomationLabel(templateDocument, templateLabel);
 			auto group = new GuiControl(theme::ThemeName::CustomControl);
 			group->SetControlTemplate(theme::GetCurrentTheme()->CreateStyle(theme::ThemeName::CustomControl));
@@ -273,22 +279,43 @@ namespace
 				TEST_ASSERT(oldDocument->GetText(-1, &text) == UIA_E_ELEMENTNOTAVAILABLE && !text);
 				oldDocument->Release();
 
+				GuiWindow destination(theme::ThemeName::Window);
+				auto boundsContainer = new GuiControl(theme::ThemeName::GroupBox);
+				boundsContainer->GetBoundsComposition()->SetAlignmentToParent({ 0,0,0,0 });
+				destination.AddChild(boundsContainer);
+				destination.SetClientSize({ 420,300 });
+				destination.ShowDeactivated();
+				auto destinationRoot = context->Control(&destination)->Provider();
 				properties = SafeArrayCreateVector(VT_I4, 0, 1);
 				LONG boundsId = UIA_BoundingRectanglePropertyId;
 				TEST_ASSERT(SafeArrayPutElement(properties, &index, &boundsId) == S_OK);
-				TEST_ASSERT(Provider(root)->AdviseEventAdded(UIA_AutomationPropertyChangedEventId, properties) == S_OK);
-				window.RefreshThemes();
-				window.ForceCalculateSizeImmediately();
-				DrainPostedNotifications();
-				context->movedControl = templateLabel;
-				templateLabel->GetBoundsComposition()->SetExpectedBounds({ 25,40,135,75 });
-				window.ForceCalculateSizeImmediately();
-				DrainPostedNotifications();
-				TEST_ASSERT(context->newLeft > context->oldLeft);
-				TEST_ASSERT(Provider(root)->AdviseEventRemoved(UIA_AutomationPropertyChangedEventId, properties) == S_OK);
+				TEST_ASSERT(Provider(destinationRoot)->AdviseEventAdded(UIA_AutomationPropertyChangedEventId, properties) == S_OK);
+				auto checkBoundsChange = [&](GuiBoundsComposition* source, Rect expected)
+				{
+					auto previous = context->boundsChanges;
+					context->movedControl = templateLabel;
+					source->SetExpectedBounds(expected);
+					destination.ForceCalculateSizeImmediately();
+					DrainPostedNotifications();
+					TEST_ASSERT(context->boundsChanges == previous + 1);
+					TEST_ASSERT(context->newLeft > context->oldLeft);
+					context->movedControl = nullptr;
+				};
+				auto moveLabelParent = [&]()
+				{
+					destination.ForceCalculateSizeImmediately();
+					DrainPostedNotifications();
+					auto local = templateLabel->GetBoundsComposition()->GetCachedBounds();
+					checkBoundsChange(labelParent, { 10,0,190,80 });
+					TEST_ASSERT(templateLabel->GetBoundsComposition()->GetCachedBounds() == local);
+				};
+				moveLabelParent();
+				destination.RefreshThemes();
+				moveLabelParent();
+				checkBoundsChange(templateLabel->GetBoundsComposition(), { 25,40,135,75 });
+				TEST_ASSERT(Provider(destinationRoot)->AdviseEventRemoved(UIA_AutomationPropertyChangedEventId, properties) == S_OK);
 				SafeArrayDestroy(properties);
 
-				GuiWindow destination(theme::ThemeName::Window);
 				window.BeforeRebuildingTheme.AttachLambda([&](auto, auto&)
 				{
 					auto composition = button->GetBoundsComposition();

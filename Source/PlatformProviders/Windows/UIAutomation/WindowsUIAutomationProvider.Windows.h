@@ -15,7 +15,6 @@ namespace vl::presentation::windows
 	class WindowsUIAutomationTextRange;
 	struct WindowsUIAutomationIdleRequest;
 	struct WindowsUIAutomationNode;
-	struct WindowsUIAutomationBounds;
 
 	struct WindowsUIAutomationSubscriptions : Object
 	{
@@ -91,8 +90,6 @@ namespace vl::presentation::windows
 		bool								observedEmpty = false;
 		bool								rebuilding = false;
 		bool								lazyDiscovery = false;
-		bool								observingBounds = false;
-		bool								boundsPending = false;
 
 		bool Closed() const;
 		controls::GuiWindow* ClosedWindow() const;
@@ -191,7 +188,6 @@ namespace vl::presentation::windows
 		collections::Dictionary<INativeWindow*, Ptr<WindowsUIAutomationNode>> roots;
 		collections::SortedList<INativeWindow*> windowsCreatedDuringRebuild;
 		collections::List<Ptr<WindowsUIAutomationNode>> nodes;
-		collections::List<Ptr<WindowsUIAutomationBounds>> boundsHooks;
 		WindowsUIAutomationSubscriptions subscriptions;
 		collections::List<Ptr<WindowsUIAutomationNode>> openMenus;
 		Ptr<WindowsUIAutomationNode>			menuModeOwner;
@@ -203,10 +199,6 @@ namespace vl::presentation::windows
 		void ControlThemeRebuilt(controls::GuiControl* control)override;
 		void BeginRebuild(Ptr<WindowsUIAutomationNode> root);
 		void EndRebuild(Ptr<WindowsUIAutomationNode> root);
-		void DiscardWindowBounds(controls::GuiWindow* window);
-		void ObserveWindowBounds(Ptr<WindowsUIAutomationNode> root);
-		void CaptureBounds(Ptr<WindowsUIAutomationNode> node);
-		void CaptureBounds(compositions::GuiGraphicsComposition* composition);
 		virtual void RaiseChildrenInvalidated(Ptr<WindowsUIAutomationNode> node);
 		virtual void RaisePropertyChanged(Ptr<WindowsUIAutomationNode> node, PROPERTYID property, VARIANT oldValue, VARIANT newValue);
 		void Scan(compositions::GuiGraphicsComposition* composition);

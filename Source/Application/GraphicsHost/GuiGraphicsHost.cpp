@@ -807,6 +807,12 @@ GuiGraphicsHost
 				return pointActionManager->GetPointCapture();
 			}
 
+			void GuiGraphicsHost::RaiseCompositionCachedBoundsChanged(GuiGraphicsComposition* sender)
+			{
+				GuiEventArgs arguments(sender);
+				CompositionCachedBoundsChanged.ExecuteWithNewSender(arguments, sender);
+			}
+
 			INativeWindow* GuiGraphicsHost::GetNativeWindow()
 			{
 				return hostRecord.nativeWindow;

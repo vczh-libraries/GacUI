@@ -76,12 +76,9 @@ GuiGraphicsComposition
 
 				if (cachedBounds != value)
 				{
-					if (auto host = GetRelatedGraphicsHost(); host && host->compositionBoundsObserver)
-					{
-						host->compositionBoundsObserver(this);
-					}
 					cachedBounds = value;
 					CachedBoundsChanged.Execute(GuiEventArgs(this));
+					if (auto host = GetRelatedGraphicsHost()) host->RaiseCompositionCachedBoundsChanged(this);
 					InvokeOnCompositionStateChanged();
 				}
 			}

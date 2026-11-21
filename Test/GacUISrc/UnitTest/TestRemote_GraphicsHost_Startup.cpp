@@ -123,7 +123,7 @@ TEST_FILE
 		StartRemoteControllerTest(protocol);
 	});
 
-	TEST_CATEGORY(L"Test nested <Bounds> associated resources")
+	TEST_CATEGORY(L"Nested compositions resolve their graphics host and publish bounds changes")
 	{
 		GraphicsHostProtocol protocol;
 		GuiWindow* controlHost = nullptr;
@@ -169,7 +169,39 @@ TEST_FILE
 			TEST_ASSERT(controlHost->GetGraphicsHost()->GetMainComposition()->GetRelatedControl() == nullptr);
 			TEST_ASSERT(controlHost->GetGraphicsHost()->GetMainComposition()->GetRelatedControlHost() == nullptr);
 			TEST_ASSERT(controlHost->GetGraphicsHost()->GetMainComposition()->GetRelatedGraphicsHost() == controlHost->GetGraphicsHost());
+		});
 
+		protocol.OnNextFrame([&]()
+		{
+			auto bounds = control->GetBoundsComposition();
+			auto& hostEvent = controlHost->GetGraphicsHost()->CompositionCachedBoundsChanged;
+			Rect expected(20, 30, 70, 80);
+			vint localChanges = 0;
+			vint hostChanges = 0;
+			auto local = bounds->CachedBoundsChanged.AttachLambda([&](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+			{
+				TEST_ASSERT(sender == bounds && arguments.compositionSource == bounds && arguments.eventSource == bounds);
+				TEST_ASSERT(bounds->GetCachedBounds() == expected && hostChanges == 0);
+				localChanges++;
+			});
+			auto onHostChange = [&](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+			{
+				if (sender != bounds) return;
+				TEST_ASSERT(arguments.compositionSource == bounds && arguments.eventSource == bounds);
+				TEST_ASSERT(bounds->GetCachedBounds() == expected && localChanges == 1);
+				hostChanges++;
+			};
+			auto first = hostEvent.AttachLambda(onHostChange);
+			auto second = hostEvent.AttachLambda(onHostChange);
+			bounds->SetExpectedBounds(expected);
+			controlHost->ForceCalculateSizeImmediately();
+			TEST_ASSERT(localChanges == 1 && hostChanges == 2);
+			bounds->SetExpectedBounds(expected);
+			controlHost->ForceCalculateSizeImmediately();
+			TEST_ASSERT(localChanges == 1 && hostChanges == 2);
+			hostEvent.Detach(first);
+			hostEvent.Detach(second);
+			bounds->CachedBoundsChanged.Detach(local);
 			controlHost->Hide();
 		});
 

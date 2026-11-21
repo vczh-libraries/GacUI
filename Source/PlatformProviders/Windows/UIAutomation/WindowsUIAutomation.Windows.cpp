@@ -370,7 +370,6 @@ namespace vl::presentation::windows
 		if (index != -1)
 		{
 			auto root = context->roots.Values()[index];
-			context->DiscardWindowBounds(root->attachment->window);
 			bool subscribed = context->Subscribed();
 			auto previous = std::move(context->nodes);
 			for (auto node : previous)
