@@ -105,6 +105,14 @@ Check out [Coding_MultiThreading.md](./Coding_MultiThreading.md).
     - DO NOT use `Nullable<T*>`, `Nullable<Ptr<T>>` or `Nullable<Nullable<T>>`, this is too confusing.
   - Only when there is no other choice, use an extra `bool` variable.
     - This could happen when "null" semantic is valid.
+- To implement a callback:
+  - If a callback is simple, consider exposing a public `Event<T>` or `GuiGraphicsEvent<T>`.
+  - If a callback is complex, consider adding a new interface with `AttachListener`/`DetachListener` who maintain a list of the interfaces:
+    - By default you should use `Ptr<IMyCallbackInterface>`, but when `List<IMyCallbackInterface*>` fit the situation more this is also allowed.
+    - `AttachListener` and `DetachListener` could be changed to other more appropriate names.
+  - Avoid using `Func<T>` for storing a callback, if there is strong reason that the callback is only make sense for one listener, either:
+    - Make the `Func<T>` one of the constructor argument.
+    - Store the listener's pointer and call it directly.
 
 ### Regular Expression
 
