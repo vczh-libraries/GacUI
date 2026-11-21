@@ -91,3 +91,57 @@ Verification:
     a retained sibling remains navigable, that only the affected subtree reports the transition, and that
     reopening or destroying the popup leaves no stale callbacks. [Hosted wrapper](Test/UIA_CppTest.ps1) ·
     [Native-window wrapper](Test/UIA_CppTest_Metaonly.ps1)
+
+## DETAILS
+
+- Keep the rebuild state on each logical `GuiWindow`. Set it before dispatching
+  `BeforeRebuildingTheme` so even the first `WM_GETOBJECT` or event subscription from inside a Before
+  handler sees the closed subtree. `BindWindows` and `RefreshObservation` can both initiate scans.
+  Honor the state at both entry points while continuing to count subscriptions. Reopen the tree before
+  notifying completion and keep same-window recursion coalesced through the last After handler.
+- Track each observed attachment's window before template edits begin. A surviving control can
+  temporarily lose its host during template replacement. Keep it eligible to resume under the same
+  identity. Using temporary invisibility as the result of `WindowsUIAutomationNode::IsLive` would let
+  `Collect` permanently retire it. Check visibility in the text range's separate read path as well as
+  in provider calls. A destroyed control, replaced document or cross-window move must still invalidate
+  the corresponding old reference.
+- Account for work already posted to the dispatcher. A pending root `Notify` reads and clears mutable
+  flags on delivery. Record the window's generation when posting work and check it before touching
+  those flags, so an old callback cannot scan the reopened tree or consume a later change. Revalidate
+  queued actions against their original attachment when they run. Keep cleanup and notification state
+  independent for sibling windows.
+- Preserve the first subscribed change on a rebuilt control that the client has never visited.
+  `UpdateProperties` initializes a missing snapshot silently. If observation starts after a change,
+  capture the transition at its source so the first delivery identifies the control, property and
+  changed value. An unchanged assignment should produce no property-change event.
+
+## VERIFICATION
+
+- Run the HTTP-only comparison in a fresh target before `AutomationElement.FromHandle`, which the
+  current Raw Clock harness calls during startup. On the fixed build, verify that UIA constructs no
+  providers and walks no subtrees at either rebuild boundary. Use the same HTTP driver for the passive
+  listener run. Take the endpoint from the wrapper (`CppTest` on 8888 and `CppTest_Metaonly` on
+  8890 by default).
+- Time each `ControlsSnapshot` GET through the last response byte. The shared helper uses
+  `WebClient.DownloadString`, and the 120-second Raw Clock polling loop cannot enforce a deadline on
+  an individual GET. Record each timeout before retrying. If the unmodified target terminates when
+  sending the late response, keep the failed sample and restart it for the remaining trials.
+- `SelectSkinItem` updates the selected item before it queues the palette change. Correlate each
+  request's UI-thread tree capture with the end of that switch's refresh. Report the immediate GET
+  and the first GET that captured the rebuilt tree, even when those are different requests. Confirm
+  the requested palette and ticking clock for each direction.
+- Use the portable theme tests for callback order and same-window reentry from Before and After
+  through a `GuiControl*`. Exercise the Windows provider on the UI thread in a Windows fixture.
+  Request the first provider from an early Before handler and verify empty child navigation. In a
+  separate run, subscribe before the refresh and count invalidations on the affected root. Expect
+  two when the probe reads the empty tree and one when no query observes it. For the hosted popup,
+  refresh a menu button's open submenu and hit-test both the menu and a sibling.
+- Queue a structure notification before the switch. Immediately after reopening, change an unvisited
+  control with only the corresponding property subscription active. Drain the dispatcher and check
+  the event's source and payload and the absence of a stale scan. Check a retained replaced child's
+  bounds and a retired range's text for `UIA_E_ELEMENTNOTAVAILABLE`. `GetRuntimeId` remains callable
+  during provider disconnection.
+- For the new reflected events, build Debug Win32 and run `Metadata_Generate`, then build Debug x64
+  and run `Metadata_Generate` and `Metadata_Test` as specified in `<GacUI repo>/Project.md`.
+
+## REVIEW COMMENTS
