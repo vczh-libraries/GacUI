@@ -99,7 +99,7 @@ namespace gacui_file_dialog_template
 			.Where([=](GuiWindow* window)
 			{
 				auto native = window->GetNativeWindow();
-				return native && native->GetParent() == ownerWindow;
+				return native && window->GetOpening() && window->GetModal() && native->GetParent() == ownerWindow;
 			})
 			.First(nullptr);
 		TEST_ASSERT(result != nullptr);
