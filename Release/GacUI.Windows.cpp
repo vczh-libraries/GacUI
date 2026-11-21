@@ -8597,7 +8597,7 @@ using namespace vl::presentation;
 using namespace vl::presentation::windows;
 using namespace vl::presentation::elements_windows_gdi;
 
-int SetupWindowsGDIRendererInternal(bool hosted, bool raw)
+int SetupWindowsGDIRendererInternal(bool hosted, bool raw, const Func<Ptr<WindowsUIAutomationListener>()>& createAutomationListener)
 {
 	InitDpiAwareness(false);
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
@@ -8626,7 +8626,7 @@ int SetupWindowsGDIRendererInternal(bool hosted, bool raw)
 		GdiWindowsNativeControllerListener nativeListener;
 		nativeController->CallbackService()->InstallListener(&nativeListener);
 		gdiListener = &nativeListener;
-		auto uiaListener = Ptr(new WindowsUIAutomationListener(hosted));
+		auto uiaListener = createAutomationListener ? createAutomationListener() : Ptr(new WindowsUIAutomationListener(hosted));
 		uiaListener->Start(uiaListener);
 		// main
 		RendererMainGDI(hostedController, raw);
@@ -15072,6 +15072,7 @@ namespace vl::presentation::windows
 		if (!metadata && create)
 		{
 			metadata = Ptr(new WindowsUIAutomationMetadata);
+			metadata->control = control;
 			control->SetInternalProperty(key, metadata);
 		}
 		return metadata;
@@ -15079,7 +15080,7 @@ namespace vl::presentation::windows
 
 	void UiaMetadataChanged(GuiControl* control)
 	{
-		if (auto lifetime = control->GetInternalProperty(L"GacUI.Windows.UIAutomation").Cast<WindowsUIAutomationLifetime>(); lifetime && lifetime->node->IsLive())
+		if (auto lifetime = control->GetInternalProperty(L"GacUI.Windows.UIAutomation").Cast<WindowsUIAutomationLifetime>(); lifetime && lifetime->node->IsLive() && !lifetime->node->attachment->Closed())
 		{
 			auto context = lifetime->node->context;
 			for (auto node : context->nodes)
@@ -15095,11 +15096,71 @@ namespace vl::presentation::windows
 		UiaMetadataChanged(control);
 	}
 
+	void UiaDetachLabel(WindowsUIAutomationMetadata* metadata)
+	{
+		if (!metadata->label || metadata->labelDisposed->IsDisposed()) return;
+		auto label = metadata->label;
+		if (auto source = UiaMetadata(label))
+		{
+			source->labeledControls.Remove(metadata->control);
+			if (!source->labeledControls.Count() && source->labelTextChanged)
+			{
+				label->TextChanged.Detach(source->labelTextChanged);
+				source->labelTextChanged = nullptr;
+				source->labelText = WString();
+			}
+		}
+	}
+
+	WindowsUIAutomationMetadata::~WindowsUIAutomationMetadata()
+	{
+		UiaDetachLabel(this);
+	}
+
+	void UiaLabelTextChanged(GuiControl* label, WindowsUIAutomationMetadata* source)
+	{
+		auto oldText = source->labelText;
+		source->labelText = label->GetText();
+		if (source->labelText == oldText) return;
+		auto lifetime = label->GetInternalProperty(L"GacUI.Windows.UIAutomation").Cast<WindowsUIAutomationLifetime>();
+		if (!lifetime || !lifetime->node->IsLive() || lifetime->node->attachment->Closed()) return;
+		auto context = lifetime->node->context;
+		if (!context->subscriptions.properties.Keys().Contains(0) && !context->subscriptions.properties.Keys().Contains(UIA_NamePropertyId)) return;
+		for (auto [control, disposed] : source->labeledControls)
+		{
+			if (disposed->IsDisposed() || UiaMetadata(control)->name || !control->GetRelatedControlHost()) continue;
+			auto node = context->Control(control);
+			if (!node->IsLive() || node->attachment->Closed()) continue;
+			if (!node->properties.Keys().Contains(UIA_NamePropertyId))
+			{
+				auto before = Ptr(new WindowsUIAutomationValue);
+				before->value.vt = VT_BSTR;
+				UiaString(oldText, &before->value.bstrVal);
+				node->properties.Add(UIA_NamePropertyId, before);
+			}
+			context->Notify(node);
+		}
+	}
+
 	void SetWindowsUIAutomationLabel(GuiControl* control, GuiControl* label)
 	{
 		auto metadata = UiaMetadata(control, true);
+		UiaDetachLabel(metadata.Obj());
 		metadata->label = label;
 		metadata->labelDisposed = label ? label->GetDisposedFlag() : nullptr;
+		if (label)
+		{
+			auto source = UiaMetadata(label, true);
+			if (!source->labeledControls.Count())
+			{
+				source->labelText = label->GetText();
+				source->labelTextChanged = label->TextChanged.AttachLambda([label, source = source.Obj()](compositions::GuiGraphicsComposition*, compositions::GuiEventArgs&)
+				{
+					UiaLabelTextChanged(label, source);
+				});
+			}
+			source->labeledControls.Set(control, control->GetDisposedFlag());
+		}
 		UiaMetadataChanged(control);
 	}
 
@@ -15296,8 +15357,21 @@ namespace vl::presentation::windows
 		if (!context->stopped) std::terminate();
 	}
 
+	void WindowsUIAutomationContext::WindowThemeBoundary(GuiWindow* window, bool rebuilding)
+	{
+		// The window owns its marker even when no provider has been requested.
+		window->SetInternalProperty(WString::Unmanaged(WindowsUIAutomationWindowState::RebuildingProperty), rebuilding ? window->GetDisposedFlag() : nullptr);
+		if (auto lifetime = window->GetInternalProperty(L"GacUI.Windows.UIAutomation").Cast<WindowsUIAutomationLifetime>(); lifetime && lifetime->node->context == this)
+		{
+			auto node = lifetime->node;
+			if (rebuilding) BeginRebuild(node);
+			else EndRebuild(node);
+		}
+	}
+
 	void WindowsUIAutomationListener::Start(Ptr<WindowsUIAutomationListener> self)
 	{
+		controls::theme_refresh::themeRefreshObserver = context.Obj();
 		messageHandler = self;
 		GetWindowsNativeController()->CallbackService()->InstallListener(this);
 		if (context->hosted) GetCurrentController()->CallbackService()->InstallListener(this);
@@ -15308,6 +15382,7 @@ namespace vl::presentation::windows
 
 	void WindowsUIAutomationListener::Stop()
 	{
+		controls::theme_refresh::themeRefreshObserver = nullptr;
 		GetWindowsNativeController()->CallbackService()->UninstallListener(this);
 		if (context->hosted) GetCurrentController()->CallbackService()->UninstallListener(this);
 		for (auto native : context->windows.Keys())
@@ -15333,7 +15408,14 @@ namespace vl::presentation::windows
 			form->InstallMessageHandler(messageHandler);
 		}
 		context->windows.Add(native, hwnd);
-		if (context->Subscribed()) context->dispatcher->Queue([state = context]() { if (!state->stopped && state->Subscribed()) state->BindWindows(); });
+		if (context->Subscribed())
+		{
+			// The GuiWindow is registered after native creation. Remember newly
+			// created template windows until BindWindows can see their controls.
+			if (From(context->roots.Values()).Any([](auto root) { return root->attachment->Closed(); }))
+				context->windowsCreatedDuringRebuild.Add(native);
+			context->dispatcher->Queue([state = context]() { if (!state->stopped && state->Subscribed()) state->BindWindows(); });
+		}
 	}
 
 	void WindowsUIAutomationListener::NativeWindowDestroying(INativeWindow* native)
@@ -15342,8 +15424,19 @@ namespace vl::presentation::windows
 		if (index != -1)
 		{
 			auto root = context->roots.Values()[index];
-			context->RetireSubtree(root->control->GetBoundsComposition());
+			bool subscribed = context->Subscribed();
+			auto previous = std::move(context->nodes);
+			for (auto node : previous)
+			{
+				if (node->attachment == root->attachment)
+				{
+					node->Retire();
+					node->context = nullptr;
+				}
+				else context->nodes.Add(node);
+			}
 			context->roots.Remove(native);
+			if (subscribed && !context->Subscribed()) context->Collect();
 		}
 		if (auto form = dynamic_cast<IWindowsForm*>(native))
 		{
@@ -15351,7 +15444,7 @@ namespace vl::presentation::windows
 			UiaReturnRawElementProvider(form->GetWindowHandle(), 0, 0, nullptr);
 		}
 		context->windows.Remove(native);
-		context->Collect();
+		context->windowsCreatedDuringRebuild.Remove(native);
 	}
 
 	void WindowsUIAutomationListener::BeforeHandle(HWND, UINT, WPARAM, LPARAM, bool&)
@@ -15518,7 +15611,7 @@ namespace vl::presentation::windows
 		{
 			auto parent = node->owner ? node->owner : node->Parent();
 			if (node->owner) if (auto combo = UiaCombo(node.Obj())) parent = node->context->Control(combo);
-			if (parent) { parent->Provider()->QueryInterface(IID_PPV_ARGS(result)); }
+			if (parent && parent->Available()) parent->Provider()->QueryInterface(IID_PPV_ARGS(result));
 			return S_OK;
 		}, UIA_SelectionItemPatternId);
 	}
@@ -15758,6 +15851,7 @@ namespace vl::presentation::windows
 
 	void UiaSelectedChildren(Ptr<WindowsUIAutomationNode> node, List<Ptr<WindowsUIAutomationNode>>& selected)
 	{
+		if (!node->Available()) return;
 		if (node->kind == Kind::Control)
 		{
 			if (auto grid = dynamic_cast<GuiVirtualDataGrid*>(node->control); UiaDataGrid(node->control))
@@ -15782,6 +15876,7 @@ namespace vl::presentation::windows
 		}
 		for (auto child : node->Children())
 		{
+			if (!child->Available()) continue;
 			if (child->Supports(UIA_SelectionItemPatternId) && child->IsSelected()) selected.Add(child);
 			if (child->kind == Kind::TreeNode || child->kind == Kind::Item && UiaDataGrid(child->control)) UiaSelectedChildren(child, selected);
 		}
@@ -16130,7 +16225,7 @@ namespace vl::presentation::windows
 				if (auto context = target->context; context && !context->stopped)
 				{
 					context->RemoveSubscriptions(removed);
-					context->Collect();
+					if (!context->Subscribed() || target->retired) context->Collect();
 				}
 			});
 			delete this;
@@ -16171,6 +16266,7 @@ namespace vl::presentation::windows
 				if (!subscriptions->events.Keys().Contains(eventId)) return E_INVALIDARG;
 				for (auto property : properties) if (!subscriptions->properties.Keys().Contains(property)) return E_INVALIDARG;
 			}
+			bool firstSubscription = !node->context->Subscribed();
 			auto change = adding ? 1 : -1;
 			UiaChangeSubscription(subscriptions->events, eventId, change);
 			UiaChangeSubscription(node->context->subscriptions.events, eventId, change);
@@ -16179,7 +16275,7 @@ namespace vl::presentation::windows
 				UiaChangeSubscription(subscriptions->properties, property, change);
 				UiaChangeSubscription(node->context->subscriptions.properties, property, change);
 			}
-			node->context->RefreshObservation();
+			node->context->RefreshObservation(firstSubscription);
 			return S_OK;
 		});
 	}
@@ -16205,7 +16301,8 @@ namespace vl::presentation::windows
 	{
 		return node->dispatcher->Run([&]() -> HRESULT
 		{
-			if (!node->IsLive()) return UIA_E_ELEMENTNOTAVAILABLE;
+			if (!node->Available()) return UIA_E_ELEMENTNOTAVAILABLE;
+			node->context->Observe(node);
 			if (pattern && !node->Supports(pattern)) return UIA_E_NOTSUPPORTED;
 			if (enabled && (!node->control->GetVisuallyEnabled() || !node->Window()->GetNativeWindow()->IsEnabled())) return UIA_E_ELEMENTNOTENABLED;
 			return action();
@@ -16215,8 +16312,9 @@ namespace vl::presentation::windows
 	{
 		return Read([&]() -> HRESULT
 		{
-			node->dispatcher->Queue([target = node, action, pattern]()
+			node->dispatcher->Queue([target = node, generation = node->attachment->generation, action, pattern]()
 			{
+				if (target->attachment->generation != generation || target->attachment->Closed()) return;
 				if (target->IsLive() && target->Supports(pattern) && target->control->GetVisuallyEnabled() && target->Window()->GetNativeWindow()->IsEnabled()) action();
 			});
 			return S_OK;
@@ -16263,7 +16361,7 @@ namespace vl::presentation::windows
 			if (kind == Kind::Control) if (auto metadata = UiaMetadata(control); metadata && metadata->label && !metadata->labelDisposed->IsDisposed())
 			{
 				auto label = context->Control(metadata->label);
-				if (label->IsLive()) { result->vt = VT_UNKNOWN; label->Provider()->QueryInterface(IID_PPV_ARGS(&result->punkVal)); }
+				if (label->Available()) { result->vt = VT_UNKNOWN; label->Provider()->QueryInterface(IID_PPV_ARGS(&result->punkVal)); }
 			}
 			break;
 		case UIA_HelpTextPropertyId: if (kind == Kind::Control) string(UiaLocalizedText(control, L"HelpText", UiaTooltipText(control->GetTooltipControl()))); break;
@@ -16461,7 +16559,7 @@ namespace vl::presentation::windows
 				}
 			}
 			else return E_INVALIDARG;
-			return target && target->IsLive() ? target->Provider()->QueryInterface(IID_PPV_ARGS(result)) : S_OK;
+			return target && target->Available() ? target->Provider()->QueryInterface(IID_PPV_ARGS(result)) : S_OK;
 		});
 	}
 	HRESULT WindowsUIAutomationProvider::GetRuntimeId(SAFEARRAY** result)
@@ -16513,6 +16611,7 @@ namespace vl::presentation::windows
 	}
 	Ptr<WindowsUIAutomationNode> UiaHitTest(Ptr<WindowsUIAutomationNode> node, double x, double y)
 	{
+		if (!node->Available()) return nullptr;
 		auto bounds = node->Bounds();
 		bool contains = x >= bounds.left && y >= bounds.top && x < bounds.left + bounds.width && y < bounds.top + bounds.height;
 		// A tab's logical page owns its body despite the header's disjoint bounds.
@@ -16534,6 +16633,12 @@ namespace vl::presentation::windows
 		return Read([&]() -> HRESULT
 		{
 			auto root = node;
+			if (node->attachment->Closed())
+			{
+				node->attachment->observedEmpty = true;
+				auto hit = UiaHitTest(node, x, y);
+				return hit ? hit->Provider()->QueryInterface(IID_PPV_ARGS(result)) : S_OK;
+			}
 			if (node->context->hosted)
 			{
 				auto origin = GetHostedApplication()->GetNativeWindowHost()->GetClientBoundsInScreen().LeftTop();
@@ -16547,6 +16652,12 @@ namespace vl::presentation::windows
 	}
 	Ptr<WindowsUIAutomationNode> UiaFindFocus(Ptr<WindowsUIAutomationNode> node)
 	{
+		if (!node->Available()) return nullptr;
+		if (node->attachment->Closed())
+		{
+			node->attachment->observedEmpty = true;
+			return nullptr;
+		}
 		for (auto child : node->Children()) if (auto focused = UiaFindFocus(child)) return focused;
 		if (node->IsFocused()) return node;
 		return nullptr;
@@ -16610,8 +16721,46 @@ namespace vl::presentation::windows
 		}
 		return group;
 	}
+	GuiWindow* UiaParentWindow(GuiWindow* window)
+	{
+		auto app = GetApplication();
+		if (!app || window == app->GetMainWindow()) return nullptr;
+		auto menu = dynamic_cast<GuiMenu*>(window);
+		if (window->GetOpening())
+		{
+			// An open popup keeps its parent even while the opener is detached.
+			if ((menu || dynamic_cast<GuiTooltip*>(window)) && window->GetNativeWindow())
+				if (auto native = window->GetNativeWindow()->GetParent())
+					if (auto parent = app->GetWindowFromNative(native)) return parent;
+			if (GetHostedApplication()) return app->GetMainWindow();
+		}
+		// The opener also installs the inherited template of its closed menu.
+		// It has no native parent yet and is absent from fragment navigation.
+		if (menu)
+			if (auto owner = menu->GetOwnerControl())
+				if (auto parent = dynamic_cast<GuiWindow*>(owner->GetRelatedControlHost()); parent != window) return parent;
+		return nullptr;
+	}
+
+	GuiWindow* UiaRebuildingWindow(GuiWindow* window)
+	{
+		GuiWindow* rebuilding = nullptr;
+		auto remaining = GetApplication() ? GetApplication()->GetWindows().Count() + 1 : 1;
+		for (; window && remaining-- > 0; window = UiaParentWindow(window))
+			if (window->GetInternalProperty(WString::Unmanaged(WindowsUIAutomationWindowState::RebuildingProperty))) rebuilding = window;
+		return rebuilding;
+	}
+
 	void UiaCollectControls(GuiControl* control, List<GuiControl*>& result)
 	{
+		if (auto window = dynamic_cast<GuiWindow*>(control))
+		{
+			if (auto closed = UiaRebuildingWindow(window))
+			{
+				if (closed == window) result.Add(control);
+				return;
+			}
+		}
 		result.Add(control);
 		for (vint i = 0; i < control->GetChildrenCount(); i++) UiaCollectControls(control->GetChild(i), result);
 	}
@@ -16703,9 +16852,40 @@ namespace vl::presentation::windows
 			: GridPos(node->row / size.x, node->row % size.x);
 	}
 
+	bool WindowsUIAutomationWindowState::Closed() const
+	{
+		return ClosedWindow() != nullptr;
+	}
+
+	GuiWindow* WindowsUIAutomationWindowState::ClosedWindow() const
+	{
+		if (disposed->IsDisposed()) return nullptr;
+		if (suspendedBy && !suspendedBy->disposed->IsDisposed() && suspendedBy->rebuilding) return suspendedBy->window;
+		return UiaRebuildingWindow(window);
+	}
+
+	bool WindowsUIAutomationNode::Available()
+	{
+		if (context && attachment)
+		{
+			if (auto closed = attachment->ClosedWindow(); closed && closed != control)
+			{
+				context->Control(closed)->attachment->observedEmpty = true;
+				return false;
+			}
+		}
+		return IsLive();
+	}
+
 	bool WindowsUIAutomationNode::IsLive()
 	{
 		if (retired || !context || context->stopped || disposed->IsDisposed()) return false;
+		if (!attachment || attachment->disposed->IsDisposed()) return false;
+		auto window = Window();
+		// A logical control may be detached from its old template before it is
+		// inserted into the new template in the same window.
+		if (attachment->Closed()) return !window || window == attachment->window;
+		if (window != attachment->window || !GetApplication() || !GetApplication()->GetWindows().Contains(window)) return false;
 		for (auto parent = control->GetParent(); parent; parent = parent->GetParent())
 			if (auto text = dynamic_cast<GuiSinglelineTextBox*>(parent); text && text->GetPasswordChar()) return false;
 		if (owner && !owner->IsLive()) return false;
@@ -16714,8 +16894,6 @@ namespace vl::presentation::windows
 			vint begin, end;
 			if (!UiaDocumentObjectRange(this, begin, end)) return false;
 		}
-		auto window = Window();
-		if (!window || !GetApplication() || !GetApplication()->GetWindows().Contains(window)) return false;
 		if (kind == Kind::Cell || kind == Kind::Header || kind == Kind::HeaderItem)
 		{
 			if (!UiaListView(control)) return false;
@@ -16813,6 +16991,13 @@ namespace vl::presentation::windows
 
 	UiaRect WindowsUIAutomationNode::Bounds()
 	{
+		if (attachment && control == attachment->window && attachment->Closed())
+		{
+			if (!attachment->window->GetOpening()) return {};
+			auto origin = ScreenOrigin();
+			auto size = attachment->window->GetNativeWindow()->GetClientSize();
+			return { (double)origin.x.value, (double)origin.y.value, (double)size.x.value, (double)size.y.value };
+		}
 		if (kind == Kind::RadioGroup)
 		{
 			UiaRect result = {};
@@ -17113,6 +17298,11 @@ namespace vl::presentation::windows
 	List<Ptr<WindowsUIAutomationNode>> WindowsUIAutomationNode::Children()
 	{
 		List<Ptr<WindowsUIAutomationNode>> result;
+		if (auto closed = attachment ? attachment->ClosedWindow() : nullptr)
+		{
+			context->Control(closed)->attachment->observedEmpty = true;
+			return result;
+		}
 		auto self = context->nodes[context->nodes.IndexOf(this)];
 		if (kind == Kind::RadioGroup)
 		{
@@ -17192,7 +17382,13 @@ namespace vl::presentation::windows
 			}
 			if (IsRoot() && context->hosted)
 			{
-				for (auto window : GetApplication()->GetWindows()) if (window != control && window->GetOpening() && !UiaPopupOwner(context->Control(window).Obj())) result.Add(context->Control(window));
+				for (auto window : GetApplication()->GetWindows())
+				{
+					if (window == control || !window->GetOpening()) continue;
+					auto child = context->Control(window);
+					if (auto closed = child->attachment->ClosedWindow(); closed && closed != window) continue;
+					if (!UiaPopupOwner(child.Obj())) result.Add(child);
+				}
 			}
 			if (auto menu = dynamic_cast<GuiMenuButton*>(control); menu && menu->GetSubMenuOpening()) result.Add(context->Control(menu->GetSubMenu()));
 			if (auto gallery = dynamic_cast<GuiBindableRibbonGalleryList*>(control); gallery && gallery->GetSubMenu()->GetOpening()) result.Add(context->Control(gallery->GetSubMenu()));
@@ -17341,34 +17537,6 @@ namespace vl::presentation::windows
 	using namespace compositions;
 	using Kind = WindowsUIAutomationNodeKind;
 
-	struct WindowsUIAutomationBoundsState : Object
-	{
-		bool disposed = false;
-	};
-
-	struct WindowsUIAutomationBoundsLifetime : Object
-	{
-		Ptr<WindowsUIAutomationBoundsState> disposed;
-		WindowsUIAutomationBoundsLifetime(Ptr<WindowsUIAutomationBoundsState> value) : disposed(value) {}
-		~WindowsUIAutomationBoundsLifetime() { disposed->disposed = true; }
-	};
-
-	struct WindowsUIAutomationBounds : Object
-	{
-		GuiGraphicsComposition* composition;
-		Ptr<WindowsUIAutomationBoundsState> disposed = Ptr(new WindowsUIAutomationBoundsState);
-		Ptr<IGuiGraphicsEventHandler> handler;
-		void Detach()
-		{
-			if (!disposed->disposed)
-			{
-				composition->CachedBoundsChanged.Detach(handler);
-				composition->SetInternalProperty(L"GacUI.Windows.UIAutomation.Bounds", nullptr);
-			}
-			handler = nullptr;
-		}
-	};
-
 	EVENTID UiaWindowEvent(GuiControl* control, bool opening)
 	{
 		if (dynamic_cast<GuiTooltip*>(control)) return opening ? UIA_ToolTipOpenedEventId : UIA_ToolTipClosedEventId;
@@ -17394,8 +17562,7 @@ namespace vl::presentation::windows
 		}
 		roots.Clear();
 		windows.Clear();
-		for (auto hook : boundsHooks) hook->Detach();
-		boundsHooks.Clear();
+		windowsCreatedDuringRebuild.Clear();
 		subscriptions.events.Clear();
 		subscriptions.properties.Clear();
 		openMenus.Clear();
@@ -17412,10 +17579,12 @@ namespace vl::presentation::windows
 			auto native = window->GetNativeWindow();
 			if (!windows.Keys().Contains(native) || roots.Keys().Contains(native)) continue;
 			auto root = Control(window);
+			if (windowsCreatedDuringRebuild.Contains(native)) root->attachment->lazyDiscovery = true;
 			roots.Add(native, root);
 			if (Subscribed())
 			{
-				Scan(window->GetBoundsComposition());
+				Observe(root);
+				if (!root->attachment->Closed() && !root->attachment->lazyDiscovery) Scan(window->GetBoundsComposition());
 				if (window->GetOpening()) WindowEvent(root, true);
 			}
 		}
@@ -17428,7 +17597,100 @@ namespace vl::presentation::windows
 
 	void WindowsUIAutomationContext::Raise(Ptr<WindowsUIAutomationNode> node, EVENTID eventId)
 	{
-		if (Subscribed(eventId) && node->IsLive()) UiaRaiseAutomationEvent(node->Provider().Obj(), eventId);
+		if (Subscribed(eventId) && node->IsLive() && !node->attachment->Closed()) UiaRaiseAutomationEvent(node->Provider().Obj(), eventId);
+	}
+
+	void WindowsUIAutomationContext::RaiseChildrenInvalidated(Ptr<WindowsUIAutomationNode> node)
+	{
+		UiaRaiseStructureChangedEvent(node->Provider().Obj(), StructureChangeType_ChildrenInvalidated, nullptr, 0);
+	}
+
+	void WindowsUIAutomationContext::RaisePropertyChanged(Ptr<WindowsUIAutomationNode> node, PROPERTYID property, VARIANT oldValue, VARIANT newValue)
+	{
+		UiaRaiseAutomationPropertyChangedEvent(node->Provider().Obj(), property, oldValue, newValue);
+	}
+
+	void WindowsUIAutomationContext::ControlThemeRebuilt(GuiControl* control)
+	{
+		if (!Subscribed()) return;
+		if (auto window = dynamic_cast<GuiWindow*>(control->GetRelatedControlHost()))
+		{
+			auto lifetime = window->GetInternalProperty(L"GacUI.Windows.UIAutomation").Cast<WindowsUIAutomationLifetime>();
+			if (lifetime && lifetime->node->context == this && lifetime->node->attachment->Closed()) Control(control);
+		}
+	}
+
+	void WindowsUIAutomationContext::BeginRebuild(Ptr<WindowsUIAutomationNode> root)
+	{
+		auto state = root->attachment;
+		if (state->rebuilding || state->ClosedWindow() != state->window) return;
+		state->rebuilding = true;
+		for (auto candidate : nodes)
+		{
+			auto attachment = candidate->attachment;
+			if (!attachment || candidate->control != attachment->window || candidate->kind != Kind::Control || candidate->retired) continue;
+			if (attachment->ClosedWindow() != state->window) continue;
+			if (attachment != state) attachment->suspendedBy = state;
+			attachment->lazyDiscovery = true;
+			attachment->generation++;
+		}
+		for (auto node : nodes)
+		{
+			if (!node->attachment || (node->attachment != state && node->attachment->suspendedBy != state)) continue;
+			node->properties.Clear();
+			node->selection.Clear();
+			node->pendingEvents.Clear();
+			node->notificationPending = false;
+			node->structurePending = false;
+			if (node->control != node->attachment->window && node->kind == Kind::Control && !node->retired && !node->disposed->IsDisposed())
+			{
+				auto lifetime = node->control->GetInternalProperty(L"GacUI.Windows.UIAutomation").Cast<WindowsUIAutomationLifetime>();
+				if (lifetime) lifetime->DetachHandlers();
+			}
+		}
+		// Closed menus can acquire new templates along with their openers.
+		// Raise a transition only for an exposed or independently retained root.
+		if (Subscribed(UIA_StructureChangedEventId) && (state->window->GetOpening() || root->ExistingProvider()))
+			RaiseChildrenInvalidated(root);
+	}
+
+	void WindowsUIAutomationContext::EndRebuild(Ptr<WindowsUIAutomationNode> root)
+	{
+		auto state = root->attachment;
+		if (!state->rebuilding) return;
+		state->rebuilding = false;
+		auto previous = std::move(nodes);
+		for (auto node : previous)
+		{
+			auto attachment = node->attachment;
+			bool affected = attachment && (attachment == state || attachment->suspendedBy == state);
+			if (affected && (node->retired || node->disposed->IsDisposed() || node->Window() != attachment->window))
+			{
+				node->Retire();
+				node->context = nullptr;
+			}
+			else nodes.Add(node);
+		}
+		// Reattach ordinary control events and take their baseline from the
+		// finished templates, including controls visited during the refresh.
+		if (Subscribed()) for (auto node : previous)
+		{
+			if (!node->attachment || node->attachment != state && node->attachment->suspendedBy != state || !node->IsLive()) continue;
+			if (node->kind == Kind::Control && node->control != node->attachment->window)
+			{
+				Observe(node);
+			}
+			else
+			{
+				UpdateProperties(node, false);
+				UpdateSelection(node, false);
+			}
+		}
+		for (auto node : nodes)
+			if (node->attachment && node->attachment->suspendedBy == state) node->attachment->suspendedBy = nullptr;
+		auto observed = state->observedEmpty;
+		state->observedEmpty = false;
+		if (observed && Subscribed(UIA_StructureChangedEventId)) RaiseChildrenInvalidated(root);
 	}
 
 	void WindowsUIAutomationContext::RemoveSubscriptions(Ptr<WindowsUIAutomationSubscriptions> value)
@@ -17446,30 +17708,23 @@ namespace vl::presentation::windows
 	void WindowsUIAutomationContext::Scan(GuiGraphicsComposition* composition)
 	{
 		if (!Subscribed()) return;
-		auto key = WString::Unmanaged(L"GacUI.Windows.UIAutomation.Bounds");
-		if (auto window = composition->GetRelatedControlHost(); window && !composition->GetInternalProperty(key))
-		{
-			auto hook = Ptr(new WindowsUIAutomationBounds);
-			hook->composition = composition;
-			composition->SetInternalProperty(key, Ptr(new WindowsUIAutomationBoundsLifetime(hook->disposed)));
-			hook->handler = composition->CachedBoundsChanged.AttachLambda([anchor = Control(window)](GuiGraphicsComposition* sender, GuiEventArgs&)
-			{
-				if (anchor->context)
-					if (auto window = sender->GetRelatedControlHost()) anchor->context->Notify(anchor->context->Control(window));
-			});
-			boundsHooks.Add(hook);
-		}
 		if (auto control = composition->GetAssociatedControl()) Observe(Control(control));
 		for (auto child : composition->Children()) Scan(child);
 	}
 
-	void WindowsUIAutomationContext::RefreshObservation()
+	void WindowsUIAutomationContext::RefreshObservation(bool firstSubscription)
 	{
 		if (stopped) return;
 		if (Subscribed())
 		{
 			BindWindows();
-			for (auto window : GetApplication()->GetWindows()) Scan(window->GetBoundsComposition());
+			for (auto window : GetApplication()->GetWindows())
+			{
+				auto root = Control(window);
+				Observe(root);
+				if (!root->attachment->Closed() && (firstSubscription || !root->attachment->lazyDiscovery) && !windowsCreatedDuringRebuild.Contains(window->GetNativeWindow()))
+					Scan(window->GetBoundsComposition());
+			}
 			// Selection discovery can append logical nodes. Index traversal includes
 			// those nodes without invalidating an enumerator.
 			for (vint i = 0; i < nodes.Count(); i++)
@@ -17486,22 +17741,18 @@ namespace vl::presentation::windows
 		if (stopped) return;
 		if (!Subscribed())
 		{
-			for (auto hook : boundsHooks) hook->Detach();
-			boundsHooks.Clear();
 			openMenus.Clear();
 			menuModeOwner = nullptr;
 		}
-		else
-		{
-			for (vint i = boundsHooks.Count() - 1; i >= 0; i--)
-				if (boundsHooks[i]->disposed->disposed) boundsHooks.RemoveAt(i);
-		}
 		SortedList<GuiControl*> required;
-		for (auto node : nodes)
+		if (!Subscribed()) for (auto node : nodes)
 		{
 			if (!node->IsLive() || !node->ExistingProvider()) continue;
+			// Retaining a submenu command also retains the rebuild observers of
+			// its exposed ancestors, even after their COM providers are released.
+			for (auto window = node->attachment->window; window && !required.Contains(window); window = UiaParentWindow(window))
+				required.Add(window);
 			if (!required.Contains(node->control)) required.Add(node->control);
-			if (auto window = node->Window(); !required.Contains(window)) required.Add(window);
 		}
 		for (vint i = nodes.Count() - 1; i >= 0; i--)
 		{
@@ -17525,14 +17776,6 @@ namespace vl::presentation::windows
 	{
 		// Removal is delivered while the detached subtree is still valid. Never
 		// retain the event's raw child pointer for the deferred notification.
-		for (vint i = boundsHooks.Count() - 1; i >= 0; i--)
-		{
-			if (boundsHooks[i]->composition == composition)
-			{
-				boundsHooks[i]->Detach();
-				boundsHooks.RemoveAt(i);
-			}
-		}
 		if (auto control = composition->GetAssociatedControl())
 		{
 			for (auto node : nodes) if (node->control == control) node->Retire();
@@ -17543,6 +17786,10 @@ namespace vl::presentation::windows
 	void WindowsUIAutomationContext::WindowEvent(Ptr<WindowsUIAutomationNode> node, bool opening)
 	{
 		if (!Subscribed()) return;
+		// A popup created with an owner's new template may stay hidden forever.
+		// Discover its event sources when the popup first opens to clients.
+		if (opening && !node->attachment->Closed() && windowsCreatedDuringRebuild.Remove(node->attachment->window->GetNativeWindow()))
+			Scan(node->control->GetBoundsComposition());
 		if (!dynamic_cast<GuiMenu*>(node->control))
 		{
 			// Hosted ShowModalAndDelete can retire the provider before a queued callback.
@@ -17577,13 +17824,35 @@ namespace vl::presentation::windows
 	Ptr<WindowsUIAutomationNode> WindowsUIAutomationContext::Control(GuiControl* control)
 	{
 		auto key = WString::Unmanaged(L"GacUI.Windows.UIAutomation");
-		if (auto lifetime = control->GetInternalProperty(key).Cast<WindowsUIAutomationLifetime>(); lifetime && !lifetime->node->retired) return lifetime->node;
+		auto window = dynamic_cast<GuiWindow*>(control->GetRelatedControlHost());
+		if (auto lifetime = control->GetInternalProperty(key).Cast<WindowsUIAutomationLifetime>(); lifetime && !lifetime->node->retired)
+		{
+			auto old = lifetime->node;
+			if (old->attachment && !old->attachment->disposed->IsDisposed())
+			{
+				if (window == old->attachment->window || !window && old->attachment->Closed()) return old;
+			}
+			else if (!old->attachment && !window) return old;
+			old->Retire();
+		}
 		auto node = Ptr(new WindowsUIAutomationNode);
 		node->context = this;
 		node->dispatcher = dispatcher;
 		node->disposed = control->GetDisposedFlag();
 		node->control = control;
 		node->id = nextId++;
+		if (window == control)
+		{
+			node->attachment = Ptr(new WindowsUIAutomationWindowState);
+			node->attachment->window = window;
+			node->attachment->disposed = node->disposed;
+			if (auto closed = node->attachment->ClosedWindow(); closed && closed != window)
+			{
+				node->attachment->suspendedBy = Control(closed)->attachment;
+				node->attachment->lazyDiscovery = true;
+			}
+		}
+		else if (window) node->attachment = Control(window)->attachment;
 		nodes.Add(node);
 		auto lifetime = Ptr(new WindowsUIAutomationLifetime);
 		lifetime->node = node;
@@ -17594,12 +17863,14 @@ namespace vl::presentation::windows
 	void WindowsUIAutomationContext::Observe(Ptr<WindowsUIAutomationNode> node)
 	{
 		if (!node->IsLive()) return;
+		if (node->attachment->Closed() && node->attachment->window != node->control) return;
 		if (node->kind != Kind::Control) { Observe(node->owner); return; }
 		auto control = node->control;
 		auto lifetime = control->GetInternalProperty(L"GacUI.Windows.UIAutomation").Cast<WindowsUIAutomationLifetime>();
 		if (lifetime->attached) return;
 		lifetime->attached = true;
 		if (auto window = node->Window(); window != control) Observe(Control(window));
+		else if (auto parent = UiaParentWindow(window)) Observe(Control(parent));
 		auto changed = [node](GuiGraphicsComposition*, GuiEventArgs&)
 		{
 			if (node->IsLive()) node->context->Notify(node);
@@ -17616,10 +17887,6 @@ namespace vl::presentation::windows
 			if (!node->IsLive()) return;
 			auto document = UiaDocument(node->control);
 			node->context->Notify(node, document != nullptr, document ? UIA_Text_TextChangedEventId : 0);
-			for (auto target : node->context->nodes)
-				if (target->kind == Kind::Control && target->IsLive())
-					if (auto metadata = UiaMetadata(target->control); metadata && metadata->label == node->control)
-						node->context->Notify(target);
 		});
 		lifetime->Attach(control, control->VisibleChanged, structure);
 		lifetime->Attach(control, control->VisuallyEnabledChanged, changed);
@@ -17644,15 +17911,22 @@ namespace vl::presentation::windows
 		});
 		if (auto window = dynamic_cast<GuiWindow*>(control))
 		{
+			if (node->attachment->ClosedWindow() == window) BeginRebuild(node);
+			lifetime->Attach(window, window->GetGraphicsHost()->CompositionCachedBoundsChanged, [node](GuiGraphicsComposition*, GuiEventArgs&)
+			{
+				if (node->context) node->context->Notify(node);
+			});
 			lifetime->Attach(window, window->BoundsChanged, [node](GuiGraphicsComposition*, GuiEventArgs&)
 			{
-				if (!node->IsLive()) return;
+				if (!node->IsLive() || node->attachment->Closed()) return;
 				for (auto child : node->context->nodes)
 					if (child->IsLive() && child->Window() == node->control) node->context->Notify(child);
 			});
 			auto windowChanged = [node](bool opening)
 			{
 				if (!node->IsLive()) return;
+				if (opening)
+					if (auto parent = UiaParentWindow(node->attachment->window)) node->context->Observe(node->context->Control(parent));
 				node->context->WindowEvent(node, opening);
 				if (node->context->hosted && node->control != GetApplication()->GetMainWindow())
 					node->context->Notify(node->context->Control(GetApplication()->GetMainWindow()), true);
@@ -17661,11 +17935,14 @@ namespace vl::presentation::windows
 			lifetime->Attach(window, window->WindowClosed, [windowChanged](GuiGraphicsComposition*, GuiEventArgs&) { windowChanged(false); });
 			lifetime->Attach(window, window->ChildCompositionUpdated, [node](GuiGraphicsComposition*, GuiCompositionUpdateEventArgs& arguments)
 			{
-				if (!node->IsLive()) return;
+				if (node->attachment->Closed() || !node->IsLive()) return;
 				if (arguments.updateType == CompositionUpdateType::Removed)
 				{
 					node->context->RetireSubtree(arguments.child);
-					node->dispatcher->Queue([node]() { if (node->context) node->context->Collect(); });
+					node->dispatcher->Queue([node, generation = node->attachment->generation]()
+					{
+						if (node->context && node->attachment->generation == generation && !node->attachment->Closed()) node->context->Collect();
+					});
 				}
 				else if (arguments.updateType == CompositionUpdateType::Inserted)
 				{
@@ -17715,29 +17992,36 @@ namespace vl::presentation::windows
 		if (auto tab = dynamic_cast<GuiTab*>(control)) lifetime->Attach(tab, tab->SelectedPageChanged, structure);
 		if (auto scroll = dynamic_cast<GuiScroll*>(control))
 		{
-			auto scrollChanged = [node, changed](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+			Ptr<WindowsUIAutomationNode> scrollView;
+			for (auto parent = control->GetParent(); parent; parent = parent->GetParent())
+			{
+				if (auto view = dynamic_cast<GuiScrollView*>(parent))
+				{
+					scrollView = Control(view);
+					if (node->attachment->lazyDiscovery) Observe(scrollView);
+					break;
+				}
+			}
+			auto scrollChanged = [changed, scrollView](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 			{
 				changed(sender, arguments);
-				if (!node->IsLive()) return;
-				for (auto parent = node->control->GetParent(); parent; parent = parent->GetParent())
-				{
-					if (auto view = dynamic_cast<GuiScrollView*>(parent))
-					{
-						node->context->Notify(node->context->Control(view));
-						break;
-					}
-				}
+				if (scrollView && scrollView->IsLive()) scrollView->context->Notify(scrollView);
 			};
 			lifetime->Attach(scroll, scroll->PositionChanged, scrollChanged);
 			lifetime->Attach(scroll, scroll->TotalSizeChanged, scrollChanged);
 			lifetime->Attach(scroll, scroll->PageSizeChanged, scrollChanged);
+			lifetime->Attach(scroll, scroll->SmallMoveChanged, scrollChanged);
+			lifetime->Attach(scroll, scroll->BigMoveChanged, scrollChanged);
 			lifetime->Attach(scroll, scroll->EnabledChanged, scrollChanged);
 		}
 		if (auto list = dynamic_cast<GuiListControl*>(control))
 		{
-			list->GetItemProvider()->AttachCallback(lifetime.Obj());
-			lifetime->columns = dynamic_cast<list::IColumnItemView*>(list->GetItemProvider()->RequestView(WString::Unmanaged(list::IColumnItemView::Identifier)));
-			if (lifetime->columns) lifetime->columns->AttachCallback(lifetime.Obj());
+			if (!lifetime->items)
+			{
+				list->GetItemProvider()->AttachCallback(lifetime.Obj());
+				lifetime->columns = dynamic_cast<list::IColumnItemView*>(list->GetItemProvider()->RequestView(WString::Unmanaged(list::IColumnItemView::Identifier)));
+				if (lifetime->columns) lifetime->columns->AttachCallback(lifetime.Obj());
+			}
 			lifetime->Attach(list, list->ItemTemplateChanged, structure);
 			lifetime->Attach(list, list->ArrangerChanged, structure);
 		}
@@ -17748,7 +18032,7 @@ namespace vl::presentation::windows
 				if (node->IsLive()) node->context->Notify(node, false, UIA_Selection_InvalidatedEventId);
 			});
 		}
-		if (auto tree = dynamic_cast<GuiVirtualTreeListControl*>(control))
+		if (auto tree = dynamic_cast<GuiVirtualTreeListControl*>(control); tree && !lifetime->tree)
 		{
 			// NodeRootProviderBase does not send OnAttached(nullptr) when destroyed.
 			// Retain the model until this hook has detached on the UI thread.
@@ -17805,6 +18089,7 @@ namespace vl::presentation::windows
 		node->disposed = owner->disposed;
 		node->control = owner->control;
 		node->owner = owner;
+		node->attachment = owner->attachment;
 		node->kind = kind;
 		node->row = row;
 		node->column = column;
@@ -17818,14 +18103,15 @@ namespace vl::presentation::windows
 
 	void WindowsUIAutomationContext::Notify(Ptr<WindowsUIAutomationNode> node, bool structure, EVENTID eventId)
 	{
-		if (!Subscribed()) return;
+		if (!Subscribed() || !node->attachment || node->attachment->Closed()) return;
 		node->structurePending |= structure;
 		if (eventId && Subscribed(eventId) && !node->pendingEvents.Contains(eventId)) node->pendingEvents.Add(eventId);
 		if (node->notificationPending) return;
 		node->notificationPending = true;
 		// Post rather than raising inside synchronous provider calls or model callbacks.
-		dispatcher->Queue([node]()
+		dispatcher->Queue([node, generation = node->attachment->generation]()
 		{
+			if (generation != node->attachment->generation || node->attachment->Closed()) return;
 			node->notificationPending = false;
 			auto structure = node->structurePending;
 			node->structurePending = false;
@@ -17836,24 +18122,49 @@ namespace vl::presentation::windows
 			auto context = node->context;
 			// Construction and model callbacks can report intermediate compositions.
 			// Rescan the final live tree without retaining notification pointers.
-			if (structure) context->Scan(node->control->GetBoundsComposition());
+			if (structure && !node->attachment->lazyDiscovery) context->Scan(node->control->GetBoundsComposition());
 			context->UpdateProperties(node, true);
 			context->UpdateSelection(node, true);
 			for (vint i = 0; i < context->nodes.Count(); i++)
 			{
 				auto child = context->nodes[i];
-				if (child != node && child->IsLive() && (child->owner == node || dynamic_cast<GuiWindow*>(node->control) && child->Window() == node->control || structure && node->IsRoot())) context->UpdateProperties(child, true);
+				if (child != node && child->attachment == node->attachment && child->IsLive() && (child->owner == node || dynamic_cast<GuiWindow*>(node->control) || structure && node->IsRoot())) context->UpdateProperties(child, true);
 			}
-			if (structure && context->Subscribed(UIA_StructureChangedEventId)) UiaRaiseStructureChangedEvent(node->Provider().Obj(), StructureChangeType_ChildrenInvalidated, nullptr, 0);
+			if (structure && context->Subscribed(UIA_StructureChangedEventId)) context->RaiseChildrenInvalidated(node);
 			for (auto eventId : events) context->Raise(node, eventId);
 		});
 	}
 
 	void WindowsUIAutomationContext::UpdateSelection(Ptr<WindowsUIAutomationNode> node, bool raiseEvents)
 	{
-		if (!(Subscribed(UIA_SelectionItem_ElementSelectedEventId) || Subscribed(UIA_SelectionItem_ElementAddedToSelectionEventId) || Subscribed(UIA_SelectionItem_ElementRemovedFromSelectionEventId)) || !node->IsLive() || !node->Supports(UIA_SelectionPatternId) || dynamic_cast<GuiComboBoxListControl*>(node->control)) return;
+		if (!node->attachment || node->attachment->Closed()) return;
+		bool selectionProperty = node->attachment->lazyDiscovery && (subscriptions.properties.Keys().Contains(0) || subscriptions.properties.Keys().Contains(UIA_SelectionItemIsSelectedPropertyId));
+		if (!(selectionProperty || Subscribed(UIA_SelectionItem_ElementSelectedEventId) || Subscribed(UIA_SelectionItem_ElementAddedToSelectionEventId) || Subscribed(UIA_SelectionItem_ElementRemovedFromSelectionEventId)) || !node->IsLive() || !node->Supports(UIA_SelectionPatternId) || dynamic_cast<GuiComboBoxListControl*>(node->control)) return;
 		List<Ptr<WindowsUIAutomationNode>> selected;
+		auto firstNewId = nextId;
 		UiaSelectedChildren(node, selected);
+		if (selectionProperty)
+		{
+			for (auto item : selected)
+			{
+				if (raiseEvents && !node->selection.Contains(item->id) && (item->id >= firstNewId || !item->properties.Keys().Contains(UIA_SelectionItemIsSelectedPropertyId)))
+				{
+					// A newly selected virtual item may first be materialized here.
+					// The container's previous selection supplies its old value.
+					auto old = Ptr(new WindowsUIAutomationValue);
+					old->value.vt = VT_BOOL;
+					old->value.boolVal = VARIANT_FALSE;
+					item->properties.Set(UIA_SelectionItemIsSelectedPropertyId, old);
+				}
+				UpdateProperties(item, raiseEvents);
+			}
+			if (raiseEvents)
+			{
+				for (auto id : node->selection)
+					for (auto item : nodes)
+						if (item->id == id && !selected.Contains(item.Obj())) { UpdateProperties(item, true); break; }
+			}
+		}
 		if (raiseEvents)
 		{
 			if (selected.Count() == 1)
@@ -17876,6 +18187,7 @@ namespace vl::presentation::windows
 
 	void WindowsUIAutomationContext::UpdateProperties(Ptr<WindowsUIAutomationNode> node, bool raiseEvents)
 	{
+		if (!node->attachment || node->attachment->Closed()) return;
 		if (!node->IsLive() || !(subscriptions.properties.Count() || Subscribed(UIA_AutomationFocusChangedEventId))) return;
 		const PROPERTYID watched[] =
 		{
@@ -17942,13 +18254,13 @@ namespace vl::presentation::windows
 							WindowsUIAutomationValue before, after;
 							for (auto label : nodes)
 							{
-								if (!label->IsLive()) continue;
+								if (!label->IsLive() || label->attachment->Closed()) continue;
 								if (label->id == old->value.llVal) { before.value.vt = VT_UNKNOWN; label->Provider()->QueryInterface(IID_PPV_ARGS(&before.value.punkVal)); }
 								if (label->id == value->value.llVal) { after.value.vt = VT_UNKNOWN; label->Provider()->QueryInterface(IID_PPV_ARGS(&after.value.punkVal)); }
 							}
-							UiaRaiseAutomationPropertyChangedEvent(node->Provider().Obj(), property, before.value, after.value);
+							RaisePropertyChanged(node, property, before.value, after.value);
 						}
-						else UiaRaiseAutomationPropertyChangedEvent(node->Provider().Obj(), property, old->value, value->value);
+						else RaisePropertyChanged(node, property, old->value, value->value);
 					}
 					if (property == UIA_HasKeyboardFocusPropertyId && value->value.boolVal == VARIANT_TRUE) Raise(node, UIA_AutomationFocusChangedEventId);
 				}
@@ -17985,11 +18297,16 @@ namespace vl::presentation::windows
 		}
 	}
 
-	void WindowsUIAutomationLifetime::Detach()
+	void WindowsUIAutomationLifetime::DetachHandlers()
 	{
 		attached = false;
 		for (auto detach : detachHandlers) detach();
 		detachHandlers.Clear();
+	}
+
+	void WindowsUIAutomationLifetime::Detach()
+	{
+		DetachHandlers();
 		if (columns) columns->DetachCallback(this);
 		columns = nullptr;
 		if (items) items->DetachCallback(this);
@@ -18001,7 +18318,7 @@ namespace vl::presentation::windows
 	WindowsUIAutomationLifetime::~WindowsUIAutomationLifetime()
 	{
 		Detach();
-		if (node->context)
+		if (node->context && !node->retired && !(node->attachment && node->attachment->Closed()))
 		{
 			for (auto item : node->context->nodes) if (item->owner == node) item->Retire();
 		}
@@ -18301,7 +18618,7 @@ namespace vl::presentation::windows
 		{
 			return node->dispatcher->Run([&]() -> HRESULT
 			{
-				if (!node->IsLive() || embedded && !embedded->IsLive() || !node->Supports(UIA_TextPatternId) || UiaDocument(node->control)->GetDocument() != document) return UIA_E_ELEMENTNOTAVAILABLE;
+				if (!node->Available() || embedded && !embedded->Available() || !node->Supports(UIA_TextPatternId) || UiaDocument(node->control)->GetDocument() != document) return UIA_E_ELEMENTNOTAVAILABLE;
 				WindowsUIAutomationTextSnapshot snapshot(UiaDocument(node->control));
 				Normalize(snapshot);
 				return action(snapshot);
@@ -18770,7 +19087,7 @@ namespace vl::presentation::windows
 		return Read([&]() -> HRESULT
 		{
 			auto provider = dynamic_cast<WindowsUIAutomationProvider*>(child);
-			if (!provider || !provider->node->IsLive()) return E_INVALIDARG;
+			if (!provider || !provider->node->Available()) return E_INVALIDARG;
 			auto document = UiaDocument(node->control);
 			WindowsUIAutomationTextSnapshot snapshot(document);
 			if (provider->node->kind == Kind::DocumentObject && provider->node->control == node->control)

@@ -2746,6 +2746,8 @@ Type Declaration (Class)
 				CLASS_MEMBER_GUIEVENT(FrameConfigChanged)
 				CLASS_MEMBER_GUIEVENT(ChildCompositionUpdated)
 				CLASS_MEMBER_GUIEVENT(BoundsChanged)
+				CLASS_MEMBER_GUIEVENT(BeforeRebuildingTheme)
+				CLASS_MEMBER_GUIEVENT(AfterRebuildingTheme)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Modal)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(BlockedByModalWindow)
 

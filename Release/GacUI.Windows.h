@@ -1092,6 +1092,7 @@ namespace vl
 	{
 		namespace windows
 		{
+			class WindowsUIAutomationListener;
 			extern WinDC*									GetNativeWindowDC(INativeWindow* window);
 			extern HDC										GetNativeWindowHDC(INativeWindow* window);
 		}
@@ -1099,8 +1100,10 @@ namespace vl
 }
 
 extern int WinMainGDI(HINSTANCE hInstance, void(*RendererMain)());
+extern int SetupWindowsGDIRendererInternal(bool hosted, bool raw, const vl::Func<vl::Ptr<vl::presentation::windows::WindowsUIAutomationListener>()>& createAutomationListener = {});
 
 #endif
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\WINDOWS\GDI\RENDERERS\GUIGRAPHICSLAYOUTPROVIDERWINDOWSGDI.H
@@ -2403,7 +2406,6 @@ namespace vl::presentation::windows
 	class WindowsUIAutomationTextRange;
 	struct WindowsUIAutomationIdleRequest;
 	struct WindowsUIAutomationNode;
-	struct WindowsUIAutomationBounds;
 
 	struct WindowsUIAutomationSubscriptions : Object
 	{
@@ -2414,11 +2416,17 @@ namespace vl::presentation::windows
 
 	struct WindowsUIAutomationMetadata : Object
 	{
+		controls::GuiControl*				control = nullptr;
 		Nullable<WString>					name;
 		WString								id;
 		controls::GuiControl*				label = nullptr;
 		Ptr<controls::GuiDisposedFlag>		labelDisposed;
 		collections::Dictionary<WString, WString> texts;
+		collections::Dictionary<controls::GuiControl*, Ptr<controls::GuiDisposedFlag>> labeledControls;
+		Ptr<compositions::IGuiGraphicsEventHandler> labelTextChanged;
+		WString								labelText;
+
+		~WindowsUIAutomationMetadata();
 	};
 	extern Ptr<WindowsUIAutomationMetadata> UiaMetadata(controls::GuiControl* control, bool create = false);
 	extern WString UiaLocalizedText(controls::GuiControl* control, const WString& key, const WString& fallback);
@@ -2463,9 +2471,27 @@ namespace vl::presentation::windows
 		~WindowsUIAutomationValue();
 	};
 
+	struct WindowsUIAutomationWindowState : Object
+	{
+		static constexpr const wchar_t*		RebuildingProperty = L"GacUI.Windows.UIAutomation.RebuildingTheme";
+		controls::GuiWindow*				window = nullptr;
+		Ptr<controls::GuiDisposedFlag>		disposed;
+		Ptr<WindowsUIAutomationWindowState>	suspendedBy;
+		vint								generation = 0;
+		bool								observedEmpty = false;
+		bool								rebuilding = false;
+		bool								lazyDiscovery = false;
+
+		bool Closed() const;
+		controls::GuiWindow* ClosedWindow() const;
+	};
+
+	extern controls::GuiWindow* UiaParentWindow(controls::GuiWindow* window);
+
 	struct WindowsUIAutomationNode : Object
 	{
 		WindowsUIAutomationContext*			context = nullptr;
+		Ptr<WindowsUIAutomationWindowState>	attachment;
 		Ptr<WindowsUIAutomationDispatcher>	dispatcher;
 		Ptr<controls::GuiDisposedFlag>		disposed;
 		controls::GuiControl*				control = nullptr;
@@ -2487,6 +2513,7 @@ namespace vl::presentation::windows
 		collections::Dictionary<PROPERTYID, Ptr<WindowsUIAutomationValue>> properties;
 
 		bool IsLive();
+		bool Available();
 		controls::GuiControl* Control();
 		controls::GuiWindow* Window();
 		HWND Handle();
@@ -2519,6 +2546,7 @@ namespace vl::presentation::windows
 		bool								attached = false;
 		collections::List<Func<void()>>		detachHandlers;
 		~WindowsUIAutomationLifetime();
+		void DetachHandlers();
 		void Detach();
 		template<typename T, typename F>
 		void Attach(controls::GuiControl* target, compositions::GuiGraphicsEvent<T>& event, F callback)
@@ -2540,7 +2568,7 @@ namespace vl::presentation::windows
 		void OnColumnChanged(bool needToRefreshItems)override;
 	};
 
-	class WindowsUIAutomationContext : public Object
+	class WindowsUIAutomationContext : public Object, public controls::theme_refresh::IGuiThemeRefreshObserver
 	{
 	public:
 		bool								hosted;
@@ -2549,8 +2577,8 @@ namespace vl::presentation::windows
 		Ptr<WindowsUIAutomationDispatcher>	dispatcher;
 		collections::Dictionary<INativeWindow*, HWND> windows;
 		collections::Dictionary<INativeWindow*, Ptr<WindowsUIAutomationNode>> roots;
+		collections::SortedList<INativeWindow*> windowsCreatedDuringRebuild;
 		collections::List<Ptr<WindowsUIAutomationNode>> nodes;
-		collections::List<Ptr<WindowsUIAutomationBounds>> boundsHooks;
 		WindowsUIAutomationSubscriptions subscriptions;
 		collections::List<Ptr<WindowsUIAutomationNode>> openMenus;
 		Ptr<WindowsUIAutomationNode>			menuModeOwner;
@@ -2558,13 +2586,19 @@ namespace vl::presentation::windows
 		void Stop();
 		void BindWindows();
 		void WindowEvent(Ptr<WindowsUIAutomationNode> node, bool opening);
+		void WindowThemeBoundary(controls::GuiWindow* window, bool rebuilding)override;
+		void ControlThemeRebuilt(controls::GuiControl* control)override;
+		void BeginRebuild(Ptr<WindowsUIAutomationNode> root);
+		void EndRebuild(Ptr<WindowsUIAutomationNode> root);
+		virtual void RaiseChildrenInvalidated(Ptr<WindowsUIAutomationNode> node);
+		virtual void RaisePropertyChanged(Ptr<WindowsUIAutomationNode> node, PROPERTYID property, VARIANT oldValue, VARIANT newValue);
 		void Scan(compositions::GuiGraphicsComposition* composition);
 		void Observe(Ptr<WindowsUIAutomationNode> node);
 		void Collect();
 		void RetireSubtree(compositions::GuiGraphicsComposition* composition);
-		void RefreshObservation();
+		void RefreshObservation(bool firstSubscription);
 		bool Subscribed(EVENTID eventId = 0);
-		void Raise(Ptr<WindowsUIAutomationNode> node, EVENTID eventId);
+		virtual void Raise(Ptr<WindowsUIAutomationNode> node, EVENTID eventId);
 		void RemoveSubscriptions(Ptr<WindowsUIAutomationSubscriptions> value);
 		Ptr<WindowsUIAutomationNode> Control(controls::GuiControl* control);
 		Ptr<WindowsUIAutomationNode> Item(Ptr<WindowsUIAutomationNode> owner, WindowsUIAutomationNodeKind kind, vint row = -1, vint column = -1, Ptr<controls::tree::INodeProvider> treeNode = nullptr, Ptr<DocumentRun> documentRun = nullptr);

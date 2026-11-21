@@ -788,6 +788,8 @@ namespace vl
 			using namespace collections;
 			using namespace reflection::description;
 
+			theme_refresh::IGuiThemeRefreshObserver* theme_refresh::themeRefreshObserver = nullptr;
+
 /***********************************************************************
 GuiDisposedFlag
 ***********************************************************************/
@@ -831,6 +833,7 @@ GuiControl
 			void GuiControl::RefreshThemes()
 			{
 				if (!controlTemplate) RebuildControlTemplate();
+				if (theme_refresh::themeRefreshObserver) theme_refresh::themeRefreshObserver->ControlThemeRebuilt(this);
 				List<Pair<GuiControl*, Ptr<GuiDisposedFlag>>> snapshot;
 				// Hidden tooltip content is owned by this control but is outside its child tree.
 				if (tooltipControl && !tooltipControl->GetParent())
@@ -3144,6 +3147,8 @@ GuiWindow
 				SetAltControl(this, true);
 				ChildCompositionUpdated.SetAssociatedComposition(boundsComposition);
 				BoundsChanged.SetAssociatedComposition(boundsComposition);
+				BeforeRebuildingTheme.SetAssociatedComposition(boundsComposition);
+				AfterRebuildingTheme.SetAssociatedComposition(boundsComposition);
 
 				INativeWindow* window = GetCurrentController()->WindowService()->CreateNativeWindow(windowMode);
 				SetNativeWindow(window);
@@ -3183,6 +3188,19 @@ GuiWindow
 				{
 					return GuiControlHost::QueryService(identifier);
 				}
+			}
+
+			void GuiWindow::RefreshThemes()
+			{
+				CHECK_ERROR(!refreshingTheme, L"GuiWindow::RefreshThemes() cannot be called recursively.");
+				refreshingTheme = true;
+				auto observer = Ptr(theme_refresh::themeRefreshObserver);
+				if (observer) observer->WindowThemeBoundary(this, true);
+				BeforeRebuildingTheme.Execute(GuiEventArgs(boundsComposition));
+				GuiControl::RefreshThemes();
+				if (observer) observer->WindowThemeBoundary(this, false);
+				AfterRebuildingTheme.Execute(GuiEventArgs(boundsComposition));
+				refreshingTheme = false;
 			}
 
 			void GuiWindow::MoveToScreenCenter()
@@ -4678,6 +4696,7 @@ GuiGraphicsComposition
 				{
 					cachedBounds = value;
 					CachedBoundsChanged.Execute(GuiEventArgs(this));
+					if (auto host = GetRelatedGraphicsHost()) host->RaiseCompositionCachedBoundsChanged(this);
 					InvokeOnCompositionStateChanged();
 				}
 			}
@@ -4756,6 +4775,7 @@ GuiGraphicsComposition
 		}
 	}
 }
+
 
 /***********************************************************************
 .\APPLICATION\GRAPHICSCOMPOSITIONS\GUIGRAPHICSEVENTRECEIVER.CPP
@@ -5706,6 +5726,12 @@ GuiGraphicsHost
 			GuiGraphicsComposition* GuiGraphicsHost::GetPointCapture()
 			{
 				return pointActionManager->GetPointCapture();
+			}
+
+			void GuiGraphicsHost::RaiseCompositionCachedBoundsChanged(GuiGraphicsComposition* sender)
+			{
+				GuiEventArgs arguments(sender);
+				CompositionCachedBoundsChanged.ExecuteWithNewSender(arguments, sender);
 			}
 
 			INativeWindow* GuiGraphicsHost::GetNativeWindow()
@@ -7973,6 +7999,7 @@ GuiDateComboBox
 		}
 	}
 }
+
 
 /***********************************************************************
 .\CONTROLS\GUIDIALOGS.CPP
@@ -21363,6 +21390,7 @@ GuiMenu
 			GuiMenu::GuiMenu(theme::ThemeName themeName, GuiControl* _owner)
 				:GuiPopup(themeName, INativeWindow::Menu)
 				, owner(_owner)
+				, ownerDisposed(_owner ? _owner->GetDisposedFlag() : nullptr)
 			{
 				UpdateMenuService();
 				WindowOpened.AttachMethod(this, &GuiMenu::OnWindowOpened);
@@ -21373,12 +21401,14 @@ GuiMenu
 			{
 			}
 
+			GuiControl* GuiMenu::GetOwnerControl()
+			{
+				return ownerDisposed && !ownerDisposed->IsDisposed() ? owner : nullptr;
+			}
+
 			void GuiMenu::UpdateMenuService()
 			{
-				if(owner)
-				{
-					parentMenuService=owner->QueryTypedService<IGuiMenuService>();
-				}
+				parentMenuService = ownerDisposed && !ownerDisposed->IsDisposed() ? owner->QueryTypedService<IGuiMenuService>() : nullptr;
 			}
 
 			IDescriptable* GuiMenu::QueryService(const WString& identifier)
@@ -22067,6 +22097,8 @@ GuiRibbonGroupMenu
 			class GuiRibbonGroupMenu : public GuiMenu, public Description<GuiRibbonGroupMenu>
 			{
 			private:
+				GuiRibbonGroup*							group;
+
 				IGuiMenuService::Direction GetPreferredDirection()override
 				{
 					return IGuiMenuService::Horizontal;
@@ -22078,9 +22110,15 @@ GuiRibbonGroupMenu
 				}
 
 			public:
-				GuiRibbonGroupMenu(theme::ThemeName themeName, GuiControl* _owner)
-					:GuiMenu(themeName, _owner)
+				GuiRibbonGroupMenu(theme::ThemeName themeName, GuiControl* button, GuiRibbonGroup* _group)
+					:GuiMenu(themeName, button)
+					, group(_group)
 				{
+				}
+
+				GuiControl* GetOwnerControl()override
+				{
+					return group;
 				}
 			};
 
@@ -22210,7 +22248,9 @@ GuiRibbonGroup
 					responsiveFixedButton->SetAlignmentToParent(Margin(0, 0, 0, 0));
 					responsiveFixedButton->AddChild(dropdownButton->GetBoundsComposition());
 
-					dropdownMenu = new GuiRibbonGroupMenu(theme::ThemeName::RibbonGroupMenu, dropdownButton);
+					// The group owns and rethemes this menu even when its responsive
+					// view detaches the dropdown button from the control tree.
+					dropdownMenu = new GuiRibbonGroupMenu(theme::ThemeName::RibbonGroupMenu, dropdownButton, this);
 				}
 
 				responsiveView = new GuiResponsiveViewComposition();

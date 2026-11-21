@@ -9471,6 +9471,19 @@ namespace vl
 		namespace controls
 		{
 			class GuiPopup;
+			class GuiWindow;
+
+			namespace theme_refresh
+			{
+				class IGuiThemeRefreshObserver : public virtual IDescriptable
+				{
+				public:
+					virtual void WindowThemeBoundary(GuiWindow* window, bool rebuilding) = 0;
+					virtual void ControlThemeRebuilt(GuiControl* control) = 0;
+				};
+
+				extern IGuiThemeRefreshObserver* themeRefreshObserver;
+			}
 
 			template<typename T, typename=void>
 			struct QueryServiceHelper;
@@ -9544,7 +9557,7 @@ Basic Construction
 			public:
 				Ptr<GuiDisposedFlag>					GetDisposedFlag();
 				/// <summary>Synchronously rebuild unassigned control templates in this control and its descendants. Explicit templates are preserved. Call on the UI thread.</summary>
-				void									RefreshThemes();
+				virtual void							RefreshThemes();
 
 			protected:
 				compositions::GuiBoundsComposition*		boundsComposition = nullptr;
@@ -10338,6 +10351,8 @@ Window
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(WindowTemplate, GuiControlHost)
 				friend class GuiApplication;
 				friend class compositions::GuiGraphicsComposition;
+			private:
+				bool									refreshingTheme = false;
 			protected:
 				struct ShowModalRecord
 				{
@@ -10399,6 +10414,13 @@ Window
 				compositions::GuiGraphicsEvent<GuiCompositionUpdateEventArgs>	ChildCompositionUpdated;
 				/// <summary>The native window's position or size changed.</summary>
 				compositions::GuiNotifyEvent			BoundsChanged;
+				/// <summary>Raised before refreshing this window and its descendants.</summary>
+				compositions::GuiNotifyEvent			BeforeRebuildingTheme;
+				/// <summary>Raised when this window and its descendants have finished refreshing.</summary>
+				compositions::GuiNotifyEvent			AfterRebuildingTheme;
+				/// <summary>Refresh the window's theme. A recursive call on this window, including from either theme event, raises an error.</summary>
+				void									RefreshThemes()override;
+
 				/// <summary>Test whether this window belongs to a modal session as a modal window.</summary>
 				/// <returns>True for a modal window, including one blocked by a nested modal window.</returns>
 				bool									GetModal();
@@ -15956,6 +15978,7 @@ Menu
 				void									UpdateClientSizeAfterRendering(Size preferredSize, Size clientSize)override;
 			protected:
 				GuiControl*								owner;
+				Ptr<GuiDisposedFlag>					ownerDisposed;
 
 				void									OnDeactivatedAltHost()override;
 				void									OnWindowOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -15967,6 +15990,8 @@ Menu
 				GuiMenu(theme::ThemeName themeName, GuiControl* _owner);
 				~GuiMenu();
 
+				/// <summary>Get the control that owns the menu template, including while the menu is closed.</summary>
+				virtual GuiControl*						GetOwnerControl();
 				/// <summary>Update the reference to the parent <see cref="IGuiMenuService"/>. This function is not required to call outside the menu or menu item control.</summary>
 				void									UpdateMenuService();
 				IDescriptable*							QueryService(const WString& identifier)override;
@@ -16144,6 +16169,7 @@ MenuButton
 }
 
 #endif
+
 
 /***********************************************************************
 .\CONTROLS\LISTCONTROLPACKAGE\GUICOMBOCONTROLS.H
@@ -27188,6 +27214,12 @@ Host
 			public:
 				GuiGraphicsHost(controls::GuiControlHost* _controlHost, GuiGraphicsComposition* boundsComposition);
 				~GuiGraphicsHost();
+
+				/// <summary>Raised after a composition in this host raises its cached bounds changed event.</summary>
+				GuiNotifyEvent							CompositionCachedBoundsChanged;
+				/// <summary>Raise the host's cached bounds changed event for a composition.</summary>
+				/// <param name="sender">The composition whose cached bounds changed.</param>
+				void									RaiseCompositionCachedBoundsChanged(GuiGraphicsComposition* sender);
 
 				/// <summary>Get the associated window.</summary>
 				/// <returns>The associated window.</returns>
