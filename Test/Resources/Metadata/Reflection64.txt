@@ -7126,6 +7126,8 @@ class presentation::controls::GuiVirtualTreeView : presentation::controls::GuiVi
 }
 
 class presentation::controls::GuiWindow : presentation::controls::GuiControlHost {
+    event AfterRebuildingTheme : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
+    event BeforeRebuildingTheme : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
     event BoundsChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
     event ChildCompositionUpdated : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::controls::GuiCompositionUpdateEventArgs*>^;
     event ClipboardUpdated : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
