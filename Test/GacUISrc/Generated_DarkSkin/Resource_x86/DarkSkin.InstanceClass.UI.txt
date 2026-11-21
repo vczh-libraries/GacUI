@@ -11319,7 +11319,7 @@ namespace darkskin
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
             <this>.SetNamedObject("container", container);
             {
-                (container.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (container.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
             {
                 (container.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
