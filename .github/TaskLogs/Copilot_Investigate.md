@@ -160,3 +160,13 @@ Exercise window and popup refresh through a control pointer with reentry from bo
 
 The original Debug x64 hosted Raw Clock passed 115 assertions. In a fresh hosted process with the passive subtree listener, immediate GET 11 returned the old palette. GET 12 timed out at 15.026 seconds. The UI thread finished the refresh in 17.027 seconds, after 93,218 scan calls and 97,695 retirements. Sending the late response opened the target's native C++ runtime error dialog. The same HTTP driver completed all five switches in its HTTP-only warmup, with 70 successful GETs.
 # PROPOSALS
+
+- No.1 Suspend UI Automation observation for each window while its templates rebuild.
+
+## No.1 Suspend UI Automation observation for each window while its templates rebuild
+
+Bracket the existing recursive refresh with two reflected events. Close the logical window before entry dispatch, reopen before completion dispatch, and coalesce recursion until the last completion callback returns. Track the window that owns each observed attachment. Detach observation once at entry, keep surviving identities, suppress visibility independently of lifetime, and reject notifications and queued actions from an earlier attachment generation. Invalidate the exposed subtree directly at entry and, if its empty state was observed, at completion. Resume observation on demand when a client asks for a descendant or a subscribed control changes.
+
+### CODE CHANGE
+
+Make the existing control refresh virtual and bracket its window override with reflected events. Track the original logical window on automation nodes, reject requests to hidden descendants, and discard stale dispatcher work by generation. Drop bounds hooks and control handlers in bulk, compare surviving attachments after the rebuild, and observe rebuilt controls through their window when they first change. Probe the production COM interfaces from Windows fixtures and compare both showcase window modes using the same HTTP driver.
