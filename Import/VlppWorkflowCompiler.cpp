@@ -5183,7 +5183,8 @@ CreateBindContext
 						else if (auto observeExpr = dynamic_cast<WfObserveExpression*>(scope->ownerNode.Obj()))
 						{
 							context.renames.Add(node, observeExpr->parent.Obj());
-							DirectDepend(node, observeExpr->parent.Obj());
+							// The observe receiver was visited before its value and event expressions.
+							DirectDepend(node, observeExpr->parent.Obj(), false);
 						}
 					}
 				}
