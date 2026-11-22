@@ -127,6 +127,7 @@ TEST_FILE
 				TEST_ASSERT(groupView && stripsView);
 
 				vint buttons = 0, rows = 0;
+				const Color rowColor(0xFA, 0xFA, 0xFA);
 				auto alternate = Ptr(new theme::ThemeTemplates);
 				alternate->Name = L"ResponsiveRibbon";
 				alternate->RibbonLargeDropdownButton = [&](const Value&)
@@ -137,7 +138,9 @@ TEST_FILE
 				alternate->ToolstripToolBar = [&](const Value&)
 				{
 					rows++;
-					return new darkskin::ToolstripTemplate;
+					auto row = new darkskin::ToolstripTemplate;
+					row->GetOwnedElement().Cast<GuiSolidBackgroundElement>()->SetColor(rowColor);
+					return row;
 				};
 				theme::RegisterTheme(alternate);
 				auto verifyRefresh = [&]()
@@ -148,13 +151,23 @@ TEST_FILE
 					TEST_ASSERT(buttons == 1);
 					TEST_ASSERT(rows == 5);
 				};
-				TEST_ASSERT(strips.GetChildrenCount() == 2);
+				auto verifyVisibleRows = [&](vint count, Color expected)
+				{
+					TEST_ASSERT(strips.GetChildrenCount() == count);
+					for (vint i = 0; i < count; i++)
+					{
+						auto row = strips.GetChild(i)->GetControlTemplateObject()->GetOwnedElement().Cast<GuiSolidBackgroundElement>();
+						TEST_ASSERT(row && row->GetColor() == expected);
+					}
+				};
+				verifyVisibleRows(2, darkskin::Theme::GetColorPackage().GeneralBackground);
 				verifyRefresh();
+				verifyVisibleRows(2, rowColor);
 				TEST_ASSERT(groupView->LevelDown() && stripsView->LevelDown());
-				TEST_ASSERT(strips.GetChildrenCount() == 3);
+				verifyVisibleRows(3, rowColor);
 				verifyRefresh();
 				TEST_ASSERT(groupView->LevelUp() && stripsView->LevelUp());
-				TEST_ASSERT(strips.GetChildrenCount() == 2);
+				verifyVisibleRows(2, rowColor);
 				theme::UnregisterTheme(alternate->Name);
 				theme::UnregisterTheme(skin->Name);
 				main->Hide();
