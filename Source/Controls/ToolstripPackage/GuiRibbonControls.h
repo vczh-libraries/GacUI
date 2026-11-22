@@ -142,7 +142,6 @@ Ribbon Group
 				GuiToolstripButton*									dropdownButton = nullptr;
 				GuiMenu*											dropdownMenu = nullptr;
 
-				void												EnumerateThemeChildren(const Func<void(GuiControl*)>& visit)override;
 				bool												IsAltAvailable()override;
 				compositions::IGuiAltActionHost*					GetActivatingAltHost()override;
 				void												OnCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -155,6 +154,8 @@ Ribbon Group
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiRibbonGroup(theme::ThemeName themeName);
 				~GuiRibbonGroup();
+
+				void												RefreshThemes()override;
 
 				/// <summary>Expandable changed event.</summary>
 				compositions::GuiNotifyEvent						ExpandableChanged;
@@ -297,7 +298,6 @@ Ribbon Toolstrips
 				compositions::GuiResponsiveFixedComposition*			views[2] = { nullptr,nullptr };
 				GuiRibbonToolstripsGroupCollection						groups;
 
-				void													EnumerateThemeChildren(const Func<void(GuiControl*)>& visit)override;
 				void													OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
 				void													RearrangeToolstripGroups(vint viewIndex = -1);
 			public:
@@ -305,6 +305,8 @@ Ribbon Toolstrips
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiRibbonToolstrips(theme::ThemeName themeName);
 				~GuiRibbonToolstrips();
+
+				void													RefreshThemes()override;
 
 				/// <summary>Get the collection of toolstrip groups. <see cref="GuiRibbonToolstrips"/> will decide the order of these toolstrip groups.</summary>
 				/// <returns>The collection of toolstrip groups.</returns>

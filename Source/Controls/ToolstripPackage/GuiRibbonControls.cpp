@@ -268,12 +268,6 @@ GuiRibbonGroupMenu
 GuiRibbonGroup
 ***********************************************************************/
 
-			void GuiRibbonGroup::EnumerateThemeChildren(const Func<void(GuiControl*)>& visit)
-			{
-				GuiControl::EnumerateThemeChildren(visit);
-				if (!dropdownButton->GetParent()) visit(dropdownButton);
-			}
-
 			void GuiRibbonGroup::BeforeControlTemplateUninstalled_()
 			{
 				auto ct = TypedControlTemplateObject(false);
@@ -424,6 +418,15 @@ GuiRibbonGroup
 					SafeDeleteComposition(responsiveFixedButton);
 				}
 				delete dropdownMenu;
+			}
+
+			void GuiRibbonGroup::RefreshThemes()
+			{
+				auto button = dropdownButton;
+				auto detached = !button->GetParent();
+				auto disposed = button->GetDisposedFlag();
+				GuiControl::RefreshThemes();
+				if (detached && !disposed->IsDisposed()) button->RefreshThemes();
 			}
 
 			bool GuiRibbonGroup::GetExpandable()
@@ -785,15 +788,6 @@ GuiRibbonToolstrips
 // TODO: (enumerable) foreach
 #define ARRLEN(X) sizeof(X) / sizeof(*X)
 
-			void GuiRibbonToolstrips::EnumerateThemeChildren(const Func<void(GuiControl*)>& visit)
-			{
-				GuiControl::EnumerateThemeChildren(visit);
-				for (auto toolbar : toolbars)
-				{
-					if (!toolbar->GetParent()) visit(toolbar);
-				}
-			}
-
 			void GuiRibbonToolstrips::BeforeControlTemplateUninstalled_()
 			{
 			}
@@ -1004,6 +998,20 @@ GuiRibbonToolstrips
 
 			GuiRibbonToolstrips::~GuiRibbonToolstrips()
 			{
+			}
+
+			void GuiRibbonToolstrips::RefreshThemes()
+			{
+				List<Pair<GuiToolstripToolBar*, Ptr<GuiDisposedFlag>>> detached;
+				for (auto toolbar : toolbars)
+				{
+					if (!toolbar->GetParent()) detached.Add({ toolbar, toolbar->GetDisposedFlag() });
+				}
+				GuiControl::RefreshThemes();
+				for (auto&& [toolbar, disposed] : detached)
+				{
+					if (!disposed->IsDisposed()) toolbar->RefreshThemes();
+				}
 			}
 
 			collections::ObservableListBase<GuiToolstripGroup*>& GuiRibbonToolstrips::GetGroups()
