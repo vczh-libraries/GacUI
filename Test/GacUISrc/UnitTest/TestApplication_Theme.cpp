@@ -110,6 +110,59 @@ TEST_FILE
 			StartRemoteControllerTest(protocol);
 		});
 
+		TEST_CATEGORY(L"RefreshThemes updates both responsive ribbon layouts")
+		{
+			GraphicsHostProtocol protocol;
+			collections::List<WString> eventLogs;
+			GuiWindow* main = nullptr;
+			protocol.OnNextFrame([&]()
+			{
+				auto skin = Ptr(new darkskin::Theme);
+				theme::RegisterTheme(skin);
+				GuiRibbonGroup group(theme::ThemeName::RibbonGroup);
+				GuiRibbonToolstrips strips(theme::ThemeName::RibbonToolstrips);
+				group.SetLargeImage(Ptr(new GuiImageData));
+				auto groupView = dynamic_cast<GuiResponsiveViewComposition*>(group.GetContainerComposition()->Children()[0]);
+				auto stripsView = dynamic_cast<GuiResponsiveViewComposition*>(strips.GetContainerComposition()->Children()[0]);
+				TEST_ASSERT(groupView && stripsView);
+
+				vint buttons = 0, rows = 0;
+				auto alternate = Ptr(new theme::ThemeTemplates);
+				alternate->Name = L"ResponsiveRibbon";
+				alternate->RibbonLargeDropdownButton = [&](const Value&)
+				{
+					buttons++;
+					return new darkskin::RibbonLargeDropdownButtonTemplate;
+				};
+				alternate->ToolstripToolBar = [&](const Value&)
+				{
+					rows++;
+					return new darkskin::ToolstripTemplate;
+				};
+				theme::RegisterTheme(alternate);
+				auto verifyRefresh = [&]()
+				{
+					buttons = rows = 0;
+					group.RefreshThemes();
+					strips.RefreshThemes();
+					TEST_ASSERT(buttons == 1);
+					TEST_ASSERT(rows == 5);
+				};
+				TEST_ASSERT(strips.GetChildrenCount() == 2);
+				verifyRefresh();
+				TEST_ASSERT(groupView->LevelDown() && stripsView->LevelDown());
+				TEST_ASSERT(strips.GetChildrenCount() == 3);
+				verifyRefresh();
+				TEST_ASSERT(groupView->LevelUp() && stripsView->LevelUp());
+				TEST_ASSERT(strips.GetChildrenCount() == 2);
+				theme::UnregisterTheme(alternate->Name);
+				theme::UnregisterTheme(skin->Name);
+				main->Hide();
+			});
+			SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, main));
+			StartRemoteControllerTest(protocol);
+		});
+
 		TEST_CASE(L"DarkSkin exposes complete palettes with shared neutrals")
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)

@@ -268,6 +268,12 @@ GuiRibbonGroupMenu
 GuiRibbonGroup
 ***********************************************************************/
 
+			void GuiRibbonGroup::EnumerateThemeChildren(const Func<void(GuiControl*)>& visit)
+			{
+				GuiControl::EnumerateThemeChildren(visit);
+				if (!dropdownButton->GetParent()) visit(dropdownButton);
+			}
+
 			void GuiRibbonGroup::BeforeControlTemplateUninstalled_()
 			{
 				auto ct = TypedControlTemplateObject(false);
@@ -778,6 +784,15 @@ GuiRibbonToolstrips
 
 // TODO: (enumerable) foreach
 #define ARRLEN(X) sizeof(X) / sizeof(*X)
+
+			void GuiRibbonToolstrips::EnumerateThemeChildren(const Func<void(GuiControl*)>& visit)
+			{
+				GuiControl::EnumerateThemeChildren(visit);
+				for (auto toolbar : toolbars)
+				{
+					if (!toolbar->GetParent()) visit(toolbar);
+				}
+			}
 
 			void GuiRibbonToolstrips::BeforeControlTemplateUninstalled_()
 			{

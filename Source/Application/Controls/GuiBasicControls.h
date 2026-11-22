@@ -146,6 +146,7 @@ Basic Construction
 				bool									displayContextMenuOnRightClick = true;
 
 				virtual void							BeforeControlTemplateUninstalled();
+				virtual void							EnumerateThemeChildren(const Func<void(GuiControl*)>& visit);
 				virtual void							AfterControlTemplateInstalled(bool initialize);
 				virtual void							CheckAndStoreControlTemplate(templates::GuiControlTemplate* value);
 				virtual void							EnsureControlTemplateExists();
