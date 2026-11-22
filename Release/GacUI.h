@@ -9592,6 +9592,7 @@ Basic Construction
 				bool									displayContextMenuOnRightClick = true;
 
 				virtual void							BeforeControlTemplateUninstalled();
+				virtual void							EnumerateThemeChildren(const Func<void(GuiControl*)>& visit);
 				virtual void							AfterControlTemplateInstalled(bool initialize);
 				virtual void							CheckAndStoreControlTemplate(templates::GuiControlTemplate* value);
 				virtual void							EnsureControlTemplateExists();
@@ -18866,6 +18867,7 @@ Ribbon Group
 				GuiToolstripButton*									dropdownButton = nullptr;
 				GuiMenu*											dropdownMenu = nullptr;
 
+				void												EnumerateThemeChildren(const Func<void(GuiControl*)>& visit)override;
 				bool												IsAltAvailable()override;
 				compositions::IGuiAltActionHost*					GetActivatingAltHost()override;
 				void												OnCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -19020,6 +19022,7 @@ Ribbon Toolstrips
 				compositions::GuiResponsiveFixedComposition*			views[2] = { nullptr,nullptr };
 				GuiRibbonToolstripsGroupCollection						groups;
 
+				void													EnumerateThemeChildren(const Func<void(GuiControl*)>& visit)override;
 				void													OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
 				void													RearrangeToolstripGroups(vint viewIndex = -1);
 			public:

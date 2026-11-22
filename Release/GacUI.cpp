@@ -830,20 +830,28 @@ GuiControl
 			{
 			}
 
+			void GuiControl::EnumerateThemeChildren(const Func<void(GuiControl*)>& visit)
+			{
+				// Hidden tooltip content is owned by this control but is outside its child tree.
+				if (tooltipControl && !tooltipControl->GetParent())
+				{
+					visit(tooltipControl);
+				}
+				for (auto child : children)
+				{
+					visit(child);
+				}
+			}
+
 			void GuiControl::RefreshThemes()
 			{
 				if (!controlTemplate) RebuildControlTemplate();
 				if (theme_refresh::themeRefreshObserver) theme_refresh::themeRefreshObserver->ControlThemeRebuilt(this);
 				List<Pair<GuiControl*, Ptr<GuiDisposedFlag>>> snapshot;
-				// Hidden tooltip content is owned by this control but is outside its child tree.
-				if (tooltipControl && !tooltipControl->GetParent())
-				{
-					snapshot.Add({ tooltipControl, tooltipControl->GetDisposedFlag() });
-				}
-				for (auto child : children)
+				EnumerateThemeChildren([&](GuiControl* child)
 				{
 					snapshot.Add({ child, child->GetDisposedFlag() });
-				}
+				});
 				for (auto&& entry : snapshot)
 				{
 					if (!entry.value->IsDisposed()) entry.key->RefreshThemes();
@@ -22126,6 +22134,12 @@ GuiRibbonGroupMenu
 GuiRibbonGroup
 ***********************************************************************/
 
+			void GuiRibbonGroup::EnumerateThemeChildren(const Func<void(GuiControl*)>& visit)
+			{
+				GuiControl::EnumerateThemeChildren(visit);
+				if (!dropdownButton->GetParent()) visit(dropdownButton);
+			}
+
 			void GuiRibbonGroup::BeforeControlTemplateUninstalled_()
 			{
 				auto ct = TypedControlTemplateObject(false);
@@ -22636,6 +22650,15 @@ GuiRibbonToolstrips
 
 // TODO: (enumerable) foreach
 #define ARRLEN(X) sizeof(X) / sizeof(*X)
+
+			void GuiRibbonToolstrips::EnumerateThemeChildren(const Func<void(GuiControl*)>& visit)
+			{
+				GuiControl::EnumerateThemeChildren(visit);
+				for (auto toolbar : toolbars)
+				{
+					if (!toolbar->GetParent()) visit(toolbar);
+				}
+			}
 
 			void GuiRibbonToolstrips::BeforeControlTemplateUninstalled_()
 			{
