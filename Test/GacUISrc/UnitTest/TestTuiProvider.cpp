@@ -458,7 +458,6 @@ TEST_FILE
 					auto content = new GuiLabel(theme::ThemeName::Label);
 					content->SetText(L"Retained content");
 					contentPopup->GetContainerComposition()->AddChild(content->GetBoundsComposition());
-					auto contentTemplate = contentPopup->GetControlTemplateObject();
 					auto date = new GuiDateComboBox(theme::ThemeName::DateComboBox);
 					add(date, Rect(0, 16, 30, 17));
 					auto selectedDate = DateTime::FromDateTime(2024, 2, 29);
@@ -569,7 +568,9 @@ TEST_FILE
 							TEST_ASSERT(editor->GetSelectionText() == L"012" && editor->GetViewPosition() == editorPosition);
 							TEST_ASSERT(editor->CanUndo() && editor->CanRedo());
 							TEST_ASSERT(date->GetSelectedDate().osMilliseconds == selectedDate.osMilliseconds);
-							TEST_ASSERT(contentPopup->GetControlTemplateObject() == contentTemplate);
+							TEST_ASSERT(combo->GetSubMenu() == contentPopup && content->GetParent() == contentPopup);
+							auto popupBackground = contentPopup->GetControlTemplateObject()->GetOwnedElement().Cast<GuiSolidBackgroundElement>();
+							TEST_ASSERT(popupBackground && popupBackground->GetColor() == colors.ControlBackground);
 							TEST_ASSERT(content->GetText() == L"Retained content");
 							auto actions = menuActions;
 							menu->GetSubMenuHost()->BeforeClicked.Execute(menu->GetNotifyEventArguments());
