@@ -5021,10 +5021,7 @@ namespace demo
         var <precompile>3 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
 
         @cpp:Protected
-        var <precompile>4 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
-
-        @cpp:Protected
-        var <precompile>5 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var clockBounds : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -5056,16 +5053,9 @@ namespace demo
             {
                 (clockBounds.PreferredMinSize = {x : 240; y : 240;} of (::presentation::Size));
             }
-            (<precompile>4 = new (::presentation::elements::GuiSolidBackgroundElement^)());
+            (<precompile>4 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>4.Color = (cast (::presentation::Color) "#202020"));
-            }
-            {
-                (clockBounds.OwnedElement = <precompile>4);
-            }
-            (<precompile>5 = new (::presentation::compositions::GuiBoundsComposition*)());
-            {
-                (<precompile>5.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             (clock = ::presentation::elements::IGuiGraphicsElement::CreateRawElement());
             <this>.SetNamedObject("clock", clock);
@@ -5076,10 +5066,10 @@ namespace demo
                 (clock.Id = "FullControlTest.Clock");
             }
             {
-                (<precompile>5.OwnedElement = clock);
+                (<precompile>4.OwnedElement = clock);
             }
             {
-                clockBounds.AddChild(<precompile>5);
+                clockBounds.AddChild(<precompile>4);
             }
             {
                 (<precompile>3.Composition = clockBounds);
@@ -8220,9 +8210,6 @@ namespace demo
         var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>5 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
-
-        @cpp:Protected
         var touchingBounds : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
@@ -8250,13 +8237,6 @@ namespace demo
             (<precompile>4 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
                 (<precompile>4.PreferredMinSize = {x : 320; y : 240;} of (::presentation::Size));
-            }
-            (<precompile>5 = new (::presentation::elements::GuiSolidBackgroundElement^)());
-            {
-                (<precompile>5.Color = (cast (::presentation::Color) "#202020"));
-            }
-            {
-                (<precompile>4.OwnedElement = <precompile>5);
             }
             (touchingBounds = new (::presentation::compositions::GuiBoundsComposition*)());
             <this>.SetNamedObject("touchingBounds", touchingBounds);
