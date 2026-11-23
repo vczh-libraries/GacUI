@@ -87,13 +87,13 @@ public static class RemoteTouchProbe {
                 if(!captured) throw new Exception("PrintWindow is unavailable in this session.");
             }
             image.Save(path,ImageFormat.Png);
-            int sky=0,yellow=0;
+            int sky=0,orange=0;
             for(int y=0;y<image.Height;y++) for(int x=0;x<image.Width;x++) {
                 var c=image.GetPixel(x,y);
                 if(c.R==135&&c.G==206&&c.B==235) sky++;
-                if(c.R==255&&c.G==255&&c.B==0) yellow++;
+                if(c.R==255&&c.G==136&&c.B==0) orange++;
             }
-            return new[]{sky,yellow};
+            return new[]{sky,orange};
         }
     }
 }

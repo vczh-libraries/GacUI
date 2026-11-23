@@ -15,7 +15,7 @@ namespace demo
 	protected:
 		Ptr<GuiRawElementBase> element;
 		Ptr<IGuiGraphicsEventHandler> beforeHandler, afterHandler, renderingHandler;
-		ComPtr<ID2D1SolidColorBrush> rectangleBrush, pointBrush;
+		ComPtr<ID2D1SolidColorBrush> rectangleBrush, borderBrush, pointBrush;
 
 		bool ReadState(Rect bounds, D2D1_POINT_2F (&polygon)[4], collections::List<Point>& points)
 		{
@@ -50,6 +50,7 @@ namespace demo
 		void BeforeTarget(GuiGraphicsComposition*, GuiDirect2DElementEventArgs&)
 		{
 			rectangleBrush = nullptr;
+			borderBrush = nullptr;
 			pointBrush = nullptr;
 		}
 
@@ -58,7 +59,9 @@ namespace demo
 			ID2D1SolidColorBrush* brush = nullptr;
 			CHECK_ERROR(SUCCEEDED(arguments.rt->CreateSolidColorBrush(D2D1::ColorF(0x87CEEB), &brush)), L"demo::RawTouchingAttachment::AfterTarget(...)#Cannot create rectangle brush.");
 			rectangleBrush = brush;
-			CHECK_ERROR(SUCCEEDED(arguments.rt->CreateSolidColorBrush(D2D1::ColorF(0xFFFF00), &brush)), L"demo::RawTouchingAttachment::AfterTarget(...)#Cannot create point brush.");
+			CHECK_ERROR(SUCCEEDED(arguments.rt->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &brush)), L"demo::RawTouchingAttachment::AfterTarget(...)#Cannot create border brush.");
+			borderBrush = brush;
+			CHECK_ERROR(SUCCEEDED(arguments.rt->CreateSolidColorBrush(D2D1::ColorF(0xFF8800), &brush)), L"demo::RawTouchingAttachment::AfterTarget(...)#Cannot create point brush.");
 			pointBrush = brush;
 		}
 
@@ -82,6 +85,7 @@ namespace demo
 			sink->EndFigure(D2D1_FIGURE_END_CLOSED);
 			CHECK_ERROR(SUCCEEDED(sink->Close()), L"demo::RawTouchingAttachment::RenderD2D(...)#Cannot finish polygon.");
 			arguments.rt->FillGeometry(geometry, rectangleBrush.Obj());
+			arguments.rt->DrawGeometry(geometry, borderBrush.Obj(), 2);
 			for (auto point : points)
 			{
 				arguments.rt->DrawEllipse(D2D1::Ellipse(D2D1::Point2F((FLOAT)point.x, (FLOAT)point.y), 16, 16), pointBrush.Obj(), 2);
@@ -96,14 +100,15 @@ namespace demo
 			POINT vertices[4];
 			for (vint i = 0; i < 4; i++) vertices[i] = { (LONG)std::round(polygon[i].x),(LONG)std::round(polygon[i].y) };
 			auto dc = arguments.dc->GetHandle();
+			windows::WinPen borderPen(PS_SOLID, 2, RGB(0, 0, 0));
 			auto saved = SaveDC(dc);
-			SelectObject(dc, GetStockObject(NULL_PEN));
+			SelectObject(dc, borderPen.GetHandle());
 			SelectObject(dc, GetStockObject(DC_BRUSH));
 			SetDCBrushColor(dc, RGB(135,206,235));
 			Polygon(dc, vertices, 4);
 			SelectObject(dc, GetStockObject(DC_PEN));
 			SelectObject(dc, GetStockObject(NULL_BRUSH));
-			SetDCPenColor(dc, RGB(255,255,0));
+			SetDCPenColor(dc, RGB(255,136,0));
 			for (auto point : points) Ellipse(dc, (int)point.x - 16, (int)point.y - 16, (int)point.x + 16, (int)point.y + 16);
 			RestoreDC(dc, saved);
 		}

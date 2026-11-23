@@ -27,6 +27,17 @@ namespace demo
 		return hour < 24 && minute < 60 && second < 60;
 	}
 
+	Color RawClockInterpretorBase::GetStrokeColor(Stroke stroke)
+	{
+		const Color colors[] = { Color(0, 0, 0), Color(255, 255, 255), Color(0, 255, 255), Color(0, 255, 0), Color(255, 255, 0) };
+		return colors[(vint)stroke];
+	}
+
+	vint RawClockInterpretorBase::GetStrokeWidth(Stroke stroke)
+	{
+		return stroke == Stroke::Outline ? 3 : 2;
+	}
+
 	void RawClockInterpretorBase::DrawClock(Rect bounds)
 	{
 		vint hour, minute, second;
@@ -36,19 +47,25 @@ namespace demo
 		double radius = (double)(bounds.Width() < bounds.Height() ? bounds.Width() : bounds.Height()) / 2.0 - 10.0;
 		if (radius <= 0) return;
 		constexpr double pi = 3.14159265358979323846;
-		DrawEllipse(cx, cy, radius);
-		for (vint i = 0; i < 12; i++)
-		{
-			auto angle = i * pi / 6;
-			DrawLine(0, cx + cos(angle) * radius * 0.94, cy + sin(angle) * radius * 0.94,
-				cx + cos(angle) * radius, cy + sin(angle) * radius);
-		}
 		double angles[] = { (hour + minute / 60.0 + second / 3600.0) * pi / 6 - pi / 2,
 			(minute + second / 60.0) * pi / 30 - pi / 2, second * pi / 30 - pi / 2 };
 		double lengths[] = { 90.0 / 160, 110.0 / 160, 130.0 / 160 };
-		for (vint i = 0; i < 3; i++)
+		const Stroke hands[] = { Stroke::Hour, Stroke::Minute, Stroke::Second };
+		for (bool outline : { true, false })
 		{
-			DrawLine(i + 1, cx, cy, cx + cos(angles[i]) * radius * lengths[i], cy + sin(angles[i]) * radius * lengths[i]);
+			SelectStroke(outline ? Stroke::Outline : Stroke::Face);
+			DrawEllipse(cx, cy, radius);
+			for (vint i = 0; i < 12; i++)
+			{
+				auto angle = i * pi / 6;
+				DrawLine(cx + cos(angle) * radius * 0.94, cy + sin(angle) * radius * 0.94,
+					cx + cos(angle) * radius, cy + sin(angle) * radius);
+			}
+			for (vint i = 0; i < 3; i++)
+			{
+				if (!outline) SelectStroke(hands[i]);
+				DrawLine(cx, cy, cx + cos(angles[i]) * radius * lengths[i], cy + sin(angles[i]) * radius * lengths[i]);
+			}
 		}
 	}
 
@@ -57,39 +74,42 @@ namespace demo
 	{
 	protected:
 		Ptr<IGuiGraphicsEventHandler> beforeHandler, afterHandler, renderingHandler;
-		ComPtr<ID2D1SolidColorBrush> brushes[4];
+		ComPtr<ID2D1SolidColorBrush> brush;
+		FLOAT strokeWidth = 0;
 		ID2D1RenderTarget* renderTarget = nullptr;
 
-		void DrawLine(vint color, double x1, double y1, double x2, double y2) override
+		void SelectStroke(Stroke stroke) override
 		{
-			renderTarget->DrawLine(D2D1::Point2F((FLOAT)x1, (FLOAT)y1), D2D1::Point2F((FLOAT)x2, (FLOAT)y2), brushes[color].Obj(), 2);
+			brush->SetColor(elements_windows_d2d::GetD2DColor(GetStrokeColor(stroke)));
+			strokeWidth = (FLOAT)GetStrokeWidth(stroke);
+		}
+
+		void DrawLine(double x1, double y1, double x2, double y2) override
+		{
+			renderTarget->DrawLine(D2D1::Point2F((FLOAT)x1, (FLOAT)y1), D2D1::Point2F((FLOAT)x2, (FLOAT)y2), brush.Obj(), strokeWidth);
 		}
 
 		void DrawEllipse(double cx, double cy, double radius) override
 		{
-			renderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F((FLOAT)cx, (FLOAT)cy), (FLOAT)radius, (FLOAT)radius), brushes[0].Obj(), 2);
+			renderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F((FLOAT)cx, (FLOAT)cy), (FLOAT)radius, (FLOAT)radius), brush.Obj(), strokeWidth);
 		}
 
 		void BeforeTarget(GuiGraphicsComposition*, GuiDirect2DElementEventArgs&)
 		{
-			for (auto& brush : brushes) brush = nullptr;
+			brush = nullptr;
 		}
 
 		void AfterTarget(GuiGraphicsComposition*, GuiDirect2DElementEventArgs& arguments)
 		{
-			D2D1_COLOR_F colors[] = { D2D1::ColorF(1,1,1), D2D1::ColorF(0,1,1), D2D1::ColorF(0,1,0), D2D1::ColorF(1,1,0) };
-			for (vint i = 0; i < 4; i++)
-			{
-				ID2D1SolidColorBrush* brush = nullptr;
-				CHECK_ERROR(SUCCEEDED(arguments.rt->CreateSolidColorBrush(colors[i], &brush)), L"demo::RawClockD2DInterpretor::AfterTarget(...)#Cannot create clock brush.");
-				brushes[i] = brush;
-			}
+			ID2D1SolidColorBrush* newBrush = nullptr;
+			CHECK_ERROR(SUCCEEDED(arguments.rt->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &newBrush)), L"demo::RawClockD2DInterpretor::AfterTarget(...)#Cannot create clock brush.");
+			brush = newBrush;
 		}
 
 		void Render(GuiGraphicsComposition*, GuiDirect2DElementEventArgs& arguments)
 		{
 			// Late subscribers may have missed the initial target assignment.
-			if (!brushes[0]) AfterTarget(nullptr, arguments);
+			if (!brush) AfterTarget(nullptr, arguments);
 			renderTarget = arguments.rt;
 			DrawClock(arguments.bounds);
 			renderTarget = nullptr;
@@ -111,7 +131,7 @@ namespace demo
 			d2d->BeforeRenderTargetChanged.Detach(beforeHandler);
 			d2d->AfterRenderTargetChanged.Detach(afterHandler);
 			d2d->Rendering.Detach(renderingHandler);
-			for (auto& brush : brushes) brush = nullptr;
+			brush = nullptr;
 			beforeHandler = nullptr;
 			afterHandler = nullptr;
 			renderingHandler = nullptr;
@@ -123,18 +143,30 @@ namespace demo
 	protected:
 		Ptr<IGuiGraphicsEventHandler> renderingHandler;
 		HDC dc = nullptr;
+		windows::WinPen outlinePen{ PS_SOLID, GetStrokeWidth(Stroke::Outline), RGB(0, 0, 0) };
 
-		void DrawLine(vint color, double x1, double y1, double x2, double y2) override
+		void SelectStroke(Stroke stroke) override
 		{
-			COLORREF colors[] = { RGB(255,255,255), RGB(0,255,255), RGB(0,255,0), RGB(255,255,0) };
-			SetDCPenColor(dc, colors[color]);
+			if (stroke == Stroke::Outline)
+			{
+				SelectObject(dc, outlinePen.GetHandle());
+			}
+			else
+			{
+				auto color = GetStrokeColor(stroke);
+				SelectObject(dc, GetStockObject(DC_PEN));
+				SetDCPenColor(dc, RGB(color.r, color.g, color.b));
+			}
+		}
+
+		void DrawLine(double x1, double y1, double x2, double y2) override
+		{
 			MoveToEx(dc, (int)std::round(x1), (int)std::round(y1), nullptr);
 			LineTo(dc, (int)std::round(x2), (int)std::round(y2));
 		}
 
 		void DrawEllipse(double cx, double cy, double radius) override
 		{
-			SetDCPenColor(dc, RGB(255,255,255));
 			Ellipse(dc, (int)(cx - radius), (int)(cy - radius), (int)(cx + radius), (int)(cy + radius));
 		}
 
@@ -142,7 +174,6 @@ namespace demo
 		{
 			dc = arguments.dc->GetHandle();
 			auto saved = SaveDC(dc);
-			SelectObject(dc, GetStockObject(DC_PEN));
 			SelectObject(dc, GetStockObject(NULL_BRUSH));
 			DrawClock(arguments.bounds);
 			RestoreDC(dc, saved);

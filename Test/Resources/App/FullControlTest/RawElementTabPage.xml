@@ -40,7 +40,6 @@
       </ez:Top>
       <ez:Fill>
         <Bounds ref.Name="clockBounds" PreferredMinSize="x:240 y:240">
-          <SolidBackground Color="#202020"/>
           <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <Raw ref.Name="clock" Id="FullControlTest.Clock" Interpretor="FullControlTest::Clock"/>
           </Bounds>

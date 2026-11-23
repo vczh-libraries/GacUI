@@ -123,7 +123,7 @@ CachedResourceAllocator
 			public:
 				Ptr<WinPen> CreateInternal(Color color)
 				{
-					return Ptr(new WinPen(PS_SOLID, 1, RGB(color.r, color.g, color.b)));
+					return Ptr(new WinPen(color.a == 0 ? PS_NULL : PS_SOLID, 1, RGB(color.r, color.g, color.b)));
 				}
 			};
 

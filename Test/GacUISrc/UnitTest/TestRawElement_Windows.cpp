@@ -223,7 +223,7 @@ Array<vuint8_t> RenderRawPixels(Ptr<GuiRawElementBase> raw, Rect bounds, bool de
 		ComPtr<ID2D1RenderTarget> targetHolder = target;
 		GuiDirect2DElementEventArgs args(d2d.Obj(), target, nullptr, factory, bounds);
 		target->BeginDraw();
-		target->Clear(D2D1::ColorF(0, 0, 0));
+		target->Clear(D2D1::ColorF(0xC0C0C0));
 		// Deliberately omit AfterRenderTargetChanged to exercise late brush creation.
 		d2d->Rendering.Execute(args);
 		TEST_ASSERT(SUCCEEDED(target->EndDraw()));
@@ -234,7 +234,9 @@ Array<vuint8_t> RenderRawPixels(Ptr<GuiRawElementBase> raw, Rect bounds, bool de
 	{
 		auto gdi = raw.Cast<GuiGDIElement>();
 		windows::WinBitmap bitmap(240, 240, windows::WinBitmap::vbb32Bits, true);
-		PatBlt(bitmap.GetWinDC()->GetHandle(), 0, 0, 240, 240, BLACKNESS);
+		RECT background = { 0, 0, 240, 240 };
+		windows::WinBrush backgroundBrush(RGB(192, 192, 192));
+		FillRect(bitmap.GetWinDC()->GetHandle(), &background, backgroundBrush.GetHandle());
 		GuiGDIElementEventArgs args(gdi.Obj(), bitmap.GetWinDC(), bounds);
 		gdi->Rendering.Execute(args);
 		GdiFlush();
@@ -246,7 +248,7 @@ Array<vuint8_t> RenderRawPixels(Ptr<GuiRawElementBase> raw, Rect bounds, bool de
 	return pixels;
 }
 
-vint CountRawPixels(const Array<vuint8_t>& pixels, Rect area, Color color)
+vint CountRawPixels(const Array<vuint8_t>& pixels, Rect area, Color color, vint tolerance = 8)
 {
 	vint count = 0;
 	for (vint y = area.y1; y < area.y2; y++)
@@ -254,7 +256,7 @@ vint CountRawPixels(const Array<vuint8_t>& pixels, Rect area, Color color)
 		for (vint x = area.x1; x < area.x2; x++)
 		{
 			auto offset = (y * 240 + x) * 4;
-			if (abs(pixels[offset] - color.b) < 8 && abs(pixels[offset + 1] - color.g) < 8 && abs(pixels[offset + 2] - color.r) < 8) count++;
+			if (abs(pixels[offset] - color.b) < tolerance && abs(pixels[offset + 1] - color.g) < tolerance && abs(pixels[offset + 2] - color.r) < tolerance) count++;
 		}
 	}
 	return count;
@@ -265,10 +267,15 @@ void TestRawPainterPixels()
 	auto raw = GetGuiGraphicsResourceManager()->CreateRawElement().Cast<GuiRawElementBase>();
 	Rect bounds(0, 0, 240, 240);
 	auto yellow = Color(255, 255, 0);
+	auto orange = Color(255, 136, 0);
+	auto background = Color(192, 192, 192);
 	raw->SetInterpretorAndData(L"FullControlTest::Clock", L"12:00:00");
 	auto pixels = RenderRawPixels(raw, bounds);
 	TEST_ASSERT(CountRawPixels(pixels, bounds, Color(255, 255, 255)) > 300);
 	TEST_ASSERT(CountRawPixels(pixels, { 118,35,123,100 }, yellow) > 30);
+	// Include the antialiased edge of the black three-pixel stroke.
+	TEST_ASSERT(CountRawPixels(pixels, { 118,35,123,100 }, Color(0, 0, 0), 128) > 30);
+	TEST_ASSERT(CountRawPixels(pixels, { 75,150,95,170 }, background) == 400);
 	raw->SetData(L"12:00:15");
 	pixels = RenderRawPixels(raw, bounds);
 	TEST_ASSERT(CountRawPixels(pixels, { 140,118,210,123 }, yellow) > 30);
@@ -276,27 +283,127 @@ void TestRawPainterPixels()
 	for (auto name : { L"", L"unregistered painter" })
 	{
 		raw->SetInterpretor(name);
-		TEST_ASSERT(CountRawPixels(RenderRawPixels(raw, bounds), bounds, Color(0, 0, 0)) == 240 * 240);
+		TEST_ASSERT(CountRawPixels(RenderRawPixels(raw, bounds), bounds, background) == 240 * 240);
 	}
 	raw->SetInterpretor(L"");
 	auto attachment = demo::AttachFullControlTestTouchingElement(raw);
 	raw->SetData(L"120,120,1,0,1,7,40,40");
 	pixels = RenderRawPixels(raw, bounds);
 	TEST_ASSERT(CountRawPixels(pixels, bounds, Color(135, 206, 235)) > 15000);
-	TEST_ASSERT(CountRawPixels(pixels, { 20,20,60,60 }, yellow) > 70);
+	TEST_ASSERT(CountRawPixels(pixels, { 60,69,180,72 }, Color(0, 0, 0)) >= 120);
+	TEST_ASSERT(CountRawPixels(pixels, { 20,20,60,60 }, orange) > 70);
+	TEST_ASSERT(CountRawPixels(pixels, { 37,37,43,43 }, background) == 36);
 	// Interpretor replacement must leave the manual attachment installed.
 	raw->SetInterpretor(L"FullControlTest::Clock");
 	raw->SetInterpretor(L"");
 	raw->SetData(L"100,100,0.5,0,1,7,180,180");
 	pixels = RenderRawPixels(raw, { 10,10,230,230 });
 	TEST_ASSERT(CountRawPixels(pixels, bounds, Color(135, 206, 235)) > 3500);
-	TEST_ASSERT(CountRawPixels(pixels, { 170,170,210,210 }, yellow) > 70);
-	TEST_ASSERT(CountRawPixels(pixels, { 20,20,60,60 }, yellow) == 0);
+	TEST_ASSERT(CountRawPixels(pixels, { 170,170,210,210 }, orange) > 70);
+	TEST_ASSERT(CountRawPixels(pixels, { 20,20,60,60 }, orange) == 0);
 	attachment = nullptr;
-	TEST_ASSERT(CountRawPixels(RenderRawPixels(raw, bounds), bounds, Color(0, 0, 0)) == 240 * 240);
+	TEST_ASSERT(CountRawPixels(RenderRawPixels(raw, bounds), bounds, background) == 240 * 240);
 	// Finalization releases Clock brushes even without another target-change event.
 	raw->SetInterpretorAndData(L"FullControlTest::Clock", L"12:00:15");
 	TEST_ASSERT(CountRawPixels(RenderRawPixels(raw, bounds, false), bounds, yellow) > 30);
+}
+
+void TestGdiElementAlpha(INativeWindow* window)
+{
+	auto target = GetGuiGraphicsResourceManager()->GetRenderTarget(window);
+	auto dc = elements_windows_gdi::GetWindowsGDIObjectProvider()->GetNativeWindowDC(window)->GetHandle();
+	Rect bounds(0, 0, 64, 64);
+	RECT area = { 0, 0, 64, 64 };
+	Point points[] = { {10,10}, {50,10}, {50,50}, {10,50} };
+	auto polygon = Ptr(GuiPolygonElement::Create());
+	polygon->SetSize(bounds.GetSize());
+	polygon->SetPoints(points, 4);
+	polygon->GetRenderer()->SetRenderTarget(target);
+	auto gradient = Ptr(GuiGradientBackgroundElement::Create());
+	gradient->GetRenderer()->SetRenderTarget(target);
+	auto paragraph = GetGuiGraphicsResourceManager()->GetLayoutProvider()->CreateParagraph(L"Text", target, nullptr);
+	target->StartRendering();
+	for (auto background : { RGB(32, 32, 32), RGB(240, 240, 240) })
+	{
+		windows::WinBrush brush(background);
+		FillRect(dc, &area, brush.GetHandle());
+		polygon->SetBorderColor(Color(0, 0, 0, 0));
+		polygon->SetBackgroundColor(Color(80, 160, 220));
+		polygon->GetRenderer()->Render(bounds);
+		TEST_ASSERT(GetPixel(dc, 30, 30) == RGB(80, 160, 220));
+		for (int y = 9; y <= 51; y++)
+		{
+			for (int x = 9; x <= 51; x++)
+			{
+				auto pixel = GetPixel(dc, x, y);
+				TEST_ASSERT(pixel == background || pixel == RGB(80, 160, 220));
+			}
+		}
+
+		FillRect(dc, &area, brush.GetHandle());
+		polygon->SetBackgroundColor(Color(255, 0, 255, 0));
+		polygon->GetRenderer()->Render(bounds);
+		TEST_ASSERT(GetPixel(dc, 30, 10) == background && GetPixel(dc, 30, 30) == background);
+		polygon->SetBorderColor(Color(0, 128, 255));
+		polygon->GetRenderer()->Render(bounds);
+		TEST_ASSERT(GetPixel(dc, 30, 10) == RGB(0, 128, 255) && GetPixel(dc, 30, 30) == background);
+
+		auto checkGradient = [&](GuiGradientBackgroundElement::Direction direction, POINT first, POINT last)
+		{
+			FillRect(dc, &area, brush.GetHandle());
+			gradient->SetDirection(direction);
+			gradient->SetColors(Color(255, 0, 255, 0), Color(0, 0, 255));
+			gradient->GetRenderer()->Render(bounds);
+			TEST_ASSERT(GetPixel(dc, first.x, first.y) == background);
+			TEST_ASSERT(GetPixel(dc, last.x, last.y) == RGB(0, 0, 255));
+			auto middle = GetPixel(dc, 32, 32);
+			TEST_ASSERT(GetRValue(middle) < GetRValue(background) && GetBValue(middle) > GetBValue(background));
+		};
+		checkGradient(GuiGradientBackgroundElement::Horizontal, { 0,32 }, { 63,32 });
+		checkGradient(GuiGradientBackgroundElement::Vertical, { 32,0 }, { 32,63 });
+		checkGradient(GuiGradientBackgroundElement::Slash, { 63,0 }, { 0,63 });
+		checkGradient(GuiGradientBackgroundElement::Backslash, { 0,0 }, { 63,63 });
+
+		FillRect(dc, &area, brush.GetHandle());
+		gradient->SetShape({ ElementShapeType::Ellipse });
+		target->PushClipper({ 16,0,64,64 }, nullptr);
+		gradient->GetRenderer()->Render(bounds);
+		target->PopClipper(nullptr);
+		TEST_ASSERT(GetPixel(dc, 9, 32) == background && GetPixel(dc, 17, 1) == background);
+		TEST_ASSERT(GetPixel(dc, 32, 32) != background);
+		FillRect(dc, &area, brush.GetHandle());
+		gradient->SetShape({});
+		gradient->SetColors(Color(255, 0, 0, 0), Color(0, 255, 0, 0));
+		gradient->GetRenderer()->Render(bounds);
+		TEST_ASSERT(GetPixel(dc, 32, 32) == background);
+
+		paragraph->SetColor(0, 4, Color(255, 0, 255));
+		auto textSize = paragraph->GetSize();
+		for (bool visible : { true, false })
+		{
+			FillRect(dc, &area, brush.GetHandle());
+			if (!visible)
+			{
+				paragraph->SetColor(0, 4, Color(255, 0, 255, 0));
+				paragraph->EnableCaret(1, Color(0, 0, 0, 0), true);
+			}
+			paragraph->Render(bounds);
+			TEST_ASSERT(paragraph->GetSize() == textSize);
+			vint changed = 0;
+			for (int y = 0; y < 64; y++)
+			{
+				for (int x = 0; x < 64; x++)
+				{
+					if (GetPixel(dc, x, y) != background) changed++;
+				}
+			}
+			TEST_ASSERT(visible == (changed > 0));
+		}
+		paragraph->DisableCaret();
+	}
+	target->StopRendering();
+	gradient->GetRenderer()->SetRenderTarget(nullptr);
+	polygon->GetRenderer()->SetRenderTarget(nullptr);
 }
 
 void TestNativeRawElements(bool direct2D)
@@ -468,6 +575,19 @@ void TestNativeRawElements(bool direct2D)
 
 TEST_FILE
 {
+	TEST_CASE(L"GDI polygon strokes, fills, gradient stops, text and carets respect transparent colors")
+	{
+		SetGuiMainProxy([]()
+		{
+			auto service = GetCurrentController()->WindowService();
+			auto native = service->CreateNativeWindow(INativeWindow::Normal);
+			native->SetClientSize({ 240,240 });
+			TestGdiElementAlpha(native);
+			service->DestroyNativeWindow(native);
+		});
+		SetupWindowsGDIRenderer();
+		SetGuiMainProxy({});
+	});
 	TEST_CASE(L"Direct2D raw factories, events, data-only rendering and retained lifetime")
 	{
 		SetGuiMainProxy([]() { TestNativeRawElements(true); });

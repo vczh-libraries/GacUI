@@ -774,7 +774,7 @@ UniscribeTextRun
 							dc->FillRect(rect);
 						}
 					}
-					else
+					else if(color.fontColor.a>0)
 					{
 						Color fontColor=color.fontColor;
 						dc->SetFont(documentFragment->fontObject);

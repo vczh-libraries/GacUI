@@ -10,12 +10,17 @@ namespace demo
 	class RawClockInterpretorBase : public vl::Object, public vl::presentation::elements::IGuiGraphicsRawInterpretor
 	{
 	protected:
+		enum class Stroke { Outline, Face, Hour, Minute, Second };
+
 		vl::presentation::elements::GuiRawElementBase*
 										element = nullptr;
 
 		bool							ReadTime(vl::vint& hour, vl::vint& minute, vl::vint& second);
 		void							DrawClock(vl::presentation::Rect bounds);
-		virtual void					DrawLine(vl::vint color, double x1, double y1, double x2, double y2) = 0;
+		static vl::presentation::Color	GetStrokeColor(Stroke stroke);
+		static vl::vint					GetStrokeWidth(Stroke stroke);
+		virtual void					SelectStroke(Stroke stroke) = 0;
+		virtual void					DrawLine(double x1, double y1, double x2, double y2) = 0;
 		virtual void					DrawEllipse(double cx, double cy, double radius) = 0;
 	};
 }
