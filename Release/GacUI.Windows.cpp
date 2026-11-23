@@ -9380,45 +9380,6 @@ GuiGradientBackgroundElementRenderer
 			{
 			}
 
-			// GDI GradientFill ignores vertex alpha. Blend a premultiplied gradient over the clipped destination.
-			static void DrawAlphaGradient(WinDC* dc, Rect bounds, GuiGradientBackgroundElement::Direction direction, Color first, Color last)
-			{
-				RECT area = { (LONG)bounds.x1, (LONG)bounds.y1, (LONG)bounds.x2, (LONG)bounds.y2 };
-				auto clip = dc->GetClipBoundRect();
-				if (!IntersectRect(&area, &area, &clip)) return;
-
-				double dx = bounds.Width() > 1 ? 1.0 / (bounds.Width() - 1) : 0;
-				double dy = bounds.Height() > 1 ? 1.0 / (bounds.Height() - 1) : 0;
-				double start = 0;
-				switch (direction)
-				{
-				case GuiGradientBackgroundElement::Horizontal: dy = 0; break;
-				case GuiGradientBackgroundElement::Vertical: dx = 0; break;
-				case GuiGradientBackgroundElement::Slash: start = 0.5; dx *= -0.5; dy *= 0.5; break;
-				case GuiGradientBackgroundElement::Backslash: dx *= 0.5; dy *= 0.5; break;
-				}
-
-				auto bitmap = Ptr(new WinBitmap(area.right - area.left, area.bottom - area.top, WinBitmap::vbb32Bits, true));
-				for (vint y = area.top; y < area.bottom; y++)
-				{
-					auto row = (RGBQUAD*)bitmap->GetScanLines()[y - area.top];
-					for (vint x = area.left; x < area.right; x++)
-					{
-						double t = start + (x - bounds.x1) * dx + (y - bounds.y1) * dy;
-						double a = (1 - t) * first.a / 255.0;
-						double b = t * last.a / 255.0;
-						*row++ = {
-							(BYTE)(a * first.b + b * last.b + 0.5),
-							(BYTE)(a * first.g + b * last.g + 0.5),
-							(BYTE)(a * first.r + b * last.r + 0.5),
-							(BYTE)((1 - t) * first.a + t * last.a + 0.5),
-						};
-					}
-				}
-				bitmap->BuildAlphaChannel(false);
-				dc->Draw(area.left, area.top, bitmap);
-			}
-
 			void GuiGradientBackgroundElementRenderer::Render(Rect bounds)
 			{
 				Color color1 = element->GetColor1();
@@ -9444,11 +9405,7 @@ GuiGradientBackgroundElementRenderer
 						renderTarget->GetDC()->ClipRegion(newRegion);
 					}
 
-					if (color1.a < 255 || color2.a < 255)
-					{
-						DrawAlphaGradient(renderTarget->GetDC(), bounds, element->GetDirection(), color1, color2);
-					}
-					else switch (element->GetDirection())
+					switch (element->GetDirection())
 					{
 					case GuiGradientBackgroundElement::Horizontal:
 					case GuiGradientBackgroundElement::Vertical:
@@ -9974,7 +9931,6 @@ GuiGDIElementRenderer
 		}
 	}
 }
-
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\WINDOWS\GDI\RENDERERS\GUIGRAPHICSUNISCRIBE.CPP
