@@ -159,9 +159,6 @@ namespace demo
         var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>5 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
-
-        @cpp:Protected
         var touchingBounds : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
@@ -189,13 +186,6 @@ namespace demo
             (<precompile>4 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
                 (<precompile>4.PreferredMinSize = {x : 320; y : 240;} of (::presentation::Size));
-            }
-            (<precompile>5 = new (::presentation::elements::GuiSolidBackgroundElement^)());
-            {
-                (<precompile>5.Color = (cast (::presentation::Color) "#202020"));
-            }
-            {
-                (<precompile>4.OwnedElement = <precompile>5);
             }
             (touchingBounds = new (::presentation::compositions::GuiBoundsComposition*)());
             <this>.SetNamedObject("touchingBounds", touchingBounds);
