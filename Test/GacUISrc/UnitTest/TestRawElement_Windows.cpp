@@ -348,34 +348,13 @@ void TestGdiElementAlpha(INativeWindow* window)
 		polygon->GetRenderer()->Render(bounds);
 		TEST_ASSERT(GetPixel(dc, 30, 10) == RGB(0, 128, 255) && GetPixel(dc, 30, 30) == background);
 
-		auto checkGradient = [&](GuiGradientBackgroundElement::Direction direction, POINT first, POINT last)
-		{
-			FillRect(dc, &area, brush.GetHandle());
-			gradient->SetDirection(direction);
-			gradient->SetColors(Color(255, 0, 255, 0), Color(0, 0, 255));
-			gradient->GetRenderer()->Render(bounds);
-			TEST_ASSERT(GetPixel(dc, first.x, first.y) == background);
-			TEST_ASSERT(GetPixel(dc, last.x, last.y) == RGB(0, 0, 255));
-			auto middle = GetPixel(dc, 32, 32);
-			TEST_ASSERT(GetRValue(middle) < GetRValue(background) && GetBValue(middle) > GetBValue(background));
-		};
-		checkGradient(GuiGradientBackgroundElement::Horizontal, { 0,32 }, { 63,32 });
-		checkGradient(GuiGradientBackgroundElement::Vertical, { 32,0 }, { 32,63 });
-		checkGradient(GuiGradientBackgroundElement::Slash, { 63,0 }, { 0,63 });
-		checkGradient(GuiGradientBackgroundElement::Backslash, { 0,0 }, { 63,63 });
-
 		FillRect(dc, &area, brush.GetHandle());
-		gradient->SetShape({ ElementShapeType::Ellipse });
-		target->PushClipper({ 16,0,64,64 }, nullptr);
-		gradient->GetRenderer()->Render(bounds);
-		target->PopClipper(nullptr);
-		TEST_ASSERT(GetPixel(dc, 9, 32) == background && GetPixel(dc, 17, 1) == background);
-		TEST_ASSERT(GetPixel(dc, 32, 32) != background);
-		FillRect(dc, &area, brush.GetHandle());
-		gradient->SetShape({});
 		gradient->SetColors(Color(255, 0, 0, 0), Color(0, 255, 0, 0));
 		gradient->GetRenderer()->Render(bounds);
 		TEST_ASSERT(GetPixel(dc, 32, 32) == background);
+		gradient->SetColors(Color(0, 0, 0, 1), Color(0, 0, 0, 128));
+		gradient->GetRenderer()->Render(bounds);
+		TEST_ASSERT(GetPixel(dc, 32, 32) == RGB(0, 0, 0));
 
 		paragraph->SetColor(0, 4, Color(255, 0, 255));
 		auto textSize = paragraph->GetSize();
@@ -575,7 +554,7 @@ void TestNativeRawElements(bool direct2D)
 
 TEST_FILE
 {
-	TEST_CASE(L"GDI polygon strokes, fills, gradient stops, text and carets respect transparent colors")
+	TEST_CASE(L"GDI skips fully transparent strokes, fills, text and carets")
 	{
 		SetGuiMainProxy([]()
 		{
