@@ -1,54 +1,38 @@
-- Add `VTab` to `GUI_CONTROL_TEMPLATE_TYPES` which is a `TabTemplate`:
-  - Add the vertical tab version to `DarkSkin` and `TuiSkin`. A new virtual class `GuiVTab` from `GuiTab` needs to be registered, making `<VTab/>` available in GacUI XML Resource.
-  - The `DarkSkin` version could take `FullControlTest` as a reference by looking at `Layout` test page.
+- Add `VTab` to `GUI_CONTROL_TEMPLATE_TYPES` with the `TabTemplate` contract. Register `GuiVTab` as a virtual `GuiTab` so GacUI XML resources can use `<VTab/>`.
+  - Provide vertical tab templates in `DarkSkin` and `TuiSkin`. Use the existing FullControlTest Layout template as the starting point for DarkSkin.
 - In `FullControlTest`:
   - The `Search` label in `Document Editor (Ribbon)` is always white, it should use `<Label/>` instead.
-  - Update `Layout` test page to use `VTab`, and delete the vertical tab template definition from `FullControlTest`.
+  - Use `<RibbonTab ControlThemeName="VTab">` for the nested tab on the `Layout` page. Keep the `Easy Layout (Responsive)` button in `AfterHeaders` and remove the showcase's local vertical tab template.
 - In `TuiControlTest`:
-  - Update `Layout` test page to use `VTab` like `FullControlTest`.
+  - Use `<VTab/>` on the `Layout` page for the existing `Repeat` and `Responsive` pages.
 - To verify the above work, just launch `CppTest` and `CppTest_Tui` and see if expected changes happen.
-- Release `GacUI` to `Release` and make sure `FullControlTest` and `TuiControlTest` are updated to `GacUI_ControlTemplates` tutorial.
-  - In `Build.ps1` adds a `-Fast` option, it does:
-    - For `-Project Vlpp`, it skips `Build-Vlpp`, same to other projects if not mentioned below. This could be done by add a `fast` argument to `Task-Vlpp` and other functions.
-    - For `-Project GacUI` it keep all others and calls `Build-GacUI` with fast argument, skipping `Test-GacUI-SubProject "UnitTest"` and keep others, so that metadata binary files are generated.
-    - For `-Project Release` it keep all others and calls `Task-Verify-Cpp` with fast argument, which only builds debug but not release.
-  - Use `Build.ps1 -Release -Fast`.
+- Release GacUI and update both showcases in `<Release repo>/Tutorial/GacUI_ControlTemplate`.
+  - Add a `-Fast` switch to `<Tools repo>/Tools/Build.ps1` for both the default build and individual `-Project` targets.
+    - For `-Project Vlpp`, skip `Build-Vlpp` and keep its import and release steps. Apply the same rule to each other library project except GacUI.
+    - For `-Project GacUI`, pass the switch to `Build-GacUI` and skip only `Test-GacUI-SubProject "UnitTest"`. Generate and test the metadata on both architectures.
+    - For `-Project Release`, keep packaging, Workflow and XML verification, and the Debug C++ tutorial builds and executable checks. Skip only the Release C++ tutorial builds.
+  - Run `<Tools repo>/Tools/Build.ps1 -Fast` with no project selector. It must run the same projects in the same order as the ordinary default build, applying each project's fast-mode rules.
 - Add `VTab` to the website, there are multiple places need to update, check out what pages reference `Tab` control.
   - Publish the website, when doing `job:copilotInitAll` skip learning.
-- commit and push all local changes in affected repos, `CheckRepo.ps1 CheckAll` could be used to verify if there is any remaining local change.
+- Commit and push all local changes in the affected repos. `<Tools repo>/Tools/CheckRepo.ps1 CheckAll` can report any remaining changes.
 
 ## DETAILS
 
 - Append `F(TabTemplate, VTab)` to `GUI_CONTROL_TEMPLATE_TYPES` in `<GacUI repo>/Source/Application/Controls/GuiThemeManager.h` to preserve existing enum values. Register `ADD_VIRTUAL_CONTROL(VTab, GuiTab, VTab)` in `<GacUI repo>/Source/Compiler/InstanceLoaders/GuiInstanceLoader_Plugin.cpp`. The resource compiler then constructs `GuiTab(ThemeName::VTab)` for `<VTab/>`. Pages and selection use the existing tab API.
-- Register `att.VTab` in both `<GacUI repo>/Test/Resources/App/DarkSkin/Index.xml` and `<GacUI repo>/Test/Resources/App/TuiSkin/Index.xml`. Reuse each skin's tab header, give the vertical template `TabOrder="TopToBottom"`, and place the selected page to the right. Use TuiSkin's cell dimensions, border and focus styling.
+- Register `att.VTab` in both `<GacUI repo>/Test/Resources/App/DarkSkin/Index.xml` and `<GacUI repo>/Test/Resources/App/TuiSkin/Index.xml`. In DarkSkin, use a `RibbonTabTemplate` with `BeforeHeadersContainer` and `AfterHeadersContainer`. It satisfies the `TabTemplate` contract and gives the showcase button a place below the headers. In TuiSkin, use a `TabTemplate` with cell-sized spacing, a terminal border and the existing focus styling. In both skins, reuse the tab header, set `TabOrder="TopToBottom"`, and put the selected page on the right.
 - Remove `<GacUI repo>/Test/Resources/App/FullControlTest/VerticalTabTemplate.xml`, its resource link and its entries in the GacUI_Compiler project and filters. Remove the Layout activation handler that assigns the explicit template back to itself. Theme refresh handles the registered default. In `<GacUI repo>/Test/Resources/App/FullControlTest/DocumentEditorRibbon.xml`, keep the `Search: ` caption, alignment and adjacent text box's `Alt="S"` while allowing the label template to supply the text color.
-- Thread `-Fast` through the named project and default build paths in `<Tools repo>/Tools/Build.ps1`. Ordinary projects still import and release their outputs. `Task-Workflow` calls the RPC stdio check separately after `Build-Workflow`. Skipping just that build leaves the check dependent on previously built Release x64 driver and service binaries.
-- In `<Tools repo>/Tools/ProjectGacUI.ps1`, keep both architecture builds, metadata generation and testing, tool deployment, skin generation and packing. Skip the UnitTest invocation in fast mode. The Release branch calls `Task-Verify-Cpp-OpenFolders`. Both C++ verification entry points call `Build-Release-Verify-GacUI-Cpp` in `<Tools repo>/Tools/BuildRelease.ps1`. Guard the Release tutorial build loop there and retain the Debug executable checks, Workflow verification and XML generation.
+- The default build prepares the tools, runs the library tasks through Workflow, runs GacUI, then packages and verifies Release. Pass the switch into the same task functions used by the named project targets. Keep the tool builds inside the release steps. Skipping `Build-Workflow` leaves the separate RPC stdio check in place. That check needs the Workflow solution's Release x64 driver and service binaries.
+- In `<Tools repo>/Tools/ProjectGacUI.ps1`, keep both architecture builds, metadata generation and testing, tool deployment, skin generation and packing. For C++ tutorial verification the default build calls `Task-Verify-Cpp` and the named Release target calls `Task-Verify-Cpp-OpenFolders`. Both call `Build-Release-Verify-GacUI-Cpp` in `<Tools repo>/Tools/BuildRelease.ps1`. Apply the fast-mode condition to the Release tutorial build loop in that shared function.
 - Update the current manual under `<WebsiteSource repo>/packages/website-doc2/src/articles/gacui`. Cover the component navigation, control hierarchy, container overview and tab reference, default template registration example, and TabTemplate reference. Add the `VTab` to `TabTemplate` mapping in `<WebsiteSource repo>/packages/website-doc2/src/articles/gacui/components/ctemplates/metadata/themeNames.json`. The custom vertical-template tutorial can point readers to the built-in control.
 
 ## VERIFICATION
 
 1. Follow the generation sequence in `<GacUI repo>/Project.md`. Generate current Win32 and x64 core metadata before running GacUI_Compiler, which reads both. Rebuild the generated skins and showcases, regenerate and check the final metadata, then launch the updated Debug x64 apps.
-2. In `CppTest`, check that Layout lists Repeat, Responsive, Easy Layout and Easy Layout (Table) down the left side in that order. Select pages by mouse and Up/Down. Open the responsive modal with the button and its displayed Alt sequence, close it, and check that the same page is selected. Resize and switch palettes. The button should stay five layout pixels below the last header, page edits should survive, and the ribbon's Search caption should match a normal label. Update the existing palette lookup in `<GacUI repo>/Test/UIA_CppTest_Shared.cs` to identify the Layout control by its new theme name.
+2. In `CppTest`, check that Layout lists Repeat, Responsive, Easy Layout and Easy Layout (Table) down the left side in that order. Select pages by mouse and Up/Down. Open the responsive modal with the button and its displayed Alt sequence, close it, and check that the same page is selected. Resize and switch palettes. The button should stay five layout pixels below the last header, page edits should survive, and the ribbon's Search caption should match a normal label. The Controls snapshot reports the theme name. Update the Layout palette lookup in `<GacUI repo>/Test/UIA_CppTest_Shared.cs` from `RibbonTab` to `VTab`.
 3. In an interactive `CppTest_Tui` session, check that Layout stacks Repeat above Responsive, each selection shows its content on the right, and Up/Down works with the tab focused. Resize from 120 by 40 to 80 by 25 and check header readability. The main tab strip should still be horizontal.
-4. Check the fast build log for Win32 and x64 metadata generation and testing, then Debug C++ tutorial verification. Confirm that the GacUI UnitTest invocation and the Release tutorial build loop still run in ordinary mode and are skipped in fast mode. Verify that the packaged showcases under `<Release repo>/Tutorial/GacUI_ControlTemplate/BlackSkin/UI/FullControlTest` and `<Release repo>/Tutorial/GacUI_ControlTemplate/TuiSkin/UI/TuiControlTest` use the new theme and that the obsolete showcase template is gone.
+4. Check the default `-Fast` run for library imports and releases, Win32 and x64 GacUI metadata generation and testing, packaging, and Debug C++ tutorial verification in order. Compare the executed steps with the normal dispatch to verify the three skips above. In the packaged resources, verify that `<Release repo>/Tutorial/GacUI_ControlTemplate/BlackSkin/UI/FullControlTest` uses the ribbon tab with the `VTab` theme and `<Release repo>/Tutorial/GacUI_ControlTemplate/TuiSkin/UI/TuiControlTest` uses the `<VTab/>` tag. Check that the obsolete showcase template and its link are gone.
 5. Follow `<WebsiteSource repo>/job.publish.prompt.md`. Check that the published tab reference and generated Markdown both describe `<VTab/>`. Start both copilotInitAll passes at “Merge Knowledge Base” as directed by `<Tools repo>/Jobs/job.Windows.copilotInitAll.prompt.md`. After pushing the affected repositories, inspect the output of `<Tools repo>/Tools/CheckRepo.ps1 CheckAll` for outstanding changes.
 
 ## REVIEW COMMENTS
 
-### Keeping the responsive button below the Layout headers
-
-**review comment**: FullControlTest places the button in `AfterHeaders`, a property of `GuiRibbonTab` in `<GacUI repo>/Source/Controls/ToolstripPackage/GuiRibbonControls.h`. A literal `<VTab/>` backed by `GuiTab` cannot accept it. Existing checks cover the five-pixel gap, the button role and its W access key. Windows UI Automation also collects header-slot children specifically from ribbon tabs.
-
-**suggested solution**: The smallest change is to use `<RibbonTab ControlThemeName="VTab">` for this one showcase and have DarkSkin supply a `RibbonTabTemplate` for the new theme, as it already does for `Tab`. TuiControlTest can use `<VTab/>` directly. If both showcases must use the literal tag, move the header slots and their template attachment, reflection and UI Automation support to the base tab types so the button keeps its position and behavior.
-
-Agreed `<RibbonTab ControlThemeName="VTab">`.
-
-### Choosing the fast release command
-
-**review comment**: `<Tools repo>/Tools/Build.ps1` currently declares only the `-Project` parameter. Its `Release` target copies previously packed GacUI outputs. Adding only `-Fast` would leave the requested `-Release -Fast` spelling undefined, and running only the existing Release target could package stale skins and metadata.
-
-**suggested solution**: Use `-Project GacUI -Fast` followed by `-Project Release -Fast`. If the literal one-command spelling is required, define `-Release -Fast` to run those two stages in that order.
-
-Good catch, I meant `Build.ps1 -Fast`, which should be equivalent to applying `-Fast` to all projects when running `Build.ps1` alone.
-
+Both comments are resolved.
