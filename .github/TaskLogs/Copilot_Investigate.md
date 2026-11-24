@@ -51,3 +51,12 @@ Baseline resource inspection found the nested GUI ribbon tab explicitly installs
 
 # PROPOSALS
 
+- No.1 Register a vertical tab theme and ship its two skin implementations
+
+## No.1 Register a vertical tab theme and ship its two skin implementations
+
+Append the theme name and bind a virtual XML control to the existing tab class so the page collection, selection and keyboard behavior stay shared. Move the showcase template into DarkSkin and build the terminal template with the existing focus-aware header. Register both through the skin indexes. Use the ribbon containers on the GUI Layout page and the plain virtual control on the terminal Layout page.
+
+### CODE CHANGE
+
+Update the theme and loader inventories, skin XML, showcase resources and palette verification. Regenerate both architectures. Add the fast switch at the existing build dispatch and keep packaging, metadata and Debug tutorial verification in place. Document the two XML forms and publish the generated manual through the normal synchronization job.
