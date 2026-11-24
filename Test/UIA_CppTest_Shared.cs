@@ -3338,7 +3338,7 @@ public static class GacUIShowcaseTests
             var selected = Named(layout, "Easy Layout (Table)", ControlType.TabItem);
             Check(Pattern<SelectionItemPattern>(selected, SelectionItemPattern.Pattern).Current.IsSelected, "vertical template refresh retains selected page");
             Check(Pattern<ValuePattern>(Find(selected, ControlType.Edit)[0], ValuePattern.Pattern).Current.Value == "Vertical template retained state", "vertical template refresh retains editor state");
-            var tab = SnapshotControl(ControlsSnapshot(), "RibbonTab", "Easy Layout (Responsive)");
+            var tab = SnapshotControl(ControlsSnapshot(), "VTab", "Easy Layout (Responsive)");
             Check(SnapshotHas(tab, "element", "Background:#2D2D30FF,Rectangle") && SnapshotHas(tab, "element", "Border:#434346FF,Rectangle"), "vertical template background and border");
             Wait(() => SnapshotHas(SnapshotControl(ControlsSnapshot(), "CheckBox", "Easy Layout (Table)"), "element", "Background:" + colors[1] + ",Rectangle"), "selected header uses current palette before hover");
             var lastHoverBounds = System.Windows.Rect.Empty;

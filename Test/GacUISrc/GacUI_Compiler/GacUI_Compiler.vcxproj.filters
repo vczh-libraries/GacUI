@@ -228,9 +228,6 @@
     <Xml Include="..\..\Resources\App\FullControlTest\ResponsiveImages\Images.xml">
       <Filter>Resource Files\FullControlTest\ResponsiveImages</Filter>
     </Xml>
-    <Xml Include="..\..\Resources\App\FullControlTest\VerticalTabTemplate.xml">
-      <Filter>Resource Files\FullControlTest</Filter>
-    </Xml>
     <Xml Include="..\..\Resources\App\FullControlTest\TouchingTabPage.xml">
       <Filter>Resource Files\FullControlTest</Filter>
     </Xml>

@@ -254,7 +254,15 @@
             <att.AfterHeaders-set>
               <Stack Direction="Horizontal" AlignmentToParent="left:0 top:-1 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
                 <StackItem>
-                  <SolidLabel Font-bind="self.DisplayFont" Color="#FFFFFF" Text="Search: " HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                  <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                    <att.Rows>
+                      <_>composeType:Percentage percentage:0.5</_>
+                      <_>composeType:MinSize</_>
+                      <_>composeType:Percentage percentage:0.5</_>
+                    </att.Rows>
+                    <att.Columns><_>composeType:MinSize</_></att.Columns>
+                    <Cell Site="row:1 column:0"><Label Text="Search: "/></Cell>
+                  </Table>
                 </StackItem>
                 <StackItem>
                   <SinglelineTextBox Alt="S">

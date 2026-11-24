@@ -198,13 +198,13 @@
               </Tab>
             </TabPage>
             <TabPage Alt="L" Text="Layout">
-              <Tab>
+              <VTab>
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
                 <att.Pages>
                   <demo:TuiRepeatTabPage Alt="R" />
                   <demo:TuiResponsiveTabPage Alt="R" />
                 </att.Pages>
-              </Tab>
+              </VTab>
             </TabPage>
             <TabPage Alt="L" Text="Control">
               <Tab>

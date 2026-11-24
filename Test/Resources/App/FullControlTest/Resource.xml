@@ -176,16 +176,7 @@
           }]]></ev.Executed-eval>
         </ToolstripCommand>
         <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
-        <Tab ref.Name="mainTabs">
-          <ev.SelectedPageChanged-eval><![CDATA[{
-            if (mainTabs.SelectedPage == layoutPage)
-            {
-              GuiApplication::GetApplication().InvokeInMainThread(self, func():void
-              {
-                layoutTab.ControlTemplate = layoutTab.ControlTemplate;
-              });
-            }
-          }]]></ev.SelectedPageChanged-eval>
+        <Tab>
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
           <att.Pages>
             <TabPage Alt="L" Text="List">
@@ -213,8 +204,8 @@
                 </att.Pages>
               </Tab>
             </TabPage>
-            <TabPage ref.Name="layoutPage" Alt="L" Text="Layout">
-              <RibbonTab ref.Name="layoutTab" ControlTemplate="demo::VerticalTabTemplate">
+            <TabPage Alt="L" Text="Layout">
+              <RibbonTab ControlThemeName="VTab">
                 <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
                 <att.AfterHeaders-set>
                   <Button Text="Easy Layout (Responsive)" Alt="W">
@@ -383,7 +374,6 @@
   <Instance name="RepeatTabPageResource" content="File">RepeatTabPage.xml</Instance>
   <Folder name="ResponsiveTabPage" content="Link">ResponsiveTabPage.xml</Folder>
   <Folder name="EasyLayoutTabPage" content="Link">EasyLayoutTabPage.xml</Folder>
-  <Folder name="VerticalTabTemplate" content="Link">VerticalTabTemplate.xml</Folder>
   <Folder name="EasyLayoutResponsiveTemplates" content="Link">EasyLayoutResponsiveTemplates.xml</Folder>
   <Folder name="EasyLayoutResponsiveWindow" content="Link">EasyLayoutResponsiveWindow.xml</Folder>
   <Folder name="ResponsiveImages" content="Link">ResponsiveImages/Images.xml</Folder>

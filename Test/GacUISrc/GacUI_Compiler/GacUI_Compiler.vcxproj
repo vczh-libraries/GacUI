@@ -218,7 +218,6 @@
     <Xml Include="..\..\Resources\App\FullControlTest\ResponsiveImages\Images.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\TouchingListTabPage.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\TouchingTabPage.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\VerticalTabTemplate.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\ElementTabPage.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\EmbeddedControlsSubTabPage.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\Images\ImageLoader.xml" />

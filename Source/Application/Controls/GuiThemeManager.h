@@ -212,6 +212,7 @@ Theme Names
 			F(ScrollTemplate,				HTracker)					\
 			F(ScrollTemplate,				VTracker)					\
 			F(ScrollTemplate,				ProgressBar)				\
+			F(TabTemplate,					VTab)						\
 
 			enum class ThemeName
 			{
