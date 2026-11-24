@@ -42,8 +42,13 @@
 
 **suggested solution**: The smallest change is to use `<RibbonTab ControlThemeName="VTab">` for this one showcase and have DarkSkin supply a `RibbonTabTemplate` for the new theme, as it already does for `Tab`. TuiControlTest can use `<VTab/>` directly. If both showcases must use the literal tag, move the header slots and their template attachment, reflection and UI Automation support to the base tab types so the button keeps its position and behavior.
 
+Agreed `<RibbonTab ControlThemeName="VTab">`.
+
 ### Choosing the fast release command
 
 **review comment**: `<Tools repo>/Tools/Build.ps1` currently declares only the `-Project` parameter. Its `Release` target copies previously packed GacUI outputs. Adding only `-Fast` would leave the requested `-Release -Fast` spelling undefined, and running only the existing Release target could package stale skins and metadata.
 
 **suggested solution**: Use `-Project GacUI -Fast` followed by `-Project Release -Fast`. If the literal one-command spelling is required, define `-Release -Fast` to run those two stages in that order.
+
+Good catch, I meant `Build.ps1 -Fast`, which should be equivalent to applying `-Fast` to all projects when running `Build.ps1` alone.
+
