@@ -58,7 +58,7 @@ namespace demo
 		if ((::vl::__vwsn::This(this->self)->GetSelectedSkinItem().Obj() != item.Obj()))
 		{
 			::vl::__vwsn::This(this->self)->SetSelectedSkinItem(item);
-			::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(static_cast<::vl::presentation::controls::GuiControlHost*>(this->self), vl::Func(::vl_workflow_global::__vwsnf84_FullControlTest_demo_MainWindow_SelectSkinItem_(item, this)));
+			::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(static_cast<::vl::presentation::controls::GuiControlHost*>(this->self), vl::Func(::vl_workflow_global::__vwsnf81_FullControlTest_demo_MainWindow_SelectSkinItem_(item, this)));
 		}
 	}
 
@@ -69,7 +69,7 @@ namespace demo
 		auto button = ::vl::__vwsn::This(itemTemplate)->GetButton();
 		::vl::__vwsn::This(button)->SetGroupController(static_cast<::vl::presentation::controls::GuiSelectableButton::GroupController*>(this->paletteGroup));
 		::vl::__vwsn::This(button)->SetSelected((::vl::__vwsn::This(this->self)->GetSelectedSkinItem().Obj() == item.Obj()));
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(button)->SelectedChanged, vl::Func(::vl_workflow_global::__vwsnf85_FullControlTest_demo_MainWindow_CreateSkinItemTemplate_(button, item, this)));
+		::vl::__vwsn::EventAttach(::vl::__vwsn::This(button)->SelectedChanged, vl::Func(::vl_workflow_global::__vwsnf82_FullControlTest_demo_MainWindow_CreateSkinItemTemplate_(button, item, this)));
 		return static_cast<::vl::presentation::templates::GuiTemplate*>(itemTemplate);
 	}
 

@@ -24546,7 +24546,7 @@ Class (::tuidemo::TuiMainWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetText(::vl::WString::Unmanaged(L"Layout"));
 		}
 		{
-			(this->__vwsn_precompile_20 = new ::vl::presentation::controls::GuiTab(::vl::presentation::theme::ThemeName::Tab));
+			(this->__vwsn_precompile_20 = new ::vl::presentation::controls::GuiTab(::vl::presentation::theme::ThemeName::VTab));
 		}
 		(this->__vwsn_precompile_22 = new ::tuidemo::TuiRepeatTabPage());
 		{

@@ -6005,6 +6005,7 @@ enum presentation::theme::ThemeName {
     TreeView = 18,
     Unknown = 0,
     VScroll = 61,
+    VTab = 65,
     VTracker = 63,
     Window = 1,
 }
@@ -6074,6 +6075,7 @@ class presentation::theme::ThemeTemplates : presentation::controls::GuiInstanceR
     property TreeItemExpander : system::Function<presentation::templates::GuiSelectableButtonTemplate*, system::Object>^;
     property TreeView : system::Function<presentation::templates::GuiTreeViewTemplate*, system::Object>^;
     property VScroll : system::Function<presentation::templates::GuiScrollTemplate*, system::Object>^;
+    property VTab : system::Function<presentation::templates::GuiTabTemplate*, system::Object>^;
     property VTracker : system::Function<presentation::templates::GuiScrollTemplate*, system::Object>^;
 
     constructor () : presentation::theme::ThemeTemplates^;

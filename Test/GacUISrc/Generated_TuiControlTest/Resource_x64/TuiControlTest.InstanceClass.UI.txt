@@ -1988,7 +1988,7 @@ namespace tuidemo
                 (<precompile>19.Text = "Layout");
             }
             {
-                (<precompile>20 = new (::presentation::controls::GuiTab*)(::presentation::theme::ThemeName::Tab));
+                (<precompile>20 = new (::presentation::controls::GuiTab*)(::presentation::theme::ThemeName::VTab));
             }
             (<precompile>22 = new (::tuidemo::TuiRepeatTabPage*)());
             {

@@ -184,8 +184,6 @@ namespace vl
 			DECL_TYPE_INFO(::demo::TouchingTabPageConstructor)
 			DECL_TYPE_INFO(::demo::TreeViewTabPage)
 			DECL_TYPE_INFO(::demo::TreeViewTabPageConstructor)
-			DECL_TYPE_INFO(::demo::VerticalTabTemplate)
-			DECL_TYPE_INFO(::demo::VerticalTabTemplateConstructor)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 

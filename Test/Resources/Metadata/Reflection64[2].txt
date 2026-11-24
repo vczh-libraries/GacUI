@@ -2162,6 +2162,61 @@ class darkskin::VScrollTemplateConstructor : system::ReferenceType {
     constructor () : darkskin::VScrollTemplateConstructor^;
 }
 
+@FullName:darkskin::VTabTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::VTabTemplateConstructor)
+class darkskin::VTabTemplate : presentation::templates::GuiRibbonTabTemplate, darkskin::VTabTemplateConstructor {
+    event HighlightedChanged : system::Function<system::Void>^ observing {
+        Highlighted,
+    }
+
+    property Highlighted : system::Boolean { get:GetHighlighted set:SetHighlighted event:HighlightedChanged }
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_prop_Highlighted : system::Boolean;
+
+    function GetHighlighted() : system::Boolean;
+    function SetHighlighted(__vwsn_value_ : system::Boolean) : system::Void;
+    function UpdateTabHeader() : system::Void;
+
+    constructor () : darkskin::VTabTemplate*;
+}
+
+@FullName:darkskin::VTabTemplateConstructor
+class darkskin::VTabTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_3 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_4 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_6 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_7 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_8 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property afterHeadersContainer : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property beforeHeadersContainer : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property header : presentation::compositions::GuiRepeatStackComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : darkskin::VTabTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_darkskin_VTabTemplate_Initialize(__vwsn_this_ : darkskin::VTabTemplate*) : system::Void;
+
+    constructor () : darkskin::VTabTemplateConstructor^;
+}
+
 @FullName:darkskin::VTrackerTemplate
 @system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::VTrackerTemplateConstructor)
 class darkskin::VTrackerTemplate : presentation::templates::GuiScrollTemplate, darkskin::VTrackerTemplateConstructor {
@@ -9365,6 +9420,7 @@ enum presentation::theme::ThemeName {
     TreeView = 18,
     Unknown = 0,
     VScroll = 61,
+    VTab = 65,
     VTracker = 63,
     Window = 1,
 }
@@ -9434,6 +9490,7 @@ class presentation::theme::ThemeTemplates : presentation::controls::GuiInstanceR
     property TreeItemExpander : system::Function<presentation::templates::GuiSelectableButtonTemplate*, system::Object>^;
     property TreeView : system::Function<presentation::templates::GuiTreeViewTemplate*, system::Object>^;
     property VScroll : system::Function<presentation::templates::GuiScrollTemplate*, system::Object>^;
+    property VTab : system::Function<presentation::templates::GuiTabTemplate*, system::Object>^;
     property VTracker : system::Function<presentation::templates::GuiScrollTemplate*, system::Object>^;
 
     constructor () : presentation::theme::ThemeTemplates^;
@@ -12752,6 +12809,37 @@ class tuiskin::TuiVScrollTemplateConstructor : system::ReferenceType {
     function __vwsn_tuiskin_TuiVScrollTemplate_Initialize(__vwsn_this_ : tuiskin::TuiVScrollTemplate*) : system::Void;
 
     constructor () : tuiskin::TuiVScrollTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiVTabTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiVTabTemplateConstructor)
+class tuiskin::TuiVTabTemplate : presentation::templates::GuiTabTemplate, tuiskin::TuiVTabTemplateConstructor {
+    constructor () : tuiskin::TuiVTabTemplate*;
+}
+
+@FullName:tuiskin::TuiVTabTemplateConstructor
+class tuiskin::TuiVTabTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_4 : presentation::elements::TuiBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property header : presentation::compositions::GuiRepeatStackComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiVTabTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiVTabTemplate_Initialize(__vwsn_this_ : tuiskin::TuiVTabTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiVTabTemplateConstructor^;
 }
 
 @FullName:tuiskin::TuiVTrackerTemplate

@@ -1,4 +1,4 @@
-﻿================================(1/87)================================
+﻿================================(1/89)================================
 module <constructor>tuiskin::TuiTheme;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -192,6 +192,14 @@ namespace tuiskin
                 });
             }
             {
+                (<precompile>0.VTab = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiTabTemplate*)
+                {
+                    {
+                        return new (::tuiskin::TuiVTabTemplate*)();
+                    }
+                });
+            }
+            {
                 (<precompile>0.ScrollView = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiScrollViewTemplate*)
                 {
                     {
@@ -325,7 +333,7 @@ namespace tuiskin
     }
 }
 
-================================(2/87)================================
+================================(2/89)================================
 module <instance>tuiskin::TuiTheme;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -377,7 +385,7 @@ namespace tuiskin
     }
 }
 
-================================(3/87)================================
+================================(3/89)================================
 module <constructor>tuiskin::TuiButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -871,7 +879,7 @@ namespace tuiskin
     }
 }
 
-================================(4/87)================================
+================================(4/89)================================
 module <instance>tuiskin::TuiButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -913,7 +921,7 @@ namespace tuiskin
     }
 }
 
-================================(5/87)================================
+================================(5/89)================================
 module <constructor>tuiskin::TuiCheckBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1538,7 +1546,7 @@ namespace tuiskin
     }
 }
 
-================================(6/87)================================
+================================(6/89)================================
 module <instance>tuiskin::TuiCheckBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1580,7 +1588,7 @@ namespace tuiskin
     }
 }
 
-================================(7/87)================================
+================================(7/89)================================
 module <constructor>tuiskin::TuiRadioButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2205,7 +2213,7 @@ namespace tuiskin
     }
 }
 
-================================(8/87)================================
+================================(8/89)================================
 module <instance>tuiskin::TuiRadioButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2247,7 +2255,7 @@ namespace tuiskin
     }
 }
 
-================================(9/87)================================
+================================(9/89)================================
 module <constructor>tuiskin::TuiDocumentLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2307,7 +2315,7 @@ namespace tuiskin
     }
 }
 
-================================(10/87)================================
+================================(10/89)================================
 module <instance>tuiskin::TuiDocumentLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2349,7 +2357,7 @@ namespace tuiskin
     }
 }
 
-================================(11/87)================================
+================================(11/89)================================
 module <constructor>tuiskin::TuiDocumentTextBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2537,7 +2545,7 @@ namespace tuiskin
     }
 }
 
-================================(12/87)================================
+================================(12/89)================================
 module <instance>tuiskin::TuiDocumentTextBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2579,7 +2587,7 @@ namespace tuiskin
     }
 }
 
-================================(13/87)================================
+================================(13/89)================================
 module <constructor>tuiskin::TuiDocumentViewerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2786,7 +2794,7 @@ namespace tuiskin
     }
 }
 
-================================(14/87)================================
+================================(14/89)================================
 module <instance>tuiskin::TuiDocumentViewerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2828,7 +2836,7 @@ namespace tuiskin
     }
 }
 
-================================(15/87)================================
+================================(15/89)================================
 module <constructor>tuiskin::TuiComboBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3669,7 +3677,7 @@ namespace tuiskin
     }
 }
 
-================================(16/87)================================
+================================(16/89)================================
 module <instance>tuiskin::TuiComboBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3711,7 +3719,7 @@ namespace tuiskin
     }
 }
 
-================================(17/87)================================
+================================(17/89)================================
 module <constructor>tuiskin::TuiContentMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3765,7 +3773,7 @@ namespace tuiskin
     }
 }
 
-================================(18/87)================================
+================================(18/89)================================
 module <instance>tuiskin::TuiContentMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3807,7 +3815,7 @@ namespace tuiskin
     }
 }
 
-================================(19/87)================================
+================================(19/89)================================
 module <constructor>tuiskin::TuiExpandingDecoratorTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3934,7 +3942,7 @@ namespace tuiskin
     }
 }
 
-================================(20/87)================================
+================================(20/89)================================
 module <instance>tuiskin::TuiExpandingDecoratorTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3976,7 +3984,7 @@ namespace tuiskin
     }
 }
 
-================================(21/87)================================
+================================(21/89)================================
 module <constructor>tuiskin::TuiItemBackgroundTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4433,7 +4441,7 @@ namespace tuiskin
     }
 }
 
-================================(22/87)================================
+================================(22/89)================================
 module <instance>tuiskin::TuiItemBackgroundTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4475,7 +4483,7 @@ namespace tuiskin
     }
 }
 
-================================(23/87)================================
+================================(23/89)================================
 module <constructor>tuiskin::TuiListViewColumnHeaderTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5423,7 +5431,7 @@ namespace tuiskin
     }
 }
 
-================================(24/87)================================
+================================(24/89)================================
 module <instance>tuiskin::TuiListViewColumnHeaderTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5465,7 +5473,7 @@ namespace tuiskin
     }
 }
 
-================================(25/87)================================
+================================(25/89)================================
 module <constructor>tuiskin::TuiListViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5691,7 +5699,7 @@ namespace tuiskin
     }
 }
 
-================================(26/87)================================
+================================(26/89)================================
 module <instance>tuiskin::TuiListViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5733,7 +5741,7 @@ namespace tuiskin
     }
 }
 
-================================(27/87)================================
+================================(27/89)================================
 module <constructor>tuiskin::TuiTextListTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5961,7 +5969,7 @@ namespace tuiskin
     }
 }
 
-================================(28/87)================================
+================================(28/89)================================
 module <instance>tuiskin::TuiTextListTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6003,7 +6011,7 @@ namespace tuiskin
     }
 }
 
-================================(29/87)================================
+================================(29/89)================================
 module <constructor>tuiskin::TuiTreeViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6223,7 +6231,7 @@ namespace tuiskin
     }
 }
 
-================================(30/87)================================
+================================(30/89)================================
 module <instance>tuiskin::TuiTreeViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6265,7 +6273,7 @@ namespace tuiskin
     }
 }
 
-================================(31/87)================================
+================================(31/89)================================
 module <constructor>tuiskin::TuiDateButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6442,7 +6450,7 @@ namespace tuiskin
     }
 }
 
-================================(32/87)================================
+================================(32/89)================================
 module <instance>tuiskin::TuiDateButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6484,7 +6492,7 @@ namespace tuiskin
     }
 }
 
-================================(33/87)================================
+================================(33/89)================================
 module <constructor>tuiskin::TuiDatePickerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6928,7 +6936,7 @@ namespace tuiskin
     }
 }
 
-================================(34/87)================================
+================================(34/89)================================
 module <instance>tuiskin::TuiDatePickerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6970,7 +6978,7 @@ namespace tuiskin
     }
 }
 
-================================(35/87)================================
+================================(35/89)================================
 module <constructor>tuiskin::TuiGroupBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7236,7 +7244,7 @@ namespace tuiskin
     }
 }
 
-================================(36/87)================================
+================================(36/89)================================
 module <instance>tuiskin::TuiGroupBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7278,7 +7286,7 @@ namespace tuiskin
     }
 }
 
-================================(37/87)================================
+================================(37/89)================================
 module <constructor>tuiskin::TuiLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7572,7 +7580,7 @@ namespace tuiskin
     }
 }
 
-================================(38/87)================================
+================================(38/89)================================
 module <instance>tuiskin::TuiLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7614,7 +7622,7 @@ namespace tuiskin
     }
 }
 
-================================(39/87)================================
+================================(39/89)================================
 module <constructor>tuiskin::TuiShortcutKeyTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7910,7 +7918,7 @@ namespace tuiskin
     }
 }
 
-================================(40/87)================================
+================================(40/89)================================
 module <instance>tuiskin::TuiShortcutKeyTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7952,7 +7960,7 @@ namespace tuiskin
     }
 }
 
-================================(41/87)================================
+================================(41/89)================================
 module <constructor>tuiskin::TuiBottomScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8244,7 +8252,7 @@ namespace tuiskin
     }
 }
 
-================================(42/87)================================
+================================(42/89)================================
 module <instance>tuiskin::TuiBottomScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8286,7 +8294,7 @@ namespace tuiskin
     }
 }
 
-================================(43/87)================================
+================================(43/89)================================
 module <constructor>tuiskin::TuiHScrollTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8672,7 +8680,7 @@ namespace tuiskin
     }
 }
 
-================================(44/87)================================
+================================(44/89)================================
 module <instance>tuiskin::TuiHScrollTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8723,7 +8731,7 @@ namespace tuiskin
     }
 }
 
-================================(45/87)================================
+================================(45/89)================================
 module <constructor>tuiskin::TuiHTrackerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8985,7 +8993,7 @@ namespace tuiskin
     }
 }
 
-================================(46/87)================================
+================================(46/89)================================
 module <instance>tuiskin::TuiHTrackerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9034,7 +9042,7 @@ namespace tuiskin
     }
 }
 
-================================(47/87)================================
+================================(47/89)================================
 module <constructor>tuiskin::TuiHandleScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9194,7 +9202,7 @@ namespace tuiskin
     }
 }
 
-================================(48/87)================================
+================================(48/89)================================
 module <instance>tuiskin::TuiHandleScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9236,7 +9244,7 @@ namespace tuiskin
     }
 }
 
-================================(49/87)================================
+================================(49/89)================================
 module <constructor>tuiskin::TuiLeftScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9528,7 +9536,7 @@ namespace tuiskin
     }
 }
 
-================================(50/87)================================
+================================(50/89)================================
 module <instance>tuiskin::TuiLeftScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9570,7 +9578,7 @@ namespace tuiskin
     }
 }
 
-================================(51/87)================================
+================================(51/89)================================
 module <constructor>tuiskin::TuiProgressBarTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9806,7 +9814,7 @@ namespace tuiskin
     }
 }
 
-================================(52/87)================================
+================================(52/89)================================
 module <instance>tuiskin::TuiProgressBarTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9848,7 +9856,7 @@ namespace tuiskin
     }
 }
 
-================================(53/87)================================
+================================(53/89)================================
 module <constructor>tuiskin::TuiRightScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10140,7 +10148,7 @@ namespace tuiskin
     }
 }
 
-================================(54/87)================================
+================================(54/89)================================
 module <instance>tuiskin::TuiRightScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10182,7 +10190,7 @@ namespace tuiskin
     }
 }
 
-================================(55/87)================================
+================================(55/89)================================
 module <constructor>tuiskin::TuiScrollViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10383,7 +10391,7 @@ namespace tuiskin
     }
 }
 
-================================(56/87)================================
+================================(56/89)================================
 module <instance>tuiskin::TuiScrollViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10425,7 +10433,7 @@ namespace tuiskin
     }
 }
 
-================================(57/87)================================
+================================(57/89)================================
 module <constructor>tuiskin::TuiTopScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10717,7 +10725,7 @@ namespace tuiskin
     }
 }
 
-================================(58/87)================================
+================================(58/89)================================
 module <instance>tuiskin::TuiTopScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10759,7 +10767,7 @@ namespace tuiskin
     }
 }
 
-================================(59/87)================================
+================================(59/89)================================
 module <constructor>tuiskin::TuiVScrollTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11145,7 +11153,7 @@ namespace tuiskin
     }
 }
 
-================================(60/87)================================
+================================(60/89)================================
 module <instance>tuiskin::TuiVScrollTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11196,7 +11204,7 @@ namespace tuiskin
     }
 }
 
-================================(61/87)================================
+================================(61/89)================================
 module <constructor>tuiskin::TuiVTrackerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11458,7 +11466,7 @@ namespace tuiskin
     }
 }
 
-================================(62/87)================================
+================================(62/89)================================
 module <instance>tuiskin::TuiVTrackerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11507,7 +11515,7 @@ namespace tuiskin
     }
 }
 
-================================(63/87)================================
+================================(63/89)================================
 module <constructor>tuiskin::TuiTabHeaderButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12028,7 +12036,7 @@ namespace tuiskin
     }
 }
 
-================================(64/87)================================
+================================(64/89)================================
 module <instance>tuiskin::TuiTabHeaderButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12070,7 +12078,7 @@ namespace tuiskin
     }
 }
 
-================================(65/87)================================
+================================(65/89)================================
 module <constructor>tuiskin::TuiTabHeaderTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12377,7 +12385,7 @@ namespace tuiskin
     }
 }
 
-================================(66/87)================================
+================================(66/89)================================
 module <instance>tuiskin::TuiTabHeaderTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12451,7 +12459,7 @@ namespace tuiskin
     }
 }
 
-================================(67/87)================================
+================================(67/89)================================
 module <constructor>tuiskin::TuiTabTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12812,7 +12820,7 @@ namespace tuiskin
     }
 }
 
-================================(68/87)================================
+================================(68/89)================================
 module <instance>tuiskin::TuiTabTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12854,7 +12862,351 @@ namespace tuiskin
     }
 }
 
-================================(69/87)================================
+================================(69/89)================================
+module <constructor>tuiskin::TuiVTabTemplate;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace tuiskin
+{
+    class TuiVTabTemplateConstructor
+    {
+        @cpp:Protected
+        var self : ::tuiskin::TuiVTabTemplate* = null of (::tuiskin::TuiVTabTemplate*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::elements::TuiBorderElement^ = null of (::presentation::elements::TuiBorderElement^);
+
+        @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var header : ::presentation::compositions::GuiRepeatStackComposition* = null of (::presentation::compositions::GuiRepeatStackComposition*);
+
+        @cpp:Protected
+        func <tuiskin-TuiVTabTemplate>Initialize(<this> : ::tuiskin::TuiVTabTemplate*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.TabOrder = TopToBottom of (::presentation::controls::TabPageOrder));
+            }
+            {
+                (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                <precompile>0.SetRowsAndColumns(1, 2);
+                <precompile>0.SetRowOption(0, {composeType : Percentage; percentage : 1;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(1, {composeType : Percentage; percentage : 1;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>1 = new (::presentation::elements::GuiSolidBackgroundElement^)());
+            {
+                (<precompile>0.OwnedElement = <precompile>1);
+            }
+            (<precompile>2 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>2.SetSite(0, 0, 1, 1);
+            }
+            (header = new (::presentation::compositions::GuiRepeatStackComposition*)());
+            <this>.SetNamedObject("header", header);
+            {
+                (header.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiTemplate*)
+                {
+                    {
+                        if (<viewModel> is (::presentation::controls::GuiTabPage*))
+                        {
+                            return new (::tuiskin::TuiTabHeaderTemplate*)((cast (::presentation::controls::GuiTabPage*) <viewModel>));
+                        }
+                    }
+                    raise "Cannot find a matched control template to create.";
+                });
+            }
+            {
+                (header.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
+            }
+            {
+                (header.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : (-1);} of (::presentation::Margin));
+            }
+            {
+                (header.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                <precompile>2.AddChild(header);
+            }
+            {
+                <precompile>0.AddChild(<precompile>2);
+            }
+            (<precompile>3 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>3.SetSite(0, 1, 1, 1);
+            }
+            (<precompile>4 = new (::presentation::elements::TuiBorderElement^)());
+            {
+                (<precompile>3.OwnedElement = <precompile>4);
+            }
+            (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
+            {
+                (container.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+            }
+            {
+                (container.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                <precompile>3.AddChild(container);
+            }
+            {
+                <precompile>0.AddChild(<precompile>3);
+            }
+            {
+                self.AddChild(<precompile>0);
+            }
+            {
+                (<precompile>1.Color = tuiskin::tuiColors.ControlBackground);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::tuiskin::TuiVTabTemplate* = null of (::tuiskin::TuiVTabTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.TabPages of (::system::Enumerable^);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::tuiskin::TuiVTabTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.TabPagesChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.TabPagesChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::tuiskin::TuiVTabTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = header.ItemSource;
+                    var <new> = (cast (::system::Enumerable^) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (header.ItemSource = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiItemEventArgs*) : (::system::Void)
+                {
+                    ((cast (tuiskin::TuiTabHeaderTemplate*) header.StackItems[arguments.itemIndex].Children[0]).Commands = self.Commands);
+                };
+                attach(header.ItemInserted, <event-handler>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::tuiskin::TuiVTabTemplate* = null of (::tuiskin::TuiVTabTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.VisuallyEnabled ? tuiskin::tuiColors.ItemBackgroundSelected : tuiskin::tuiColors.ItemBackground of (::presentation::Color);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::tuiskin::TuiVTabTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.VisuallyEnabledChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.VisuallyEnabledChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::tuiskin::TuiVTabTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>4.Color;
+                    var <new> = (cast (::presentation::Color) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>4.Color = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                (self.ContainerComposition = container);
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(70/89)================================
+module <instance>tuiskin::TuiVTabTemplate;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace tuiskin
+{
+    @cpp:Friend(typeof(TuiVTabTemplateConstructor))
+    class TuiVTabTemplate : ::presentation::templates::GuiTabTemplate, TuiVTabTemplateConstructor
+    {
+        new* ()
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("tuiskin::TuiVTabTemplate");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<tuiskin-TuiVTabTemplate>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
+        }
+    }
+}
+
+================================(71/89)================================
 module <constructor>tuiskin::TuiMenuBarButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -13315,7 +13667,7 @@ namespace tuiskin
     }
 }
 
-================================(70/87)================================
+================================(72/89)================================
 module <instance>tuiskin::TuiMenuBarButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -13357,7 +13709,7 @@ namespace tuiskin
     }
 }
 
-================================(71/87)================================
+================================(73/89)================================
 module <constructor>tuiskin::TuiMenuItemButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14414,7 +14766,7 @@ namespace tuiskin
     }
 }
 
-================================(72/87)================================
+================================(74/89)================================
 module <instance>tuiskin::TuiMenuItemButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14456,7 +14808,7 @@ namespace tuiskin
     }
 }
 
-================================(73/87)================================
+================================(75/89)================================
 module <constructor>tuiskin::TuiMenuSplitterTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14513,7 +14865,7 @@ namespace tuiskin
     }
 }
 
-================================(74/87)================================
+================================(76/89)================================
 module <instance>tuiskin::TuiMenuSplitterTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14555,7 +14907,7 @@ namespace tuiskin
     }
 }
 
-================================(75/87)================================
+================================(77/89)================================
 module <constructor>tuiskin::TuiToolstripMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14649,7 +15001,7 @@ namespace tuiskin
     }
 }
 
-================================(76/87)================================
+================================(78/89)================================
 module <instance>tuiskin::TuiToolstripMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14691,7 +15043,7 @@ namespace tuiskin
     }
 }
 
-================================(77/87)================================
+================================(79/89)================================
 module <constructor>tuiskin::TuiToolstripTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14745,7 +15097,7 @@ namespace tuiskin
     }
 }
 
-================================(78/87)================================
+================================(80/89)================================
 module <instance>tuiskin::TuiToolstripTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14787,7 +15139,7 @@ namespace tuiskin
     }
 }
 
-================================(79/87)================================
+================================(81/89)================================
 module <constructor>tuiskin::TuiCustomControlTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14831,7 +15183,7 @@ namespace tuiskin
     }
 }
 
-================================(80/87)================================
+================================(82/89)================================
 module <instance>tuiskin::TuiCustomControlTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14873,7 +15225,7 @@ namespace tuiskin
     }
 }
 
-================================(81/87)================================
+================================(83/89)================================
 module <constructor>tuiskin::TuiCustomFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -16278,7 +16630,7 @@ namespace tuiskin
     }
 }
 
-================================(82/87)================================
+================================(84/89)================================
 module <instance>tuiskin::TuiCustomFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -16320,7 +16672,7 @@ namespace tuiskin
     }
 }
 
-================================(83/87)================================
+================================(85/89)================================
 module <constructor>tuiskin::TuiSystemFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -16394,7 +16746,7 @@ namespace tuiskin
     }
 }
 
-================================(84/87)================================
+================================(86/89)================================
 module <instance>tuiskin::TuiSystemFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -16436,7 +16788,7 @@ namespace tuiskin
     }
 }
 
-================================(85/87)================================
+================================(87/89)================================
 module <constructor>tuiskin::TuiTooltipTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -16507,7 +16859,7 @@ namespace tuiskin
     }
 }
 
-================================(86/87)================================
+================================(88/89)================================
 module <instance>tuiskin::TuiTooltipTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -16549,7 +16901,7 @@ namespace tuiskin
     }
 }
 
-================================(87/87)================================
+================================(89/89)================================
 module TuiPalette;
 using presentation::*;
 
