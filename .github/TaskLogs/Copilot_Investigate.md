@@ -43,15 +43,52 @@ Both comments are resolved.
 
 # UPDATES
 
+## UPDATE
+
+The work is overall good and only one thing to fix in `TuiSkin`:
+
+In the horizontal version of tab pages, you will see tab headers are actually on the top border with the left-top corner rendered. So the same thing must apply to vertical tab control like this:
+
+- The last pixel of tab headers should cover the left border of the container border
+- Tab headers begin at the second row
+
+So we could still see the corner like this:
+```shell
+           +----
+#####Repeat#
+#Responsive#
+           |
+           |...
+```
+
+"#" means background of tab headers, including the left and right filling space and pixels that are not covered by text, so the right filling space is on the tab header. A solid background should do the trick.
+
+And texts should be right aligned for vertical tab control's tab headers.&#x20;
+
+The same to `DarkSkin`'s vertical tab header, make them right aligned.
+
+
+
+To verify, you only need to start `CppTest` and `CppTest_Tui` and see if the vertical tab control is good. And then run:
+
+`Build.ps1 -Project GacUI -Fast`
+
+`Build.ps1 -Project Release -Fast`
+
+To release the updated skins.
+
 # TEST [CONFIRMED]
 
 Exercise the Layout page in both Debug x64 showcases. Compare the nested tab theme, header order, keyboard and mouse selection, content geometry, palette refresh, retained page edits and modal access. Verify the normal label in the ribbon editor. Inspect the terminal at 120 by 40 and 80 by 25. Check both metadata architectures, the default and named fast-build dispatch, the two packaged resources and the built, published and synchronized tab reference.
 
 Baseline resource inspection found the nested GUI ribbon tab explicitly installs the showcase template and the Search element sets its color to white. The TUI Layout uses the horizontal tab. The theme inventory, XML loader and build entry point have no VTab or fast switch.
 
+For the follow-up, inspect the actual header glyphs and terminal cells. The corner should sit one row above the first header. Both captions should end one filled cell before the same border column, and the vertical border should resume below the last header. Check both DarkSkin and TuiSkin in the running showcases.
+
 # PROPOSALS
 
 - No.1 Register a vertical tab theme and ship its two skin implementations [CONFIRMED]
+- No.2 Align the vertical tab captions and share the terminal page border with the headers
 
 ## No.1 Register a vertical tab theme and ship its two skin implementations
 
@@ -78,3 +115,11 @@ The default `Build.ps1 -Fast` reported an elapsed time of 3 hours, 27 minutes an
 The packaged BlackSkin XML uses `<RibbonTab ControlThemeName="VTab">` with the existing button and four pages. TuiSkin uses `<VTab>` with Repeat and Responsive. The old showcase template and resource link were removed. The distributed skin sources and metadata matched the files produced by GacUI. The verified package was pushed in `<Release repo>` commit `0c27b7e7`.
 
 The website build and tests passed. GitHub Pages deployment `45507923791` succeeded, and a fresh browser loaded the published tab reference with its keyboard and selection documentation. Both knowledge-base synchronization passes started at Merge Knowledge Base. The final manual tree and index matched the canonical Tools copy in all eight receiving repositories. Both passes skipped learning.
+
+## No.2 Align the vertical tab captions and share the terminal page border with the headers
+
+Mirror the horizontal TUI tab layout on the left edge. Draw the page border first and place the vertical stack one row below the corner, with its existing opaque header backgrounds painting over one border cell. Use the installed tab template’s orientation to align the shared header label in each skin.
+
+### CODE CHANGE
+
+Anchor the border to the widest header, accounting for the single shared cell and empty tabs. Preserve the horizontal templates’ text alignment, header commands and focus handling.
