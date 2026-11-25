@@ -20259,10 +20259,10 @@ Class (::demo::CategoryDisplayerConstructor)
 		}
 		(this->__vwsn_precompile_6 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
+			::vl::__vwsn::This(this->__vwsn_precompile_6.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Left);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Left);
+			::vl::__vwsn::This(this->__vwsn_precompile_6.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6.Obj())->SetEllipse(true);
@@ -26436,10 +26436,10 @@ Class (::demo::EasyResponsiveAccountItemTemplateConstructor)
 		}
 		(this->__vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiImageFrameElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_4.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
+			::vl::__vwsn::This(this->__vwsn_precompile_4.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Center);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_4.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Center);
+			::vl::__vwsn::This(this->__vwsn_precompile_4.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4.Obj())->SetStretch(false);
@@ -26490,10 +26490,10 @@ Class (::demo::EasyResponsiveAccountItemTemplateConstructor)
 		}
 		(this->__vwsn_precompile_11 = ::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiImageFrameElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_11.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
+			::vl::__vwsn::This(this->__vwsn_precompile_11.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Center);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_11.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Center);
+			::vl::__vwsn::This(this->__vwsn_precompile_11.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_11.Obj())->SetStretch(false);
@@ -28988,10 +28988,10 @@ Class (::demo::GenderDisplayerConstructor)
 		}
 		(this->__vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiImageFrameElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
+			::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Left);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Left);
+			::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_1));

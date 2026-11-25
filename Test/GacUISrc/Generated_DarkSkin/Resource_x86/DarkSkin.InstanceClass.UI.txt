@@ -678,10 +678,10 @@ namespace darkskin
             }
             (<precompile>6 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>6.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>6.HorizontalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>6.HorizontalAlignment = Center of (::presentation::Alignment));
+                (<precompile>6.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>5.OwnedElement = <precompile>6);
@@ -1430,10 +1430,10 @@ namespace darkskin
             }
             (<precompile>13 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>13.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>13.HorizontalAlignment = Left of (::presentation::Alignment));
             }
             {
-                (<precompile>13.HorizontalAlignment = Left of (::presentation::Alignment));
+                (<precompile>13.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>12.OwnedElement = <precompile>13);
@@ -2395,10 +2395,10 @@ namespace darkskin
             }
             (<precompile>13 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>13.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>13.HorizontalAlignment = Left of (::presentation::Alignment));
             }
             {
-                (<precompile>13.HorizontalAlignment = Left of (::presentation::Alignment));
+                (<precompile>13.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>12.OwnedElement = <precompile>13);
@@ -3812,10 +3812,10 @@ namespace darkskin
             }
             (<precompile>4 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>4.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>4.HorizontalAlignment = Left of (::presentation::Alignment));
             }
             {
-                (<precompile>4.HorizontalAlignment = Left of (::presentation::Alignment));
+                (<precompile>4.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>4.Ellipse = true);
@@ -5885,10 +5885,10 @@ namespace darkskin
             }
             (<precompile>12 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>12.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>12.HorizontalAlignment = Left of (::presentation::Alignment));
             }
             {
-                (<precompile>12.HorizontalAlignment = Left of (::presentation::Alignment));
+                (<precompile>12.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>12.Ellipse = true);
@@ -9925,10 +9925,10 @@ namespace darkskin
             }
             (<precompile>4 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>4.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>4.HorizontalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>4.HorizontalAlignment = Center of (::presentation::Alignment));
+                (<precompile>4.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>3.OwnedElement = <precompile>4);
@@ -12439,10 +12439,10 @@ namespace darkskin
             }
             (<precompile>5 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>5.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>5.HorizontalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>5.HorizontalAlignment = Center of (::presentation::Alignment));
+                (<precompile>5.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>4.OwnedElement = <precompile>5);
@@ -12856,10 +12856,10 @@ namespace darkskin
             }
             (<precompile>3 = new (::presentation::elements::GuiImageFrameElement^)());
             {
-                (<precompile>3.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>3.HorizontalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>3.HorizontalAlignment = Center of (::presentation::Alignment));
+                (<precompile>3.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>2.OwnedElement = <precompile>3);
@@ -13297,10 +13297,10 @@ namespace darkskin
             }
             (<precompile>8 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>8.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>8.HorizontalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>8.HorizontalAlignment = Center of (::presentation::Alignment));
+                (<precompile>8.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>7.OwnedElement = <precompile>8);
@@ -14197,10 +14197,10 @@ namespace darkskin
             }
             (<precompile>10 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>10.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>10.HorizontalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>10.HorizontalAlignment = Center of (::presentation::Alignment));
+                (<precompile>10.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>9.OwnedElement = <precompile>10);
@@ -16195,10 +16195,10 @@ namespace darkskin
             }
             (<precompile>7 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>7.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>7.HorizontalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>7.HorizontalAlignment = Center of (::presentation::Alignment));
+                (<precompile>7.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>6.OwnedElement = <precompile>7);
@@ -17070,10 +17070,10 @@ namespace darkskin
             }
             (<precompile>8 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>8.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>8.HorizontalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>8.HorizontalAlignment = Center of (::presentation::Alignment));
+                (<precompile>8.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>7.OwnedElement = <precompile>8);
@@ -18143,10 +18143,10 @@ namespace darkskin
             }
             (<precompile>3 = new (::presentation::elements::GuiImageFrameElement^)());
             {
-                (<precompile>3.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>3.HorizontalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>3.HorizontalAlignment = Center of (::presentation::Alignment));
+                (<precompile>3.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>2.OwnedElement = <precompile>3);
@@ -18831,10 +18831,10 @@ namespace darkskin
             }
             (<precompile>7 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>7.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>7.HorizontalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>7.HorizontalAlignment = Center of (::presentation::Alignment));
+                (<precompile>7.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>6.OwnedElement = <precompile>7);
@@ -19824,10 +19824,10 @@ namespace darkskin
             }
             (<precompile>1 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>1.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>1.HorizontalAlignment = Left of (::presentation::Alignment));
             }
             {
-                (<precompile>1.HorizontalAlignment = Left of (::presentation::Alignment));
+                (<precompile>1.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>0.OwnedElement = <precompile>1);
@@ -24414,9 +24414,6 @@ namespace darkskin
                 (<precompile>4.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>4.HorizontalAlignment = Center of (::presentation::Alignment));
-            }
-            {
                 (<precompile>3.OwnedElement = <precompile>4);
             }
             {
@@ -24874,6 +24871,104 @@ namespace darkskin
                         return;
                     }
                     (<precompile>4.Font = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::darkskin::TabHeaderButtonTemplate* = null of (::darkskin::TabHeaderButtonTemplate*);
+
+                    var <bind-cache>1 : ::presentation::templates::GuiTabTemplate* = null of (::presentation::templates::GuiTabTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = ((<bind-cache>1.TabOrder ?? TabPageOrder::Unknown) == TabPageOrder::TopToBottom) ? Alignment::Right : Alignment::Center of (::presentation::Alignment);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        if (<bind-handler>1_0 is not null)
+                        {
+                            detach(<bind-cache>1.TabOrderChanged, <bind-handler>1_0);
+                            (<bind-handler>1_0 = null);
+                        }
+                        (<bind-cache>1 = ((cast (TabPage*) <bind-cache>0.Context).OwnerTab.TypedControlTemplateObject(false) ?? null of (::presentation::templates::GuiTabTemplate*)));
+                        (<bind-handler>1_0 = (attach(<bind-cache>1.TabOrderChanged, <bind-callback>1_0) ?? null));
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::darkskin::TabHeaderButtonTemplate*)));
+                            (<bind-cache>1 = ((cast (TabPage*) <bind-cache>0.Context).OwnerTab.TypedControlTemplateObject(false) ?? null of (::presentation::templates::GuiTabTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.ContextChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.TabOrderChanged, <bind-callback>1_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.ContextChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            if (<bind-handler>1_0 is not null)
+                            {
+                                detach(<bind-cache>1.TabOrderChanged, <bind-handler>1_0);
+                                (<bind-handler>1_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::darkskin::TabHeaderButtonTemplate*));
+                            (<bind-cache>1 = null of (::presentation::templates::GuiTabTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>4.HorizontalAlignment;
+                    var <new> = (cast (::presentation::Alignment) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>4.HorizontalAlignment = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -26752,10 +26847,10 @@ namespace darkskin
             }
             (<precompile>2 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>2.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>2.HorizontalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>2.HorizontalAlignment = Center of (::presentation::Alignment));
+                (<precompile>2.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>1.OwnedElement = <precompile>2);
@@ -27277,10 +27372,10 @@ namespace darkskin
             }
             (<precompile>6 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>6.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>6.HorizontalAlignment = Left of (::presentation::Alignment));
             }
             {
-                (<precompile>6.HorizontalAlignment = Left of (::presentation::Alignment));
+                (<precompile>6.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>5.OwnedElement = <precompile>6);
@@ -27307,10 +27402,10 @@ namespace darkskin
             }
             (<precompile>9 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>9.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>9.HorizontalAlignment = Right of (::presentation::Alignment));
             }
             {
-                (<precompile>9.HorizontalAlignment = Right of (::presentation::Alignment));
+                (<precompile>9.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>8.OwnedElement = <precompile>9);

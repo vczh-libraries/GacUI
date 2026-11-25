@@ -446,10 +446,10 @@ namespace tuiskin
             }
             (<precompile>2 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>2.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>2.HorizontalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>2.HorizontalAlignment = Center of (::presentation::Alignment));
+                (<precompile>2.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>1.OwnedElement = <precompile>2);
@@ -12028,6 +12028,104 @@ namespace tuiskin
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::tuiskin::TuiTabHeaderButtonTemplate* = null of (::tuiskin::TuiTabHeaderButtonTemplate*);
+
+                    var <bind-cache>1 : ::presentation::templates::GuiTabTemplate* = null of (::presentation::templates::GuiTabTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = ((<bind-cache>1.TabOrder ?? TabPageOrder::Unknown) == TabPageOrder::TopToBottom) ? Alignment::Right : Alignment::Left of (::presentation::Alignment);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        if (<bind-handler>1_0 is not null)
+                        {
+                            detach(<bind-cache>1.TabOrderChanged, <bind-handler>1_0);
+                            (<bind-handler>1_0 = null);
+                        }
+                        (<bind-cache>1 = ((cast (TabPage*) <bind-cache>0.Context).OwnerTab.TypedControlTemplateObject(false) ?? null of (::presentation::templates::GuiTabTemplate*)));
+                        (<bind-handler>1_0 = (attach(<bind-cache>1.TabOrderChanged, <bind-callback>1_0) ?? null));
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::tuiskin::TuiTabHeaderButtonTemplate*)));
+                            (<bind-cache>1 = ((cast (TabPage*) <bind-cache>0.Context).OwnerTab.TypedControlTemplateObject(false) ?? null of (::presentation::templates::GuiTabTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.ContextChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.TabOrderChanged, <bind-callback>1_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.ContextChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            if (<bind-handler>1_0 is not null)
+                            {
+                                detach(<bind-cache>1.TabOrderChanged, <bind-handler>1_0);
+                                (<bind-handler>1_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::tuiskin::TuiTabHeaderButtonTemplate*));
+                            (<bind-cache>1 = null of (::presentation::templates::GuiTabTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>2.HorizontalAlignment;
+                    var <new> = (cast (::presentation::Alignment) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>2.HorizontalAlignment = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
         }
 
         new ()
@@ -12892,19 +12990,13 @@ namespace tuiskin
         var self : ::tuiskin::TuiVTabTemplate* = null of (::tuiskin::TuiVTabTemplate*);
 
         @cpp:Protected
-        var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+        var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
 
         @cpp:Protected
-        var <precompile>1 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+        var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>2 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
-
-        @cpp:Protected
-        var <precompile>3 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
-
-        @cpp:Protected
-        var <precompile>4 : ::presentation::elements::TuiBorderElement^ = null of (::presentation::elements::TuiBorderElement^);
+        var <precompile>2 : ::presentation::elements::TuiBorderElement^ = null of (::presentation::elements::TuiBorderElement^);
 
         @cpp:Protected
         var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -12922,26 +13014,31 @@ namespace tuiskin
             {
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
-            (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
+            (<precompile>0 = new (::presentation::elements::GuiSolidBackgroundElement^)());
             {
-                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (self.OwnedElement = <precompile>0);
+            }
+            (<precompile>1 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>2 = new (::presentation::elements::TuiBorderElement^)());
+            {
+                (<precompile>1.OwnedElement = <precompile>2);
+            }
+            (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
+            {
+                (container.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
             {
-                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (container.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                <precompile>0.SetRowsAndColumns(1, 2);
-                <precompile>0.SetRowOption(0, {composeType : Percentage; percentage : 1;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(1, {composeType : Percentage; percentage : 1;} of (::presentation::compositions::GuiCellOption));
+                <precompile>1.AddChild(container);
             }
-            (<precompile>1 = new (::presentation::elements::GuiSolidBackgroundElement^)());
             {
-                (<precompile>0.OwnedElement = <precompile>1);
-            }
-            (<precompile>2 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>2.SetSite(0, 0, 1, 1);
+                self.AddChild(<precompile>1);
             }
             (header = new (::presentation::compositions::GuiRepeatStackComposition*)());
             <this>.SetNamedObject("header", header);
@@ -12961,44 +13058,162 @@ namespace tuiskin
                 (header.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
             }
             {
-                (header.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : (-1);} of (::presentation::Margin));
+                (header.AlignmentToParent = {left : 0; top : 1; right : (-1); bottom : (-1);} of (::presentation::Margin));
             }
             {
                 (header.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                <precompile>2.AddChild(header);
+                self.AddChild(header);
             }
             {
-                <precompile>0.AddChild(<precompile>2);
-            }
-            (<precompile>3 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>3.SetSite(0, 1, 1, 1);
-            }
-            (<precompile>4 = new (::presentation::elements::TuiBorderElement^)());
-            {
-                (<precompile>3.OwnedElement = <precompile>4);
-            }
-            (container = new (::presentation::compositions::GuiBoundsComposition*)());
-            <this>.SetNamedObject("container", container);
-            {
-                (container.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+                (<precompile>0.Color = tuiskin::tuiColors.ControlBackground);
             }
             {
-                (container.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::tuiskin::TuiVTabTemplate* = null of (::tuiskin::TuiVTabTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.VisuallyEnabled ? tuiskin::tuiColors.ItemBackgroundSelected : tuiskin::tuiColors.ItemBackground of (::presentation::Color);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::tuiskin::TuiVTabTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.VisuallyEnabledChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.VisuallyEnabledChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::tuiskin::TuiVTabTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>2.Color;
+                    var <new> = (cast (::presentation::Color) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>2.Color = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
             }
             {
-                <precompile>3.AddChild(container);
-            }
-            {
-                <precompile>0.AddChild(<precompile>3);
-            }
-            {
-                self.AddChild(<precompile>0);
-            }
-            {
-                (<precompile>1.Color = tuiskin::tuiColors.ControlBackground);
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::presentation::compositions::GuiRepeatStackComposition* = null of (::presentation::compositions::GuiRepeatStackComposition*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = {left : Math::Max(0, (<bind-cache>0.CachedMinSize.x - 1)); top : 0; right : 0; bottom : 0;} of (::presentation::Margin);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (header ?? null of (::presentation::compositions::GuiRepeatStackComposition*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.CachedMinSizeChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.CachedMinSizeChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::presentation::compositions::GuiRepeatStackComposition*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>1.AlignmentToParent;
+                    var <new> = (cast (::presentation::Margin) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>1.AlignmentToParent = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -13079,79 +13294,6 @@ namespace tuiskin
                     ((cast (tuiskin::TuiTabHeaderTemplate*) header.StackItems[arguments.itemIndex].Children[0]).Commands = self.Commands);
                 };
                 attach(header.ItemInserted, <event-handler>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::tuiskin::TuiVTabTemplate* = null of (::tuiskin::TuiVTabTemplate*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.VisuallyEnabled ? tuiskin::tuiColors.ItemBackgroundSelected : tuiskin::tuiColors.ItemBackground of (::presentation::Color);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (self ?? null of (::tuiskin::TuiVTabTemplate*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.VisuallyEnabledChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.VisuallyEnabledChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::tuiskin::TuiVTabTemplate*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>4.Color;
-                    var <new> = (cast (::presentation::Color) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>4.Color = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
             }
             {
                 (self.ContainerComposition = container);

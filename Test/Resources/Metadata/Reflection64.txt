@@ -12820,15 +12820,11 @@ class tuiskin::TuiVTabTemplate : presentation::templates::GuiTabTemplate, tuiski
 @FullName:tuiskin::TuiVTabTemplateConstructor
 class tuiskin::TuiVTabTemplateConstructor : system::ReferenceType {
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_2 : presentation::compositions::GuiCellComposition*;
-    @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
-    @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_4 : presentation::elements::TuiBorderElement^;
+    property __vwsn_precompile_2 : presentation::elements::TuiBorderElement^;
     @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
     @system::workflow_attributes::att_cpp_Protected()

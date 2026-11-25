@@ -11401,10 +11401,10 @@ namespace demo
             }
             (<precompile>6 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>6.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>6.HorizontalAlignment = Left of (::presentation::Alignment));
             }
             {
-                (<precompile>6.HorizontalAlignment = Left of (::presentation::Alignment));
+                (<precompile>6.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>6.Ellipse = true);
@@ -12484,10 +12484,10 @@ namespace demo
             }
             (<precompile>1 = new (::presentation::elements::GuiImageFrameElement^)());
             {
-                (<precompile>1.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>1.HorizontalAlignment = Left of (::presentation::Alignment));
             }
             {
-                (<precompile>1.HorizontalAlignment = Left of (::presentation::Alignment));
+                (<precompile>1.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>0.OwnedElement = <precompile>1);
@@ -22060,10 +22060,10 @@ namespace demo
             }
             (<precompile>4 = new (::presentation::elements::GuiImageFrameElement^)());
             {
-                (<precompile>4.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>4.HorizontalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>4.HorizontalAlignment = Center of (::presentation::Alignment));
+                (<precompile>4.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>4.Stretch = false);
@@ -22114,10 +22114,10 @@ namespace demo
             }
             (<precompile>11 = new (::presentation::elements::GuiImageFrameElement^)());
             {
-                (<precompile>11.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>11.HorizontalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>11.HorizontalAlignment = Center of (::presentation::Alignment));
+                (<precompile>11.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>11.Stretch = false);
