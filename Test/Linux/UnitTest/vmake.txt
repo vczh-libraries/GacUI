@@ -234,6 +234,7 @@
 ../../GacUISrc/UnitTest/TestApplication_Dialog_Message.cpp
 ../../GacUISrc/UnitTest/TestApplication_Tab.cpp
 ../../GacUISrc/UnitTest/TestApplication_Theme.cpp
+../../GacUISrc/UnitTest/TestApplication_Theme_Windows.cpp
 ../../GacUISrc/UnitTest/TestApplication_Tooltip.cpp
 ../../GacUISrc/UnitTest/TestApplication_Windows.cpp
 ../../GacUISrc/UnitTest/TestCompositions_AllNested.cpp
