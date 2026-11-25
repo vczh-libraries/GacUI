@@ -15,7 +15,9 @@
           <FocusRectangle/>
         </Bounds>
         <Bounds AlignmentToParent="left:6 top:3 right:6 bottom:3">
-          <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+          <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" VerticalAlignment="Center">
+            <att.HorizontalAlignment-bind>((cast (TabPage*) self.Context).OwnerTab.TypedControlTemplateObject(false).TabOrder ?? TabPageOrder::Unknown) == TabPageOrder::TopToBottom ? Alignment::Right : Alignment::Center</att.HorizontalAlignment-bind>
+          </SolidLabel>
         </Bounds>
       </SelectableButtonTemplate>
     </Instance>
