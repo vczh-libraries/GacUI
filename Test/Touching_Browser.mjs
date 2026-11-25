@@ -159,13 +159,20 @@ try {
     a = { ...a, x:a.x+30, y:a.y+20 };
     await touch('touchMove', [a]);
     await until(async () => { const s=await state(); return s[4]===1 && Math.abs(s[0]-initial[0]-30)<=1 && Math.abs(s[1]-initial[1]-20)<=1; }, 'One contact translates');
-    const pixels=()=>page.locator('#gacui-screen canvas').evaluate(canvas=>{
-        const data=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data;
-        let sky=0,yellow=0;
-        for(let i=0;i<data.length;i+=4){if(data[i]===135&&data[i+1]===206&&data[i+2]===235)sky++;if(data[i]===255&&data[i+1]===255&&data[i+2]===0)yellow++;}
-        return {sky,yellow};
+    const pixels = () => page.locator('#gacui-screen canvas').evaluate(canvas => {
+        const data = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
+        let sky = 0, border = 0, orange = 0;
+        for (let i = 0; i < data.length; i += 4) {
+            if (data[i] === 135 && data[i + 1] === 206 && data[i + 2] === 235) sky++;
+            if (data[i] === 0 && data[i + 1] === 0 && data[i + 2] === 0 && data[i + 3] === 255) border++;
+            if (data[i] === 255 && data[i + 1] === 136 && data[i + 2] === 0) orange++;
+        }
+        return { sky, border, orange };
     });
-    await until(async()=>{const p=await pixels();return p.sky>1000&&p.yellow>20;},'Browser paints transformed rectangle and contact marker');
+    await until(async () => {
+        const { sky, border, orange } = await pixels();
+        return sky > 1000 && border > 100 && orange > 20;
+    }, 'Browser paints the bordered rectangle and orange contact ring');
     const marker=await state(); assert.equal(marker[5],0); assert(Math.abs(marker[6]-170)<=1&&Math.abs(marker[7]-140)<=1);
     b = { ...b, x:a.x+100, y:a.y };
     await touch('touchStart', [a,b]);
@@ -184,7 +191,7 @@ try {
     await until(async () => (await state())[4]===0,'Three-contact pause, membership rebase and canceled marker cleanup');
     await touch('touchStart',[a]); await touch('touchEnd',[]);
     await until(async () => (await state())[4]===0,'Fresh successful sequence clears markers');
-    await until(async()=>(await pixels()).yellow===0,'Browser clears contact marker pixels');
+    await until(async () => (await pixels()).orange === 0, 'Browser clears contact marker pixels');
     noCompatibility(start);
     await picture('touching');
 
