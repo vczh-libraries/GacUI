@@ -136,6 +136,8 @@ namespace vl
 			DECL_TYPE_INFO(::tuiskin::TuiTreeViewTemplateConstructor)
 			DECL_TYPE_INFO(::tuiskin::TuiVScrollTemplate)
 			DECL_TYPE_INFO(::tuiskin::TuiVScrollTemplateConstructor)
+			DECL_TYPE_INFO(::tuiskin::TuiVTabTemplate)
+			DECL_TYPE_INFO(::tuiskin::TuiVTabTemplateConstructor)
 			DECL_TYPE_INFO(::tuiskin::TuiVTrackerTemplate)
 			DECL_TYPE_INFO(::tuiskin::TuiVTrackerTemplateConstructor)
 #endif

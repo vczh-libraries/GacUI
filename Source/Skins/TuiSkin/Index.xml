@@ -19,6 +19,7 @@
     <att.ScrollView>x:TuiScrollViewTemplate</att.ScrollView>
     <att.GroupBox>x:TuiGroupBoxTemplate</att.GroupBox>
     <att.Tab>x:TuiTabTemplate</att.Tab>
+    <att.VTab>x:TuiVTabTemplate</att.VTab>
     <att.ComboBox>x:TuiComboBoxTemplate</att.ComboBox>
     <att.MultilineTextBox>x:TuiDocumentViewerTemplate</att.MultilineTextBox>
     <att.SinglelineTextBox>x:TuiDocumentTextBoxTemplate</att.SinglelineTextBox>

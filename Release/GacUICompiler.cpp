@@ -9843,6 +9843,7 @@ GuiPredefinedInstanceLoadersPlugin
 
 						/*						VIRTUAL-CONTROL-TYPE		REAL-CONTROL-TYPE				THEME-NAME											*/
 						ADD_VIRTUAL_CONTROL		(GroupBox,					GuiControl,						GroupBox											);
+						ADD_VIRTUAL_CONTROL		(VTab,						GuiTab,							VTab												);
 						ADD_VIRTUAL_CONTROL		(MenuSplitter,				GuiControl,						MenuSplitter										);
 						ADD_VIRTUAL_CONTROL		(MenuBarButton,				GuiToolstripButton,				MenuBarButton										);
 						ADD_VIRTUAL_CONTROL		(MenuItemButton,			GuiToolstripButton,				MenuItemButton										);

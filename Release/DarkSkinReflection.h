@@ -188,6 +188,8 @@ namespace vl
 			DECL_TYPE_INFO(::darkskin::VScrollHandleTemplateConstructor)
 			DECL_TYPE_INFO(::darkskin::VScrollTemplate)
 			DECL_TYPE_INFO(::darkskin::VScrollTemplateConstructor)
+			DECL_TYPE_INFO(::darkskin::VTabTemplate)
+			DECL_TYPE_INFO(::darkskin::VTabTemplateConstructor)
 			DECL_TYPE_INFO(::darkskin::VTrackerTemplate)
 			DECL_TYPE_INFO(::darkskin::VTrackerTemplateConstructor)
 #endif
