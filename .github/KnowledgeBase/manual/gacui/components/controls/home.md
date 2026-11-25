@@ -35,6 +35,7 @@ Here are predefined controls by category:
   - \<CustomControl\>
     - **\<TabPage\>**
   - **\<Tab\>**
+    - **\<VTab\>** (virtual)
   - GuiScrollView
     - **\<ScrollContainer\>**
   - **\<GroupBox\>** (virtual)

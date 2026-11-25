@@ -56,7 +56,7 @@ Here are all predefined control templates and their control themes:
       - **<TextListTemplate/>`missing document: /gacui/components/ctemplates/TextListTemplate.html`**: TextList, RibbonGalleryItemList
       - **<ListViewTemplate/>`missing document: /gacui/components/ctemplates/ListViewTemplate.html`**: ListView
       - **<TreeViewTemplate/>`missing document: /gacui/components/ctemplates/TreeViewTemplate.html`**: TreeView
-  - **<TabTemplate/>`missing document: /gacui/components/ctemplates/TabTemplate.html`**: Tab
+  - **<TabTemplate/>`missing document: /gacui/components/ctemplates/TabTemplate.html`**: Tab, VTab
     - **<RibbonTabTemplate/>`missing document: /gacui/components/ctemplates/RibbonTabTemplate.html`**: RibbonTab
   - **<DatePickerTemplate/>`missing document: /gacui/components/ctemplates/DatePickerTemplate.html`**: DatePicker
   - **<RibbonGroupTemplate/>`missing document: /gacui/components/ctemplates/RibbonGroupTemplate.html`**: RibbonGroup

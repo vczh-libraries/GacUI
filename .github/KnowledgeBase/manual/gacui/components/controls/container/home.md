@@ -8,5 +8,5 @@ Unlike compositions that only layout multiple other objects in groups, container
 
 Scroll bars are provided in **GuiScrollView**, which is the base class of **\<ScrollContainer/\>** and also all other list controls and some editor controls. **HorizontalAlwaysVisible** and **VerticalAlwaysVisible** properties also exist in list controls and some editor controls, so that their scroll bars can be optionally hidden when list items are not too many.
 
-**\<Tab/\>** is a container of multiple **\<TabPage/\>**. Differet controls can be organized in different **\<TabPage/\>** in one **\<Tab/\>**. When a **\<TabPage/\>** is activated by the user, only contents in this page are visible, contents in other pages are hidden but still contribute to the minimum size of the **\<Tab/\>**.
+**\<Tab/\>** and **\<VTab/\>** show one **\<TabPage/\>** at a time. The built-in skins place the headers above the page for **\<Tab/\>** and to its left for **\<VTab/\>**. Pages that have been shown contribute to the minimum size even while another page is selected.
 

@@ -1,16 +1,22 @@
-# \<Tab\> and \<TabPage\>
+# \<Tab\>, \<VTab\> and \<TabPage\>
 
 - **\<Tab/\>**
   - **C++/Workflow**: (vl::)presentation::controls::GuiTab*
   - **Template Tag**: \<TabTemplate/\>
   - **Template Name**: Tab
+- **\<VTab/\>**
+  - **C++/Workflow**: (vl::)presentation::controls::GuiTab*
+  - **Template Tag**: \<TabTemplate/\>
+  - **Template Name**: VTab
 
 - **\<TabPage/\>**
   - **C++/Workflow**: (vl::)presentation::controls::GuiTabPage*
   - **Template Tag**: \<ControlTemplate/\>
   - **Template Name**: CustomControl
 
-When a **\<Tab/\>** is deleted, all **\<TabPage/\>** in its **Pages** will also be deleted.
+**\<VTab/\>** creates a **GuiTab** with the **VTab** theme. DarkSkin and TuiSkin stack its headers on the left and show the selected page on the right. Click a header or focus the tab and use the Up and Down keys to select a page. Both orientations share the same **Pages**, **SelectedPage** and **SelectedPageChanged**.
+
+When a tab control is deleted, all **\<TabPage/\>** in its **Pages** will also be deleted.
 
 When a **\<TabPage/\>** is activated, only content of this tab page is visible in the **\<Tab/\>**. But inactivated pages still limit the minimum size of the **\<Tab/\>**. The only exception is when an inactivated page has never become activated, since its content has never been rendered, the minimum size of that page is never calculated.
 
@@ -25,11 +31,11 @@ When a **\<TabPage/\>** is activated, only content of this tab page is visible i
   </att.Pages>
 </Tab>
 ```
- If an **ALT** sequence is assigned to a tab page, the page will be selected and shown to the user when the **ALT** sequence is hit. Please check out [this tutorial project](https://github.com/vczh-libraries/Release/blob/master/Tutorial/GacUI_Controls/Animation/UI/Resource.xml) for more details.
+ To use vertical headers, change the enclosing **\<Tab\>** and **\</Tab\>** tags to **\<VTab\>** and **\</VTab\>**. If an **ALT** sequence is assigned to a tab page, the page will be selected and shown to the user when the **ALT** sequence is hit. Please check out [this tutorial project](https://github.com/vczh-libraries/Release/blob/master/Tutorial/GacUI_Controls/Animation/UI/Resource.xml) for more details.
 
 **\<TabPage/\>** is also a **GuiInstanceRootObject**, which means it could also be a base class of an **\<Instance/\>**. It is very useful when you want to put a tab page in a single file, or create components that just for this tab page and other part of the code cannot access these components. Please check out [this tutorial page](https://github.com/vczh-libraries/Release/tree/master/Tutorial/GacUI_Controls/ListControls) for more details.
 
-## \<Tab\> Properties
+## \<Tab\> and \<VTab\> Properties
 
 ### Pages
 

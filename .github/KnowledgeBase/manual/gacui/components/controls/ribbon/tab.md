@@ -11,6 +11,8 @@ A **\<RibbonTab/\>** is a **\<Tab/\>** with two more properties:
 
 Usually, a **\<RibbonTab/\>** is put on the top of a window.
 
+With DarkSkin, use **\<RibbonTab ControlThemeName="VTab"/\>** to stack headers on the left. Add controls to **BeforeHeaders** or **AfterHeaders** to place them above or below that stack.
+
 ## Sample
 
 Please check out [this tutorial project](https://github.com/vczh-libraries/Release/tree/master/Tutorial/GacUI_Controls/DocumentEditorRibbon/UI) for details of ribbon controls.

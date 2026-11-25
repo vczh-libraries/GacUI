@@ -86,7 +86,7 @@ Finally we get:
 
 ![](https://gaclib.net/doc/gacui/kb_ctemplates_button.gif)
 
-With this new control template, we can create a more complex control template for tab control.
+DarkSkin and TuiSkin provide **\<VTab/\>** for vertical headers. The example below builds a custom vertical template to show how a tab and its headers communicate.
 
 **Tab** needs **TabTemplate**, and it has two important properties: **Commands** and **TabPages**. These are all input properties. **Commands** is an interface with a method **ShowTab** for activate a tab page. **TabPages** is an observable collection for all tab pages at runtime.
 

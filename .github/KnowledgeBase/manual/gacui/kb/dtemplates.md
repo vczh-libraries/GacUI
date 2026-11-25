@@ -42,6 +42,7 @@ There is not default item templates in this list, because default item templates
     <att.ScrollView>x:ScrollViewTemplate</att.ScrollView>
     <att.GroupBox>x:GroupBoxTemplate</att.GroupBox>
     <att.Tab>x:TabTemplate</att.Tab>
+    <att.VTab>x:VTabTemplate</att.VTab>
     <att.ComboBox>x:ComboBoxTemplate</att.ComboBox>
     <att.MultilineTextBox>x:DocumentViewerTemplate</att.MultilineTextBox>
     <att.SinglelineTextBox>x:DocumentLabelTemplate</att.SinglelineTextBox>
