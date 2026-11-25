@@ -51,7 +51,7 @@ Baseline resource inspection found the nested GUI ribbon tab explicitly installs
 
 # PROPOSALS
 
-- No.1 Register a vertical tab theme and ship its two skin implementations
+- No.1 Register a vertical tab theme and ship its two skin implementations [CONFIRMED]
 
 ## No.1 Register a vertical tab theme and ship its two skin implementations
 
@@ -63,4 +63,18 @@ The Layout automation locates the nested control by its `VTab` theme. When switc
 
 `VTab` is appended to the theme inventory and registered as a virtual `GuiTab`. DarkSkin now owns the former showcase ribbon template and its two header containers. TuiSkin uses its existing focus-aware header in a vertical stack beside the selected page. The GUI showcase uses the ribbon form, and the terminal showcase uses `<VTab/>`. A palette-styled `Label` supplies the ribbon Search caption. Both metadata architectures and the generated skin and showcase sources were refreshed.
 
-The fast switch uses the existing default and named project dispatch. Each dependency still imports and releases its sources. GacUI still builds and tests both metadata architectures. Release still packages, verifies Workflow and XML, builds the Debug C++ tutorials and checks for their executables. The Layout palette check locates the new `VTab` theme and checks the rendered result after a switch. The online and bundled manuals document the control, its shared tab API and both XML forms.
+The fast switch uses the existing default and named project dispatch. Each dependency still imports and releases its sources. GacUI still builds and tests both metadata architectures. Release still packages, verifies Workflow and XML, builds the Debug C++ tutorials and checks for their executables. The online and bundled manuals document the control, its shared tab API and both XML forms.
+
+### CONFIRMED
+
+Win32 and x64 Debug builds passed with zero warnings and errors. Each architecture generated its core metadata before the resource compiler ran. After rebuilding the generated sources, both metadata tests passed. Both core reflection listings assign `VTab` the value 65, immediately after `ProgressBar`.
+
+The full Debug x64 GUI Layout scenario passed 3,767 assertions. The focused palette scenario passed 369. The four headers appeared in page order at y = 74, 96, 118 and 140. The last header ended at 162 and the modal button began at 167. Mouse and Up/Down selection, the displayed Alt sequence, modal dismissal, window resizing, the five-pixel gap and retained editor text all passed. The Search caption and a normal ribbon label both rendered in Segoe UI 12 with color `#F1F1F1FF`. The Layout checks waited for the palette accent in the rendered controls, allowing UI Automation to retain or replace its radio provider.
+
+The terminal showcase ran in a live Windows pseudoconsole. At 120 by 40 and 80 by 25, Repeat and Responsive occupied column 2 on consecutive rows. Their page content began at column 18 or 17 respectively. The main strip stayed horizontal. Native Up/Down input selected both pages after shrinking and restoring the terminal. Exiting through the application menu returned zero.
+
+The default `Build.ps1 -Fast` reported an elapsed time of 3 hours, 27 minutes and 39 seconds. A dispatch trace compared the ordinary and fast paths for the default and individual projects. The actual fast log confirmed project order, dependency imports, all releases, the Workflow RPC check, and Win32 and x64 metadata generation and testing. Release packaged both showcases, verified Workflow and XML, built all six Debug C++ tutorial solutions and checked all 55 expected executables. The only skips were the seven dependency library builds, the two GacUI unit-test launches and the Release C++ tutorial build loop.
+
+The packaged BlackSkin XML uses `<RibbonTab ControlThemeName="VTab">` with the existing button and four pages. TuiSkin uses `<VTab>` with Repeat and Responsive. The old showcase template and resource link were removed. The distributed skin sources and metadata matched the files produced by GacUI. The verified package was pushed in `<Release repo>` commit `0c27b7e7`.
+
+The website build and tests passed. GitHub Pages deployment `45507923791` succeeded, and a fresh browser loaded the published tab reference with its keyboard and selection documentation. Both knowledge-base synchronization passes started at Merge Knowledge Base. The final manual tree and index matched the canonical Tools copy in all eight receiving repositories. Both passes skipped learning.
