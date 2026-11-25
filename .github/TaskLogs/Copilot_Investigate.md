@@ -15,3 +15,17 @@
 Before the fix, both Win32 remote backends received ticking `FullControlTest::Clock` data over MiniHTTP while their captured clock surfaces stayed empty. The local Direct2D `CppTest` capture showed the rim, hour marks and colored hands, and the local RawClock UIA scenario passed 186 assertions. The remote GDI Touching capture showed its sky-blue rectangle.
 
 Two controlled Chromium cases failed on the original GacJS painters. The white rim had no black outline. The Touching border sample was sky blue and its contact sample was opaque yellow.
+
+# PROPOSALS
+
+- No.1 Reuse the native clock plugin and match the browser painters to the showcase
+
+## No.1 Reuse the native clock plugin and match the browser painters to the showcase
+
+The showcase selects the clock painter by its `Interpretor` name. Both raw Windows backends load controller-related plugins before dispatching remote descriptors. Including the showcase's existing clock plugin in the renderer project makes its Direct2D or GDI factory available at that point. Touching already attaches by raw element ID.
+
+Both browser entry pages import the same painter modules. Follow the native draw order and logical dimensions there. The clock needs its complete black outline under the face, ticks and hands. Touching needs a black stroke on the transformed polygon, followed by orange contact rings.
+
+### CODE CHANGE
+
+Add the clock source and header to the Win32 renderer project and its filters. Update the two shared GacJS painters, their pixel expectations and the operating notes that describe the old appearance. Verify complete clock pictures across ticks and contact pixels on press and release.
