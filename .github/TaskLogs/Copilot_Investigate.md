@@ -18,7 +18,7 @@ Two controlled Chromium cases failed on the original GacJS painters. The white r
 
 # PROPOSALS
 
-- No.1 Reuse the native clock plugin and match the browser painters to the showcase
+- No.1 Reuse the native clock plugin and match the browser painters to the showcase [CONFIRMED]
 
 ## No.1 Reuse the native clock plugin and match the browser painters to the showcase
 
@@ -28,4 +28,14 @@ Both browser entry pages import the same painter modules. Follow the native draw
 
 ### CODE CHANGE
 
-Add the clock source and header to the Win32 renderer project and its filters. Update the two shared GacJS painters, their pixel expectations and the operating notes that describe the old appearance. Verify complete clock pictures across ticks and contact pixels on press and release.
+The Win32 renderer project and filters include the existing clock source and header. The GacJS clock strokes a combined path in black at width 3 before painting the face and three hands at width 2. The Touching painter fills and strokes the same transformed polygon, then draws orange rings at the received points. Both the HTTP and Wasm FCT entry pages already import these modules.
+
+The fixed-time Chromium checks sample the rim, hour marks, all hand colors, the Touching border and the ring. Live clock verification compares completed pictures across idle signals. The HTTP and Wasm touch suites share the orange and border pixel checks. The standalone Chromium touch check in `<GacUI repo>/Test/Touching_Browser.mjs` checks the same colors.
+
+### CONFIRMED
+
+The Debug x64 solution built with zero warnings and errors. With Core over MiniHTTP, Direct2D drew the clock at 01:14:54 and 01:15:15, and GDI drew it at 01:17:43 and 01:18:03. In each pair the second hand moved. The rim, hour marks and colored hands were visible. Changing the palette to Rosewood and revisiting the page preserved the drawing. Touching still drew its rectangle on both backends.
+
+All 30 controlled Chromium raw/browser cases and nine Wasm-page setup cases passed. The live Chromium clock ticked across hide/show, and both HTTP transports passed their Touching tests, including movement, rotation, scaling, cancellation and fallback. The standalone MiniHTTP Chromium check passed 167 checks, including the bordered rectangle, orange ring and its disappearance on release. Firefox and WebKit at 2× device scale also painted and cleared the expected clock and touch pixels with controlled protocol data.
+
+The served HTTP and Wasm FCT HTML and both painter modules matched the built and authored files byte for byte. The Windows checks exercised the shared browser code and Wasm page setup. The real Wasm Core requires the Linux build. Both showcase XML pages matched their copies in the BlackSkin tutorial.
