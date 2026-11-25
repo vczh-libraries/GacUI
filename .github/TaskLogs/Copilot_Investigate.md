@@ -59,4 +59,8 @@ Append the theme name and bind a virtual XML control to the existing tab class s
 
 ### CODE CHANGE
 
-Update the theme and loader inventories, skin XML, showcase resources and palette verification. Regenerate both architectures. Add the fast switch at the existing build dispatch and keep packaging, metadata and Debug tutorial verification in place. Document the two XML forms and publish the generated manual through the normal synchronization job.
+The Layout automation locates the nested control by its `VTab` theme. When switching palettes it waits for the selected palette to appear in the rendered controls. The old radio provider can survive a theme refresh. The test checks the resulting colors, selection, geometry and edited text across the change.
+
+`VTab` is appended to the theme inventory and registered as a virtual `GuiTab`. DarkSkin now owns the former showcase ribbon template and its two header containers. TuiSkin uses its existing focus-aware header in a vertical stack beside the selected page. The GUI showcase uses the ribbon form, and the terminal showcase uses `<VTab/>`. A palette-styled `Label` supplies the ribbon Search caption. Both metadata architectures and the generated skin and showcase sources were refreshed.
+
+The fast switch uses the existing default and named project dispatch. Each dependency still imports and releases its sources. GacUI still builds and tests both metadata architectures. Release still packages, verifies Workflow and XML, builds the Debug C++ tutorials and checks for their executables. The Layout palette check locates the new `VTab` theme and checks the rendered result after a switch. The online and bundled manuals document the control, its shared tab API and both XML forms.

@@ -558,7 +558,12 @@ public static class GacUIShowcaseTests
     // palette accent together distinguish the finished tree from the queued click.
     static bool ClockPaletteApplied(object tree, string palette)
     {
-        string accent = palette == "Aurora" ? "#168A7AFF" : "#007ACCFF";
+        var accents = new Dictionary<string, string> {
+            { "Default", "#007ACCFF" }, { "Aurora", "#168A7AFF" }, { "Ember", "#B66332FF" },
+            { "Moonstone", "#6866B4FF" }, { "Lagoon", "#147F9CFF" }, { "Rosewood", "#A04E72FF" }
+        };
+        string accent;
+        if (!accents.TryGetValue(palette, out accent)) return false;
         if (!SnapshotHas(tree, "element", "Background:" + accent + ",Rectangle")) return false;
         foreach (var node in SnapshotNodes(tree))
         {
@@ -3324,9 +3329,8 @@ public static class GacUIShowcaseTests
             var manager = Page(root, "Window Manager");
             var radio = Named(manager, colors[0], ControlType.RadioButton);
             var selection = Pattern<SelectionItemPattern>(radio, SelectionItemPattern.Pattern);
-            bool changed = !selection.Current.IsSelected;
             selection.Select();
-            if (changed) Wait(() => PaletteAttachmentRetired(radio), "palette replaced");
+            Wait(() => SnapshotHas(SnapshotControl(ControlsSnapshot(), "CheckBox", "Window Manager"), "element", "Background:" + colors[1] + ",Rectangle"), "requested palette rendered", 60000);
             root = AutomationElement.FromHandle(hwnd);
             var layout = Page(root, "Layout");
             // A Debug palette refresh rebuilds the complete showcase before laying out its new templates.
@@ -3803,7 +3807,7 @@ public static class GacUIShowcaseTests
             var manager = Page(root, "Window Manager");
             var oldRadio = Named(manager, palette, ControlType.RadioButton);
             Pattern<SelectionItemPattern>(oldRadio, SelectionItemPattern.Pattern).Select();
-            Wait(() => PaletteAttachmentRetired(oldRadio), "old palette attachment retired after " + palette);
+            Wait(() => ClockPaletteApplied(ControlsSnapshot(), palette), "requested palette rendered after " + palette, 60000);
             root = AutomationElement.FromHandle(mainWindowHandle);
             manager = Page(root, "Window Manager");
             var currentRadio = Named(manager, palette, ControlType.RadioButton);
@@ -4007,7 +4011,7 @@ public static class GacUIShowcaseTests
             var manager = Page(root, "Window Manager");
             var radio = Named(manager, palette, ControlType.RadioButton);
             Pattern<SelectionItemPattern>(radio, SelectionItemPattern.Pattern).Select();
-            Wait(() => PaletteAttachmentRetired(radio), "table palette refresh completed");
+            Wait(() => ClockPaletteApplied(ControlsSnapshot(), palette), "table palette refresh rendered " + palette, 60000);
             root = AutomationElement.FromHandle(hwnd);
             page = Page(Page(root, "Layout"), "Easy Layout (Table)");
             Check(Pattern<ValuePattern>(Find(page, ControlType.Edit)[0], ValuePattern.Pattern).Current.Value == retainedText, "palette refresh retains table payload");
