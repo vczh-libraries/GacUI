@@ -77,6 +77,10 @@ To verify, you only need to start `CppTest` and `CppTest_Tui` and see if the ver
 
 To release the updated skins.
 
+## UPDATE
+
+The machine accidentally restarted, please continue the work
+
 # TEST [CONFIRMED]
 
 Exercise the Layout page in both Debug x64 showcases. Compare the nested tab theme, header order, keyboard and mouse selection, content geometry, palette refresh, retained page edits and modal access. Verify the normal label in the ribbon editor. Inspect the terminal at 120 by 40 and 80 by 25. Check both metadata architectures, the default and named fast-build dispatch, the two packaged resources and the built, published and synchronized tab reference.
@@ -88,7 +92,7 @@ For the follow-up, inspect the actual header glyphs and terminal cells. The corn
 # PROPOSALS
 
 - No.1 Register a vertical tab theme and ship its two skin implementations [CONFIRMED]
-- No.2 Align the vertical tab captions and share the terminal page border with the headers
+- No.2 Align the vertical tab captions and share the terminal page border with the headers [CONFIRMED]
 
 ## No.1 Register a vertical tab theme and ship its two skin implementations
 
@@ -123,3 +127,13 @@ Mirror the horizontal TUI tab layout on the left edge. Draw the page border firs
 ### CODE CHANGE
 
 Anchor the border to the widest header, accounting for the single shared cell and empty tabs. Preserve the horizontal templates’ text alignment, header commands and focus handling.
+
+### CONFIRMED
+
+In the running `CppTest_Tui`, the nested border drew its top-left corner at (12, 1). On the next two rows, Repeat occupied columns 6–11 and Responsive occupied columns 2–11. Each header had a solid background from column 1 through its padding at column 12. The vertical border resumed at (12, 4). These zero-based coordinates held at 120 × 40, at 80 × 25 and after restoring the wider viewport. Clicking the padding at (12, 3) selected Responsive. Up and Down switched pages, and the showcase exited normally.
+
+In `CppTest`, the rightmost painted pixels of Repeat, Responsive, Easy Layout and Easy Layout (Table) were at x = 152, 151, 151 and 151. Their previous positions were 106, 117, 119 and 138. The four horizontal captions checked in the same GDI captures retained their original horizontal extents. The showcase switched away from Layout and back, then exited normally.
+
+`Build.ps1 -Project GacUI -Fast` passed in 2 hours, 42 minutes and 15 seconds. It rebuilt Win32 and x64, generated and tested both metadata sets, and regenerated DarkSkin and TuiSkin. The earlier Win32 Debug build reported two existing C4566 warnings in the remote caret test. The recovered x64 Debug build passed with zero warnings and errors.
+
+`Build.ps1 -Project Release -Fast` passed in 25 minutes and 24 seconds. Workflow and XML verification passed, all six C++ tutorial solutions built, and all 55 expected Debug executables were present. All eight distributed skin source files and both reflection metadata binaries matched the GacUI build output byte for byte. The package was pushed in `<Release repo>` commit `43d6abcc`.
