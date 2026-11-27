@@ -35,8 +35,30 @@
     - `GacJS`/`wGac` should render it is treated as a local shortcut key.
 - Windows OSProvider
   - L/M/R double click should generates a mouse down message, instead of letting GuiGraphicsHost and other places to do it.
+- Think about allowing `GacUI.xml` to publish pure reflection metaonly binary for selected resources and their dependencies.
+  - Make sure GacBuild.ps1/GacGen.ps1/GacGen.exe can load specified reflection metaonly binary from `GacUI.xml` and self or dependency `Resource.xml`.
+
+### Localization
+
 - Allow different shortcut key per OS.
   - Update shortcut key builder in XML compiler.
+- Expose hosted/tui application functions so that XML could know the current mode.
+  - By adding direct helper functions and fix all code using the GetXXXApplication detection to use them.
+  - Register them as `GuiApplication` getters so that properties could be used in XML.
+
+### Drag and Drop
+
+- Drag and Drop framework.
+  - Drag data from other control, data from other app, `GuiWindow` in the same process.
+  - Substitutable.
+  - `GuiFakeDragAndDropService`.
+    - Activated by substitution when an OS dependent implementation is not available.
+  - `GuiRemoteProtocolDragAndDropService`.
+- Dock container.
+  - Use drag and drop to perform docking.
+  - A small framework for implementing dock guiding UI.
+  - A predefined dockable tool window for users that are fine with the default behavior about how to transfer content to the dock container.
+  - A "binary tree layout/control" for implementing VS-like dock container.
 
 ### Optimization
 
