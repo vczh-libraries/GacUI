@@ -7246,7 +7246,7 @@ Closures
 
 	void __vwsnc10_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetShortcut())->GetName();
+		auto __vwsn_bind_activator_result_ = [&](){ try{ return ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetShortcut())->GetName(); } catch(...){ return ::vl::WString::Unmanaged(L"Global shortcut unavailable"); } }();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
