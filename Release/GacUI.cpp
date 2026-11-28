@@ -35213,6 +35213,15 @@ GuiHostedController::INativeWindowService
 
 			SettingHostedWindowsBeforeRunning();
 			wmManager->needRefresh = true;
+			struct HostedWindowCleanup
+			{
+				GuiHostedController* controller;
+				~HostedWindowCleanup() noexcept(false)
+				{
+					controller->DestroyHostedWindowsAfterRunning();
+				}
+			} cleanup{ this };
+
 			if (unittest::UnitTest::GetFailureMode() == unittest::UnitTest::FailureMode::NotRunning || unittest::UnitTest::GetFailureMode() == unittest::UnitTest::FailureMode::Debug)
 			{
 				nativeController->WindowService()->Run(nativeWindow);
@@ -35233,7 +35242,6 @@ GuiHostedController::INativeWindowService
 					}
 					else
 					{
-						DestroyHostedWindowsAfterRunning();
 						throw;
 					}
 				}
@@ -35247,7 +35255,6 @@ GuiHostedController::INativeWindowService
 					}
 					else
 					{
-						DestroyHostedWindowsAfterRunning();
 						throw;
 					}
 				}
@@ -35261,7 +35268,6 @@ GuiHostedController::INativeWindowService
 					}
 					else
 					{
-						DestroyHostedWindowsAfterRunning();
 						throw;
 					}
 				}
@@ -35271,13 +35277,11 @@ GuiHostedController::INativeWindowService
 					{
 						GuiHostedController_UnitTestHelper::exceptionOccuredUnderUnitTestReleaseMode = true;
 						unittest::UnitTest::PrintMessage(WString::Unmanaged(L"Runtime exception occurred!"), unittest::UnitTest::MessageKind::Error);
-						DestroyHostedWindowsAfterRunning();
 						throw;
 					}
 				}
 			}
 			CHECK_ERROR((nativeWindow == nullptr) == (mainWindow == nullptr), ERROR_MESSAGE_PREFIX L"Hosted windows should have been destroyed if the native windows is destroyed.");
-			DestroyHostedWindowsAfterRunning();
 #undef ERROR_MESSAGE_PREFIX
 		}
 
@@ -35340,6 +35344,10 @@ GuiHostedController
 
 		GuiHostedController::~GuiHostedController()
 		{
+			if (nativeWindow)
+			{
+				nativeWindow->UninstallListener(this);
+			}
 			nativeController->CallbackService()->UninstallListener(this);
 		}
 
