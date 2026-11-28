@@ -18,3 +18,5 @@
 - Error recovery in `VlppParser2`.
   - `VlppParser2` editor.
   - `Workflow` editor.
+  - XML editor.
+  - JSON editor.
