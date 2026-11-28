@@ -29,7 +29,7 @@ namespace vl::presentation
 		friend class GuiRemoteController;
 		struct Invocation : Object
 		{
-			Func<bool(GuiRemoteController*)>		proc;
+			Func<bool(GuiRemoteController*)>	proc;
 			EventObject							completed;
 			bool								result = false;
 			Invocation();
@@ -112,10 +112,10 @@ namespace vl::presentation
 	// it never delegates to the predecessor or accesses core storage.
 	class GuiRemoteFileSystemInjection : public feature_injection::FeatureImpl<filesystem::IFileSystemImpl>
 	{
-		GuiRemoteController*					remote;
-		mutable SpinLock						lockDelimiters;
-		mutable collections::SortedList<WString>	delimiters;
-		remoteprotocol::InjectionFileResponse	Query(remoteprotocol::InjectionFileOperation operation, const WString& path = L"", const WString& target = L"") const;
+		GuiRemoteController*								remote;
+		mutable SpinLock									lockDelimiters;
+		mutable collections::SortedList<WString>			delimiters;
+		remoteprotocol::InjectionFileResponse				Query(remoteprotocol::InjectionFileOperation operation, const WString& path = L"", const WString& target = L"") const;
 	public:
 		GuiRemoteFileSystemInjection(GuiRemoteController* _remote);
 		wchar_t												GetPathDelimiter() const override;
@@ -157,8 +157,8 @@ namespace vl::presentation
 		~GuiRemoteFileStreamInjection();
 		bool									Open() override;
 		void									Close() override;
-		pos_t							Position() const override;
-		pos_t							Size() const override;
+		pos_t									Position() const override;
+		pos_t									Size() const override;
 		void									Seek(pos_t size) override;
 		void									SeekFromBegin(pos_t size) override;
 		void									SeekFromEnd(pos_t size) override;
@@ -167,9 +167,9 @@ namespace vl::presentation
 		vint									Peek(void* data, vint size) override;
 	};
 
-	extern remoteprotocol::InjectionDateTime		EncodeInjectionDateTime(DateTime value);
+	extern remoteprotocol::InjectionDateTime	EncodeInjectionDateTime(DateTime value);
 	extern DateTime								DecodeInjectionDateTime(const remoteprotocol::InjectionDateTime& value);
-	extern remoteprotocol::InjectionFileInfo		EncodeInjectionFileInfo(const filesystem::FileInfo& value);
+	extern remoteprotocol::InjectionFileInfo	EncodeInjectionFileInfo(const filesystem::FileInfo& value);
 	extern filesystem::FileInfo					DecodeInjectionFileInfo(const remoteprotocol::InjectionFileInfo& value);
 }
 

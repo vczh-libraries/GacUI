@@ -64,7 +64,7 @@ GuiRemoteController
 		GuiRemoteControllerConfig						globalConfig;
 		Ptr<GuiRemoteControllerInjectionState>			injectionState;
 		Ptr<GuiRemoteDateTimeInjection>					dateTimeInjection;
-		Ptr<GuiRemoteLocaleInjection>						localeInjection;
+		Ptr<GuiRemoteLocaleInjection>					localeInjection;
 		Ptr<GuiRemoteFileSystemInjection>				fileSystemInjection;
 		vuint64_t										connectionGeneration = 0;
 		remoteprotocol::ControllerGlobalConfig			remoteGlobalConfig{};

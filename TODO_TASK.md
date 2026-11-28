@@ -1,38 +1,77 @@
-- Add `VTab` to `GUI_CONTROL_TEMPLATE_TYPES` with the `TabTemplate` contract. Register `GuiVTab` as a virtual `GuiTab` so GacUI XML resources can use `<VTab/>`.
-  - Provide vertical tab templates in `DarkSkin` and `TuiSkin`. Use the existing FullControlTest Layout template as the starting point for DarkSkin.
-- In `FullControlTest`:
-  - The `Search` label in `Document Editor (Ribbon)` is always white, it should use `<Label/>` instead.
-  - Use `<RibbonTab ControlThemeName="VTab">` for the nested tab on the `Layout` page. Keep the `Easy Layout (Responsive)` button in `AfterHeaders` and remove the showcase's local vertical tab template.
-- In `TuiControlTest`:
-  - Use `<VTab/>` on the `Layout` page for the existing `Repeat` and `Responsive` pages.
-- To verify the above work, just launch `CppTest` and `CppTest_Tui` and see if expected changes happen.
-- Release GacUI and update both showcases in `<Release repo>/Tutorial/GacUI_ControlTemplate`.
-  - Add a `-Fast` switch to `<Tools repo>/Tools/Build.ps1` for both the default build and individual `-Project` targets.
-    - For `-Project Vlpp`, skip `Build-Vlpp` and keep its import and release steps. Apply the same rule to each other library project except GacUI.
-    - For `-Project GacUI`, pass the switch to `Build-GacUI` and skip only `Test-GacUI-SubProject "UnitTest"`. Generate and test the metadata on both architectures.
-    - For `-Project Release`, keep packaging, Workflow and XML verification, and the Debug C++ tutorial builds and executable checks. Skip only the Release C++ tutorial builds.
-  - Run `<Tools repo>/Tools/Build.ps1 -Fast` with no project selector. It must run the same projects in the same order as the ordinary default build, applying each project's fast-mode rules.
-- Add `VTab` to the website, there are multiple places need to update, check out what pages reference `Tab` control.
-  - Publish the website, when doing `job:copilotInitAll` skip learning.
-- Commit and push all local changes in the affected repos. `<Tools repo>/Tools/CheckRepo.ps1 CheckAll` can report any remaining changes.
+Currently remote protocol core is using `FakeClipboardService`. This task would like it to use the real one.
+This task requires to fix `GacUI` including Windows and WASM, `wGac`, `iGac` and `GacJS`.
+This task requires verification to be done against `GacUI` on Windows, and `GacJS`.
+This task should only verify against remote protocol related test apps.
+Injection options are everywhere, like in core, renderers, scripts, GacJS url arguments. You should read how other injections are implemented and add them in the same pattern.
 
-## DETAILS
+Verification Tips:
 
-- Append `F(TabTemplate, VTab)` to `GUI_CONTROL_TEMPLATE_TYPES` in `<GacUI repo>/Source/Application/Controls/GuiThemeManager.h` to preserve existing enum values. Register `ADD_VIRTUAL_CONTROL(VTab, GuiTab, VTab)` in `<GacUI repo>/Source/Compiler/InstanceLoaders/GuiInstanceLoader_Plugin.cpp`. The resource compiler then constructs `GuiTab(ThemeName::VTab)` for `<VTab/>`. Pages and selection use the existing tab API.
-- Register `att.VTab` in both `<GacUI repo>/Test/Resources/App/DarkSkin/Index.xml` and `<GacUI repo>/Test/Resources/App/TuiSkin/Index.xml`. In DarkSkin, use a `RibbonTabTemplate` with `BeforeHeadersContainer` and `AfterHeadersContainer`. It satisfies the `TabTemplate` contract and gives the showcase button a place below the headers. In TuiSkin, use a `TabTemplate` with cell-sized spacing, a terminal border and the existing focus styling. In both skins, reuse the tab header, set `TabOrder="TopToBottom"`, and put the selected page on the right.
-- Remove `<GacUI repo>/Test/Resources/App/FullControlTest/VerticalTabTemplate.xml`, its resource link and its entries in the GacUI_Compiler project and filters. Remove the Layout activation handler that assigns the explicit template back to itself. Theme refresh handles the registered default. In `<GacUI repo>/Test/Resources/App/FullControlTest/DocumentEditorRibbon.xml`, keep the `Search: ` caption, alignment and adjacent text box's `Alt="S"` while allowing the label template to supply the text color.
-- The default build prepares the tools, runs the library tasks through Workflow, runs GacUI, then packages and verifies Release. Pass the switch into the same task functions used by the named project targets. Keep the tool builds inside the release steps. Skipping `Build-Workflow` leaves the separate RPC stdio check in place. That check needs the Workflow solution's Release x64 driver and service binaries.
-- In `<Tools repo>/Tools/ProjectGacUI.ps1`, keep both architecture builds, metadata generation and testing, tool deployment, skin generation and packing. For C++ tutorial verification the default build calls `Task-Verify-Cpp` and the named Release target calls `Task-Verify-Cpp-OpenFolders`. Both call `Build-Release-Verify-GacUI-Cpp` in `<Tools repo>/Tools/BuildRelease.ps1`. Apply the fast-mode condition to the Release tutorial build loop in that shared function.
-- Update the current manual under `<WebsiteSource repo>/packages/website-doc2/src/articles/gacui`. Cover the component navigation, control hierarchy, container overview and tab reference, default template registration example, and TabTemplate reference. Add the `VTab` to `TabTemplate` mapping in `<WebsiteSource repo>/packages/website-doc2/src/articles/gacui/components/ctemplates/metadata/themeNames.json`. The custom vertical-template tutorial can point readers to the built-in control.
+Both document editor test page watches for clipboard. If the clipboard has anything that is not image/text/document, the paste button will automatically becomes disabled. Vice versa. So this feature is the best suite for seeing if the whole thing properly implemented.
 
-## VERIFICATION
+`fakeClipboard` passed to core will make `RemotingTest_Core` only reads a clipboard simulation inside the process. So when there is no `denyClipboard` for both core and renderer, core will access the real renderer clipboard, therefore it begins to sense OS clipboard changing.
 
-1. Follow the generation sequence in `<GacUI repo>/Project.md`. Generate current Win32 and x64 core metadata before running GacUI_Compiler, which reads both. Rebuild the generated skins and showcases, regenerate and check the final metadata, then launch the updated Debug x64 apps.
-2. In `CppTest`, check that Layout lists Repeat, Responsive, Easy Layout and Easy Layout (Table) down the left side in that order. Select pages by mouse and Up/Down. Open the responsive modal with the button and its displayed Alt sequence, close it, and check that the same page is selected. Resize and switch palettes. The button should stay five layout pixels below the last header, page edits should survive, and the ribbon's Search caption should match a normal label. The Controls snapshot reports the theme name. Update the Layout palette lookup in `<GacUI repo>/Test/UIA_CppTest_Shared.cs` from `RibbonTab` to `VTab`.
-3. In an interactive `CppTest_Tui` session, check that Layout stacks Repeat above Responsive, each selection shows its content on the right, and Up/Down works with the tab focused. Resize from 120 by 40 to 80 by 25 and check header readability. The main tab strip should still be horizontal.
-4. Check the default `-Fast` run for library imports and releases, Win32 and x64 GacUI metadata generation and testing, packaging, and Debug C++ tutorial verification in order. Compare the executed steps with the normal dispatch to verify the three skips above. In the packaged resources, verify that `<Release repo>/Tutorial/GacUI_ControlTemplate/BlackSkin/UI/FullControlTest` uses the ribbon tab with the `VTab` theme and `<Release repo>/Tutorial/GacUI_ControlTemplate/TuiSkin/UI/TuiControlTest` uses the `<VTab/>` tag. Check that the obsolete showcase template and its link are gone.
-5. Follow `<WebsiteSource repo>/job.publish.prompt.md`. Check that the published tab reference and generated Markdown both describe `<VTab/>`. Start both copilotInitAll passes at “Merge Knowledge Base” as directed by `<Tools repo>/Jobs/job.Windows.copilotInitAll.prompt.md`. After pushing the affected repositories, inspect the output of `<Tools repo>/Tools/CheckRepo.ps1 CheckAll` for outstanding changes.
+Combining `fakeClipboard` and both `denyClipboard` there will be 8 combinations:
+- Each combination should test the paste button auto relation, cut and paste features from document editor test pages.
+- Add to `DebugRemoteProtocolSop.md` for only two combination:
+  - `fakeClipboard` is turned on and both `denyClipboard` is used, so OS clipboard does not affect it.
+  - `fakeClipboard` is turned off and both `denyClipboard` is not used, so OS clipboard does affect it.
+  - GacJS option will be in the URL.
 
-## REVIEW COMMENTS
+1. Windows
 
-Both comments are resolved.
+`GuiRemoteControllerConfig::injectClipboard` should have default value `true`.
+`GacUI.h` still keeps `SetupRemoteNativeController` forward declaration but in `GuiRemoteControllerSetup.cpp` that function should be updated to be:
+```C++
+int SetupRemoteNativeControllerInternal(vl::presentation::IGuiRemoteProtocol* protocol, const GuiRemoteControllerConfig& config, INativeClipboardService* clipboardService);
+```
+and forward declare at the end of `GuiRemoteController.h`.
+
+The `clipboardService` here will be the implementation when `injectClipboard` is false, or when `injectClipboard` is true but `ControllerGlobalConfig::injectClipboard` passed from the remote renderer is false.
+
+The value will be passed to `GuiRemoteController` and then to `GuiRemoteClipboardInjection` in `GuiRemoteControllerInjection.h`.
+`GuiRemoteClipboardInjection` inherits from `INativeClipboardService` so that it talks to the remote renderer when it could.
+
+If `clipboardService` is null, a `FakeClipboardService` will be used herer. Since `FakeClipboardService` is almost no performance overhead, this value could be just declared inside `SetupRemoteNativeControllerInternal` and use its address when needed.
+
+You are going to update the remote protocol so that when remote renderer offers a clipboard implementation:
+- After `ControllerConnect` is processed a `InjectionRequestClipboard` message will be sent from core when both `injectClipboard` is true, so that the renderer knows its clipboard implementation is in use.
+- Right after `InjectRequestClipboard`, or when clipboard value from renderer side is changed by whatever program, an `InjectionUpdateClipboardFromRenderer` event is sent to the core with clipboard values. The value has optional text, document and image.
+- If the core side wants to update the clipboard value proactively, an `InjectionUpdateClipboardFromCore` message will be sent from core with the same argument. The renderer should update the OS's clipboard.
+- Declare protocols in `Protocol_Injection.txt`.
+
+For the core side, now each OS is going to prepare its `SetupRemoteNativeController` implementation, which calls `SetupRemoteNativeControllerInternal` with their native clipboard implementation. For Windows, it may needs to create a proc just for `WindowsClipboardService::SetOwnerHandle` so that the OS update would reach the remote protocol core. `fakeClipboard` will be added for the core side. When it is passed, the application will call `SetupRemoteNativeControllerInternal` instead of `SetupRemoteNativeController` and pass null, so that `FakeClipboardService` will take place.
+
+For the native renderer side, everything should just be ready as `GuiRemoteRendererSingle` starts on a OS native `INativeController` provider.
+`RemotingTest_Rendering_Win32` should have a new command line argument added, since `injectClipboard` is by default true, so you are going to add an `denyClipboard` to make it false, there will be no `remoteClipboard`.
+
+`denyClipboard` will also works for `RemotingTest_Core`.
+
+2. GacJS
+
+Update `GacJS` to implement clipboard. The clipboard injection check box should be by default checked, unlike others.
+The URL argument will also be `remoteClipboard`, unlike `denyClipboard` for native renderers.
+
+3. WASM
+
+WASM is going to use browser's clipboard feature anyway, so `injectClipboard` from core should be `true`.
+Update the `wasm_fct/index.html` properly.
+You do not have the environment to test WASM.
+
+4. wGac
+
+You need to update `wGac` to add the `SetupRemoteNativeController` function.
+You are going to add the `--denyClipboard` and `--fakeClipboard` to `RemotingTest_Rendering_Wayland` and `test.sh`.
+You do not have the environment to test wGac.
+
+5. iGac
+
+You need to update `iGac` to add the `SetupRemoteNativeController` function.
+You are going to add the `--denyClipboard` and `--fakeClipboard` to `RemotingTest_Rendering_Cocoa` and `test.sh`.
+You do not have the environment to test iGac.
+
+6. Website
+
+Update the website to introduce this new clipboard injection thing.
+Also update KB pages.
+Publish the website.
+When updating KB pages and website, you are going to pretend that WASM/wGac/iGac are already implemented this feature. I will follow up right away to verify them, I don't want to waste time updating KB pages and website again.

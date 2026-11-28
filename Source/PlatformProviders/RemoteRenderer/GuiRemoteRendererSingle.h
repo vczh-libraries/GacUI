@@ -40,16 +40,16 @@ namespace vl::presentation::remote_renderer
 		// Native library renderers offer all capabilities unless explicitly disabled.
 		struct GlobalConfig
 		{
-			bool							injectDateTime = true;
-			bool							injectLocale = true;
-			bool							injectFileSystem = true;
+			bool								injectDateTime = true;
+			bool								injectLocale = true;
+			bool								injectFileSystem = true;
 		};
 	protected:
-		GlobalConfig						globalConfig;
+		GlobalConfig							globalConfig;
 		INativeWindow*							window = nullptr;
 		INativeScreen*							screen = nullptr;
 		IGuiRemoteProtocolEvents*				events = nullptr;
-		atomic_vint							disconnectingFromCore = false;
+		atomic_vint								disconnectingFromCore = false;
 		bool									stoppedByFatalError = false;
 		Nullable<WString>						fatalError;
 		WString									titleBeforeFatalError;

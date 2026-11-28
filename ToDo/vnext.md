@@ -44,6 +44,7 @@
   - Update shortcut key builder in XML compiler.
 - Expose hosted/tui application functions so that XML could know the current mode.
   - By adding direct helper functions and fix all code using the GetXXXApplication detection to use them.
+    - e.g. currently `GetTuiApplication` is called to detect if TUI is running.
   - Register them as `GuiApplication` getters so that properties could be used in XML.
 
 ### Drag and Drop
