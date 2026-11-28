@@ -1300,6 +1300,10 @@ GuiHostedController
 
 		GuiHostedController::~GuiHostedController()
 		{
+			if (nativeWindow)
+			{
+				nativeWindow->UninstallListener(this);
+			}
 			nativeController->CallbackService()->UninstallListener(this);
 		}
 

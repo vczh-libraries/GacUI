@@ -1260,6 +1260,23 @@ TEST_FILE
 		});
 	});
 
+	TEST_CASE(L"The physical TUI window can outlive the hosted controller during unwinding")
+	{
+		TuiRunTest([](TuiTestBackend*, TuiTestController* controller)
+		{
+			auto hosted = Ptr(new GuiHostedController(controller));
+			hosted->Initialize();
+			auto window = controller->GetMainWindow();
+			TuiTestWindowListener listener;
+			TEST_ASSERT(window->InstallListener(&listener));
+
+			hosted = nullptr;
+			controller->DestroyNativeWindow(window);
+			TEST_ASSERT(listener.destroying == 1);
+			TEST_ASSERT(listener.destroyed == 1);
+		});
+	});
+
 	TEST_CASE(L"TUI hosted clicks hit a replacement window without pointer motion")
 	{
 		TuiRunTest([](TuiTestBackend*, TuiTestController* controller)
