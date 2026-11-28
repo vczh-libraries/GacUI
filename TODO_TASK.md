@@ -158,8 +158,12 @@ Follow `<WebsiteSource repo>/job.publish.prompt.md` for the documentation publis
 
 **suggested solution**: Keep `--fakeClipboard` on both Core launchers. If the requested renderer switch is intentional, let it supply a renderer-local fake clipboard when Core subscribes, with `--denyClipboard` still controlling the advertisement. If only the eight cases are intended, expose the fake switch on Core alone.
 
+I think OS native clipboard implementation is in `wGac` and `iGac`. So from now on you have to add `RemotingTest_Core` as a test app to `wGac` and `iGac` repos, and update the `GacUI/.github/Jobs` to fix the test instructions. Both `test.sh` should now supports `--app:core`. And you can delete `GacUI/Test/Linux/RemotingTest_Core`. Both `syncProj.sh` needs to fix too, but unfortunately you do not have the environment to test them, I will verify them in Ubuntu and macOS later.
+
 ### Cut when the renderer cannot write
 
 **review comment**: `GuiDocumentCommonInterface::Cut()` in `<GacUI repo>/Source/Controls/TextEditorPackage/GuiDocumentCommonInterface.cpp` ignores the Boolean returned by `Submit()` and immediately deletes the selection. A renderer can fail to open the OS clipboard, and a browser can reject a write after Core sends it. A one-way update gives Core no way to report that failure before deleting the text.
 
 **suggested solution**: Return the renderer's write result on `InjectionUpdateClipboardFromCore` and have Cut remove the selection only after a successful submit. Verify a rejected write leaves the selection intact. If delivery is intentionally one-way, define how the user can recover the cut content after a rejected write.
+
+Messages have responses, I think it should be fine when the renderer returning failure, and it just crashes the core. `CHECK_ERROR` could just be used in `GuiRemoteClipboardInjection`.
