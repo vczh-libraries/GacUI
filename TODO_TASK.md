@@ -172,6 +172,8 @@ I think OS native clipboard implementation is in `wGac` and `iGac`. So from now 
 
 **suggested solution**: Use `--fakeClipboard` for the new Core mode alone and `--denyClipboard` for either process. Keep renderer-side simulation only if it is a separate intended feature.
 
+To clarify, `fakeClipboard` means to use `FakeCliboardService` instead of OS native clipboard. `denyClipboard` means core won't use renderer side clipboard or renderer won't offer clipboard implementation. They have different purpose.
+
 ### Cut when the renderer cannot write [CLOSED]
 
 **review comment**: `GuiDocumentCommonInterface::Cut()` in `<GacUI repo>/Source/Controls/TextEditorPackage/GuiDocumentCommonInterface.cpp` ignores the Boolean returned by `Submit()` and immediately deletes the selection. A renderer can fail to open the OS clipboard, and a browser can reject a write after Core sends it. A one-way update gives Core no way to report that failure before deleting the text.
