@@ -6,7 +6,7 @@ Remote clipboard sharing is enabled by default at both endpoints. Core subscribe
 
 GacUI now takes a platform clipboard as the headless Core's fallback. iGac builds its own headless `RemotingTest_Core`. Its local clipboard is the macOS general pasteboard, or private memory with the Core-only `--fakeClipboard` switch. Reads, writes and notifications use the fallback before the current renderer's first snapshot, after disconnect, or while either endpoint denies sharing. A first snapshot with no supported formats still selects the renderer.
 
-Win32 and Chromium renderers passed all eight configurations against a Windows Core. Windows checks also covered the iGac launch arguments and packed imports. macOS pasteboard transfers still need a native run.
+Win32 and Chromium renderers passed all eight configurations against a Windows Core. Windows checks also covered the iGac launch arguments and packed imports. The macOS native run on November 28, 2026 passed all eight configurations; results and remaining independent-desktop coverage are recorded below.
 
 ## What to verify
 
@@ -47,3 +47,13 @@ Record the build, launch arguments, results for both editors in each row, extern
 ## Out of scope
 
 Windows and Wayland runs, GacJS, Wasm, website or knowledge-base publication, other transports and DateTime/Locale/filesystem injection. Standalone, TUI and view-model regression suites, unrelated showcase pages, native touch and the known Toolstrip shortcut conflict are outside this clipboard check. A standalone editor serves only as a clipboard peer.
+
+## Execution result, November 28, 2026
+
+The required iGac import → synchronization → build sequence passed. All eight configurations passed in both editors, totaling 220 recorded checkpoints. Checks covered external Unicode and unsupported-format notifications, exact selected-range Cut/Paste, styled paragraphs, embedded images, PNG-only and TIFF-only input, outgoing PNG/document formats and decoded pixel/alpha equality. Separate-process rich peers passed in both directions on both OS routes; live renderer handoff and fake fallback restoration passed. Traces confirmed one subscription per shared connection, matching write acknowledgements, no echo writes, no Paste requests and zero clipboard messages in denied rows.
+
+Native testing found an external pasteboard notification race: ownership can change before data is published. `<iGac repo>/Mac/NativeWindow/OSX/ServicesImpl/CocoaClipboardService.mm` now waits for an external ownership count to settle for 50 ms; completed GacUI writes notify immediately. Real `pbcopy` stress cycles passed on both OS routes after the fix.
+
+A controlled rejected renderer write exposed missing hosted-window cleanup during exception unwinding. `<GacUI repo>/Source/PlatformProviders/Hosted/GuiHostedController.cpp` now preserves the original clipboard error through cleanup. Core exits with status 1, the rejected Cut preserves its document and selection, and the external pasteboard is unchanged. All 34 remote-startup cases pass under `/C` and `/D`; all 17 hosted-window-manager cases pass. Native retained-renderer inspection also passed, using a test-only simulated No response because the locked desktop did not expose the macOS error dialog to accessibility inspection. The renderer then exited normally through `!Exit`.
+
+Independent Core/renderer desktops remain unavailable. Same-desktop traces confirm zero Core fallback data reads and writes during sharing. Delayed first snapshots, replacement without a preceding disconnect, stale writers and late updates are covered by focused unit tests; the live transport emitted disconnect before each takeover. Detailed evidence and limitations are in `<iGac repo>/TestMatrix_NativeRenderer.md`, under “Remote clipboard verification — 2026-11-28”.

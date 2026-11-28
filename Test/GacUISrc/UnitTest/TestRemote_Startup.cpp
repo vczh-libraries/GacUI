@@ -7,6 +7,7 @@
 #include "../../../Source/Utilities/FakeServices/GuiFakeClipboardService.h"
 #include "../../../Source/Resources/GuiDocumentClipboard.h"
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteController.h"
+#include "../../../Source/PlatformProviders/Hosted/GuiHostedController.h"
 #include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
 #include "../Generated_FullControlTest/FullControlTestEventHandlers.h"
 
@@ -446,6 +447,7 @@ namespace remote_startup_tests
 			InjectionProtocol::RequestInjectionFileSystem(id, arguments);
 		}
 		void RequestWindowNotifySetTitle(const WString&) override {}
+		void RequestWindowNotifySetClientSize(const NativeSize&) override {}
 		void RequestWindowNotifySetEnabled(const bool&) override {}
 		void RequestWindowNotifySetTopMost(const bool&) override {}
 		void RequestWindowNotifySetShowInTaskBar(const bool&) override {}
@@ -725,6 +727,89 @@ TEST_FILE
 			SetupRemoteNativeControllerInternal(protocol.GetProtocol(), core, fake ? nullptr : &local);
 			SetGuiMainProxy({});
 		}
+	});
+
+	TEST_CASE(L"A rejected renderer clipboard write preserves the document and selection during Cut")
+	{
+		PersistenceProtocol protocol;
+		JsonProtocol json(protocol.GetProtocol());
+		SetGuiMainProxy([&]()
+		{
+			theme::RegisterTheme(Ptr(new darkskin::Theme));
+			auto config = MakeGlobalConfig();
+			config.injectClipboard = true;
+			protocol.GetEvents()->OnControllerConnect(config);
+			protocol.rejectClipboard = true;
+			{
+				PersistenceWindow window;
+				for (auto editor : { window.ribbon, window.toolstrip })
+				{
+					auto viewer = editor->viewer;
+					viewer->SetDocument(PersistenceDocument(L"ABCDE-tail", false));
+					viewer->SetEditMode(controls::GuiDocumentEditMode::Editable);
+					viewer->SetCaret(TextPos(0, 0), TextPos(0, 5));
+					TEST_EXCEPTION(viewer->Cut(), Error, [](const Error& error)
+					{
+						TEST_ASSERT(WString::Unmanaged(error.Description()) == L"GuiRemoteClipboardInjection#The renderer could not write the clipboard.");
+					});
+					TEST_ASSERT(viewer->GetDocument()->GetTextForReading(L"|") == L"ABCDE-tail");
+					TEST_ASSERT(viewer->GetSelectionText() == L"ABCDE");
+					TEST_ASSERT(!viewer->CanUndo());
+				}
+			}
+			TEST_ASSERT(protocol.clipboardRequests == 1 && protocol.clipboardWrites == 2);
+			TEST_ASSERT(GetCurrentController()->ClipboardService()->ReadClipboard()->GetText() == L"Renderer initial");
+			protocol.GetEvents()->OnControllerForceExit();
+		});
+		SetupRemoteNativeControllerInternal(&json, {}, nullptr);
+		SetGuiMainProxy({});
+	});
+
+	TEST_CASE(L"A failing native loop destroys hosted windows before propagating its original error")
+	{
+		class FailingController : public InjectionWorkerController
+		{
+		public:
+			using InjectionWorkerController::InjectionWorkerController;
+			void Run(INativeWindow*) override
+			{
+				throw Error(L"Hosted loop failure.");
+			}
+		};
+		class DestroyListener : public INativeWindowListener
+		{
+		public:
+			vint destroying = 0;
+			vint destroyed = 0;
+			void Destroying() override { destroying++; }
+			void Destroyed() override { destroyed++; }
+		};
+		InjectionWorkerProtocol protocol;
+		FailingController native(protocol.GetProtocol());
+		GuiHostedController hosted(&native);
+		hosted.Initialize();
+		DestroyListener mainListener, childListener;
+		auto windows = hosted.WindowService();
+		auto main = windows->CreateNativeWindow(INativeWindow::Normal);
+		auto child = windows->CreateNativeWindow(INativeWindow::Normal);
+		main->InstallListener(&mainListener);
+		child->InstallListener(&childListener);
+		if (vl::unittest::UnitTest::GetFailureMode() == vl::unittest::UnitTest::FailureMode::Release)
+		{
+			windows->Run(main);
+		}
+		else
+		{
+			TEST_EXCEPTION(windows->Run(main), Error, [](const Error& error)
+			{
+				TEST_ASSERT(WString::Unmanaged(error.Description()) == L"Hosted loop failure.");
+			});
+		}
+		TEST_ASSERT(windows->GetMainWindow() == nullptr);
+		TEST_ASSERT(mainListener.destroying == 1 && mainListener.destroyed == 1);
+		TEST_ASSERT(childListener.destroying == 1 && childListener.destroyed == 1);
+		hosted.Finalize();
+		native.Finalize();
 	});
 
 	TEST_CASE(L"The local clipboard serves reads, writes and notifications until a renderer snapshot arrives")
