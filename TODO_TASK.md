@@ -48,9 +48,10 @@ For the native renderer side, everything should just be ready as `GuiRemoteRende
 
 ### DETAILS
 
-- Keep the public setup signature in `<GacUI repo>/Source/GacUI.h`. The platform entry point owns the native clipboard for the duration of the internal setup call. The internal function owns the fake fallback when passed null. Have the hosted controller obtain the selected service through `GuiRemoteController::ClipboardService()`. The remote snapshot test harness currently calls the public entry point in `<GacUI repo>/Source/UnitTestUtilities/GuiUnitTestUtilities.cpp` and needs the process-local fallback to keep recorded clipboard state deterministic.
+- Keep the public setup signature in `<GacUI repo>/Source/GacUI.h`. The platform entry point owns the native clipboard for the duration of the internal setup call. The internal function owns the fake fallback when passed null. Have the hosted controller obtain the selected service through `GuiRemoteController::ClipboardService()`. Use the internal setup with a null fallback in the snapshot harness in `<GacUI repo>/Source/UnitTestUtilities/GuiUnitTestUtilities.cpp` and the direct callers in `<GacUI repo>/Test/GacUISrc/UnitTest/TestRemote.h` and `<GacUI repo>/Test/GacUISrc/UnitTest/TestRemote_Startup.cpp`. This keeps their clipboard deterministic and lets the portable unit-test target link without a platform clipboard provider.
 - Append `injectClipboard` to the Core and native renderer configuration structs to preserve existing positional initializers. Add the advertised field to `<GacUI repo>/Source/PlatformProviders/Remote/Protocol/Protocol_Controller.txt`. An absent advertisement means the renderer cannot supply a clipboard. Use `InjectionRequestClipboard` consistently for the subscription. Generate the C++ schema and protocol metadata with `Metadata_UpdateProtocol` after editing the injection and controller schemas.
 - Both update directions carry a complete snapshot. Preserve text presence even for an empty string. Use the existing clipboard document stream helpers in `<GacUI repo>/Source/Resources/GuiDocumentClipboard.h` for styles and embedded images, and encoded PNG bytes for a standalone image. All three representations can coexist. A successful read with none of them clears the previous snapshot. Copy data out of the native reader promptly so caching it does not keep the OS clipboard open.
+- Declare `InjectionUpdateClipboardFromCore` with `response: bool`. The renderer replies to the request ID with the outcome of its clipboard write. In the injected writer's `Submit()`, wait for that response from the same connection and use `CHECK_ERROR` in `GuiRemoteClipboardInjection` on failure, following the writeback pattern in `<GacUI repo>/Source/PlatformProviders/Remote/GuiRemoteControllerInjection.cpp`. A successful write returns to the editor. A rejected write enters Core's fatal-error path before `GuiDocumentCommonInterface::Cut()` reaches `SetSelectionText`.
 - Before a renderer connects, Core uses its selected fallback. When both ends enable injection, request the renderer's current snapshot and start with an empty remote reader until it arrives. Install the snapshot before raising `InvokeClipboardUpdated()` so Paste sees the new value. Only an application write sends an update back to the renderer. On disconnect, restore the fallback and notify listeners. On replacement, discard the old snapshot and pending completions, negotiate again and request the new renderer's initial value.
 - The headless Core event loop in `<GacUI repo>/Source/PlatformProviders/Remote/GuiRemoteController.cpp` processes protocol events. A message-only HWND registered with `WindowsClipboardService::SetOwnerHandle` needs a live Windows message pump. Deliver `WM_CLIPBOARDUPDATE` to Core's UI thread while its local service is active and detach the listener before destroying its owner. The native image helpers in `<GacUI repo>/Source/PlatformProviders/Windows/ServicesImpl/WindowsImageService.cpp` cast to Windows image types. Bridge bitmap data between WIC and Core's remote image service using encoded bytes so the native fallback also handles images.
 - Route `/fakeClipboard` to Core's fallback selection and `/denyClipboard` to each endpoint's capability through `<GacUI repo>/Test/GacUISrc/SharedArguments.h` and the two app entry points. Forward the applicable switches through `<GacUI repo>/Test/StartCore.ps1` and `<GacUI repo>/Test/StartRendrerer.ps1`. Keep the existing duplicate-switch checks.
@@ -74,6 +75,7 @@ Use the eight rows below for each renderer. The two deny columns describe the ef
 2. Seed the OS clipboard with known text before connecting. In each OS-backed row, confirm Paste starts enabled, then replace the clipboard from another process with an unsupported-only format and then with different Unicode text. Observe Paste disable and re-enable without an editor command, then paste and compare the new text. In a fake-backed row start with an empty fake clipboard. External changes must leave Paste disabled. Cut a known selection, change the OS clipboard again, and verify Paste still inserts the cut selection while the OS retains the external value.
 3. In every row, verify Cut removes exactly the selected range and Paste restores it once at a new caret. Check styled text and an embedded image from `<GacUI repo>/Test/TestDocument.bin`, and exercise a standalone image on each clipboard backend. For OS-backed writes, inspect the clipboard from outside the editor. On one Windows desktop the two processes share an OS clipboard, so also capture the protocol messages. Expect a subscription, an initial renderer update and a Core write in the renderer rows, and zero clipboard messages in the fallback rows.
 4. Keep a fake-fallback Core alive and replace an enabled renderer with a denying renderer, then reconnect an enabled one. Check that Paste follows each active source, accepts the fresh initial value and that updates settle after a write. Add only the first and last matrix rows to the shared SOP, including their browser URL settings.
+5. In a separate session with injection active, hold the Windows clipboard open from another process while invoking Cut. Match the renderer's `false` response to that write's request ID and check Core's clipboard error and nonzero exit code.
 
 2. GacJS
 
@@ -85,11 +87,13 @@ The URL argument will also be `remoteClipboard`, unlike `denyClipboard` for nati
 - The existing parser in `<GacJS repo>/Gaclib/website/entry/src/connectionOptions.ts` treats any value on an injection flag as enabled. Give the new default-on option a round trip for both states. An omitted option, `?remoteClipboard` and `?remoteClipboard=true` enable it. Unchecking the box writes `?remoteClipboard=false`, which stays unchecked after Refresh. Apply this to the HTTP renderer and the renderer started with `rvmhost`.
 - Implement clipboard access in the shared page-side renderer. Advertise the capability when the option is enabled and the page has the Clipboard API in a secure context. Start reading when Core subscribes. Map Unicode text, PNG and the private GacUI document bytes to representations of the same clipboard item. Use a web custom format for the document where supported. Detect support for clipboard change events and refresh on focus or a permitted user gesture when needed. A denied read gives no information about the clipboard contents. Discard asynchronous results from a stopped or replaced session. [W3C Clipboard API](https://www.w3.org/TR/clipboard-apis/)
 - The browser text input adapter already handles DOM `paste` and `beforeinput` in `<GacJS repo>/Gaclib/gaclib/renderer/src/textInput.ts`. Coordinate that path with the Core Paste command so a single gesture inserts once and a rich selection keeps its formatting.
+- Complete the Core write request when the browser's clipboard write promise settles. Resolve the protocol response to `true` on success or `false` on rejection so Core can apply its failure policy.
 
 ### VERIFICATION
 
 - After native schema generation, run `yarn run import`, `yarn codegen` and `yarn build` in `<GacJS repo>/Gaclib`. Run the eight rows and both editor pages against the Windows `/FCT /MiniHttp` Core using Playwright Chromium on localhost. Use the real browser clipboard with read/write permission for the OS-backed cases. Verify the checkbox, refreshed URL and advertised capability for the bare URL and explicit off setting.
 - Exercise the initial clipboard read, an external change followed by refocus, a browser clipboard write visible to another application, and rich Paste through the editor command. Check keyboard Paste for duplicate insertion. Deny a read and verify it produces no fabricated empty snapshot. Then allow access, refocus the page and check that Core receives the current contents.
+- In a fresh session, deny a browser clipboard write after subscription. Invoke Cut and observe the matching `false` response and Core's fatal exit.
 
 3. WASM
 
@@ -113,13 +117,15 @@ You do not have the environment to test wGac.
 
 ### DETAILS
 
-`<wGac repo>/test_core.sh` launches the executable built by `<GacUI repo>/Test/Linux/RemotingTest_Core/vmake`. That target currently omits the Wayland provider. Wire the platform setup into the Core target actually launched. Forward Core's two options there and the renderer options through `<wGac repo>/test.sh`. Keep the renderer entry point and argument parser synchronized from GacUI.
+- Add a headless `RemotingTest_Core` test app to `<wGac repo>/CMakeLists.txt`. Repack GacUI and refresh both platform imports so the packed library supplies the internal setup and each platform supplies `SetupRemoteNativeController`. Extend `<wGac repo>/syncProj.sh` to copy the main and GUI entry points from `<GacUI repo>/Test/GacUISrc/RemotingTest_Core` alongside the shared argument parser. Use the packed GacUI and test-remoting headers in the Unix build. Link the synchronized FullControlTest, RemoteProtocolTest and RemoteViewModelTest resources, editor helpers and RPC initialization once.
+- In both platform launchers, `test.sh --app:core` starts the local Core with `/MiniHttp` and defaults to `/FCT`. Support `/RPT`, `/RVMT` and the existing injection options. Forward `--fakeClipboard` and `--denyClipboard` on the Core command, and `--denyClipboard` on the renderer command, in foreground and `--unblock` modes. Route the existing Core launcher scripts' FCT, RPT and RVMT cases to the new binary. Their `cpptest_rvm` case still starts the standalone requester. Preserve native RVMT host startup and let GacJS supply its own network host or pass a complete `/Cli:<command>` as one argument.
+- Once both platform targets and launchers use the new Core, remove `<GacUI repo>/Test/Linux/RemotingTest_Core`. The separate host still builds from `<GacUI repo>/Test/Linux/RemotingTest_RvmHost`. Update the Unix build and launch examples in `<GacUI repo>/.github/Jobs/job.rpXPlat.prompt.md`, `<GacUI repo>/.github/Jobs/DebugRemoteProtocolWithNativeRenderer.md` and `<GacUI repo>/.github/Jobs/DebugRemoteProtocolWithGacJS.md`. Update the matching project inventories, platform launcher documentation and the Core binary location in `<GacJS repo>/doc/Projects.md`.
 
 In `<wGac repo>/WGac/Services/WGacClipboardService.cpp`, an external selection changes the offer without raising a clipboard notification. Its writer needs a compositor input serial to publish a selection. Notify after releasing the offer lock. A headless Core needs a clipboard backend it can service without focused Wayland input. The TUI adapter in `<wGac repo>/WGac/TUI/TuiWGacClipboardService.cpp` uses X11/XWayland selection ownership and currently exposes only text to other applications.
 
 ### VERIFICATION
 
-Trace both foreground and `--unblock` launcher arguments, the linked setup definition, and external selection notifications for the active clipboard. Leave native clipboard transfers for the Wayland follow-up.
+Check the CMake target, its synchronized inputs, and the path selected by `<wGac repo>/test.sh` and `<wGac repo>/test_core.sh`. Trace `--app:core --fakeClipboard` and `--app:renderer --denyClipboard` through both foreground and `--unblock` branches. Check the updated job commands for references to the retired build directory. Native execution and external clipboard notifications are for the Ubuntu follow-up.
 
 5. iGac
 
@@ -129,11 +135,13 @@ You do not have the environment to test iGac.
 
 ### DETAILS
 
-The target is `RemotingTest_Rendering_macOS`. The same portable Core link requirement applies to `<iGac repo>/test_core.sh`. Use the Cocoa clipboard's callback and image-service dependencies, and arrange for `CocoaClipboardService::CheckForUpdates()` to observe external pasteboard changes on both the native fallback and renderer paths. The TUI integration in `<iGac repo>/Mac/TUI/TuiCocoaController.mm` shows how it observes the pasteboard change count.
+Add the headless `RemotingTest_Core` target to `<iGac repo>/CMakeLists.txt` alongside `RemotingTest_Rendering_macOS`. Extend `<iGac repo>/syncProj.sh` with the same canonical Core entry points and resource inputs as wGac. Link the Cocoa setup into this executable. Apply the Core launcher and host modes above in `<iGac repo>/test.sh` and `<iGac repo>/test_core.sh`.
+
+Use the Cocoa clipboard's callback and image-service dependencies, and arrange for `CocoaClipboardService::CheckForUpdates()` to observe external pasteboard changes on both the native fallback and renderer paths. The TUI integration in `<iGac repo>/Mac/TUI/TuiCocoaController.mm` shows how it observes the pasteboard change count.
 
 ### VERIFICATION
 
-Trace Core and renderer switches through `<iGac repo>/test_core.sh` and `<iGac repo>/test.sh` in foreground and `--unblock` modes. Check the macOS target links one public setup definition and has a live caller for the pasteboard update check. Leave native runtime verification for the macOS follow-up.
+Check that the executable path used by `<iGac repo>/test.sh` matches the new Core target, that both launch modes forward each switch to the intended process, and that the target has one public setup definition and a live caller for the pasteboard update check. Native execution and pasteboard transfers are for the macOS follow-up.
 
 6. Website
 
@@ -160,7 +168,11 @@ Follow `<WebsiteSource repo>/job.publish.prompt.md` for the documentation publis
 
 I think OS native clipboard implementation is in `wGac` and `iGac`. So from now on you have to add `RemotingTest_Core` as a test app to `wGac` and `iGac` repos, and update the `GacUI/.github/Jobs` to fix the test instructions. Both `test.sh` should now supports `--app:core`. And you can delete `GacUI/Test/Linux/RemotingTest_Core`. Both `syncProj.sh` needs to fix too, but unfortunately you do not have the environment to test them, I will verify them in Ubuntu and macOS later.
 
-### Cut when the renderer cannot write
+**review comment**: The new platform-owned Core gives `test.sh --app:core --fakeClipboard` a defined destination on both systems. The remaining case is the literal `test.sh --app:renderer --fakeClipboard` requested in sections 4 and 5. With injection enabled, that would substitute a second clipboard in the renderer process.
+
+**suggested solution**: Use `--fakeClipboard` for the new Core mode alone and `--denyClipboard` for either process. Keep renderer-side simulation only if it is a separate intended feature.
+
+### Cut when the renderer cannot write [CLOSED]
 
 **review comment**: `GuiDocumentCommonInterface::Cut()` in `<GacUI repo>/Source/Controls/TextEditorPackage/GuiDocumentCommonInterface.cpp` ignores the Boolean returned by `Submit()` and immediately deletes the selection. A renderer can fail to open the OS clipboard, and a browser can reject a write after Core sends it. A one-way update gives Core no way to report that failure before deleting the text.
 
