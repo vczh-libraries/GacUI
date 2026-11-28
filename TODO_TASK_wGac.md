@@ -6,7 +6,7 @@ Remote clipboard sharing is enabled by default at both endpoints. Core subscribe
 
 GacUI now takes a platform clipboard as the headless Core's fallback. wGac builds its own headless `RemotingTest_Core`. Its local clipboard is the X11 `CLIPBOARD` selection through XWayland, or private memory with the Core-only `--fakeClipboard` switch. Reads, writes and notifications use the fallback before the current renderer's first snapshot, after disconnect, or while either endpoint denies sharing. A first snapshot with no supported formats still selects the renderer.
 
-Win32 and Chromium renderers passed all eight configurations against a Windows Core. Windows checks also covered the wGac launch arguments and packed imports. Ubuntu clipboard transfers still need a native run.
+Win32 and Chromium renderers passed all eight configurations against a Windows Core. Windows checks also covered the wGac launch arguments and packed imports. The Ubuntu native run on November 28, 2026 exercised all eight configurations; its results and remaining compositor-input-dependent checks are recorded below.
 
 ## What to verify
 
@@ -47,3 +47,11 @@ Record the build, launch arguments, results for both editors in each row, extern
 ## Out of scope
 
 Windows and macOS runs, GacJS, Wasm, website or knowledge-base publication, other transports and DateTime/Locale/filesystem injection. Standalone, TUI and view-model regression suites, unrelated showcase pages, native touch and the known Toolstrip shortcut conflict are outside this clipboard check. A standalone editor serves only as a clipboard peer.
+
+## Execution result, November 28, 2026
+
+The required wGac import → synchronization → build sequence passed. All six X11/fake fallback configurations passed text, rich-document and standalone-image Cut/Paste in both editors. Both shared Wayland configurations passed incoming Unicode, rich documents, PNGs, notification-driven Paste state and repeated Paste. Protocol traces confirmed one subscription per shared connection, ordered snapshots, zero requests from Paste and zero clipboard messages in denied rows. Handoff and independent Core/renderer selection-domain checks passed on one host. A rejected no-serial Cut received a matching false reply, reported the clipboard failure and terminated Core before deleting the selection; a debugger-free repeat exited with status 134.
+
+Image comparison found and fixed repeated-PNG alpha-rounding loss in `<wGac repo>/WGac/Services/WGacImageService.cpp`. The new regression preserves every premultiplied channel across all alpha values through five PNG roundtrips. Native image and clipboard tests passed 3/3 each, and the focused GacUI remote-startup suite passed 32/32.
+
+Successful shared Wayland writes, their acknowledgements/echo checks, and outgoing renderer-side peer exchanges remain pending a real compositor input serial. Separate physical-machine coverage also remains pending. The current automation session cannot supply that input; it does exercise the required failure path. Detailed evidence, per-editor results, image comparisons and limitations are in `<wGac repo>/TestMatrix_NativeRenderer.md`, under “Remote clipboard verification, 2026-11-28”.
