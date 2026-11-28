@@ -727,12 +727,18 @@ TEST_FILE
 		}
 	});
 
-	TEST_CASE(L"A shared clipboard notifies listeners of an empty reader before the first renderer snapshot")
+	TEST_CASE(L"The local clipboard serves reads, writes and notifications until a renderer snapshot arrives")
 	{
-		class LocalClipboard : public FakeClipboardService
+		class LocalClipboard : public FakeClipboardService, public IGuiRemoteClipboardEventSource
 		{
 		public:
 			vint accesses = 0;
+			bool changed = false;
+
+			bool PumpClipboardEvents() override
+			{
+				return std::exchange(changed, false);
+			}
 
 			Ptr<INativeClipboardReader> ReadClipboard() override
 			{
@@ -752,11 +758,18 @@ TEST_FILE
 			class ClipboardListener : public INativeControllerListener
 			{
 			public:
-				List<Ptr<INativeClipboardReader>> readers;
+				Ptr<INativeClipboardReader> reader;
 
 				void ClipboardUpdated() override
 				{
-					readers.Add(GetCurrentController()->ClipboardService()->ReadClipboard());
+					TEST_ASSERT(!reader);
+					reader = GetCurrentController()->ClipboardService()->ReadClipboard();
+				}
+
+				Ptr<INativeClipboardReader> TakeReader()
+				{
+					TEST_ASSERT(reader);
+					return std::move(reader);
 				}
 			} listener;
 			auto assertEmpty = [](Ptr<INativeClipboardReader> reader)
@@ -770,15 +783,13 @@ TEST_FILE
 			auto local = clipboard->WriteClipboard();
 			local->SetText(L"Core local");
 			TEST_ASSERT(local->Submit());
-			const auto localAccesses = fallback.accesses;
+			const auto initialAccesses = fallback.accesses;
 			auto callbacks = GetCurrentController()->CallbackService();
 			TEST_ASSERT(callbacks->InstallListener(&listener));
 			auto renderer = MakeGlobalConfig();
 			renderer.injectClipboard = true;
 			protocol.GetEvents()->OnControllerConnect(renderer);
-			TEST_ASSERT(listener.readers.Count() == 2);
-			assertEmpty(listener.readers[0]);
-			TEST_ASSERT(listener.readers[1]->GetText() == L"Renderer initial");
+			TEST_ASSERT(listener.TakeReader()->GetText() == L"Renderer initial");
 			TEST_ASSERT(protocol.clipboardRequests == 1);
 
 			{
@@ -789,31 +800,54 @@ TEST_FILE
 				writer->SetImage(document->paragraphs[1]->runs[0].Cast<DocumentImageRun>()->image);
 				TEST_ASSERT(writer->Submit());
 			}
-			TEST_ASSERT(listener.readers.Count() == 3);
-			auto previous = listener.readers[2];
+			auto previous = listener.TakeReader();
 			TEST_ASSERT(previous->ContainsText() && previous->ContainsImage() && previous->ContainsDocument());
+			fallback.changed = true;
+			GetCurrentController()->WindowService()->RunOneCycle();
+			TEST_ASSERT(!fallback.changed && !listener.reader);
+			TEST_ASSERT(fallback.accesses == initialAccesses);
 
+			auto stale = clipboard->WriteClipboard();
 			protocol.deferClipboardSnapshot = true;
 			protocol.GetEvents()->OnControllerConnect(renderer);
-			TEST_ASSERT(listener.readers.Count() == 4);
-			assertEmpty(listener.readers[3]);
+			auto restored = listener.TakeReader();
+			TEST_ASSERT(restored->GetText() == L"Core local");
+			TEST_ASSERT(!restored->ContainsImage() && !restored->ContainsDocument());
+			TEST_ASSERT(clipboard->ReadClipboard()->GetText() == L"Core local");
+
+			auto writer = clipboard->WriteClipboard();
+			writer->SetText(L"Written while waiting");
+			TEST_ASSERT(writer->Submit());
+			TEST_ASSERT(protocol.clipboardWrites == 1);
+			TEST_ASSERT(listener.TakeReader()->GetText() == L"Written while waiting");
+
+			fallback.changed = true;
+			GetCurrentController()->WindowService()->RunOneCycle();
+			TEST_ASSERT(!fallback.changed);
+			TEST_ASSERT(listener.TakeReader()->GetText() == L"Written while waiting");
+			const auto fallbackAccesses = fallback.accesses;
 			const auto submissions = protocol.submissions;
+			protocol.GetEvents()->OnInjectionUpdateClipboardFromRenderer({});
+			assertEmpty(listener.TakeReader());
 			assertEmpty(clipboard->ReadClipboard());
-			assertEmpty(clipboard->ReadClipboard());
-			TEST_ASSERT(protocol.submissions == submissions);
+			TEST_ASSERT(!stale->Submit());
+			TEST_ASSERT(protocol.clipboardWrites == 1);
+
 			InjectionClipboard next{};
 			next.text = WString::Unmanaged(L"Replacement renderer");
 			protocol.GetEvents()->OnInjectionUpdateClipboardFromRenderer(next);
-			TEST_ASSERT(listener.readers.Count() == 5);
-			TEST_ASSERT(listener.readers[4]->GetText() == L"Replacement renderer");
+			TEST_ASSERT(listener.TakeReader()->GetText() == L"Replacement renderer");
 			TEST_ASSERT(clipboard->ReadClipboard()->GetText() == L"Replacement renderer");
-			protocol.GetEvents()->OnInjectionUpdateClipboardFromRenderer({});
-			TEST_ASSERT(listener.readers.Count() == 6);
-			assertEmpty(listener.readers[5]);
 			TEST_ASSERT(protocol.submissions == submissions);
-			TEST_ASSERT(fallback.accesses == localAccesses);
-			TEST_ASSERT(fallback.ReadClipboard()->GetText() == L"Core local");
+			TEST_ASSERT(fallback.accesses == fallbackAccesses);
 			TEST_ASSERT(protocol.clipboardRequests == 2);
+
+			protocol.GetEvents()->OnControllerDisconnect();
+			TEST_ASSERT(listener.TakeReader()->GetText() == L"Written while waiting");
+			protocol.GetEvents()->OnControllerDisconnect();
+			protocol.GetEvents()->OnInjectionUpdateClipboardFromRenderer(next);
+			TEST_ASSERT(!listener.reader);
+			TEST_ASSERT(clipboard->ReadClipboard()->GetText() == L"Written while waiting");
 			TEST_ASSERT(callbacks->UninstallListener(&listener));
 		});
 		SetupRemoteNativeControllerInternal(protocol.GetProtocol(), {}, &fallback);

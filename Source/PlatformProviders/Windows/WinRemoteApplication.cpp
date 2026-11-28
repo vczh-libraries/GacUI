@@ -45,16 +45,10 @@ int SetupRemoteNativeController(vl::presentation::IGuiRemoteProtocol* protocol, 
 	auto initialized = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	CHECK_ERROR(SUCCEEDED(initialized) || initialized == RPC_E_CHANGED_MODE, L"SetupRemoteNativeController()#COM initialization failed.");
 	int result;
-	try
 	{
 		WindowsImageService images;
 		WindowsRemoteClipboardService clipboard(&images);
 		result = SetupRemoteNativeControllerInternal(protocol, config, &clipboard);
-	}
-	catch (...)
-	{
-		if (SUCCEEDED(initialized)) CoUninitialize();
-		throw;
 	}
 	if (SUCCEEDED(initialized)) CoUninitialize();
 	return result;

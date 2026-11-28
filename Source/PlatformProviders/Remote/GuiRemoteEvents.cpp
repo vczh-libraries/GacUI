@@ -143,7 +143,7 @@ GuiRemoteEvents (events)
 
 	void GuiRemoteEvents::OnInjectionUpdateClipboardFromRenderer(const remoteprotocol::InjectionClipboard& arguments)
 	{
-		if (remote->clipboardInjection.IsActive()) remote->clipboardInjection.Update(arguments);
+		remote->clipboardInjection.UpdateData(arguments);
 	}
 
 	void GuiRemoteEvents::OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments)

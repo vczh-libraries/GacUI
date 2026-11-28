@@ -333,10 +333,7 @@ GuiRemoteController::INativeWindowService
 			{
 				callbackService.InvokeGlobalTimer();
 			}
-			if (clipboardEvents && clipboardEvents->PumpClipboardEvents() && !clipboardInjection.IsActive())
-			{
-				callbackService.InvokeClipboardUpdated();
-			}
+			clipboardInjection.PumpClipboardEvents();
 			asyncService.ExecuteAsyncTasks();
 		}
 		return !connectionStopped;
@@ -351,11 +348,10 @@ GuiRemoteController (events)
 		connectionGeneration++;
 		controllerConnected = true;
 		remoteGlobalConfig = _globalConfig;
-		clipboardInjection.Reset();
-		const bool shared = clipboardInjection.IsActive();
-		if (shared)
+		// A replacement renderer can connect without a preceding disconnect.
+		clipboardInjection.Disconnected();
+		if (clipboardInjection.IsEnabled())
 		{
-			callbackService.InvokeClipboardUpdated();
 			remoteMessages.RequestInjectionRequestClipboard();
 		}
 		UpdateGlobalShortcutKey();
@@ -370,19 +366,16 @@ GuiRemoteController (events)
 		imageService.OnControllerConnect();
 		resourceManager->OnControllerConnect();
 		callbackService.InvokeEnvironmentChanged();
-		if (!shared) callbackService.InvokeClipboardUpdated();
 	}
 
 	void GuiRemoteController::OnControllerDisconnect()
 	{
 		connectionGeneration++;
-		const bool shared = clipboardInjection.IsActive();
 		controllerConnected = false;
-		clipboardInjection.Reset();
+		clipboardInjection.Disconnected();
 		remoteWindow.OnControllerDisconnect();
 		imageService.OnControllerDisconnect();
 		resourceManager->OnControllerDisconnect();
-		if (shared) callbackService.InvokeClipboardUpdated();
 	}
 
 	void GuiRemoteController::OnControllerRequestExit()
@@ -413,7 +406,6 @@ GuiRemoteController
 		, remoteWindow(this)
 		, imageService(this)
 		, clipboardInjection(this, _clipboardService)
-		, clipboardEvents(dynamic_cast<IGuiRemoteClipboardEventSource*>(_clipboardService))
 		, globalConfig(_globalConfig)
 		, injectionState(Ptr(new GuiRemoteControllerInjectionState(this)))
 	{
@@ -490,7 +482,7 @@ GuiRemoteController (INativeController)
 
 	INativeClipboardService* GuiRemoteController::ClipboardService()
 	{
-		return clipboardInjection.fallback || clipboardInjection.IsActive() ? &clipboardInjection : nullptr;
+		return clipboardInjection.fallback || clipboardInjection.rendererClipboard ? &clipboardInjection : nullptr;
 	}
 
 	INativeImageService* GuiRemoteController::ImageService()

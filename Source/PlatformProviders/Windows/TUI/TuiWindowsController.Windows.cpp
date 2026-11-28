@@ -75,7 +75,7 @@ namespace vl::presentation::windows
 			switch (message)
 			{
 			case WM_CLIPBOARDUPDATE:
-				if (!console::TUI::IsStopRequested()) controller->clipboardService.DispatchClipboardUpdate(controller->callbackService, true);
+				controller->clipboardService.MarkClipboardUpdated();
 				return 0;
 			case WM_HOTKEY:
 				controller->GlobalShortcutKeyActivated(static_cast<vint>(wParam));
@@ -117,12 +117,18 @@ namespace vl::presentation::windows
 
 	void TuiWindowsController::PumpPlatformEvents()
 	{
-		if (!console::TUI::IsStopRequested()) clipboardService.DispatchClipboardUpdate(callbackService, false);
 		MSG message;
 		while (!console::TUI::IsStopRequested() && PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&message);
 			DispatchMessageW(&message);
+		}
+		if (!console::TUI::IsStopRequested())
+		{
+			if (auto reader = clipboardService.AcquirePendingRead())
+			{
+				ClipboardUpdated();
+			}
 		}
 	}
 

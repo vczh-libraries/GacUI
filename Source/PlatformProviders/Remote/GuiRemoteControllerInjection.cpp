@@ -882,7 +882,7 @@ GuiRemoteClipboardInjection
 			return invocation->Execute([&](GuiRemoteController* controller)
 			{
 				auto& clipboard = controller->clipboardInjection;
-				if (connection != controller->connectionGeneration || !clipboard.IsActive()) return false;
+				if (connection != controller->connectionGeneration || !clipboard.rendererClipboard) return false;
 				auto revision = clipboard.revision;
 				auto& messages = controller->remoteMessages;
 				auto id = messages.RequestInjectionUpdateClipboardFromCore(value);
@@ -890,44 +890,58 @@ GuiRemoteClipboardInjection
 				messages.Submit(disconnected);
 				if (disconnected || connection != controller->connectionGeneration) return false;
 				CHECK_ERROR(messages.RetrieveInjectionUpdateClipboardFromCore(id), L"GuiRemoteClipboardInjection#The renderer could not write the clipboard.");
-				if (revision == clipboard.revision) clipboard.Update(value);
+				if (revision == clipboard.revision) clipboard.UpdateData(value);
 				return true;
 			});
 		}
 	};
 
 	GuiRemoteClipboardInjection::GuiRemoteClipboardInjection(GuiRemoteController* controller, INativeClipboardService* local)
-		: remote(controller), fallback(local)
+		: remote(controller)
+		, fallback(local)
+		, fallbackEvents(dynamic_cast<IGuiRemoteClipboardEventSource*>(local))
 	{
 	}
 
-	bool GuiRemoteClipboardInjection::IsActive() const
+	bool GuiRemoteClipboardInjection::IsEnabled() const
 	{
 		return remote->controllerConnected && remote->globalConfig.injectClipboard && remote->remoteGlobalConfig.injectClipboard;
 	}
 
-	void GuiRemoteClipboardInjection::Reset()
+	void GuiRemoteClipboardInjection::Disconnected()
 	{
-		snapshot = {};
-		revision++;
+		if (rendererClipboard)
+		{
+			rendererClipboard = nullptr;
+			remote->callbackService.InvokeClipboardUpdated();
+		}
 	}
 
-	void GuiRemoteClipboardInjection::Update(const InjectionClipboard& value)
+	void GuiRemoteClipboardInjection::UpdateData(const InjectionClipboard& value)
 	{
-		snapshot = value;
+		if (!IsEnabled()) return;
+		rendererClipboard = Ptr(new GuiRemoteClipboardReader(value));
 		revision++;
 		remote->callbackService.InvokeClipboardUpdated();
 	}
 
+	void GuiRemoteClipboardInjection::PumpClipboardEvents()
+	{
+		if (fallbackEvents && fallbackEvents->PumpClipboardEvents() && !rendererClipboard)
+		{
+			remote->callbackService.InvokeClipboardUpdated();
+		}
+	}
+
 	Ptr<INativeClipboardReader> GuiRemoteClipboardInjection::ReadClipboard()
 	{
-		if (IsActive()) return Ptr(new GuiRemoteClipboardReader(snapshot));
+		if (rendererClipboard) return rendererClipboard;
 		return fallback->ReadClipboard();
 	}
 
 	Ptr<INativeClipboardWriter> GuiRemoteClipboardInjection::WriteClipboard()
 	{
-		if (IsActive()) return Ptr(new GuiRemoteClipboardWriter(this));
+		if (rendererClipboard) return Ptr(new GuiRemoteClipboardWriter(this));
 		return fallback->WriteClipboard();
 	}
 }

@@ -236,6 +236,12 @@ So you are going to still remove `TryReadClipboard`, just to be clear
 
 This is not the appropriate way. I mean `InjectionUpdateClipboardFromRenderer` does not update core side OS clipboard, it only update the cached inside core's clipboard service. So there is never a actual clipboard change, so there should not make any WM_CLIPBOARDUPDATE message. You should just call `InvokeClipboardUpdated` upon receiving `InjectionUpdateClipboardFromRenderer` instead of doing these things around. What do you think?
 
+## UPDATE
+
+commits have been grouped but changes still. I would like you to take a look at `DispatchClipboardUpdate` and other changes to `WindowsClipboardService.(h|cpp)`. I think some changes are only valid with remote protocol, take a look add see if they could be moved to `GuiRemoteControllerInjection.(h|cpp)` or not. For example, you could add a `GuiRemoteClipboardInjection::Disconnected` to tell GacUI that remote protocol no longer serving the clipboard implementation, it could be called when `ControllerDisconnected` is called, but this event is not guaranteed to trigger, and it could also be called in `ControllerConnected` before the first clipboard data from the renderer is received. Since `GuiRemoteClipboardInjection` is the accessible `INativeClipboardService` in remote protocol core, no one is going to access `WindowsClipboardService` directly, So I guess `GuiRemoteClipboardInjection::Disconnected|UpdateData` might be sufficient and leave `WindowsClipboardService` with only bug fixes. When it is disconnected, instead of serving empty data, it should return to OS clipboard data, so an clipboard updated notification to GacUI (but not via windows message since there is no actual OS clipboard change) is sent. Now a disconnected `GuiRemoteClipboardInjection` will just redirect everything to the underlying clipboard service appropriately, until `UpdateData` is called and it goes back to "renderer mode". I think this should be enough to remove `DispatchClipboardUpdate` since that function looks wired and it is unnecessary to stay inside `WindowsClipboardService`.
+
+by the way, `SetupRemoteNativeController` no need to do try-catch, just let it crashes, since at the moment no one is going to recover the error so `CoUninitialize` is unnecessary and this helps to preserve the scene for debugging.
+
 # TEST [CONFIRMED]
 
 Build the Debug x64 remote applications and use the two document editor pages in Editable mode. Seed the clipboard with a known fixture before connecting. Check Paste availability and the result of Cut and Paste using the eight routing cases above for each renderer. Verify each renderer subscription, change event, write result, replacement and denied write with the observations specified above. Check the Unix launchers and Wasm wiring statically on Windows.
@@ -244,6 +250,8 @@ On the original Debug x64 binaries, a separate Win32 process seeded the clipboar
 
 A controller listener recorded the reader from each connection notification. On the previous implementation, the first callback already contained the renderer’s text when its subscription handler replied immediately. The first empty-reader assertion failed.
 
+For the revised handoff, seed the fallback with distinct text and replace a renderer while its successor delays its first snapshot. Observe the reader from inside each listener callback. The gap must allow local writes and local update notifications. An empty first snapshot must select the renderer, a writer from the old connection must be rejected, and an explicit disconnect must restore the text written during the gap.
+
 # PROPOSALS
 
 - No.1 Give the headless Core a platform-owned local clipboard [CONFIRMED]
@@ -251,7 +259,8 @@ A controller listener recorded the reader from each connection notification. On 
 
 - No.3 Remove the native clipboard dialog and verify cross-application transfers [DENIED]
 - No.4 Notify listeners of the empty shared clipboard before subscribing to the renderer [DENIED]
-- No.5 Deliver renderer snapshots directly to Core clipboard listeners [CONFIRMED]
+- No.5 Deliver renderer snapshots directly to Core clipboard listeners [DENIED]
+- No.6 Use the local clipboard until the current renderer supplies data [CONFIRMED]
 
 The first two proposals supply the two clipboard routes. The first supplies the clipboard when sharing is disabled on either endpoint. The second supplies the connected renderer’s clipboard when both endpoints enable sharing.
 
@@ -361,7 +370,9 @@ Remove the Win32 read-retry timer and the code that posts `WM_CLIPBOARDUPDATE`. 
 
 With the repost removed, a Windows process copied new text and immediately reopened the clipboard for reading. The OS sequence advanced from 3392 to 3397 for the copy and stayed at 3397 after release. The remote editor lost Paste and still had it disabled after release. Remember a failed native read in the Windows provider and finish it on the existing event loop. The GUI holds the readable native clipboard while delivering that change to listeners. The headless fallback continues to drain its window independently of the injected cache.
 
-### CONFIRMED
+### DENIED BY USER
+
+The maintainer changed the handoff before the first snapshot and requested removal of the Windows callback dispatcher. Proposal 6 supersedes the connection-time empty reader. Direct delivery of renderer snapshots and recovery of genuine busy Windows reads still apply. The following observations describe the previous implementation.
 
 The Core listener observed the replacement text and then an empty clipboard in the callbacks for the two corresponding renderer events. Each snapshot produced one synchronous callback. The instrumented Core-local service recorded zero accesses throughout sharing and retained its original contents. The cache reads and the two incoming events issued zero protocol submissions.
 
@@ -370,3 +381,25 @@ A Win32 renderer connected to a Core with a Windows fallback while another proce
 A separate real Windows copy made while both apps were running advanced the sequence from 3513 to 3518. The remote editor kept Paste enabled while the new contents were busy. It and CppTest pasted the new text after release with the sequence still at 3518. A renderer that denied sharing also recovered the new text through Core’s native fallback after release. The single-image selection retained the private document and all 851 bitmap pixels. A separate Paint window pasted the image and copied all 851 pixels back. Both GacUI editors exchanged Unicode text in both directions with the Notepad editing control. The rich document retained six paragraph alignments, its text runs and both embedded images across the remote editor and CppTest.
 
 The Windows Debug x64 build succeeded and all 199 focused tests passed. Every remaining production reference to `WM_CLIPBOARDUPDATE` in GacUI, wGac and iGac receives a message from Windows. Both platform imports match the generated Windows sources. Runtime checks used Windows.
+
+## No.6 Use the local clipboard until the current renderer supplies data
+
+The presence of a complete renderer snapshot selects the renderer route. Both connect and disconnect discard any previous snapshot before notifying listeners. A replacement that sends no disconnect therefore exposes the local clipboard immediately. The first accepted snapshot, including one with no formats, selects the new renderer. The permission to request and accept snapshots still comes from both endpoints.
+
+### CODE CHANGE
+
+In `<GacUI repo>/Source/PlatformProviders/Remote/GuiRemoteControllerInjection.cpp`, `GuiRemoteClipboardInjection` retains an immutable reader for the last accepted snapshot. Its absence routes reads, writes and local change notifications to the fallback. Switching sources updates the reader before notifying GacUI. The writer still checks its connection and the revision of the snapshot it submitted.
+
+The Windows GUI and TUI event loops deliver native clipboard changes while holding the readable clipboard. A failed native read stays pending until the clipboard opens. The Windows provider still handles registered PNG, DIBV5 and the WIC conversion required for native bitmap handles. Headless Core supplies the Windows image service for this conversion because its own graphics service produces remote images. Windows remote setup lets exceptions propagate and balances successful COM initialization on a normal return.
+
+Exercise immediate and delayed snapshots, replacement without disconnect, writes during the gap, a present empty snapshot, explicit disconnect, ignored updates and fallback notifications. Check the active reader from inside each callback and count clipboard requests, writes and accesses to the fallback.
+
+### CONFIRMED
+
+The replacement test observed the seeded local text in the callback that retired the previous renderer. A write during the gap updated the fallback and sent zero renderer writes. A local change notified the listener during that gap. Once an empty first snapshot arrived, the application saw no supported formats despite the text still present in the fallback. The previous renderer’s writer was rejected. Disconnecting restored the text written during the gap, and a late renderer update produced no callback.
+
+The Windows Debug x64 solution built successfully. The Core executable was linked in a separate output directory because a running MiniHTTP Core held the usual executable open. All 605 selected cases in 24 files passed, including the eight clipboard configurations and the handoff regression. No leaks were reported. The window and editor fixtures rendered identically. Thirteen generated Workflow listings reordered existing declarations or layout assignments and were excluded after comparison. CodePack regenerated the portable and Windows sources, and the four resulting files matched both Unix platform imports after line-ending normalization.
+
+In the live Ribbon editor, an external process copied a fresh text marker and immediately held the Windows clipboard open for five seconds. The first Paste after release inserted the marker with renderer sharing enabled. Repeating the check with a renderer that denied sharing pasted the second marker through the Windows fallback. Each run used a single external copy.
+
+With only a private, unsupported Windows format present, the open context menu showed Paste in its disabled color while Select All stayed enabled. After one external text copy, Paste changed to its enabled color without editor input. Sampling covered the five-second hold and the following interval. The first subsequent paste inserted the new text.

@@ -23,13 +23,6 @@ namespace vl::presentation
 GuiRemoteController
 ***********************************************************************/
 
-	// Implemented by headless platform clipboards that share the Core event loop.
-	class IGuiRemoteClipboardEventSource : public virtual Interface
-	{
-	public:
-		virtual bool					PumpClipboardEvents() = 0;
-	};
-
 	class GuiRemoteController
 		: public Object
 		, public INativeController
@@ -66,7 +59,6 @@ GuiRemoteController
 		SharedAsyncService								asyncService;
 		GuiRemoteGraphicsImageService					imageService;
 		GuiRemoteClipboardInjection						clipboardInjection;
-		IGuiRemoteClipboardEventSource*					clipboardEvents;
 		bool											applicationRunning = false;
 		bool											controllerConnected = false;
 		bool											connectionForcedToStop = false;

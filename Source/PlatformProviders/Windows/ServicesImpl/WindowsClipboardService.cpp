@@ -273,16 +273,18 @@ WindowsClipboardService
 				return Ptr(new WindowsClipboardWriter(this));
 			}
 
-			void WindowsClipboardService::DispatchClipboardUpdate(INativeCallbackInvoker& callbacks, bool nativeChange)
+			void WindowsClipboardService::MarkClipboardUpdated()
 			{
-				if (!nativeChange && !readPending) return;
+				readPending = true;
+			}
+
+			Ptr<INativeClipboardReader> WindowsClipboardService::AcquirePendingRead()
+			{
+				if (!readPending) return nullptr;
 				readPending = false;
-				// Keep the native clipboard open while listeners read this change.
+				// Keep the OS clipboard open until the listeners finish reading it.
 				auto nativeReader = ReadClipboard();
-				if (!readPending)
-				{
-					callbacks.InvokeClipboardUpdated();
-				}
+				return readPending ? nullptr : nativeReader;
 			}
 
 			void WindowsClipboardService::SetOwnerHandle(HWND handle)

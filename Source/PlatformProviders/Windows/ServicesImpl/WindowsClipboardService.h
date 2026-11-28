@@ -84,7 +84,8 @@ namespace vl
 				Ptr<INativeClipboardWriter>		WriteClipboard()override;
 
 				void							SetOwnerHandle(HWND handle);
-				void							DispatchClipboardUpdate(INativeCallbackInvoker& callbacks, bool nativeChange);
+				void							MarkClipboardUpdated();
+				Ptr<INativeClipboardReader>		AcquirePendingRead();
 			};
 		}
 	}
