@@ -1,5 +1,6 @@
 #include "GuiRemoteController.h"
 #include "../Hosted/GuiHostedController.h"
+#include "../../Utilities/FakeServices/GuiFakeClipboardService.h"
 
 using namespace vl;
 using namespace vl::presentation;
@@ -11,9 +12,10 @@ SetupRemoteNativeController
 
 extern void GuiApplicationMain();
 
-int SetupRemoteNativeController(vl::presentation::IGuiRemoteProtocol* protocol, const GuiRemoteControllerConfig& config)
+int SetupRemoteNativeControllerInternal(IGuiRemoteProtocol* protocol, const GuiRemoteControllerConfig& config, INativeClipboardService* clipboardService)
 {
-	GuiRemoteController remoteController(protocol, config);
+	FakeClipboardService fakeClipboard;
+	GuiRemoteController remoteController(protocol, config, clipboardService ? clipboardService : &fakeClipboard);
 	GuiHostedController hostedController(&remoteController);
 
 	GuiRemoteGraphicsResourceManager remoteResourceManager(&remoteController, &hostedController);

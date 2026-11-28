@@ -2,6 +2,7 @@
 
 #if defined VCZH_WASM
 #include "DarkSkin.h"
+#include "../../../Source/PlatformProviders/Remote/GuiRemoteController.h"
 #include "../../RemotingHelpers/RemotingServer/Wasm/WasmNetworkProtocol.h"
 #include "../../RemotingHelpers/RemotingServer/RemotingChannelServer.h"
 
@@ -114,7 +115,8 @@ vint WasmMain()
 		config.injectDateTime = false;
 		config.injectLocale = false;
 		config.injectFileSystem = false;
-		SetupRemoteNativeController(&protocol, config);
+		config.injectClipboard = true;
+		SetupRemoteNativeControllerInternal(&protocol, config, nullptr);
 #if defined GACUI_WASM_RVMT
 		wasmViewModel = nullptr;
 #endif

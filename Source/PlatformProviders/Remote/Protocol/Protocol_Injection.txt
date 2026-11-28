@@ -114,3 +114,14 @@ struct InjectionFileResponse
 }
 
 message InjectionFileSystem { request: InjectionFileRequest; response: InjectionFileResponse; }
+
+struct InjectionClipboard
+{
+    var text : string?;
+    var document : binary;
+    var image : binary;
+}
+
+message InjectionRequestClipboard {}
+event InjectionUpdateClipboardFromRenderer { request: InjectionClipboard; }
+message InjectionUpdateClipboardFromCore { request: InjectionClipboard; response: bool; }

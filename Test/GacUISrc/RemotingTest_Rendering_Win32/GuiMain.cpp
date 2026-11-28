@@ -2,6 +2,7 @@
 #include <GacUI.h>
 #include <Test.RemotingHelpers.h>
 #include "../WGac/Services/WGacAutomationService.h"
+#include "../WGac/Services/WGacClipboardService.h"
 #include "../WGac/Renderers/WGacRenderer.h"
 #include "../WGacShared/FullControlTestRawElementRemote.h"
 #elif defined __APPLE__ && __has_include(<GacUI.h>)
@@ -47,6 +48,7 @@ struct RendererGuiContext
 	Ptr<inter_process::async_tcp_socket::IAsyncSocketServer>
 											miniHttpSocketServer;
 	vint												automationHttpPort = 0;
+	WString												coreHost;
 };
 
 RendererGuiContext* currentGuiContext = nullptr;
@@ -89,7 +91,10 @@ void GuiMain()
 		mainWindow->SetBounds({ {x,y},size });
 	}
 	auto invoker = Ptr(new GuiMainAsyncRendererInvoker);
-	currentGuiContext->renderer->RegisterMainWindow(mainWindow);
+#if defined VCZH_GCC && !defined VCZH_APPLE
+	if (auto clipboard = dynamic_cast<wayland::WGacClipboardService*>(GetCurrentController()->ClipboardService())) clipboard->RequireSystemWrites();
+#endif
+	currentGuiContext->renderer->RegisterMainWindow(mainWindow, currentGuiContext->coreHost);
 
 #if defined VCZH_MSVC
 	windows::WindowsAutomationServiceRenderer rendererAutomationServiceObject(currentGuiContext->renderer);
@@ -145,6 +150,7 @@ void GuiMain()
 }
 
 int StartClient(
+	const WString& coreHost,
 	Ptr<inter_process::INetworkProtocolClient> networkClient,
 	Ptr<inter_process::async_tcp_socket::IAsyncSocketServer> miniHttpSocketServer,
 	vint automationHttpPort
@@ -158,14 +164,14 @@ int StartClient(
 		);
 	GuiRemoteProtocolAsyncJsonChannelRenderer asyncRendererChannel(channelClient.GetProtocolChannel());
 	auto&& injection = gacui_test::remoteInjectionArguments;
-	GuiRemoteRendererSingle remoteRenderer(true, { injection.injectDateTime, injection.injectLocale, injection.injectFileSystem });
+	GuiRemoteRendererSingle remoteRenderer(true, { injection.injectDateTime, injection.injectLocale, injection.injectFileSystem, injection.injectClipboard });
 	auto rawElementAttachments = demo::AttachFullControlTestRawElements(remoteRenderer);
 	GuiRemoteProtocolRendererChannel rendererChannel(&asyncRendererChannel, &remoteRenderer);
 	channelClient.SetRenderer(&remoteRenderer);
 	channelClient.SetAsyncRendererChannel(&asyncRendererChannel);
 	channelClient.WaitForServer();
 
-	RendererGuiContext context{ &channelClient, &asyncRendererChannel, &remoteRenderer, miniHttpSocketServer, automationHttpPort };
+	RendererGuiContext context{ &channelClient, &asyncRendererChannel, &remoteRenderer, miniHttpSocketServer, automationHttpPort, coreHost };
 	CHECK_ERROR(!currentGuiContext, L"StartClient(...)#The GUI context has already been bound.");
 	currentGuiContext = &context;
 #if defined VCZH_MSVC
@@ -188,6 +194,7 @@ int StartClient(
 int StartNamedPipeClient(const WString& coreHost, vint automationHttpPort)
 {
 	return StartClient(
+		coreHost,
 		Ptr(new inter_process::named_pipe::NamedPipeClient(coreHost, WString::Unmanaged(GacUIRemoteProtocolNamedPipeName))),
 		nullptr,
 		automationHttpPort
@@ -197,6 +204,7 @@ int StartNamedPipeClient(const WString& coreHost, vint automationHttpPort)
 int StartHttpClient(const WString& coreHost, vint automationHttpPort)
 {
 	return StartClient(
+		coreHost,
 		Ptr(new inter_process::windows_http::HttpClient(
 			coreHost,
 			WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl),
@@ -213,6 +221,7 @@ int StartMiniHttpClient(const WString& coreHost, vint automationHttpPort)
 	auto socketServer = inter_process::async_tcp_socket::CreateDefaultAsyncSocketServer(automationHttpPort);
 	auto socketClient = inter_process::async_tcp_socket::CreateDefaultAsyncSocketClient(coreHost, GacUIRemoteProtocolHttpPort);
 	return StartClient(
+		coreHost,
 		Ptr(new inter_process::async_tcp_socket::SocketHttpClient(
 			socketClient,
 			coreHost,

@@ -23,6 +23,13 @@ namespace vl::presentation
 GuiRemoteController
 ***********************************************************************/
 
+	// Implemented by headless platform clipboards that share the Core event loop.
+	class IGuiRemoteClipboardEventSource : public virtual Interface
+	{
+	public:
+		virtual bool					PumpClipboardEvents() = 0;
+	};
+
 	class GuiRemoteController
 		: public Object
 		, public INativeController
@@ -41,6 +48,8 @@ GuiRemoteController
 		friend class GuiRemoteLocaleInjection;
 		friend class GuiRemoteFileSystemInjection;
 		friend class GuiRemoteFileStreamInjection;
+		friend class GuiRemoteClipboardInjection;
+		friend class GuiRemoteClipboardWriter;
 		friend class elements::GuiRemoteGraphicsRenderTarget;
 		friend class elements::GuiRemoteGraphicsResourceManager;
 		using CursorMap = collections::Dictionary<INativeCursor::SystemCursorType, Ptr<INativeCursor>>;
@@ -56,6 +65,8 @@ GuiRemoteController
 		SharedCallbackService							callbackService;
 		SharedAsyncService								asyncService;
 		GuiRemoteGraphicsImageService					imageService;
+		GuiRemoteClipboardInjection						clipboardInjection;
+		IGuiRemoteClipboardEventSource*					clipboardEvents;
 		bool											applicationRunning = false;
 		bool											controllerConnected = false;
 		bool											connectionForcedToStop = false;
@@ -155,7 +166,7 @@ GuiRemoteController
 		void							OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments);
 
 	public:
-		GuiRemoteController(IGuiRemoteProtocol* _remoteProtocol, const GuiRemoteControllerConfig& _globalConfig = {});
+		GuiRemoteController(IGuiRemoteProtocol* _remoteProtocol, const GuiRemoteControllerConfig& _globalConfig = {}, INativeClipboardService* _clipboardService = nullptr);
 		~GuiRemoteController();
 
 		void									Initialize();
@@ -180,5 +191,7 @@ GuiRemoteController
 		INativeWindowService*			WindowService() override;
 	};
 }
+
+extern int SetupRemoteNativeControllerInternal(vl::presentation::IGuiRemoteProtocol* protocol, const vl::presentation::GuiRemoteControllerConfig& config, vl::presentation::INativeClipboardService* clipboardService);
 
 #endif

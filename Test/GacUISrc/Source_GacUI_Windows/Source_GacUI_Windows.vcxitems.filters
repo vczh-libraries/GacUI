@@ -33,6 +33,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\WinNativeWindow.cpp">
       <Filter>PlatformProviders\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\WinRemoteApplication.cpp">
+      <Filter>PlatformProviders\Windows</Filter>
+    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\ServicesImpl\WindowsInputService.cpp">
       <Filter>PlatformProviders\Windows\ServicesImpl</Filter>
     </ClCompile>

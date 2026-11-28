@@ -1,3 +1,13 @@
+#if defined(__linux__) || defined(__APPLE__)
+#include <GacUI.h>
+#include <Test.RemotingHelpers.h>
+#include <Skins/DarkSkin/DarkSkin.h>
+#include "FullControlTest.h"
+#include "FullControlTestEventHandlers.h"
+#include "RemoteProtocolTest.h"
+#include "RemoteViewModelTest.h"
+#include "RemoteViewModelTestInitialize.h"
+#else
 #include "DarkSkin.h"
 #include "RpMainWindow.h"
 #include "MainWindow.h"
@@ -6,8 +16,10 @@
 #include "RemoteViewModelTestIncludes.h"
 #include "../Generated_RemoteViewModelTest/RemoteViewModelTestInitialize.h"
 #include "../../RemotingHelpers/Rvmt/ViewModelHostServer.h"
+#include "../../../Source/PlatformProviders/Remote/GuiRemoteController.h"
 #include "../../../Source/Utilities/AutomationService/MiniHttpAutomationService.h"
 #include "../../../Source/Utilities/SharedServices/GuiSharedAutomationService_Controls.h"
+#endif
 #include <VlppOS.h>
 #if defined VCZH_MSVC
 #include <VlppOS.Windows.h>
@@ -262,7 +274,15 @@ int StartServer(
 			context.viewModel = rvmChannelServer->RequestService(L"rvmt::IViewModel").template Cast<rvmt::IViewModel>();
 		}
 		auto&& injection = gacui_test::remoteInjectionArguments;
-		SetupRemoteNativeController(&diffConverterProtocol, { injection.injectDateTime, injection.injectLocale, injection.injectFileSystem });
+		GuiRemoteControllerConfig config{ injection.injectDateTime, injection.injectLocale, injection.injectFileSystem, injection.injectClipboard };
+		if (gacui_test::useFakeClipboard)
+		{
+			SetupRemoteNativeControllerInternal(&diffConverterProtocol, config, nullptr);
+		}
+		else
+		{
+			SetupRemoteNativeController(&diffConverterProtocol, config);
+		}
 	}
 	catch (const Exception& ex)
 	{

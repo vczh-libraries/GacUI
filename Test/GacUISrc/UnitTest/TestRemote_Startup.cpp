@@ -4,6 +4,8 @@
 #endif
 #include "TestRemote.h"
 #include "TestControls.h"
+#include "../../../Source/Utilities/FakeServices/GuiFakeClipboardService.h"
+#include "../../../Source/Resources/GuiDocumentClipboard.h"
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteController.h"
 #include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
 #include "../Generated_FullControlTest/FullControlTestEventHandlers.h"
@@ -148,6 +150,28 @@ namespace remote_startup_tests
 	class InjectionProtocol : public StartUpProtocol
 	{
 	public:
+		vint submissions = 0;
+		vint clipboardRequests = 0;
+		vint clipboardWrites = 0;
+		bool rejectClipboard = false;
+		bool deferClipboardSnapshot = false;
+
+		void RequestInjectionRequestClipboard() override
+		{
+			clipboardRequests++;
+			if (deferClipboardSnapshot) return;
+			InjectionClipboard snapshot{};
+			snapshot.text = WString::Unmanaged(L"Renderer initial");
+			events->OnInjectionUpdateClipboardFromRenderer(snapshot);
+		}
+
+		void RequestInjectionUpdateClipboardFromCore(vint id, const InjectionClipboard& value) override
+		{
+			clipboardWrites++;
+			TEST_ASSERT(value.text);
+			events->RespondInjectionUpdateClipboardFromCore(id, !rejectClipboard);
+		}
+
 		vint dateRequests = 0;
 		vint localeRequests = 0;
 		vint fileRequests = 0;
@@ -181,6 +205,7 @@ namespace remote_startup_tests
 
 		void Submit(bool& disconnected) override
 		{
+			submissions++;
 			if (cancelPending)
 			{
 				cancelPending = false;
@@ -613,14 +638,196 @@ TEST_FILE
 		filesystem::EjectFileSystemImpl(&files);
 	});
 
+	TEST_CASE(L"Remote setup uses the supplied local clipboard and isolates its fake fallback")
+	{
+		FakeClipboardService localClipboard;
+		for (bool useLocal : { true, false, true })
+		{
+			InjectionProtocol protocol;
+			SetGuiMainProxy([&]()
+			{
+				auto clipboard = GetCurrentController()->ClipboardService();
+				TEST_ASSERT(clipboard);
+				if (useLocal && localClipboard.ReadClipboard()->ContainsText())
+				{
+					TEST_ASSERT(clipboard->ReadClipboard()->GetText() == L"Core clipboard");
+				}
+				else
+				{
+					TEST_ASSERT(!clipboard->ReadClipboard()->ContainsText());
+					auto writer = clipboard->WriteClipboard();
+					writer->SetText(useLocal ? L"Core clipboard" : L"Private clipboard");
+					TEST_ASSERT(writer->Submit());
+					TEST_ASSERT(clipboard->ReadClipboard()->ContainsText());
+				}
+			});
+			SetupRemoteNativeControllerInternal(protocol.GetProtocol(), {}, useLocal ? &localClipboard : nullptr);
+			SetGuiMainProxy({});
+		}
+	});
+
+	TEST_CASE(L"Renderer clipboard subscriptions, snapshots and acknowledged writes follow the current connection")
+	{
+		for (vint mask = 0; mask < 8; mask++)
+		{
+			const bool fake = (mask & 1) != 0;
+			const bool coreAllows = (mask & 2) == 0;
+			const bool rendererAllows = (mask & 4) == 0;
+			FakeClipboardService local;
+			InjectionProtocol protocol;
+			GuiRemoteControllerConfig core{};
+			core.injectClipboard = coreAllows;
+			SetGuiMainProxy([&]()
+			{
+				auto clipboard = GetCurrentController()->ClipboardService();
+				auto initial = clipboard->WriteClipboard();
+				initial->SetText(L"Core local");
+				TEST_ASSERT(initial->Submit());
+
+				auto renderer = MakeGlobalConfig();
+				renderer.injectClipboard = rendererAllows;
+				protocol.GetEvents()->OnControllerConnect(renderer);
+				const bool shared = coreAllows && rendererAllows;
+				auto source = shared ? L"Renderer initial" : L"Core local";
+				TEST_ASSERT(clipboard->ReadClipboard()->GetText() == source);
+				TEST_ASSERT(clipboard->ReadClipboard()->GetText() == source);
+				TEST_ASSERT(protocol.clipboardRequests == (shared ? 1 : 0));
+
+				protocol.GetEvents()->OnInjectionUpdateClipboardFromRenderer({});
+				TEST_ASSERT(clipboard->ReadClipboard()->ContainsText() != shared);
+				InjectionClipboard emptyText{};
+				emptyText.text = WString();
+				protocol.GetEvents()->OnInjectionUpdateClipboardFromRenderer(emptyText);
+				TEST_ASSERT(clipboard->ReadClipboard()->ContainsText());
+				if (shared) TEST_ASSERT(clipboard->ReadClipboard()->GetText() == L"");
+
+				auto writer = clipboard->WriteClipboard();
+				writer->SetText(L"Application copy");
+				TEST_ASSERT(writer->Submit());
+				TEST_ASSERT(clipboard->ReadClipboard()->GetText() == L"Application copy");
+				TEST_ASSERT(protocol.clipboardWrites == (shared ? 1 : 0));
+				if (shared)
+				{
+					protocol.rejectClipboard = true;
+					auto rejected = clipboard->WriteClipboard();
+					rejected->SetText(L"Rejected");
+					TEST_ERROR(rejected->Submit());
+					TEST_ASSERT(clipboard->ReadClipboard()->GetText() == L"Application copy");
+					auto stale = clipboard->WriteClipboard();
+					renderer.injectClipboard = false;
+					protocol.GetEvents()->OnControllerConnect(renderer);
+					TEST_ASSERT(clipboard->ReadClipboard()->GetText() == L"Core local");
+					TEST_ASSERT(!stale->Submit());
+				}
+				protocol.GetEvents()->OnControllerDisconnect();
+				TEST_ASSERT(clipboard->ReadClipboard()->GetText() == (shared ? L"Core local" : L"Application copy"));
+			});
+			SetupRemoteNativeControllerInternal(protocol.GetProtocol(), core, fake ? nullptr : &local);
+			SetGuiMainProxy({});
+		}
+	});
+
+	TEST_CASE(L"A shared clipboard notifies listeners of an empty reader before the first renderer snapshot")
+	{
+		class LocalClipboard : public FakeClipboardService
+		{
+		public:
+			vint accesses = 0;
+
+			Ptr<INativeClipboardReader> ReadClipboard() override
+			{
+				accesses++;
+				return FakeClipboardService::ReadClipboard();
+			}
+
+			Ptr<INativeClipboardWriter> WriteClipboard() override
+			{
+				accesses++;
+				return FakeClipboardService::WriteClipboard();
+			}
+		} fallback;
+		PersistenceProtocol protocol;
+		SetGuiMainProxy([&]()
+		{
+			class ClipboardListener : public INativeControllerListener
+			{
+			public:
+				List<Ptr<INativeClipboardReader>> readers;
+
+				void ClipboardUpdated() override
+				{
+					readers.Add(GetCurrentController()->ClipboardService()->ReadClipboard());
+				}
+			} listener;
+			auto assertEmpty = [](Ptr<INativeClipboardReader> reader)
+			{
+				TEST_ASSERT(reader);
+				TEST_ASSERT(!reader->ContainsText() && !reader->ContainsImage() && !reader->ContainsDocument());
+				TEST_ASSERT(reader->GetText() == L"" && !reader->GetImage() && !reader->GetDocument());
+			};
+
+			auto clipboard = GetCurrentController()->ClipboardService();
+			auto local = clipboard->WriteClipboard();
+			local->SetText(L"Core local");
+			TEST_ASSERT(local->Submit());
+			const auto localAccesses = fallback.accesses;
+			auto callbacks = GetCurrentController()->CallbackService();
+			TEST_ASSERT(callbacks->InstallListener(&listener));
+			auto renderer = MakeGlobalConfig();
+			renderer.injectClipboard = true;
+			protocol.GetEvents()->OnControllerConnect(renderer);
+			TEST_ASSERT(listener.readers.Count() == 2);
+			assertEmpty(listener.readers[0]);
+			TEST_ASSERT(listener.readers[1]->GetText() == L"Renderer initial");
+			TEST_ASSERT(protocol.clipboardRequests == 1);
+
+			{
+				auto document = PersistenceDocument(L"Previous renderer", true);
+				auto writer = clipboard->WriteClipboard();
+				writer->SetText(L"Previous renderer");
+				writer->SetDocument(document);
+				writer->SetImage(document->paragraphs[1]->runs[0].Cast<DocumentImageRun>()->image);
+				TEST_ASSERT(writer->Submit());
+			}
+			TEST_ASSERT(listener.readers.Count() == 3);
+			auto previous = listener.readers[2];
+			TEST_ASSERT(previous->ContainsText() && previous->ContainsImage() && previous->ContainsDocument());
+
+			protocol.deferClipboardSnapshot = true;
+			protocol.GetEvents()->OnControllerConnect(renderer);
+			TEST_ASSERT(listener.readers.Count() == 4);
+			assertEmpty(listener.readers[3]);
+			const auto submissions = protocol.submissions;
+			assertEmpty(clipboard->ReadClipboard());
+			assertEmpty(clipboard->ReadClipboard());
+			TEST_ASSERT(protocol.submissions == submissions);
+			InjectionClipboard next{};
+			next.text = WString::Unmanaged(L"Replacement renderer");
+			protocol.GetEvents()->OnInjectionUpdateClipboardFromRenderer(next);
+			TEST_ASSERT(listener.readers.Count() == 5);
+			TEST_ASSERT(listener.readers[4]->GetText() == L"Replacement renderer");
+			TEST_ASSERT(clipboard->ReadClipboard()->GetText() == L"Replacement renderer");
+			protocol.GetEvents()->OnInjectionUpdateClipboardFromRenderer({});
+			TEST_ASSERT(listener.readers.Count() == 6);
+			assertEmpty(listener.readers[5]);
+			TEST_ASSERT(protocol.submissions == submissions);
+			TEST_ASSERT(fallback.accesses == localAccesses);
+			TEST_ASSERT(fallback.ReadClipboard()->GetText() == L"Core local");
+			TEST_ASSERT(protocol.clipboardRequests == 2);
+			TEST_ASSERT(callbacks->UninstallListener(&listener));
+		});
+		SetupRemoteNativeControllerInternal(protocol.GetProtocol(), {}, &fallback);
+		SetGuiMainProxy({});
+	});
+
 	TEST_CASE(L"Older connect messages have no injection capabilities")
 	{
 		glr::json::Parser parser;
 		ControllerGlobalConfig config{};
 		ConvertJsonToCustomType(glr::json::JsonParse(L"{}", parser), config);
-		TEST_ASSERT(!config.injectDateTime && !config.injectLocale && !config.injectFileSystem);
+		TEST_ASSERT(!config.injectDateTime && !config.injectLocale && !config.injectFileSystem && !config.injectClipboard);
 		GuiRemoteControllerConfig core;
-		TEST_ASSERT(!core.injectDateTime && !core.injectLocale && !core.injectFileSystem);
+		TEST_ASSERT(!core.injectDateTime && !core.injectLocale && !core.injectFileSystem && core.injectClipboard);
 	});
 
 	TEST_CASE(L"Worker filesystem calls marshal through the real UI pump")
@@ -813,7 +1020,7 @@ TEST_FILE
 					}
 					protocol.GetEvents()->OnControllerForceExit();
 				});
-				SetupRemoteNativeController(&json, { (coreMask & 1) != 0, (coreMask & 2) != 0, (coreMask & 4) != 0 });
+				SetupRemoteNativeControllerInternal(&json, { (coreMask & 1) != 0, (coreMask & 2) != 0, (coreMask & 4) != 0 }, nullptr);
 				SetGuiMainProxy({});
 				TEST_ASSERT(DateTime::LocalTime().hour == 22);
 				TEST_ASSERT(Locale::UserDefault().GetName() == L"core-locale");
@@ -875,7 +1082,7 @@ TEST_FILE
 			TEST_ASSERT(!Folder(child).Create(false));
 			protocol.GetEvents()->OnControllerForceExit();
 		});
-		SetupRemoteNativeController(&json, { false, false, true });
+		SetupRemoteNativeControllerInternal(&json, { false, false, true }, nullptr);
 		SetGuiMainProxy({});
 	});
 
@@ -962,7 +1169,39 @@ TEST_FILE
 			});
 			protocol.GetEvents()->OnControllerForceExit();
 		});
-		SetupRemoteNativeController(&json, { false, false, true });
+		SetupRemoteNativeControllerInternal(&json, { false, false, true }, nullptr);
+		SetGuiMainProxy({});
+	});
+
+	TEST_CASE(L"Both document editors paste a standalone image from the Core fake clipboard")
+	{
+		PersistenceProtocol protocol;
+		JsonProtocol json(protocol.GetProtocol());
+		SetGuiMainProxy([&]()
+		{
+			theme::RegisterTheme(Ptr(new darkskin::Theme));
+			protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
+			{
+				PersistenceWindow window;
+				auto clipboard = GetCurrentController()->ClipboardService();
+				auto document = PersistenceDocument(L"Image fixture", true);
+				auto image = document->paragraphs[1]->runs[0].Cast<DocumentImageRun>()->image;
+				auto writer = clipboard->WriteClipboard();
+				writer->SetImage(image);
+				TEST_ASSERT(writer->Submit());
+				auto reader = clipboard->ReadClipboard();
+				TEST_ASSERT(reader->ContainsImage() && !reader->ContainsText() && !reader->ContainsDocument());
+				for (auto editor : { window.ribbon, window.toolstrip })
+				{
+					auto viewer = editor->viewer;
+					viewer->SetEditMode(controls::GuiDocumentEditMode::Editable);
+					TEST_ASSERT(viewer->CanPaste() && viewer->Paste());
+					TEST_ASSERT(GetImageFromSingleImageDocument(viewer->GetDocument()) == image);
+				}
+			}
+			protocol.GetEvents()->OnControllerForceExit();
+		});
+		SetupRemoteNativeControllerInternal(&json, {}, nullptr);
 		SetGuiMainProxy({});
 	});
 
@@ -1027,7 +1266,7 @@ TEST_FILE
 			}
 			protocol.GetEvents()->OnControllerForceExit();
 		});
-		SetupRemoteNativeController(&json, { false, false, true });
+		SetupRemoteNativeControllerInternal(&json, { false, false, true }, nullptr);
 		SetGuiMainProxy({});
 	});
 
@@ -1081,7 +1320,7 @@ TEST_FILE
 			}
 			protocol.GetEvents()->OnControllerForceExit();
 		});
-		SetupRemoteNativeController(&json);
+		SetupRemoteNativeControllerInternal(&json, {}, nullptr);
 		SetGuiMainProxy({});
 	});
 
@@ -1115,7 +1354,7 @@ TEST_FILE
 			TEST_ASSERT(output.Size() == 18 && protocol.imageCreates == 4 && protocol.imageSaves == 4);
 			protocol.GetEvents()->OnControllerForceExit();
 		});
-		SetupRemoteNativeController(&json);
+		SetupRemoteNativeControllerInternal(&json, {}, nullptr);
 		SetGuiMainProxy({});
 	});
 
@@ -1187,7 +1426,7 @@ TEST_FILE
 
 			protocol.GetEvents()->OnControllerForceExit();
 		});
-		SetupRemoteNativeController(protocol.GetProtocol());
+		SetupRemoteNativeControllerInternal(protocol.GetProtocol(), {}, nullptr);
 		SetGuiMainProxy({});
 	});
 
@@ -1217,7 +1456,7 @@ TEST_FILE
 
 			protocol.GetEvents()->OnControllerForceExit();
 		});
-		SetupRemoteNativeController(protocol.GetProtocol());
+		SetupRemoteNativeControllerInternal(protocol.GetProtocol(), {}, nullptr);
 		SetGuiMainProxy({});
 	});
 }

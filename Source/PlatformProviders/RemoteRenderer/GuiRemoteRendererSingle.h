@@ -43,6 +43,7 @@ namespace vl::presentation::remote_renderer
 			bool								injectDateTime = true;
 			bool								injectLocale = true;
 			bool								injectFileSystem = true;
+			bool								injectClipboard = true;
 		};
 	protected:
 		GlobalConfig							globalConfig;
@@ -58,6 +59,9 @@ namespace vl::presentation::remote_renderer
 		remoteprotocol::WindowSizingConfig		windowSizingConfig;
 		NativeSize								suggestedMinSize;
 
+		bool									clipboardOffered = false;
+		bool									clipboardSubscribed = false;
+		void									ClipboardUpdated() override;
 		bool									CanSendEvents();
 		void									ClearPendingCoreEvents();
 		void									DisconnectFromCore();
@@ -207,7 +211,7 @@ namespace vl::presentation::remote_renderer
 		/// <returns>The installed elements, in creation order.</returns>
 		const collections::List<Ptr<elements::GuiRawElementBase>>& GetRawElements() const;
 
-		void									RegisterMainWindow(INativeWindow* _window);
+		void									RegisterMainWindow(INativeWindow* _window, const WString& clipboardPeer = L"");
 		void									UnregisterMainWindow();
 		bool									IsDisconnectedFromCore();
 		void									ForceExitByFatelError();

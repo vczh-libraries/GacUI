@@ -333,6 +333,10 @@ GuiRemoteController::INativeWindowService
 			{
 				callbackService.InvokeGlobalTimer();
 			}
+			if (clipboardEvents && clipboardEvents->PumpClipboardEvents() && !clipboardInjection.IsActive())
+			{
+				callbackService.InvokeClipboardUpdated();
+			}
 			asyncService.ExecuteAsyncTasks();
 		}
 		return !connectionStopped;
@@ -347,6 +351,13 @@ GuiRemoteController (events)
 		connectionGeneration++;
 		controllerConnected = true;
 		remoteGlobalConfig = _globalConfig;
+		clipboardInjection.Reset();
+		const bool shared = clipboardInjection.IsActive();
+		if (shared)
+		{
+			callbackService.InvokeClipboardUpdated();
+			remoteMessages.RequestInjectionRequestClipboard();
+		}
 		UpdateGlobalShortcutKey();
 		vint idGetFontConfig = remoteMessages.RequestControllerGetFontConfig();
 		vint idGetScreenConfig = remoteMessages.RequestControllerGetScreenConfig();
@@ -359,15 +370,19 @@ GuiRemoteController (events)
 		imageService.OnControllerConnect();
 		resourceManager->OnControllerConnect();
 		callbackService.InvokeEnvironmentChanged();
+		if (!shared) callbackService.InvokeClipboardUpdated();
 	}
 
 	void GuiRemoteController::OnControllerDisconnect()
 	{
 		connectionGeneration++;
+		const bool shared = clipboardInjection.IsActive();
 		controllerConnected = false;
+		clipboardInjection.Reset();
 		remoteWindow.OnControllerDisconnect();
 		imageService.OnControllerDisconnect();
 		resourceManager->OnControllerDisconnect();
+		if (shared) callbackService.InvokeClipboardUpdated();
 	}
 
 	void GuiRemoteController::OnControllerRequestExit()
@@ -391,12 +406,14 @@ GuiRemoteController (events)
 GuiRemoteController
 ***********************************************************************/
 
-	GuiRemoteController::GuiRemoteController(IGuiRemoteProtocol* _remoteProtocol, const GuiRemoteControllerConfig& _globalConfig)
+	GuiRemoteController::GuiRemoteController(IGuiRemoteProtocol* _remoteProtocol, const GuiRemoteControllerConfig& _globalConfig, INativeClipboardService* _clipboardService)
 		: remoteProtocol(_remoteProtocol)
 		, remoteMessages(this)
 		, remoteEvents(this)
 		, remoteWindow(this)
 		, imageService(this)
+		, clipboardInjection(this, _clipboardService)
+		, clipboardEvents(dynamic_cast<IGuiRemoteClipboardEventSource*>(_clipboardService))
 		, globalConfig(_globalConfig)
 		, injectionState(Ptr(new GuiRemoteControllerInjectionState(this)))
 	{
@@ -473,8 +490,7 @@ GuiRemoteController (INativeController)
 
 	INativeClipboardService* GuiRemoteController::ClipboardService()
 	{
-		// Use FakeClipboardService
-		return nullptr;
+		return clipboardInjection.fallback || clipboardInjection.IsActive() ? &clipboardInjection : nullptr;
 	}
 
 	INativeImageService* GuiRemoteController::ImageService()

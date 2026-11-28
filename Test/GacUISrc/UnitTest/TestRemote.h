@@ -1,3 +1,4 @@
+#include "../../../Source/PlatformProviders/Remote/GuiRemoteController.h"
 #include "TestRemote_Shared_JsonProtocol.h"
 #include "TestRemote_Shared_NoRenderingProtocol.h"
 #include "TestRemote_Shared_RenderingProtocol.h"
@@ -14,7 +15,7 @@ void StartRemoteControllerTest(TProtocol& protocol)
 	JsonProtocol jsonProtocol(&protocol);
 	repeatfiltering::GuiRemoteProtocolFilterVerifier verifierProtocol(&jsonProtocol);
 	repeatfiltering::GuiRemoteProtocolFilter filteredProtocol(&verifierProtocol);
-	SetupRemoteNativeController(&filteredProtocol);
+	SetupRemoteNativeControllerInternal(&filteredProtocol, {}, nullptr);
 	SetGuiMainProxy({});
 }
 

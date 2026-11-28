@@ -24,6 +24,7 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::DisconnectFromCore()
 	{
 		disconnectingFromCore = true;
+		clipboardSubscribed = false;
 		if (window)
 		{
 			window->ReleaseCapture();
@@ -109,6 +110,7 @@ namespace vl::presentation::remote_renderer
 		globalConfig.injectDateTime = this->globalConfig.injectDateTime;
 		globalConfig.injectLocale = this->globalConfig.injectLocale;
 		globalConfig.injectFileSystem = this->globalConfig.injectFileSystem;
+		globalConfig.injectClipboard = clipboardOffered;
 		globalConfig.osSuperKeyName = GetCurrentController()->ResourceService()->GetOSSuperKeyName();
 #if defined VCZH_WCHAR_UTF16
 		globalConfig.documentCaretFromEncoding = vl::presentation::remoteprotocol::CharacterEncoding::UTF16;
@@ -223,9 +225,11 @@ namespace vl::presentation::remote_renderer
 		return rawElements;
 	}
 
-	void GuiRemoteRendererSingle::RegisterMainWindow(INativeWindow* _window)
+	void GuiRemoteRendererSingle::RegisterMainWindow(INativeWindow* _window, const WString& clipboardPeer)
 	{
 		window = _window;
+
+		clipboardOffered = globalConfig.injectClipboard && GetCurrentController()->ClipboardService() && clipboardPeer.Length() > 0;
 		windowSizingConfig = GetWindowSizingConfig();
 		window->InstallListener(this);
 		GetCurrentController()->CallbackService()->InstallListener(this);

@@ -234,6 +234,22 @@ TEST_FILE
 		}
 	});
 
+	TEST_CASE(L"Rich replacements retain alignment for complete paragraphs")
+	{
+		auto target = LoadDoc(LR"(<Doc><Content><p align="Right">abc</p></Content></Doc>)");
+		auto single = LoadDoc(LR"(<Doc><Content><p align="Center">x</p></Content></Doc>)");
+		TEST_ASSERT(target->EditRun(TextPos(0, 0), TextPos(0, 1), single, true) == 1);
+		TEST_ASSERT(target->paragraphs[0]->alignment.Value() == Alignment::Right);
+		TEST_ASSERT(target->EditRun(TextPos(0, 0), TextPos(0, 3), single, true) == 1);
+		TEST_ASSERT(target->paragraphs[0]->alignment.Value() == Alignment::Center);
+
+		auto multi = LoadDoc(LR"(<Doc><Content><p>one</p><p align="Right">two</p></Content></Doc>)");
+		TEST_ASSERT(target->EditRun(TextPos(0, 0), TextPos(0, 0), multi, true) == 2);
+		TEST_ASSERT(!target->paragraphs[0]->alignment);
+		TEST_ASSERT(target->paragraphs[1]->alignment.Value() == Alignment::Right);
+		TEST_ASSERT(target->GetTextForReading(L"|") == L"one|twox");
+	});
+
 	TEST_CASE(L"Test Simple DocumentModel Serialization")
 	{
 		auto inputXml1 = LR"XML(

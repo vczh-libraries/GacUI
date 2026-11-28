@@ -1,4 +1,5 @@
 #include "GuiRemoteController.h"
+#include "../../Resources/GuiDocumentClipboard.h"
 
 namespace vl::presentation
 {
@@ -770,5 +771,163 @@ GuiRemoteFileStreamInjection
 		CHECK_ERROR(opened && access != stream::FileStream::WriteOnly, L"vl::presentation::GuiRemoteFileStreamInjection::Peek()#Stream is closed or access is denied.");
 		return buffer->Peek(data, size);
 	}
-}
 
+/***********************************************************************
+GuiRemoteClipboardInjection
+***********************************************************************/
+
+	class GuiRemoteClipboardReader : public Object, public INativeClipboardReader
+	{
+		InjectionClipboard snapshot;
+	public:
+		GuiRemoteClipboardReader(const InjectionClipboard& value) : snapshot(value) {}
+		bool ContainsText() override { return snapshot.text; }
+		bool ContainsDocument() override { return snapshot.document; }
+		bool ContainsImage() override { return snapshot.image; }
+		WString GetText() override { return snapshot.text ? snapshot.text.Value() : WString(); }
+
+		Ptr<DocumentModel> GetDocument() override
+		{
+			if (!snapshot.document) return nullptr;
+			stream::MemoryWrapperStream input(snapshot.document->GetInternalBuffer(), (vint)snapshot.document->Size());
+			return LoadDocumentFromClipboardStream(input);
+		}
+
+		Ptr<INativeImage> GetImage() override
+		{
+			if (!snapshot.image) return nullptr;
+			return GetCurrentController()->ImageService()->CreateImageFromMemory(snapshot.image->GetInternalBuffer(), (vint)snapshot.image->Size());
+		}
+	};
+
+	Ptr<stream::MemoryStream> EncodeClipboardDocument(Ptr<DocumentModel> document)
+	{
+		if (!document) return nullptr;
+		auto bytes = Ptr(new stream::MemoryStream);
+		SaveDocumentToClipboardStream(document, *bytes.Obj());
+		return bytes;
+	}
+
+	Ptr<stream::MemoryStream> EncodeClipboardImage(Ptr<INativeImage> image)
+	{
+		if (!image) return nullptr;
+		auto bytes = Ptr(new stream::MemoryStream);
+		image->SaveToStream(*bytes.Obj(), INativeImage::Png);
+		return bytes;
+	}
+
+	InjectionClipboard ReadClipboardSnapshot(INativeClipboardReader* reader)
+	{
+		InjectionClipboard value;
+		if (reader->ContainsText()) value.text = reader->GetText();
+		if (reader->ContainsDocument()) value.document = EncodeClipboardDocument(reader->GetDocument());
+		if (reader->ContainsImage()) value.image = EncodeClipboardImage(reader->GetImage());
+		return value;
+	}
+
+	bool WriteClipboardSnapshot(INativeClipboardService* service, const InjectionClipboard& value)
+	{
+		GuiRemoteClipboardReader reader(value);
+		auto writer = service->WriteClipboard();
+		if (!writer) return false;
+		if (reader.ContainsDocument())
+		{
+			auto document = reader.GetDocument();
+			if (!document) return false;
+			writer->SetDocument(document);
+		}
+		if (reader.ContainsText()) writer->SetText(reader.GetText());
+		if (reader.ContainsImage())
+		{
+			auto image = reader.GetImage();
+			if (!image) return false;
+			writer->SetImage(image);
+		}
+		return writer->Submit();
+	}
+
+	class GuiRemoteClipboardWriter : public Object, public INativeClipboardWriter
+	{
+		Ptr<GuiRemoteControllerInjectionState> state;
+		vuint64_t connection;
+		InjectionClipboard value;
+	public:
+		GuiRemoteClipboardWriter(GuiRemoteClipboardInjection* owner)
+			: state(owner->remote->injectionState), connection(owner->remote->connectionGeneration)
+		{
+		}
+
+		void SetText(const WString& text) override
+		{
+			value.text = text;
+		}
+
+		void SetDocument(Ptr<DocumentModel> document) override
+		{
+			if (!value.text) SetText(document->GetTextForReading(WString::Unmanaged(L"\r\n\r\n")));
+			if (!value.image) SetImage(GetImageFromSingleImageDocument(document));
+			ModifyDocumentForClipboard(document);
+			value.document = EncodeClipboardDocument(document);
+		}
+
+		void SetImage(Ptr<INativeImage> image) override
+		{
+			value.image = EncodeClipboardImage(image);
+		}
+
+		bool Submit() override
+		{
+			if (!state) return false;
+			auto invocation = std::move(state);
+			return invocation->Execute([&](GuiRemoteController* controller)
+			{
+				auto& clipboard = controller->clipboardInjection;
+				if (connection != controller->connectionGeneration || !clipboard.IsActive()) return false;
+				auto revision = clipboard.revision;
+				auto& messages = controller->remoteMessages;
+				auto id = messages.RequestInjectionUpdateClipboardFromCore(value);
+				bool disconnected = false;
+				messages.Submit(disconnected);
+				if (disconnected || connection != controller->connectionGeneration) return false;
+				CHECK_ERROR(messages.RetrieveInjectionUpdateClipboardFromCore(id), L"GuiRemoteClipboardInjection#The renderer could not write the clipboard.");
+				if (revision == clipboard.revision) clipboard.Update(value);
+				return true;
+			});
+		}
+	};
+
+	GuiRemoteClipboardInjection::GuiRemoteClipboardInjection(GuiRemoteController* controller, INativeClipboardService* local)
+		: remote(controller), fallback(local)
+	{
+	}
+
+	bool GuiRemoteClipboardInjection::IsActive() const
+	{
+		return remote->controllerConnected && remote->globalConfig.injectClipboard && remote->remoteGlobalConfig.injectClipboard;
+	}
+
+	void GuiRemoteClipboardInjection::Reset()
+	{
+		snapshot = {};
+		revision++;
+	}
+
+	void GuiRemoteClipboardInjection::Update(const InjectionClipboard& value)
+	{
+		snapshot = value;
+		revision++;
+		remote->callbackService.InvokeClipboardUpdated();
+	}
+
+	Ptr<INativeClipboardReader> GuiRemoteClipboardInjection::ReadClipboard()
+	{
+		if (IsActive()) return Ptr(new GuiRemoteClipboardReader(snapshot));
+		return fallback->ReadClipboard();
+	}
+
+	Ptr<INativeClipboardWriter> GuiRemoteClipboardInjection::WriteClipboard()
+	{
+		if (IsActive()) return Ptr(new GuiRemoteClipboardWriter(this));
+		return fallback->WriteClipboard();
+	}
+}

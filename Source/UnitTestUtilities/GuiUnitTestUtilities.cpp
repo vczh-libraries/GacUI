@@ -1,5 +1,5 @@
 #include "GuiUnitTestUtilities.h"
-#include "../PlatformProviders/Remote/GuiRemoteProtocol.h"
+#include "../PlatformProviders/Remote/GuiRemoteController.h"
 #include "../Resources/GuiParserManager.h"
 #include "../Reflection/GuiInstanceCompiledWorkflow.h"
 
@@ -417,10 +417,11 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 
 	UnitTestContextImpl unitTestContext(&unitTestProtocol);
 	guiMainUnitTestContext = &unitTestContext;
-	SetupRemoteNativeController(
+	SetupRemoteNativeControllerInternal(
 		globalConfig.useDomDiff
 		? static_cast<IGuiRemoteProtocol*>(&diffConverterProtocol)
-		: &filteredProtocol
+		: &filteredProtocol,
+		{}, nullptr
 		);
 	GacUIUnitTest_SetGuiMainProxy({});
 	TEST_ASSERT(!ExceptionOccuredUnderUnitTestReleaseMode());
@@ -486,10 +487,11 @@ void GacUIUnitTest_StartAsync(const WString& appName, Nullable<UnitTestScreenCon
 
 		UnitTestContextImpl unitTestContext(&unitTestProtocol);
 		guiMainUnitTestContext = &unitTestContext;
-		SetupRemoteNativeController(
+		SetupRemoteNativeControllerInternal(
 			config.Value().useDomDiff
 			? static_cast<IGuiRemoteProtocol*>(&diffConverterProtocol)
-			: &filteredProtocol
+			: &filteredProtocol,
+			{}, nullptr
 			);
 		GacUIUnitTest_SetGuiMainProxy({});
 		eventStopped.Signal();

@@ -19,6 +19,7 @@ namespace vl::presentation
 		bool									injectDateTime = false;
 		bool									injectLocale = false;
 		bool									injectFileSystem = false;
+		bool									injectClipboard = true;
 	};
 
 	// Shared by the controller and its buffered streams. Requests execute on the
@@ -166,6 +167,26 @@ namespace vl::presentation
 		vint									Write(void* data, vint size) override;
 		vint									Peek(void* data, vint size) override;
 	};
+
+	class GuiRemoteClipboardInjection : public Object, public INativeClipboardService
+	{
+		friend class GuiRemoteClipboardWriter;
+		friend class GuiRemoteController;
+		GuiRemoteController*					remote;
+		INativeClipboardService*				fallback;
+		remoteprotocol::InjectionClipboard		snapshot;
+		vuint64_t								revision = 0;
+	public:
+		GuiRemoteClipboardInjection(GuiRemoteController* controller, INativeClipboardService* local);
+		bool									IsActive() const;
+		void									Reset();
+		void									Update(const remoteprotocol::InjectionClipboard& value);
+		Ptr<INativeClipboardReader>				ReadClipboard() override;
+		Ptr<INativeClipboardWriter>				WriteClipboard() override;
+	};
+
+	extern remoteprotocol::InjectionClipboard	ReadClipboardSnapshot(INativeClipboardReader* reader);
+	extern bool									WriteClipboardSnapshot(INativeClipboardService* service, const remoteprotocol::InjectionClipboard& value);
 
 	extern remoteprotocol::InjectionDateTime	EncodeInjectionDateTime(DateTime value);
 	extern DateTime								DecodeInjectionDateTime(const remoteprotocol::InjectionDateTime& value);

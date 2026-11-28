@@ -88,9 +88,16 @@ namespace gacui_test
 		bool injectDateTime = false;
 		bool injectLocale = false;
 		bool injectFileSystem = false;
+		bool injectClipboard = true;
 
 		vl::vint Consume(const vl::WString& argument)
 		{
+			if (argument == L"/denyClipboard")
+			{
+				if (!injectClipboard) return -1;
+				injectClipboard = false;
+				return 1;
+			}
 			bool* option = argument == L"/remoteDT" ? &injectDateTime
 				: argument == L"/remoteLocale" ? &injectLocale
 				: argument == L"/remoteFS" ? &injectFileSystem : nullptr;
@@ -102,5 +109,6 @@ namespace gacui_test
 	};
 
 	inline RemoteInjectionArguments remoteInjectionArguments;
+	inline bool useFakeClipboard = false;
 }
 #endif

@@ -1698,7 +1698,7 @@ GuiDocumentCommonInterface
 				{
 					writer->SetDocument(model);
 				}
-				writer->Submit();
+				if (!writer->Submit()) return false;
 				SetSelectionText(L"");
 				return true;
 			}
@@ -1713,8 +1713,7 @@ GuiDocumentCommonInterface
 				{
 					writer->SetDocument(model);
 				}
-				writer->Submit();
-				return true;
+				return writer->Submit();
 			}
 
 			bool GuiDocumentCommonInterface::Paste()

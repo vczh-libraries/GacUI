@@ -2229,12 +2229,13 @@ WindowsController
 
 				void InvokeGlobalTimer()
 				{
+					clipboardService.DispatchClipboardUpdate(callbackService, false);
 					callbackService.InvokeGlobalTimer();
 				}
 
 				void InvokeClipboardUpdated()
 				{
-					callbackService.InvokeClipboardUpdated();
+					clipboardService.DispatchClipboardUpdate(callbackService, true);
 				}
 
 				void InvokeGlobalShortcutkeyActivated(vint id)

@@ -50,7 +50,16 @@ int main(int argc, char* argv[])
 		if (consumed == 0) consumed = gacui_test::automationArguments.Consume(argument);
 		if (consumed < 0) { Console::WriteLine(L"Error: invalid or duplicate option; /AsPort requires a decimal port in 1..65535."); return result; }
 		if (consumed > 0) continue;
-		if (ARGUMENT_COMPARE(argv[i], ARGUMENT_TEXT("/FCT")) == 0)
+		if (argument == L"/fakeClipboard")
+		{
+			if (gacui_test::useFakeClipboard)
+			{
+				Console::WriteLine(L"Error: duplicate /fakeClipboard.");
+				return result;
+			}
+			gacui_test::useFakeClipboard = true;
+		}
+		else if (ARGUMENT_COMPARE(argv[i], ARGUMENT_TEXT("/FCT")) == 0)
 		{
 			if (index != -1)
 			{

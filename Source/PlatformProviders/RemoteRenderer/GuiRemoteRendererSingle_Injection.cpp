@@ -12,6 +12,32 @@ Renderer feature implementations use public APIs, including application
 injections on the renderer. They never reach into an injection chain.
 ***********************************************************************/
 
+	void GuiRemoteRendererSingle::RequestInjectionRequestClipboard()
+	{
+		if (!clipboardOffered || clipboardSubscribed || !CanSendEvents()) return;
+		clipboardSubscribed = true;
+		ClipboardUpdated();
+	}
+
+	void GuiRemoteRendererSingle::ClipboardUpdated()
+	{
+		if (!clipboardSubscribed || !CanSendEvents()) return;
+		auto service = GetCurrentController()->ClipboardService();
+		if (!service) return;
+		auto reader = service->ReadClipboard();
+		auto snapshot = ReadClipboardSnapshot(reader.Obj());
+		reader = nullptr;
+		if (CanSendEvents()) events->OnInjectionUpdateClipboardFromRenderer(snapshot);
+	}
+
+	void GuiRemoteRendererSingle::RequestInjectionUpdateClipboardFromCore(vint id, const InjectionClipboard& arguments)
+	{
+		if (!CanSendEvents()) return;
+		auto service = GetCurrentController()->ClipboardService();
+		bool success = clipboardSubscribed && service && WriteClipboardSnapshot(service, arguments);
+		if (CanSendEvents()) events->RespondInjectionUpdateClipboardFromCore(id, success);
+	}
+
 	void GuiRemoteRendererSingle::RequestInjectionLocalToUtc(vint id, const InjectionDateTime& arguments)
 	{
 		CHECK_ERROR(globalConfig.injectDateTime, L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestInjectionLocalToUtc()#Capability is disabled.");

@@ -318,7 +318,14 @@ DocumentModel::EditRun
 			// edit runs
 			Array<Ptr<DocumentParagraphRun>> runs;
 			CopyFrom(runs, model->paragraphs);
-			return EditRunNoCopy(begin, end, runs);
+			bool replacesFirstParagraph = runs.Count() > 0 && begin.column == 0 &&
+				(runs.Count() > 1 || end.column == runRanges[paragraphs[end.row].Obj()].end);
+			auto rows = EditRunNoCopy(begin, end, runs);
+			if (rows > 0 && replacesFirstParagraph)
+			{
+				paragraphs[begin.row]->alignment = runs[0]->alignment;
+			}
+			return rows;
 		}
 
 		vint DocumentModel::EditRunNoCopy(TextPos begin, TextPos end, const collections::Array<Ptr<DocumentParagraphRun>>& runs)
