@@ -31,3 +31,4 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\PlatformProviders\Windows\UIAutomation\WindowsUIAutomationSemantic.Windows.cpp"
 #include "..\..\Source\PlatformProviders\Windows\UIAutomation\WindowsUIAutomationState.Windows.cpp"
 #include "..\..\Source\PlatformProviders\Windows\UIAutomation\WindowsUIAutomationText.Windows.cpp"
+#include "..\..\Source\PlatformProviders\Windows\WinRemoteApplication.cpp"

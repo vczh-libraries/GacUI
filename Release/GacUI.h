@@ -21102,6 +21102,7 @@ namespace vl::presentation::remoteprotocol
 	struct InjectionFileInfo;
 	struct InjectionFileRequest;
 	struct InjectionFileResponse;
+	struct InjectionClipboard;
 	struct WindowSizingConfig;
 	struct WindowShowing;
 	struct IOMouseInfoWithButton;
@@ -21173,6 +21174,7 @@ namespace vl::presentation::remoteprotocol
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::InjectionFileInfo> { static constexpr const wchar_t* Name = L"InjectionFileInfo"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::InjectionFileRequest> { static constexpr const wchar_t* Name = L"InjectionFileRequest"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::InjectionFileResponse> { static constexpr const wchar_t* Name = L"InjectionFileResponse"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::InjectionClipboard> { static constexpr const wchar_t* Name = L"InjectionClipboard"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::WindowSizingConfig> { static constexpr const wchar_t* Name = L"WindowSizingConfig"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::WindowShowing> { static constexpr const wchar_t* Name = L"WindowShowing"; };
 	template<> struct JsonNameHelper<::vl::presentation::NativeWindowMouseInfo> { static constexpr const wchar_t* Name = L"IOMouseInfo"; };
@@ -21380,6 +21382,7 @@ namespace vl::presentation::remoteprotocol
 		bool injectDateTime;
 		bool injectLocale;
 		bool injectFileSystem;
+		bool injectClipboard;
 	};
 
 	struct InjectionDateTime
@@ -21444,6 +21447,13 @@ namespace vl::presentation::remoteprotocol
 		::vl::Ptr<::vl::collections::List<::vl::WString>> paths;
 		::vl::Nullable<::vl::presentation::remoteprotocol::InjectionFileInfo> info;
 		::vl::Ptr<::vl::stream::MemoryStream> content;
+	};
+
+	struct InjectionClipboard
+	{
+		::vl::Nullable<::vl::WString> text;
+		::vl::Ptr<::vl::stream::MemoryStream> document;
+		::vl::Ptr<::vl::stream::MemoryStream> image;
 	};
 
 	struct WindowSizingConfig
@@ -21873,6 +21883,7 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionFileInfo>(const ::vl::presentation::remoteprotocol::InjectionFileInfo & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionFileRequest>(const ::vl::presentation::remoteprotocol::InjectionFileRequest & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionFileResponse>(const ::vl::presentation::remoteprotocol::InjectionFileResponse & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionClipboard>(const ::vl::presentation::remoteprotocol::InjectionClipboard & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::WindowSizingConfig>(const ::vl::presentation::remoteprotocol::WindowSizingConfig & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::WindowShowing>(const ::vl::presentation::remoteprotocol::WindowShowing & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeWindowMouseInfo>(const ::vl::presentation::NativeWindowMouseInfo & value);
@@ -21965,6 +21976,7 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionFileInfo& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionFileRequest& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileResponse>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionFileResponse& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionClipboard>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionClipboard& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::WindowSizingConfig>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::WindowSizingConfig& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::WindowShowing>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::WindowShowing& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeWindowMouseInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeWindowMouseInfo& value);
@@ -22030,6 +22042,8 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(InjectionUtcToLocal, ::vl::presentation::remoteprotocol::InjectionDateTime, ::vl::presentation::remoteprotocol::InjectionDateTime, REQ, RES, NODROP)\
 	HANDLER(InjectionLocale, ::vl::presentation::remoteprotocol::InjectionLocaleRequest, ::vl::Ptr<::vl::collections::List<::vl::WString>>, REQ, RES, NODROP)\
 	HANDLER(InjectionFileSystem, ::vl::presentation::remoteprotocol::InjectionFileRequest, ::vl::presentation::remoteprotocol::InjectionFileResponse, REQ, RES, NODROP)\
+	HANDLER(InjectionRequestClipboard, void, void, NOREQ, NORES, NODROP)\
+	HANDLER(InjectionUpdateClipboardFromCore, ::vl::presentation::remoteprotocol::InjectionClipboard, bool, REQ, RES, NODROP)\
 	HANDLER(WindowGetBounds, void, ::vl::presentation::remoteprotocol::WindowSizingConfig, NOREQ, RES, NODROP)\
 	HANDLER(WindowNotifySetTitle, ::vl::WString, void, REQ, NORES, DROPREP)\
 	HANDLER(WindowNotifySetEnabled, bool, void, REQ, NORES, DROPREP)\
@@ -22081,6 +22095,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(ControllerRequestExit, void, NOREQ, NODROP)\
 	HANDLER(ControllerForceExit, void, NOREQ, NODROP)\
 	HANDLER(ControllerScreenUpdated, ::vl::presentation::remoteprotocol::ScreenConfig, REQ, DROPREP)\
+	HANDLER(InjectionUpdateClipboardFromRenderer, ::vl::presentation::remoteprotocol::InjectionClipboard, REQ, NODROP)\
 	HANDLER(WindowBoundsUpdated, ::vl::presentation::remoteprotocol::WindowSizingConfig, REQ, DROPREP)\
 	HANDLER(WindowActivatedUpdated, bool, REQ, DROPREP)\
 	HANDLER(IOGlobalShortcutKey, ::vl::vint, REQ, NODROP)\
@@ -22123,6 +22138,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(::vl::presentation::remoteprotocol::GetNearestCaretFromTextPosRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::ImageCreation)\
 	HANDLER(::vl::presentation::remoteprotocol::ImageSaveRequest)\
+	HANDLER(::vl::presentation::remoteprotocol::InjectionClipboard)\
 	HANDLER(::vl::presentation::remoteprotocol::InjectionDateTime)\
 	HANDLER(::vl::presentation::remoteprotocol::InjectionFileRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::InjectionLocaleRequest)\
@@ -22158,6 +22174,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(::vl::presentation::remoteprotocol::IOMouseInfoWithButton)\
 	HANDLER(::vl::presentation::remoteprotocol::IOPointAction)\
 	HANDLER(::vl::presentation::remoteprotocol::IOPointEnd)\
+	HANDLER(::vl::presentation::remoteprotocol::InjectionClipboard)\
 	HANDLER(::vl::presentation::remoteprotocol::ScreenConfig)\
 	HANDLER(::vl::presentation::remoteprotocol::WindowSizingConfig)\
 	HANDLER(::vl::vint)\
@@ -23940,16 +23957,17 @@ namespace vl::presentation::remote_renderer
 		// Native library renderers offer all capabilities unless explicitly disabled.
 		struct GlobalConfig
 		{
-			bool							injectDateTime = true;
-			bool							injectLocale = true;
-			bool							injectFileSystem = true;
+			bool								injectDateTime = true;
+			bool								injectLocale = true;
+			bool								injectFileSystem = true;
+			bool								injectClipboard = true;
 		};
 	protected:
-		GlobalConfig						globalConfig;
+		GlobalConfig							globalConfig;
 		INativeWindow*							window = nullptr;
 		INativeScreen*							screen = nullptr;
 		IGuiRemoteProtocolEvents*				events = nullptr;
-		atomic_vint							disconnectingFromCore = false;
+		atomic_vint								disconnectingFromCore = false;
 		bool									stoppedByFatalError = false;
 		Nullable<WString>						fatalError;
 		WString									titleBeforeFatalError;
@@ -23958,6 +23976,9 @@ namespace vl::presentation::remote_renderer
 		remoteprotocol::WindowSizingConfig		windowSizingConfig;
 		NativeSize								suggestedMinSize;
 
+		bool									clipboardOffered = false;
+		bool									clipboardSubscribed = false;
+		void									ClipboardUpdated() override;
 		bool									CanSendEvents();
 		void									ClearPendingCoreEvents();
 		void									DisconnectFromCore();
@@ -24107,7 +24128,7 @@ namespace vl::presentation::remote_renderer
 		/// <returns>The installed elements, in creation order.</returns>
 		const collections::List<Ptr<elements::GuiRawElementBase>>& GetRawElements() const;
 
-		void									RegisterMainWindow(INativeWindow* _window);
+		void									RegisterMainWindow(INativeWindow* _window, const WString& clipboardPeer = L"");
 		void									UnregisterMainWindow();
 		bool									IsDisconnectedFromCore();
 		void									ForceExitByFatelError();
@@ -27406,6 +27427,7 @@ namespace vl::presentation
 		bool									injectDateTime = false;
 		bool									injectLocale = false;
 		bool									injectFileSystem = false;
+		bool									injectClipboard = true;
 	};
 
 	// Shared by the controller and its buffered streams. Requests execute on the
@@ -27416,7 +27438,7 @@ namespace vl::presentation
 		friend class GuiRemoteController;
 		struct Invocation : Object
 		{
-			Func<bool(GuiRemoteController*)>		proc;
+			Func<bool(GuiRemoteController*)>	proc;
 			EventObject							completed;
 			bool								result = false;
 			Invocation();
@@ -27499,10 +27521,10 @@ namespace vl::presentation
 	// it never delegates to the predecessor or accesses core storage.
 	class GuiRemoteFileSystemInjection : public feature_injection::FeatureImpl<filesystem::IFileSystemImpl>
 	{
-		GuiRemoteController*					remote;
-		mutable SpinLock						lockDelimiters;
-		mutable collections::SortedList<WString>	delimiters;
-		remoteprotocol::InjectionFileResponse	Query(remoteprotocol::InjectionFileOperation operation, const WString& path = L"", const WString& target = L"") const;
+		GuiRemoteController*								remote;
+		mutable SpinLock									lockDelimiters;
+		mutable collections::SortedList<WString>			delimiters;
+		remoteprotocol::InjectionFileResponse				Query(remoteprotocol::InjectionFileOperation operation, const WString& path = L"", const WString& target = L"") const;
 	public:
 		GuiRemoteFileSystemInjection(GuiRemoteController* _remote);
 		wchar_t												GetPathDelimiter() const override;
@@ -27544,8 +27566,8 @@ namespace vl::presentation
 		~GuiRemoteFileStreamInjection();
 		bool									Open() override;
 		void									Close() override;
-		pos_t							Position() const override;
-		pos_t							Size() const override;
+		pos_t									Position() const override;
+		pos_t									Size() const override;
 		void									Seek(pos_t size) override;
 		void									SeekFromBegin(pos_t size) override;
 		void									SeekFromEnd(pos_t size) override;
@@ -27554,9 +27576,29 @@ namespace vl::presentation
 		vint									Peek(void* data, vint size) override;
 	};
 
-	extern remoteprotocol::InjectionDateTime		EncodeInjectionDateTime(DateTime value);
+	class GuiRemoteClipboardInjection : public Object, public INativeClipboardService
+	{
+		friend class GuiRemoteClipboardWriter;
+		friend class GuiRemoteController;
+		GuiRemoteController*					remote;
+		INativeClipboardService*				fallback;
+		remoteprotocol::InjectionClipboard		snapshot;
+		vuint64_t								revision = 0;
+	public:
+		GuiRemoteClipboardInjection(GuiRemoteController* controller, INativeClipboardService* local);
+		bool									IsActive() const;
+		void									Reset();
+		void									Update(const remoteprotocol::InjectionClipboard& value);
+		Ptr<INativeClipboardReader>				ReadClipboard() override;
+		Ptr<INativeClipboardWriter>				WriteClipboard() override;
+	};
+
+	extern remoteprotocol::InjectionClipboard	ReadClipboardSnapshot(INativeClipboardReader* reader);
+	extern bool									WriteClipboardSnapshot(INativeClipboardService* service, const remoteprotocol::InjectionClipboard& value);
+
+	extern remoteprotocol::InjectionDateTime	EncodeInjectionDateTime(DateTime value);
 	extern DateTime								DecodeInjectionDateTime(const remoteprotocol::InjectionDateTime& value);
-	extern remoteprotocol::InjectionFileInfo		EncodeInjectionFileInfo(const filesystem::FileInfo& value);
+	extern remoteprotocol::InjectionFileInfo	EncodeInjectionFileInfo(const filesystem::FileInfo& value);
 	extern filesystem::FileInfo					DecodeInjectionFileInfo(const remoteprotocol::InjectionFileInfo& value);
 }
 
@@ -27680,6 +27722,13 @@ namespace vl::presentation
 GuiRemoteController
 ***********************************************************************/
 
+	// Implemented by headless platform clipboards that share the Core event loop.
+	class IGuiRemoteClipboardEventSource : public virtual Interface
+	{
+	public:
+		virtual bool					PumpClipboardEvents() = 0;
+	};
+
 	class GuiRemoteController
 		: public Object
 		, public INativeController
@@ -27698,6 +27747,8 @@ GuiRemoteController
 		friend class GuiRemoteLocaleInjection;
 		friend class GuiRemoteFileSystemInjection;
 		friend class GuiRemoteFileStreamInjection;
+		friend class GuiRemoteClipboardInjection;
+		friend class GuiRemoteClipboardWriter;
 		friend class elements::GuiRemoteGraphicsRenderTarget;
 		friend class elements::GuiRemoteGraphicsResourceManager;
 		using CursorMap = collections::Dictionary<INativeCursor::SystemCursorType, Ptr<INativeCursor>>;
@@ -27713,6 +27764,8 @@ GuiRemoteController
 		SharedCallbackService							callbackService;
 		SharedAsyncService								asyncService;
 		GuiRemoteGraphicsImageService					imageService;
+		GuiRemoteClipboardInjection						clipboardInjection;
+		IGuiRemoteClipboardEventSource*					clipboardEvents;
 		bool											applicationRunning = false;
 		bool											controllerConnected = false;
 		bool											connectionForcedToStop = false;
@@ -27721,7 +27774,7 @@ GuiRemoteController
 		GuiRemoteControllerConfig						globalConfig;
 		Ptr<GuiRemoteControllerInjectionState>			injectionState;
 		Ptr<GuiRemoteDateTimeInjection>					dateTimeInjection;
-		Ptr<GuiRemoteLocaleInjection>						localeInjection;
+		Ptr<GuiRemoteLocaleInjection>					localeInjection;
 		Ptr<GuiRemoteFileSystemInjection>				fileSystemInjection;
 		vuint64_t										connectionGeneration = 0;
 		remoteprotocol::ControllerGlobalConfig			remoteGlobalConfig{};
@@ -27812,7 +27865,7 @@ GuiRemoteController
 		void							OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments);
 
 	public:
-		GuiRemoteController(IGuiRemoteProtocol* _remoteProtocol, const GuiRemoteControllerConfig& _globalConfig = {});
+		GuiRemoteController(IGuiRemoteProtocol* _remoteProtocol, const GuiRemoteControllerConfig& _globalConfig = {}, INativeClipboardService* _clipboardService = nullptr);
 		~GuiRemoteController();
 
 		void									Initialize();
@@ -27837,6 +27890,8 @@ GuiRemoteController
 		INativeWindowService*			WindowService() override;
 	};
 }
+
+extern int SetupRemoteNativeControllerInternal(vl::presentation::IGuiRemoteProtocol* protocol, const vl::presentation::GuiRemoteControllerConfig& config, vl::presentation::INativeClipboardService* clipboardService);
 
 #endif
 

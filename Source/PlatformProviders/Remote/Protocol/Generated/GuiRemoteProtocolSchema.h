@@ -18,6 +18,7 @@ namespace vl::presentation::remoteprotocol
 	struct InjectionFileInfo;
 	struct InjectionFileRequest;
 	struct InjectionFileResponse;
+	struct InjectionClipboard;
 	struct WindowSizingConfig;
 	struct WindowShowing;
 	struct IOMouseInfoWithButton;
@@ -89,6 +90,7 @@ namespace vl::presentation::remoteprotocol
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::InjectionFileInfo> { static constexpr const wchar_t* Name = L"InjectionFileInfo"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::InjectionFileRequest> { static constexpr const wchar_t* Name = L"InjectionFileRequest"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::InjectionFileResponse> { static constexpr const wchar_t* Name = L"InjectionFileResponse"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::InjectionClipboard> { static constexpr const wchar_t* Name = L"InjectionClipboard"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::WindowSizingConfig> { static constexpr const wchar_t* Name = L"WindowSizingConfig"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::WindowShowing> { static constexpr const wchar_t* Name = L"WindowShowing"; };
 	template<> struct JsonNameHelper<::vl::presentation::NativeWindowMouseInfo> { static constexpr const wchar_t* Name = L"IOMouseInfo"; };
@@ -296,6 +298,7 @@ namespace vl::presentation::remoteprotocol
 		bool injectDateTime;
 		bool injectLocale;
 		bool injectFileSystem;
+		bool injectClipboard;
 	};
 
 	struct InjectionDateTime
@@ -360,6 +363,13 @@ namespace vl::presentation::remoteprotocol
 		::vl::Ptr<::vl::collections::List<::vl::WString>> paths;
 		::vl::Nullable<::vl::presentation::remoteprotocol::InjectionFileInfo> info;
 		::vl::Ptr<::vl::stream::MemoryStream> content;
+	};
+
+	struct InjectionClipboard
+	{
+		::vl::Nullable<::vl::WString> text;
+		::vl::Ptr<::vl::stream::MemoryStream> document;
+		::vl::Ptr<::vl::stream::MemoryStream> image;
 	};
 
 	struct WindowSizingConfig
@@ -789,6 +799,7 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionFileInfo>(const ::vl::presentation::remoteprotocol::InjectionFileInfo & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionFileRequest>(const ::vl::presentation::remoteprotocol::InjectionFileRequest & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionFileResponse>(const ::vl::presentation::remoteprotocol::InjectionFileResponse & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionClipboard>(const ::vl::presentation::remoteprotocol::InjectionClipboard & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::WindowSizingConfig>(const ::vl::presentation::remoteprotocol::WindowSizingConfig & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::WindowShowing>(const ::vl::presentation::remoteprotocol::WindowShowing & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeWindowMouseInfo>(const ::vl::presentation::NativeWindowMouseInfo & value);
@@ -881,6 +892,7 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionFileInfo& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionFileRequest& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileResponse>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionFileResponse& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionClipboard>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionClipboard& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::WindowSizingConfig>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::WindowSizingConfig& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::WindowShowing>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::WindowShowing& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeWindowMouseInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeWindowMouseInfo& value);
@@ -946,6 +958,8 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(InjectionUtcToLocal, ::vl::presentation::remoteprotocol::InjectionDateTime, ::vl::presentation::remoteprotocol::InjectionDateTime, REQ, RES, NODROP)\
 	HANDLER(InjectionLocale, ::vl::presentation::remoteprotocol::InjectionLocaleRequest, ::vl::Ptr<::vl::collections::List<::vl::WString>>, REQ, RES, NODROP)\
 	HANDLER(InjectionFileSystem, ::vl::presentation::remoteprotocol::InjectionFileRequest, ::vl::presentation::remoteprotocol::InjectionFileResponse, REQ, RES, NODROP)\
+	HANDLER(InjectionRequestClipboard, void, void, NOREQ, NORES, NODROP)\
+	HANDLER(InjectionUpdateClipboardFromCore, ::vl::presentation::remoteprotocol::InjectionClipboard, bool, REQ, RES, NODROP)\
 	HANDLER(WindowGetBounds, void, ::vl::presentation::remoteprotocol::WindowSizingConfig, NOREQ, RES, NODROP)\
 	HANDLER(WindowNotifySetTitle, ::vl::WString, void, REQ, NORES, DROPREP)\
 	HANDLER(WindowNotifySetEnabled, bool, void, REQ, NORES, DROPREP)\
@@ -997,6 +1011,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(ControllerRequestExit, void, NOREQ, NODROP)\
 	HANDLER(ControllerForceExit, void, NOREQ, NODROP)\
 	HANDLER(ControllerScreenUpdated, ::vl::presentation::remoteprotocol::ScreenConfig, REQ, DROPREP)\
+	HANDLER(InjectionUpdateClipboardFromRenderer, ::vl::presentation::remoteprotocol::InjectionClipboard, REQ, NODROP)\
 	HANDLER(WindowBoundsUpdated, ::vl::presentation::remoteprotocol::WindowSizingConfig, REQ, DROPREP)\
 	HANDLER(WindowActivatedUpdated, bool, REQ, DROPREP)\
 	HANDLER(IOGlobalShortcutKey, ::vl::vint, REQ, NODROP)\
@@ -1039,6 +1054,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(::vl::presentation::remoteprotocol::GetNearestCaretFromTextPosRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::ImageCreation)\
 	HANDLER(::vl::presentation::remoteprotocol::ImageSaveRequest)\
+	HANDLER(::vl::presentation::remoteprotocol::InjectionClipboard)\
 	HANDLER(::vl::presentation::remoteprotocol::InjectionDateTime)\
 	HANDLER(::vl::presentation::remoteprotocol::InjectionFileRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::InjectionLocaleRequest)\
@@ -1074,6 +1090,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(::vl::presentation::remoteprotocol::IOMouseInfoWithButton)\
 	HANDLER(::vl::presentation::remoteprotocol::IOPointAction)\
 	HANDLER(::vl::presentation::remoteprotocol::IOPointEnd)\
+	HANDLER(::vl::presentation::remoteprotocol::InjectionClipboard)\
 	HANDLER(::vl::presentation::remoteprotocol::ScreenConfig)\
 	HANDLER(::vl::presentation::remoteprotocol::WindowSizingConfig)\
 	HANDLER(::vl::vint)\

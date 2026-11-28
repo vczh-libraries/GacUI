@@ -477,6 +477,7 @@ namespace vl::presentation::remoteprotocol
 		ConvertCustomTypeToJsonField(node, L"injectDateTime", value.injectDateTime);
 		ConvertCustomTypeToJsonField(node, L"injectLocale", value.injectLocale);
 		ConvertCustomTypeToJsonField(node, L"injectFileSystem", value.injectFileSystem);
+		ConvertCustomTypeToJsonField(node, L"injectClipboard", value.injectClipboard);
 		return node;
 	}
 
@@ -551,6 +552,15 @@ namespace vl::presentation::remoteprotocol
 		ConvertCustomTypeToJsonField(node, L"paths", value.paths);
 		ConvertCustomTypeToJsonField(node, L"info", value.info);
 		ConvertCustomTypeToJsonField(node, L"content", value.content);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionClipboard>(const ::vl::presentation::remoteprotocol::InjectionClipboard & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"text", value.text);
+		ConvertCustomTypeToJsonField(node, L"document", value.document);
+		ConvertCustomTypeToJsonField(node, L"image", value.image);
 		return node;
 	}
 
@@ -1581,6 +1591,7 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"injectDateTime") ConvertJsonToCustomType(field->value, value.injectDateTime); else
 			if (field->name.value == L"injectLocale") ConvertJsonToCustomType(field->value, value.injectLocale); else
 			if (field->name.value == L"injectFileSystem") ConvertJsonToCustomType(field->value, value.injectFileSystem); else
+			if (field->name.value == L"injectClipboard") ConvertJsonToCustomType(field->value, value.injectClipboard); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
@@ -1685,6 +1696,21 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"paths") ConvertJsonToCustomType(field->value, value.paths); else
 			if (field->name.value == L"info") ConvertJsonToCustomType(field->value, value.info); else
 			if (field->name.value == L"content") ConvertJsonToCustomType(field->value, value.content); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionClipboard>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionClipboard& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionClipboard>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::InjectionClipboard&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"text") ConvertJsonToCustomType(field->value, value.text); else
+			if (field->name.value == L"document") ConvertJsonToCustomType(field->value, value.document); else
+			if (field->name.value == L"image") ConvertJsonToCustomType(field->value, value.image); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX

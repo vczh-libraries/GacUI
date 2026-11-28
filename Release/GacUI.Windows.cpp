@@ -2331,12 +2331,13 @@ WindowsController
 
 				void InvokeGlobalTimer()
 				{
+					clipboardService.DispatchClipboardUpdate(callbackService, false);
 					callbackService.InvokeGlobalTimer();
 				}
 
 				void InvokeClipboardUpdated()
 				{
-					callbackService.InvokeClipboardUpdated();
+					clipboardService.DispatchClipboardUpdate(callbackService, true);
 				}
 
 				void InvokeGlobalShortcutkeyActivated(vint id)
@@ -7014,7 +7015,7 @@ WinBitmap
 					Header2.bV5BitCount = (int)GetBitsFromBB(FBits);
 					Header2.bV5Compression = BI_RGB;
 					Header2.bV5CSType = LCS_sRGB;
-					Header2.bV5Intent = LCS_GM_GRAPHICS;
+					Header2.bV5Intent = DIBV5ClipboardFormat ? LCS_GM_IMAGES : LCS_GM_GRAPHICS;
 					Output.Write(&Header2, sizeof(Header2));
 				}
 
@@ -13043,22 +13044,42 @@ WindowsClipboardReader
 
 			bool WindowsClipboardReader::ContainsImage()
 			{
-				return ContainsFormat(CF_BITMAP);
+				return ContainsFormat(service->WCF_PNG) || ContainsFormat(CF_BITMAP);
 			}
 
 			Ptr<INativeImage> WindowsClipboardReader::GetImage()
 			{
+				if (auto png = ::GetClipboardData(service->WCF_PNG))
+				{
+					auto size = ::GlobalSize(png);
+					if (size > 0 && size <= INT_MAX)
+					{
+						if (auto data = ::GlobalLock(png))
+						{
+							auto image = GetCurrentController()->ImageService()->CreateImageFromMemory(data, (vint)size);
+							::GlobalUnlock(png);
+							if (image) return image;
+						}
+					}
+				}
+
 				HBITMAP handle = (HBITMAP)::GetClipboardData(CF_BITMAP);
 				if (handle != 0)
 				{
-					return CreateImageFromHBITMAP(handle);
+					if (!service->nativeImageService) return CreateImageFromHBITMAP(handle);
+					auto nativeImage = service->nativeImageService->CreateImageFromHBITMAP(handle);
+					if (!nativeImage) return nullptr;
+					stream::MemoryStream png;
+					nativeImage->SaveToStream(png, INativeImage::Png);
+					png.SeekFromBegin(0);
+					return GetCurrentController()->ImageService()->CreateImageFromStream(png);
 				}
 				return nullptr;
 			}
 
 			void WindowsClipboardReader::CloseClipboard()
 			{
-				if (service->reader)
+				if (service->reader == this)
 				{
 					::CloseClipboard();
 					service->reader = nullptr;
@@ -13069,14 +13090,20 @@ WindowsClipboardReader
 WindowsClipboardWriter
 ***********************************************************************/
 
-			void WindowsClipboardWriter::SetClipboardData(UINT format, stream::MemoryStream& memoryStream)
+			bool WindowsClipboardWriter::SetClipboardData(UINT format, stream::MemoryStream& bytes)
 			{
-				memoryStream.SeekFromBegin(0);
-				HGLOBAL data = ::GlobalAlloc(GMEM_MOVEABLE, (SIZE_T)memoryStream.Size());
+				auto size = (SIZE_T)bytes.Size();
+				HGLOBAL data = ::GlobalAlloc(GMEM_MOVEABLE, size);
+				if (!data) return false;
 				auto buffer = ::GlobalLock(data);
-				memoryStream.Read(buffer, (vint)memoryStream.Size());
-				::GlobalUnlock(data);
-				::SetClipboardData(format, data);
+				if (buffer)
+				{
+					memcpy(buffer, bytes.GetInternalBuffer(), size);
+					::GlobalUnlock(data);
+					if (::SetClipboardData(format, data)) return true;
+				}
+				::GlobalFree(data);
+				return false;
 			}
 
 			WindowsClipboardWriter::WindowsClipboardWriter(WindowsClipboardService* _service)
@@ -13116,67 +13143,56 @@ WindowsClipboardWriter
 
 			bool WindowsClipboardWriter::Submit()
 			{
-				if (service->reader)
+				if (service->reader) service->reader->CloseClipboard();
+
+				List<Pair<UINT, Ptr<stream::MemoryStream>>> formats;
+				auto addFormat = [&](UINT type)
 				{
-					service->reader->CloseClipboard();
+					auto bytes = Ptr(new stream::MemoryStream);
+					formats.Add({ type, bytes });
+					return bytes;
+				};
+				if (textData)
+				{
+					auto bytes = addFormat(CF_UNICODETEXT);
+					bytes->Write((void*)textData.Value().Buffer(), (textData.Value().Length() + 1) * sizeof(wchar_t));
+				}
+				if (documentData)
+				{
+					SaveDocumentToClipboardStream(documentData, *addFormat(service->WCF_Document).Obj());
+					SaveDocumentToRtfStream(documentData, *addFormat(service->WCF_RTF).Obj());
+					SaveDocumentToHtmlClipboardStream(documentData, *addFormat(service->WCF_HTML).Obj());
+				}
+				if (imageData)
+				{
+					auto png = Ptr(new stream::MemoryStream);
+					imageData->SaveToStream(*png.Obj(), INativeImage::Png);
+					if (png->Size() > 0) formats.Add({ service->WCF_PNG, png });
+					if (service->nativeImageService && imageData->GetImageService() != service->nativeImageService)
+					{
+						png->SeekFromBegin(0);
+						imageData = service->nativeImageService->CreateImageFromStream(*png.Obj());
+					}
+					if (!imageData || imageData->GetFrameCount() == 0) return false;
+					auto wicBitmap = GetWICBitmap(imageData->GetFrame(0));
+					UINT width = 0, height = 0;
+					if (!wicBitmap || FAILED(wicBitmap->GetSize(&width, &height))) return false;
+					auto bitmap = Ptr(new WinBitmap((vint)width, (vint)height, WinBitmap::vbb32Bits, true));
+					WICRect rect{ 0, 0, (INT)width, (INT)height };
+					if (FAILED(wicBitmap->CopyPixels(&rect, (UINT)bitmap->GetLineBytes(),
+						(UINT)(bitmap->GetLineBytes() * height), (BYTE*)bitmap->GetScanLines()[0]))) return false;
+					bitmap->SaveToStream(*addFormat(CF_DIBV5).Obj(), true);
 				}
 
 				if (!::OpenClipboard(service->ownerHandle)) return false;
-				::EmptyClipboard();
-
-				if (textData)
+				bool success = ::EmptyClipboard() != FALSE;
+				for (const auto& [type, bytes] : formats)
 				{
-					vint size = (textData.Value().Length() + 1) * sizeof(wchar_t);
-					HGLOBAL data = ::GlobalAlloc(GMEM_MOVEABLE, size);
-					auto buffer = (wchar_t*)::GlobalLock(data);
-					memcpy(buffer, textData.Value().Buffer(), size);
-					::GlobalUnlock(data);
-					::SetClipboardData(CF_UNICODETEXT, data);
+					if (!success) break;
+					success = SetClipboardData(type, *bytes.Obj());
 				}
-
-				if (documentData)
-				{
-					{
-						stream::MemoryStream memoryStream;
-						SaveDocumentToClipboardStream(documentData, memoryStream);
-						SetClipboardData(service->WCF_Document, memoryStream);
-					}
-					{
-						stream::MemoryStream memoryStream;
-						SaveDocumentToRtfStream(documentData, memoryStream);
-						SetClipboardData(service->WCF_RTF, memoryStream);
-					}
-					{
-						stream::MemoryStream memoryStream;
-						SaveDocumentToHtmlClipboardStream(documentData, memoryStream);
-						SetClipboardData(service->WCF_HTML, memoryStream);
-					}
-				}
-
-				if (imageData && imageData->GetFrameCount()>0)
-				{
-					if (auto wicBitmap = GetWICBitmap(imageData->GetFrame(0)))
-					{
-						UINT width = 0;
-						UINT height = 0;
-						wicBitmap->GetSize(&width, &height);
-						auto bitmap = Ptr(new WinBitmap((vint)width, (vint)height, WinBitmap::vbb32Bits, true));
-
-						WICRect rect;
-						rect.X = 0;
-						rect.Y = 0;
-						rect.Width = (INT)width;
-						rect.Height = (INT)height;
-						wicBitmap->CopyPixels(&rect, (UINT)bitmap->GetLineBytes(), (UINT)(bitmap->GetLineBytes()*height), (BYTE*)bitmap->GetScanLines()[0]);
-
-						stream::MemoryStream memoryStream;
-						bitmap->SaveToStream(memoryStream, true);
-						SetClipboardData(CF_DIBV5, memoryStream);
-					}
-				}
-
 				::CloseClipboard();
-				return true;
+				return success;
 			}
 
 /***********************************************************************
@@ -13194,19 +13210,25 @@ WindowsClipboardService
 				Ptr<INativeImage>				GetImage()override { return nullptr; }
 			};
 
-			WindowsClipboardService::WindowsClipboardService()
-				:ownerHandle(NULL)
+			WindowsClipboardService::WindowsClipboardService(WindowsImageService* _nativeImageService)
+				: ownerHandle(NULL)
+				, nativeImageService(_nativeImageService)
 			{
 				WCF_Document = ::RegisterClipboardFormat(L"GacUI Document Format");
 				WCF_RTF = ::RegisterClipboardFormat(L"Rich Text Format");
 				WCF_HTML = ::RegisterClipboardFormat(L"HTML Format");
+				WCF_PNG = ::RegisterClipboardFormat(L"PNG");
 			}
 
 			Ptr<INativeClipboardReader> WindowsClipboardService::ReadClipboard()
 			{
 				if (!reader)
 				{
-					if (!::OpenClipboard(ownerHandle)) return Ptr(new WindowsFakeClipboardReader);
+					if (!::OpenClipboard(ownerHandle))
+					{
+						readPending = true;
+						return Ptr(new WindowsFakeClipboardReader);
+					}
 					reader = new WindowsClipboardReader(this);
 				}
 				return Ptr(reader);
@@ -13217,9 +13239,22 @@ WindowsClipboardService
 				return Ptr(new WindowsClipboardWriter(this));
 			}
 
+			void WindowsClipboardService::DispatchClipboardUpdate(INativeCallbackInvoker& callbacks, bool nativeChange)
+			{
+				if (!nativeChange && !readPending) return;
+				readPending = false;
+				// Keep the native clipboard open while listeners read this change.
+				auto nativeReader = ReadClipboard();
+				if (!readPending)
+				{
+					callbacks.InvokeClipboardUpdated();
+				}
+			}
+
 			void WindowsClipboardService::SetOwnerHandle(HWND handle)
 			{
 				HWND oldHandle=ownerHandle;
+				readPending = false;
 				ownerHandle=handle;
 				if(handle==NULL)
 				{
@@ -14963,7 +14998,7 @@ namespace vl::presentation::windows
 			switch (message)
 			{
 			case WM_CLIPBOARDUPDATE:
-				controller->ClipboardUpdated();
+				if (!console::TUI::IsStopRequested()) controller->clipboardService.DispatchClipboardUpdate(controller->callbackService, true);
 				return 0;
 			case WM_HOTKEY:
 				controller->GlobalShortcutKeyActivated(static_cast<vint>(wParam));
@@ -15005,6 +15040,7 @@ namespace vl::presentation::windows
 
 	void TuiWindowsController::PumpPlatformEvents()
 	{
+		if (!console::TUI::IsStopRequested()) clipboardService.DispatchClipboardUpdate(callbackService, false);
 		MSG message;
 		while (!console::TUI::IsStopRequested() && PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE))
 		{
@@ -19135,4 +19171,67 @@ namespace vl::presentation::windows
 	}
 }
 #endif
+
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\WINDOWS\WINREMOTEAPPLICATION.CPP
+***********************************************************************/
+
+namespace vl::presentation::windows
+{
+	// The Core runs a protocol loop and has no ordinary Windows controller.
+	class WindowsRemoteClipboardService : public WindowsClipboardService, public IGuiRemoteClipboardEventSource
+	{
+	public:
+		WindowsRemoteClipboardService(WindowsImageService* images)
+			: WindowsClipboardService(images)
+		{
+			auto owner = CreateWindowExW(0, L"STATIC", L"GacUI Core Clipboard", 0, 0, 0, 0, 0, HWND_MESSAGE, nullptr, GetModuleHandleW(nullptr), nullptr);
+			CHECK_ERROR(owner, L"WindowsRemoteClipboardService()#Failed to create the clipboard owner window.");
+			SetOwnerHandle(owner);
+		}
+
+		~WindowsRemoteClipboardService()
+		{
+			auto owner = ownerHandle;
+			SetOwnerHandle(nullptr);
+			DestroyWindow(owner);
+		}
+
+		bool PumpClipboardEvents() override
+		{
+			bool changed = readPending;
+			readPending = false;
+			MSG message;
+			while (PeekMessageW(&message, ownerHandle, 0, 0, PM_REMOVE))
+			{
+				if (message.message == WM_CLIPBOARDUPDATE) changed = true;
+				DispatchMessageW(&message);
+			}
+			return changed;
+		}
+	};
+}
+
+int SetupRemoteNativeController(vl::presentation::IGuiRemoteProtocol* protocol, const vl::presentation::GuiRemoteControllerConfig& config)
+{
+	using namespace vl;
+	using namespace vl::presentation::windows;
+	auto initialized = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+	CHECK_ERROR(SUCCEEDED(initialized) || initialized == RPC_E_CHANGED_MODE, L"SetupRemoteNativeController()#COM initialization failed.");
+	int result;
+	try
+	{
+		WindowsImageService images;
+		WindowsRemoteClipboardService clipboard(&images);
+		result = SetupRemoteNativeControllerInternal(protocol, config, &clipboard);
+	}
+	catch (...)
+	{
+		if (SUCCEEDED(initialized)) CoUninitialize();
+		throw;
+	}
+	if (SUCCEEDED(initialized)) CoUninitialize();
+	return result;
+}
 

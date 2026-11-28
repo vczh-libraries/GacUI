@@ -439,6 +439,13 @@
                 "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
+        }, {
+            "$ast": "StructMember",
+            "name": "injectClipboard",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
         }],
         "type": "Struct"
     }, {
@@ -1035,6 +1042,71 @@
             "type": {
                 "$ast": "ReferenceType",
                 "name": "InjectionFileResponse"
+            }
+        }
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "InjectionClipboard",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "text",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "PrimitiveType",
+                    "type": "String"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "document",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Binary"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "image",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Binary"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "InjectionRequestClipboard",
+        "request": null,
+        "response": null
+    }, {
+        "$ast": "EventDecl",
+        "attributes": [],
+        "name": "InjectionUpdateClipboardFromRenderer",
+        "request": {
+            "$ast": "EventRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "InjectionClipboard"
+            }
+        }
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "InjectionUpdateClipboardFromCore",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "InjectionClipboard"
+            }
+        },
+        "response": {
+            "$ast": "MessageResponse",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
             }
         }
     }, {
