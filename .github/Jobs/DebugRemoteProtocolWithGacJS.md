@@ -11,8 +11,6 @@ Run from a monorepo root where `GacUI`, `GacJS`, and `Tools` are sibling
 repositories. In the commands below, `<GacUI>` and `<GacJS>` mean those checkout
 roots.
 
-The Chromium MiniHTTP clipboard run on November 27, 2026 passed all eight configurations in the Ribbon and Toolstrip editors. An independent browser page observed remote writes, and a separate Windows process retained the Core-side value. A denied browser read produced no snapshot. A rejected browser write returned false for its request and Core exited nonzero. Wasm runtime clipboard verification is pending.
-
 ## Test Matrix
 
 The Core application and renderer transport are independent dimensions.

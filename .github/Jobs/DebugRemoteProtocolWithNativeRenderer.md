@@ -6,8 +6,6 @@ error injections, and pass/fail observations are defined only in
 [`DebugRemoteProtocolSop.md`](DebugRemoteProtocolSop.md). Use this guide to
 establish each required process topology, then execute the matching SOP section.
 
-The Windows MiniHTTP clipboard run on November 27, 2026 passed all eight Core and renderer configurations in the Ribbon and Toolstrip editors. A competing Windows process held the clipboard open for the rejected Cut check. The renderer returned false for the matching request and Core exited nonzero. Ubuntu and macOS clipboard transfers await a native run.
-
 ## Test Matrix
 
 The application and renderer transport are independent dimensions.
