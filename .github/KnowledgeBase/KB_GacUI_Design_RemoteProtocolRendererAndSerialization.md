@@ -216,3 +216,9 @@ Network clients receive their destination from application configuration. Keep t
 ## Underlying process services
 
 Core and a native renderer can each install their own underlying service implementations with `vl::InjectDateTimeImpl`, `vl::InjectLocaleImpl` and `vl::filesystem::InjectFileSystemImpl`. These process-local replacements are separate from the remote configuration/capability flags: installing one does not opt into remote injection. Core opt-in defaults, native-renderer capability defaults, DateTime/Locale predecessor fallback and the enabled-but-unavailable filesystem's empty root remain as described above.
+
+## Clipboard snapshots
+
+`ControllerGlobalConfig::injectClipboard` advertises an available clipboard. A missing field decodes to false. On subscription a native renderer snapshots Unicode text, the GacUI document stream and a standalone PNG, then observes the OS clipboard on its UI thread. A successful remote write can produce a new OS change event. Applying a renderer event in Core only changes its in-memory reader.
+
+GacJS reads and writes a single browser clipboard item when `remoteClipboard` is enabled and the page has the Clipboard API in a secure context. It uses a web custom type for the GacUI document where available. Denied reads preserve the current snapshot. The page refreshes on focus or a permitted gesture when change events are unavailable. The browser option also applies to an RVM-host session. Wasm shares the page adapter with a local worker. Windows uses a message-only clipboard owner for Core, wGac uses X11/XWayland for the headless Core, and iGac polls pasteboard change counts.

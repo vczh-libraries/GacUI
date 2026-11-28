@@ -11,6 +11,8 @@ Run from a monorepo root where `GacUI`, `GacJS`, and `Tools` are sibling
 repositories. In the commands below, `<GacUI>` and `<GacJS>` mean those checkout
 roots.
 
+The Chromium MiniHTTP clipboard run on November 27, 2026 passed all eight configurations in the Ribbon and Toolstrip editors. An independent browser page observed remote writes, and a separate Windows process retained the Core-side value. A denied browser read produced no snapshot. A rejected browser write returned false for its request and Core exited nonzero. Wasm runtime clipboard verification is pending.
+
 ## Test Matrix
 
 The Core application and renderer transport are independent dimensions.
@@ -340,13 +342,12 @@ if ($hostProcess -and -not $hostProcess.HasExited) { Stop-Process -Id $hostProce
 
 ## Linux and macOS
 
-The portable build entry and website server are shared by Linux and macOS.
-Build and start the core, retaining its process identifier:
+Build Core in `<wGac repo>` on Linux or `<iGac repo>` on macOS. Run these commands from that platform repo and retain the process identifier.
 
 ```bash
-cd <GacUI>/Test/Linux/RemotingTest_Core
-../../../.github/Ubuntu/build.sh
-./Bin/RemotingTest_Core /MiniHttp /FCT &
+./build.sh
+core_exe="$PWD/build/RemotingTest_Core/bin/RemotingTest_Core"
+./test.sh --app:core /FCT &
 core_pid=$!
 ```
 
@@ -381,14 +382,13 @@ the host manually:
 
 ```bash
 host_exe="$(realpath <GacUI>/Test/Linux/RemotingTest_RvmHost/Bin/RemotingTest_RvmHost)"
-<GacUI>/Test/Linux/RemotingTest_Core/Bin/RemotingTest_Core /MiniHttp /RVMT "/Cli:\"$host_exe\"" &
+"$core_exe" /MiniHttp /RVMT "/Cli:\"$host_exe\"" &
 core_pid=$!
 ```
 
 Run the three GacJS-host variants as separate portable rows:
 
 ```bash
-core_exe="<GacUI>/Test/Linux/RemotingTest_Core/Bin/RemotingTest_Core"
 node_cli="<GacJS>/Gaclib/website/rvmhost/lib/src/cli.js"
 
 # Browser host: open /index.html?rvmhost

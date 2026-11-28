@@ -30,7 +30,7 @@ void GuiMain()
     mainWindow->SetTitle(L"Connecting ...");
 
     GuiMainInvoker invoker;
-    remoteRenderer->RegisterMainWindow(mainWindow);
+    remoteRenderer->RegisterMainWindow(mainWindow, L"localhost");
     asyncChannel->SetInvokeInMainThread(&invoker);
 
     GetCurrentController()->WindowService()->Run(mainWindow);
@@ -74,7 +74,15 @@ Override GuiRemoteProtocolChannelClient::OnReadError, OnLocalError, or OnDisconn
 
 `ControllerGlobalConfig::injectDateTime` advertises local timezone conversion; `ControllerGlobalConfig::injectLocale` advertises locale information; `ControllerGlobalConfig::injectFileSystem` advertises filesystem access. These capabilities are independent and require the matching [Core configuration](../.././gacui/modes/remote_core.md) flag for remote use.
 
-The native renderer's `GuiRemoteRendererSingle::GlobalConfig` initializes all three capabilities to `true`. The demo applications explicitly disable them unless the respective `/remoteDT`, `/remoteLocale` or `/remoteFS` option is supplied. A default protocol `ControllerGlobalConfig` record alone does not enable them.
+The native renderer's `GuiRemoteRendererSingle::GlobalConfig` initializes these three capabilities to `true`. The demo applications explicitly disable them unless the respective `/remoteDT`, `/remoteLocale` or `/remoteFS` option is supplied. A default protocol `ControllerGlobalConfig` record alone does not enable them.
 
 When a capability is unavailable, Core DateTime and Locale use predecessor implementations. An enabled remote filesystem exposes an empty root. A native renderer can install its own underlying services with `vl::InjectDateTimeImpl`, `vl::InjectLocaleImpl` and `vl::filesystem::InjectFileSystemImpl`; this replacement is separate from capability advertisement.
+
+## Sharing the renderer clipboard
+
+Clipboard sharing is enabled by default. The renderer advertises `ControllerGlobalConfig::injectClipboard` when it can provide the service. Core sends `InjectionRequestClipboard` once per enabled connection. The renderer publishes its current clipboard and later OS changes with `InjectionUpdateClipboardFromRenderer`. It acknowledges each `InjectionUpdateClipboardFromCore` write with the result for that request.
+
+GacJS uses the clipboard available to its browser page. Use the `remoteClipboard` checkbox or URL option. An omitted option, a bare option and `remoteClipboard=true` enable it. `remoteClipboard=false` disables it after refresh. The page needs a secure context and browser clipboard access. It asks before sharing with a different network destination. A denied read leaves the last known contents intact. On browsers without clipboard-change events, focus and permitted input gestures refresh the snapshot.
+
+Copying text in another renderer-side application updates the remote editor’s Paste command. Styled selections use a GacUI document representation where the clipboard supports it. A standalone image uses PNG. The Wasm worker uses the same page-side adapter.
 

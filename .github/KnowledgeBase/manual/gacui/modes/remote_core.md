@@ -94,7 +94,7 @@ See [RemotingTest_Core](https://github.com/vczh-libraries/GacUI/tree/master/Test
 
 ## Optional renderer services
 
-Pass `GuiRemoteControllerConfig` to `SetupRemoteNativeController`. Its three independent flags default to `false`:
+Pass `GuiRemoteControllerConfig` to `SetupRemoteNativeController`. The date/time, locale and filesystem flags default to `false`.
 
 - `injectDateTime` uses the renderer's local timezone conversions. UTC time, construction and arithmetic remain with the predecessor implementation.
 - `injectLocale` uses renderer locale defaults, enumeration and names; formatting and comparisons remain local.
@@ -103,4 +103,12 @@ Pass `GuiRemoteControllerConfig` to `SetupRemoteNativeController`. Its three ind
 Both Core and the renderer must enable the corresponding capability. DateTime and Locale fall back to predecessor implementations on missing support or disconnection. Capabilities are checked again when a renderer is replaced. See [renderer configuration](../.././gacui/modes/remote_client.md).
 
 Core and native renderers can independently replace their underlying process services with `vl::InjectDateTimeImpl`, `vl::InjectLocaleImpl` and `vl::filesystem::InjectFileSystemImpl`. Installing an underlying implementation does not enable remote injection or advertise a capability.
+
+## Clipboard routing
+
+`GuiRemoteControllerConfig::injectClipboard` defaults to `true`. When a connected renderer offers its clipboard, Core subscribes once and caches its initial contents and subsequent changes. Each snapshot can contain Unicode text, a serialized GacUI document with embedded images, and a PNG. An empty snapshot disables Paste for the document editor. Checking Paste availability and pasting both read the cache.
+
+Copy and Cut send the selection to the renderer. The renderer acknowledges the OS write before Cut removes the selection. With the endpoints on separate machines, a copy in the remote editor becomes available to other applications on the renderer machine. Applications on the Core machine keep their own OS clipboard.
+
+Before a renderer offers sharing, when either endpoint disables it, and after disconnecting, the application uses Core’s local clipboard. The platform supplies the Windows clipboard, the X11/XWayland clipboard selection, or the macOS pasteboard. Core tests can select an in-memory fallback. A replacement renderer starts with a fresh snapshot.
 

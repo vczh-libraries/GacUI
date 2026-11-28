@@ -8,6 +8,8 @@ param(
     [string]$Protocol,
 
     [switch]$Cli,
+    [switch]$FakeClipboard,
+    [switch]$DenyClipboard,
 
     [ValidateRange(1, 65535)]
     [int]$AsPort = 8888
@@ -28,6 +30,7 @@ if ($Cli -and $App -ne 'cpptest_rvm' -and $App -ne 'rvmt') {
 }
 
 if ($App -eq 'cpptest_rvm') {
+    if ($FakeClipboard -or $DenyClipboard) { throw 'Clipboard options are supported only by RemotingTest_Core.' }
     $application = Join-Path $bin 'CppTest_Rvm.exe'
     if ($Cli) {
         $applicationArguments = @('/Cli:"\"{0}\""' -f $hostExe)
@@ -44,6 +47,8 @@ else {
         'rvmt' { '/RVMT' }
     }
     $applicationArguments = @($protocolArgument, $appArgument)
+    if ($FakeClipboard) { $applicationArguments += '/fakeClipboard' }
+    if ($DenyClipboard) { $applicationArguments += '/denyClipboard' }
     if ($Cli) {
         $applicationArguments += '/Cli:"\"{0}\""' -f $hostExe
     }
@@ -62,12 +67,12 @@ if (($App -eq 'cpptest_rvm' -or $App -eq 'rvmt') -and -not (Test-Path -LiteralPa
 }
 
 Write-Host "Starting: $application $($applicationArguments -join ' ')"
-$applicationProcess = Start-Process -FilePath $application -ArgumentList $applicationArguments -PassThru
+$applicationProcess = Start-Process -FilePath $application -ArgumentList $applicationArguments -WindowStyle Hidden -PassThru
 Write-Output $applicationProcess
 
 if (-not $Cli -and ($App -eq 'cpptest_rvm' -or $App -eq 'rvmt')) {
     Start-Sleep -Seconds 1
     Write-Host "Starting: $hostExe $protocolArgument"
-    $hostProcess = Start-Process -FilePath $hostExe -ArgumentList $protocolArgument -PassThru
+    $hostProcess = Start-Process -FilePath $hostExe -ArgumentList $protocolArgument -WindowStyle Hidden -PassThru
     Write-Output $hostProcess
 }

@@ -6,6 +6,8 @@ error injections, and pass/fail observations are defined only in
 [`DebugRemoteProtocolSop.md`](DebugRemoteProtocolSop.md). Use this guide to
 establish each required process topology, then execute the matching SOP section.
 
+The Windows MiniHTTP clipboard run on November 27, 2026 passed all eight Core and renderer configurations in the Ribbon and Toolstrip editors. A competing Windows process held the clipboard open for the rejected Cut check. The renderer returned false for the matching request and Core exited nonzero. Ubuntu and macOS clipboard transfers await a native run.
+
 ## Test Matrix
 
 The application and renderer transport are independent dimensions.
@@ -272,14 +274,10 @@ accepts `--port:<port>` and forwards it as the renderer's `/port:` automation
 option; this changes only the renderer automation listener, not the Core
 connection on port 8888.
 
-From the monorepo root, build the portable Core and host and the wGac native
+From the monorepo root, build the portable view-model host and the wGac native
 applications:
 
 ```bash
-(
-  cd GacUI/Test/Linux/RemotingTest_Core
-  ../../../.github/Ubuntu/build.sh
-)
 (
   cd GacUI/Test/Linux/RemotingTest_RvmHost
   ../../../.github/Ubuntu/build.sh
@@ -302,7 +300,7 @@ For a Core target, run Core in the first terminal. Replace `/RPT` with `/FCT`
 or `/RVMT` for the other application targets:
 
 ```bash
-wGac/test_core.sh --app:rpt --protocol:minihttp
+wGac/test.sh --app:core /RPT
 ```
 
 For manual `/RVMT`, the same launcher starts Core, waits one second, then
@@ -382,14 +380,10 @@ the macOS contract. Its automation port defaults to `8889`; the iGac launcher
 accepts `--port:<port>` and forwards it as the renderer's `/port:` automation
 option without changing the Core connection on port 8888.
 
-From the monorepo root, build the portable Core and host and the iGac native
+From the monorepo root, build the portable view-model host and the iGac native
 applications:
 
 ```bash
-(
-  cd GacUI/Test/Linux/RemotingTest_Core
-  ../../../.github/Ubuntu/build.sh
-)
 (
   cd GacUI/Test/Linux/RemotingTest_RvmHost
   ../../../.github/Ubuntu/build.sh
@@ -412,7 +406,7 @@ For a Core target, run Core in the first terminal. Replace `/RPT` with `/FCT`
 or `/RVMT` for the other application targets:
 
 ```bash
-iGac/test_core.sh --app:rpt --protocol:minihttp
+iGac/test.sh --app:core /RPT
 ```
 
 For manual `/RVMT`, the same launcher starts Core, waits one second, then

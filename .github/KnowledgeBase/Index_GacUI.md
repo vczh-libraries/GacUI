@@ -191,7 +191,7 @@ Use GitTui to browse working-tree diffs and local branch history in a terminal, 
 - GacJS primarily runs the core as WebAssembly in the browser, connecting its HTML5 renderer and TypeScript view model through exposed functions. WebAssembly and HTTP are alternative transports; HTTP mainly supports renderer testing without Wasm.
 - Messages flow core → renderer via `IGuiRemoteProtocolMessages`; events and responses flow renderer → core via `IGuiRemoteProtocolEvents`.
 - `GuiRemoteMessages` provides synchronous batched request-response with auto-incrementing IDs and blocking `Submit()`.
-- `GuiRemoteController` implements `INativeController` and all sub-services as virtual stubs: single window only, intentionally null clipboard/dialog/automation services, synchronous key state queries.
+- `GuiRemoteController` implements `INativeController` and all sub-services as virtual stubs: single window only, a negotiated renderer clipboard with a platform-owned fallback, hosted dialog and automation substitutes, synchronous key state queries.
 - Connection lifecycle: `SetupRemoteNativeController` creates a layered stack (`GuiRemoteController` → `GuiHostedController` → resource managers), with connect/disconnect/reconnection handling that re-sends all window state and explicit forced-exit handling from the renderer.
 - Rendering pipeline: element lifecycle via ID allocation, diff-based element updates, frame rendering flow (`StartRenderingOnNativeWindow` → traversal → `StopRenderingOnNativeWindow`), and measurement feedback loop (font heights, min sizes, image metadata, inline object bounds).
 - `GuiRemoteGraphicsParagraph` handles rich text with run property system, incremental diff synchronization, delegated layout queries, and caret bounds caching.

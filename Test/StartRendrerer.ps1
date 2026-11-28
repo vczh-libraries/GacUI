@@ -6,6 +6,8 @@ param(
     [ValidateRange(1, 65535)]
     [int]$AsPort = 8889,
 
+    [switch]$DenyClipboard,
+
     [ValidateNotNullOrEmpty()]
     [string]$CoreHost = 'localhost'
 )
@@ -33,6 +35,7 @@ $rendererArguments = @(
 )
 $rendererArguments += "/AsPort:$AsPort"
 $rendererArguments += "/corehost:$CoreHost"
+if ($DenyClipboard) { $rendererArguments += '/denyClipboard' }
 
 Write-Host "Starting: $renderer $($rendererArguments -join ' ')"
 $rendererProcess = Start-Process -FilePath $renderer -ArgumentList $rendererArguments -WindowStyle Hidden -PassThru

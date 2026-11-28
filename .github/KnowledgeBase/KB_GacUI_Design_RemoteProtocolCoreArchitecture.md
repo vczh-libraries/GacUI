@@ -60,7 +60,7 @@ The core side operates synchronously from its own perspective despite the underl
 ### Service Design Decisions
 
 - **Single window only**: `CreateNativeWindow` can only be called once (enforced by `CHECK_ERROR`). Multiple sub-windows are managed by `GuiHostedController` through hosted mode.
-- **Intentionally null services**: `ClipboardService()`, `DialogService()`, and `AutomationService()` return `nullptr`. GacUI consequently uses its fake clipboard, `FakeDialogServiceBase`, and `INativeAutomationService::UnavailableService`; the core side cannot directly use those renderer-side OS services.
+- `DialogService()` and `AutomationService()` use their hosted substitutes. `ClipboardService()` selects the connected renderer snapshot or Core’s platform-owned local fallback.
 - **Synchronous key state queries**: `IsKeyPressing()` and `IsKeyToggled()` perform synchronous request-submit-retrieve round-trips. This is expensive but rarely called.
 - **Global shortcut keys**: Tracked core-side and batch-sent to the renderer side on update.
 
@@ -417,3 +417,8 @@ The controller wrappers and their lifetime state are in
 ## Underlying process services
 
 Core and a native renderer can each install their own underlying service implementations with `vl::InjectDateTimeImpl`, `vl::InjectLocaleImpl` and `vl::filesystem::InjectFileSystemImpl`. These process-local replacements are separate from the remote configuration/capability flags: installing one does not opt into remote injection. Core opt-in defaults, native-renderer capability defaults, DateTime/Locale predecessor fallback and the enabled-but-unavailable filesystem's empty root remain as described above.
+## Clipboard ownership
+
+Core and the sample renderers enable clipboard sharing by default. When both endpoints allow it, Core sends `InjectionRequestClipboard` once per connection. A renderer sends its current formats and changes in observation order. Core replaces its snapshot before notifying the editor. Repeated availability checks and pastes read memory. An explicitly present empty string remains pasteable. Absence of all supported formats clears the previous value.
+
+A submitted write sends one `InjectionUpdateClipboardFromCore` and waits for the matching OS result. A rejected write raises a clipboard error before Cut deletes its selection. The native or fake fallback remains independent during sharing. Disconnecting restores that fallback and replacing a renderer negotiates a new subscription. In separate desktop sessions, a remote copy is available to applications on the renderer machine. The Core machine retains its own clipboard.

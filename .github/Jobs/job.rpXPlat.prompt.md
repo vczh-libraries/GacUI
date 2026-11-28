@@ -55,7 +55,7 @@ Without explicitly instructed, you are required to complete every available test
   - `GacUI`, `wGac` and `iGac`, as well as `syncProj.sh`, might needs some manual fix.
 - `build.sh` builds the whole repo.
 - `test.sh` runs each app.
-- `test_core.sh` full-builds and runs the selected sibling GacUI Core-side app; it complements `test.sh`, which continues to run native platform apps and renderers.
+- `test.sh --app:core` runs the platform-built Core. `test_core.sh` also arranges the portable view-model host for RVMT.
 
 ## Ensure Project Availability
 
@@ -87,8 +87,9 @@ In `GacUI` there are important test apps:
   - Its portable counterparts are `wGac/RemotingTest_Rendering_Wayland` and `iGac/RemotingTest_Rendering_macOS`.
   - The Windows `RemotingTest_Rendering_Win32` executable accepts `/AsPort:<port>` and defaults to 8888; pass `/AsPort:8889` when running beside Core. The portable wGac/iGac launchers retain their `--port:<port>` contract and default 8889. A concurrent takeover renderer needs a different automation port, such as 8890; this does not change the `/MiniHttp` Core connection on port 8888.
 - `RemotingTest_Core`, a test ap as the core app in remote protocol.
-  - It runs from `GacUI/Test/Linux/RemotingTest_Core`.
-  - `test_core.sh --app:fct|rpt|rvmt --protocol:minihttp [--cli]` full-builds the selected GacUI project and starts it.
+  - Each platform builds `build/RemotingTest_Core/bin/RemotingTest_Core`. Its `syncProj.sh` copies both Core entry points and the shared parser from `<GacUI repo>/Test/GacUISrc`.
+  - Run `test.sh --app:core /FCT`, `/RPT` or `/RVMT` after the platform build. Omitting the selector chooses FCT. Core accepts `--fakeClipboard`. Both endpoints accept `--denyClipboard`.
+  - `test_core.sh --app:fct|rpt|rvmt --protocol:minihttp [--cli]` starts the platform Core and manages the native view-model host when selected.
   - Renderer traffic always uses `/MiniHttp`. For `/RVMT`, host mode is independently either manual `/MiniHttp` or auto-launched `/Cli:<command>`. Pass the complete host command as one argument, preserving quotes around paths containing spaces; Core appends ` /Cli`.
 - `RemotingTest_RvmHost`, a CLI app hosts the implementation of `IViewModel` with `RemoteViewModelTest` is used.
   - Requres `CppTest_Rvm` or `RemotingTest_Core /RVMT`.

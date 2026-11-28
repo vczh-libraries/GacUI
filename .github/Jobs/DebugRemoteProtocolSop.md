@@ -300,6 +300,19 @@ Apply section 3.1 once on `Document Editor (Toolstrip)`, using its equivalent me
 
 Skip this point-input scenario for native `wGac` and `iGac`, whose native renderers do not support point input. Run it for GacJS on every operating system when that renderer is in scope. Use the automation service first and then attempt applicable UIA coverage, recording any unavailable operations.
 
+#### Clipboard routing in the Ribbon and Toolstrip editors
+
+Start a fresh FCT Core for each row. Use distinct Core and native renderer automation ports. For a browser renderer, apply the option on the HTTP page and grant clipboard access on localhost.
+
+| Core arguments | Native renderer argument | Browser URL | Clipboard used |
+| --- | --- | --- | --- |
+| `/MiniHttp /FCT` | `/MiniHttp` | `/index.html` or `/index.html?remoteClipboard=true` | Renderer OS |
+| `/MiniHttp /FCT /fakeClipboard /denyClipboard` | `/MiniHttp /denyClipboard` | `/index.html?remoteClipboard=false` | Core fake |
+
+Open each editor in Editable mode. In the renderer-OS row, set a known external text value before connecting. Confirm Paste enables, disables after an unsupported-only clipboard item and enables again after different Unicode text. Paste the new value. Cut a known selection and paste it once at another caret. Check the selection from another renderer-side application and verify an unrelated Core-side application keeps its own clipboard when the desktops are independent. Repeat with a styled selection and embedded image from `<GacUI repo>/Test/TestDocument.bin` and with a standalone bitmap.
+
+In the fake row, start with an empty clipboard. External copies must leave Paste disabled. Cut a known selection, replace the real OS clipboard, then paste at a different caret. The editor restores the cut selection and the external application still sees its own value. Use section 3.2 point selection and Edit commands on the Toolstrip page.
+
 ### 4. Verify Shortcuts and Mouse Buttons
 
 1. Activate `Window Manager` and require the three shortcut labels to be

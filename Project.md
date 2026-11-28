@@ -448,7 +448,6 @@ Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` support automation I
 - `Metadata_Generate`: `<GacUI repo>/Test/Linux/Metadata_Generate/vmake`.
 - `Metadata_Test`: `<GacUI repo>/Test/Linux/Metadata_Test/vmake`.
 - `GacUI_Compiler`: `<GacUI repo>/Test/Linux/GacUI_Compiler/vmake`.
-- `RemotingTest_Core`: `<GacUI repo>/Test/Linux/RemotingTest_Core/vmake`.
 - `RemotingTest_RvmHost`: `<GacUI repo>/Test/Linux/RemotingTest_RvmHost/vmake`.
 - `UnitTest`: `<GacUI repo>/Test/Linux/UnitTest/vmake`.
 - `WasmFCT`: `<GacUI repo>/Test/Linux/WasmFCT/vmake`.
@@ -469,7 +468,7 @@ Unlike Windows, building have to be done in each folder separately.
 
 The Unix unit-test entry point uses the environment locale for wide console output, including Unicode test names. Run it with an installed UTF-8 locale; on macOS, use `LC_ALL=en_US.UTF-8 ./Bin/UnitTest /C` if the inherited locale is unavailable.
 
-The portable `RemotingTest_Core` entry point initializes `LC_CTYPE` from the environment before using filesystem services. Use an installed UTF-8 locale for Core-local Unicode filenames, including when remote filesystem injection is disabled. This does not change the native en-US date/number formatting implementation.
+The Unix `RemotingTest_Core` entry point initializes `LC_CTYPE` from the environment before using filesystem services. Use an installed UTF-8 locale for Core-local Unicode filenames, including when remote filesystem injection is disabled. This does not change the native en-US date/number formatting implementation.
 
 It is expected if `makefile` and `vmake.txt` is changed due to build any project, they should be included in the commit for manually updated files, do not revert them.
 
@@ -483,13 +482,18 @@ The native GUI projects in this solution use Windows providers. wGac supplies Wa
 | FullControlTest with native windows | `Test_FullControlTest` | `Test_FullControlTest` | `--app:fct` |
 | `CppTest_Tui` | `Test_TuiControlTest` | `Test_TuiControlTest` | `--app:tui` |
 | `CppTest_Rvm` | `Test_CppTest_Rvm` | `Test_CppTest_Rvm` | `--app:rvmt` |
+| `RemotingTest_Core` | `RemotingTest_Core` | `RemotingTest_Core` | `--app:core` |
 | `RemotingTest_Rendering_Win32` | `RemotingTest_Rendering_Wayland` | `RemotingTest_Rendering_macOS` | `--app:renderer` |
 
-These replacement test apps are built without reflection; they do not provide separate metaonly, full-reflection or Workflow-binary variants corresponding to `CppTest_Metaonly`, `CppTest_Reflection` and `GacUI_Host`. `RemotingTest_Core` and `RemotingTest_RvmHost` use the portable projects under `<GacUI repo>/Test/Linux`.
+These replacement test apps are built without reflection; they do not provide separate metaonly, full-reflection or Workflow-binary variants corresponding to `CppTest_Metaonly`, `CppTest_Reflection` and `GacUI_Host`. Each platform builds its own Core. The view-model host builds from `<GacUI repo>/Test/Linux/RemotingTest_RvmHost`.
 
 For a renderer, both test launchers accept `--corehost:<host>`, `--port:<1-65535>`, `--remoteDT`, `--remoteLocale` and `--remoteFS`. They forward `/MiniHttp`, `/corehost:<host>`, `/port:<port>` and the corresponding slash injection switches in foreground and `--unblock` modes. The renderer's local automation option is `/port`, default `8889`; Core continues to use `/AsPort`. `/corehost` is supported by these renderers and the portable network view-model host, so it is not Windows-specific. Shared argument semantics are described under [Maintaining Test Apps](#maintaining-test-apps).
 
-`<wGac repo>/test_core.sh` and `<iGac repo>/test_core.sh` launch the portable Core with `--app:fct`, `--app:rpt` or `--app:rvmt` and `--protocol:minihttp`. Their `--remoteDT`, `--remoteLocale` and `--remoteFS` options forward the matching slash switches to Core. For a stdio view-model host, use `--app:rvmt --protocol:minihttp --cli`.
+`<wGac repo>/test_core.sh` and `<iGac repo>/test_core.sh` launch the platform Core with `--app:fct`, `--app:rpt` or `--app:rvmt` and `--protocol:minihttp`. Their `--remoteDT`, `--remoteLocale` and `--remoteFS` options forward the matching slash switches to Core. For a stdio view-model host, use `--app:rvmt --protocol:minihttp --cli`.
+
+Run `test.sh --app:core` after the platform build. It defaults to `/MiniHttp /FCT` and accepts `/RPT`, `/RVMT` and one quoted `/Cli:<command>` argument. Core alone accepts `--fakeClipboard`. Both endpoints accept `--denyClipboard`. Windows accepts `-FakeClipboard` on the Core launcher and `-DenyClipboard` on either launcher. The native test renderers share with the selected Core without opening a confirmation dialog. The platform Core uses the Windows clipboard, X11/XWayland selection or macOS pasteboard for its local fallback.
+
+On November 27, 2026, the Windows Debug x64 MiniHTTP Core passed all eight clipboard configurations with the Win32 renderer and with Chromium GacJS. Both document editors followed the active clipboard and preserved rich selections. Renderer replacement, rejected writes and independent Core/browser clipboards were verified in live sessions. Ubuntu, macOS and Wasm runtime verification is pending.
 
 The `Test_CppTest_Rvm` replacements accept only `/MiniHttp`; their test launcher does not automatically start a host. Use the corresponding test-core launcher with `--app:cpptest_rvm --protocol:minihttp` to launch the requester and its network host together. That mode does not accept `--cli`. The portable Core's RemoteViewModelTest remains available for stdio-host testing.
 
