@@ -27576,19 +27576,28 @@ namespace vl::presentation
 		vint									Peek(void* data, vint size) override;
 	};
 
+	// Implemented by headless platform clipboards that share the Core event loop.
+	class IGuiRemoteClipboardEventSource : public virtual Interface
+	{
+	public:
+		virtual bool							PumpClipboardEvents() = 0;
+	};
+
 	class GuiRemoteClipboardInjection : public Object, public INativeClipboardService
 	{
 		friend class GuiRemoteClipboardWriter;
 		friend class GuiRemoteController;
 		GuiRemoteController*					remote;
 		INativeClipboardService*				fallback;
-		remoteprotocol::InjectionClipboard		snapshot;
+		IGuiRemoteClipboardEventSource*			fallbackEvents;
+		Ptr<INativeClipboardReader>				rendererClipboard;
 		vuint64_t								revision = 0;
 	public:
 		GuiRemoteClipboardInjection(GuiRemoteController* controller, INativeClipboardService* local);
-		bool									IsActive() const;
-		void									Reset();
-		void									Update(const remoteprotocol::InjectionClipboard& value);
+		bool									IsEnabled() const;
+		void									Disconnected();
+		void									UpdateData(const remoteprotocol::InjectionClipboard& value);
+		void									PumpClipboardEvents();
 		Ptr<INativeClipboardReader>				ReadClipboard() override;
 		Ptr<INativeClipboardWriter>				WriteClipboard() override;
 	};
@@ -27722,13 +27731,6 @@ namespace vl::presentation
 GuiRemoteController
 ***********************************************************************/
 
-	// Implemented by headless platform clipboards that share the Core event loop.
-	class IGuiRemoteClipboardEventSource : public virtual Interface
-	{
-	public:
-		virtual bool					PumpClipboardEvents() = 0;
-	};
-
 	class GuiRemoteController
 		: public Object
 		, public INativeController
@@ -27765,7 +27767,6 @@ GuiRemoteController
 		SharedAsyncService								asyncService;
 		GuiRemoteGraphicsImageService					imageService;
 		GuiRemoteClipboardInjection						clipboardInjection;
-		IGuiRemoteClipboardEventSource*					clipboardEvents;
 		bool											applicationRunning = false;
 		bool											controllerConnected = false;
 		bool											connectionForcedToStop = false;

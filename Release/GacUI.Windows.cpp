@@ -2331,13 +2331,22 @@ WindowsController
 
 				void InvokeGlobalTimer()
 				{
-					clipboardService.DispatchClipboardUpdate(callbackService, false);
+					InvokePendingClipboardUpdate();
 					callbackService.InvokeGlobalTimer();
 				}
 
 				void InvokeClipboardUpdated()
 				{
-					clipboardService.DispatchClipboardUpdate(callbackService, true);
+					clipboardService.MarkClipboardUpdated();
+					InvokePendingClipboardUpdate();
+				}
+
+				void InvokePendingClipboardUpdate()
+				{
+					if (auto reader = clipboardService.AcquirePendingRead())
+					{
+						callbackService.InvokeClipboardUpdated();
+					}
 				}
 
 				void InvokeGlobalShortcutkeyActivated(vint id)
@@ -13239,16 +13248,18 @@ WindowsClipboardService
 				return Ptr(new WindowsClipboardWriter(this));
 			}
 
-			void WindowsClipboardService::DispatchClipboardUpdate(INativeCallbackInvoker& callbacks, bool nativeChange)
+			void WindowsClipboardService::MarkClipboardUpdated()
 			{
-				if (!nativeChange && !readPending) return;
+				readPending = true;
+			}
+
+			Ptr<INativeClipboardReader> WindowsClipboardService::AcquirePendingRead()
+			{
+				if (!readPending) return nullptr;
 				readPending = false;
-				// Keep the native clipboard open while listeners read this change.
+				// Keep the OS clipboard open until the listeners finish reading it.
 				auto nativeReader = ReadClipboard();
-				if (!readPending)
-				{
-					callbacks.InvokeClipboardUpdated();
-				}
+				return readPending ? nullptr : nativeReader;
 			}
 
 			void WindowsClipboardService::SetOwnerHandle(HWND handle)
@@ -13268,6 +13279,7 @@ WindowsClipboardService
 		}
 	}
 }
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\WINDOWS\SERVICESIMPL\WINDOWSDIALOGSERVICE.CPP
@@ -14998,7 +15010,7 @@ namespace vl::presentation::windows
 			switch (message)
 			{
 			case WM_CLIPBOARDUPDATE:
-				if (!console::TUI::IsStopRequested()) controller->clipboardService.DispatchClipboardUpdate(controller->callbackService, true);
+				controller->clipboardService.MarkClipboardUpdated();
 				return 0;
 			case WM_HOTKEY:
 				controller->GlobalShortcutKeyActivated(static_cast<vint>(wParam));
@@ -15040,12 +15052,18 @@ namespace vl::presentation::windows
 
 	void TuiWindowsController::PumpPlatformEvents()
 	{
-		if (!console::TUI::IsStopRequested()) clipboardService.DispatchClipboardUpdate(callbackService, false);
 		MSG message;
 		while (!console::TUI::IsStopRequested() && PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&message);
 			DispatchMessageW(&message);
+		}
+		if (!console::TUI::IsStopRequested())
+		{
+			if (auto reader = clipboardService.AcquirePendingRead())
+			{
+				ClipboardUpdated();
+			}
 		}
 	}
 
@@ -19220,16 +19238,10 @@ int SetupRemoteNativeController(vl::presentation::IGuiRemoteProtocol* protocol, 
 	auto initialized = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	CHECK_ERROR(SUCCEEDED(initialized) || initialized == RPC_E_CHANGED_MODE, L"SetupRemoteNativeController()#COM initialization failed.");
 	int result;
-	try
 	{
 		WindowsImageService images;
 		WindowsRemoteClipboardService clipboard(&images);
 		result = SetupRemoteNativeControllerInternal(protocol, config, &clipboard);
-	}
-	catch (...)
-	{
-		if (SUCCEEDED(initialized)) CoUninitialize();
-		throw;
 	}
 	if (SUCCEEDED(initialized)) CoUninitialize();
 	return result;
